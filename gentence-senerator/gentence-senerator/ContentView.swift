@@ -8,17 +8,11 @@ struct ContentView: View {
     @State private var englishSentence = "The boy carries the red box."
     @State private var isLoading = false
     @State private var apiKey = Key.key
-    @State private var showAPIKeyInput = true
     
     let languages = ["Mandarin", "French", "German", "Spanish"]
     
     var body: some View {
         VStack(spacing: 30) {
-            Text("Language Learning")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top, 40)
-            
             mainContentView
             
             Spacer()
@@ -168,7 +162,7 @@ struct ContentView: View {
         2. What's the correct translation?
         3. Explain any mistakes they made
         
-        Be supportive and educational in your response.
+        Be strict and educational in your response. Provide no other feedbaack.
         """
         
         callGPT(prompt: prompt) { response in
