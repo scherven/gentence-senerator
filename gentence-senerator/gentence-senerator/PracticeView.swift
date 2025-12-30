@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct PracticeView: View {
-    @Binding var selectedLanguage: String
+    @State var selectedLanguage: String
     @State private var userTranslation = ""
     @State private var showFeedback = false
     @State private var feedbackText = ""
@@ -15,7 +15,6 @@ struct PracticeView: View {
     @State private var isLoading = false
     @Environment(\.presentationMode) var presentationMode
     
-    // TODO: Replace with your actual OpenAI API key
     let apiKey = Key.key
     
     var body: some View {
@@ -64,7 +63,7 @@ struct PracticeView: View {
             .padding(.horizontal)
             
             // Submit button
-            HStack(spacing: 15) {
+            HStack {
                 Button(action: checkTranslation) {
                     if isLoading {
                         ProgressView()
@@ -80,32 +79,33 @@ struct PracticeView: View {
                 .background(isLoading ? Color.gray : Color.blue)
                 .cornerRadius(10)
                 .disabled(isLoading || userTranslation.isEmpty)
-                
-                Button(action: generateNewSentence) {
-                    Text("New Sentence")
-                }
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.green)
-                .cornerRadius(10)
-                .disabled(isLoading)
-            }
-            .padding(.horizontal)
+            }.padding(.horizontal)
             
             // Feedback area
             if showFeedback && !feedbackText.isEmpty {
-                ScrollView {
-                    Text(feedbackText)
-                        .font(.body)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
+                VStack(spacing: 15) {
+                    ScrollView {
+                        Text(feedbackText)
+                            .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(10)
+                    }
+                    .frame(maxHeight: 200)
+                    .padding(.horizontal)
+                    
+                    Button(action: generateNewSentence) {
+                        Text("New Sentence")
+                    }
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green)
+                    .cornerRadius(10)
+                    .disabled(isLoading)
                 }
-                .frame(maxHeight: 200)
-                .padding(.horizontal)
             }
             
             Spacer()
@@ -116,11 +116,6 @@ struct PracticeView: View {
             if englishSentence == "Loading..." {
                 generateNewSentence()
             }
-        }
-        .onChange(of: selectedLanguage) { _ in
-            showFeedback = false
-            userTranslation = ""
-            feedbackText = ""
         }
     }
     
@@ -158,9 +153,8 @@ struct PracticeView: View {
         1. Is the translation correct or incorrect?
         2. What's the correct translation?
         3. Explain any mistakes they made
-        4. Give encouragement and tips for improvement
         
-        Be supportive and educational in your response.
+        Be strict and educational in your response. Provide no extraneous feedback (words of encouragement, etc.). 
         """
         
         callGPT(prompt: prompt) { response in
@@ -173,6 +167,8 @@ struct PracticeView: View {
     }
     
     func callGPT(prompt: String, completion: @escaping (String) -> Void) {
+        return completion("Hello!")
+        
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             completion("Error: Invalid URL")
             return
@@ -219,4 +215,8 @@ struct PracticeView: View {
             }
         }.resume()
     }
+}
+
+#Preview {
+    PracticeView(selectedLanguage: "Mandarin")
 }

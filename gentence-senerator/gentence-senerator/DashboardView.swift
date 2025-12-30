@@ -37,7 +37,7 @@ struct DashboardView: View {
                 Spacer()
                 
                 // Practice button
-                NavigationLink(destination: PracticeView(selectedLanguage: $selectedLanguage), isActive: $navigateToPractice) {
+                NavigationLink(destination: PracticeView(selectedLanguage: selectedLanguage), isActive: $navigateToPractice) {
                     EmptyView()
                 }
                 
