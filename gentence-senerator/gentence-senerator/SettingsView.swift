@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject var store: AppStore
     @State private var showResetAlert = false
     @State private var newGrammarArea = ""
+    @State private var offlineDownloadCount = 10
 
     let languages = ["Mandarin", "French", "German", "Spanish", "Italian", "Portuguese", "Japanese", "Korean"]
 
@@ -226,6 +227,43 @@ struct SettingsView: View {
                         }
                         .disabled(newGrammarArea.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
+                }
+
+                Section(header: Text("Offline Mode")) {
+                    let lang = store.settings.targetLanguage
+                    let diff = store.currentLangProfile.currentDifficultyLevel
+                    let cached = store.cachedSentenceCount(language: lang, difficulty: diff)
+                    HStack {
+                        Text("Cached sentences")
+                        Spacer()
+                        Text("\(cached)")
+                            .foregroundColor(.secondary)
+                    }
+
+                    Stepper("Download \(offlineDownloadCount) sentences", value: $offlineDownloadCount, in: 5...50, step: 5)
+
+                    if store.isCachingOffline {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                            Text("Downloading sentences...")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Button {
+                            Task { await store.prefetchSentences(count: offlineDownloadCount) }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.down.circle.fill")
+                                Text("Download for Offline Use")
+                                    .fontWeight(.medium)
+                            }
+                        }
+                    }
+
+                    Text("Downloads \(offlineDownloadCount) sentences at difficulty \(diff)/10 for \(lang). Used automatically when you're offline.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
 
                 Section(header: Text("Danger Zone")) {

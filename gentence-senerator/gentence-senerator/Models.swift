@@ -1,5 +1,12 @@
 import Foundation
 
+// MARK: - Practice Mode
+
+enum PracticeMode: String, Codable {
+    case translation   // existing flow: English → target language
+    case listening     // new: hear target language → reproduce it
+}
+
 // MARK: - Practice Phase (drives PracticeView state machine)
 
 enum PracticePhase: Equatable {
@@ -91,8 +98,10 @@ struct Sentence: Codable, Identifiable {
     var attempts: [Attempt]
     var bestScore: Int?
     var status: SentenceStatus
+    var listeningTargetText: String?   // non-nil for listening-mode sentences (target-language text played via TTS)
 
-    init(id: UUID = UUID(), englishText: String, targetLanguage: String, difficultyLevel: Int) {
+    init(id: UUID = UUID(), englishText: String, targetLanguage: String, difficultyLevel: Int,
+         listeningTargetText: String? = nil) {
         self.id = id
         self.englishText = englishText
         self.targetLanguage = targetLanguage
@@ -101,6 +110,26 @@ struct Sentence: Codable, Identifiable {
         self.attempts = []
         self.bestScore = nil
         self.status = .pending
+        self.listeningTargetText = listeningTargetText
+    }
+
+    // Backward-compatible decoder: handles old records missing listeningTargetText
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id                  = try  c.decode(UUID.self,            forKey: .id)
+        englishText         = try  c.decode(String.self,          forKey: .englishText)
+        targetLanguage      = try  c.decode(String.self,          forKey: .targetLanguage)
+        difficultyLevel     = try  c.decode(Int.self,             forKey: .difficultyLevel)
+        createdAt           = try  c.decode(Date.self,            forKey: .createdAt)
+        attempts            = try  c.decode([Attempt].self,       forKey: .attempts)
+        bestScore           = try? c.decodeIfPresent(Int.self,    forKey: .bestScore)
+        status              = try  c.decode(SentenceStatus.self,  forKey: .status)
+        listeningTargetText = try? c.decodeIfPresent(String.self, forKey: .listeningTargetText)
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, englishText, targetLanguage, difficultyLevel, createdAt,
+             attempts, bestScore, status, listeningTargetText
     }
 
     var attemptCount: Int { attempts.count }
@@ -282,6 +311,7 @@ struct AppSettings: Codable {
     var difficultyLocked: Bool = false
     var showRomanization: Bool = true
     var autoAdvance: Bool = false
+    var practiceMode: PracticeMode = .translation
     // grammarFocusAreas moved to LanguageProfile — kept here only for one-time migration
     var grammarFocusAreas: [String] = []
 }

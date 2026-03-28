@@ -21,11 +21,26 @@ final class AppStore: ObservableObject {
     @Published var isEndlessMode: Bool = false
     @Published var pendingTranscript: String = ""
     @Published var pendingAudioURL: URL?
+    @Published var isCachingOffline: Bool = false
 
     // MARK: - Services
 
-    let openAI = OpenAIService()
+    let openAI = OpenAIService()          // generic fallback (Spanish, Italian, etc.)
+    private let mandarinService = MandarinService()
+    private let germanService   = GermanService()
+    private let frenchService   = FrenchService()
     let speech = SpeechService()
+
+    /// Returns the language-specialised service for the active target language,
+    /// falling back to the generic OpenAIService for languages without a dedicated service.
+    var languageService: OpenAIService {
+        switch settings.targetLanguage {
+        case "Mandarin": return mandarinService
+        case "German":   return germanService
+        case "French":   return frenchService
+        default:         return openAI
+        }
+    }
 
     // MARK: - UserDefaults Keys
 
@@ -33,6 +48,7 @@ final class AppStore: ObservableObject {
     private let settingsKey = "appSettings_v1"
     private let sessionsKey = "dailySessions_v1"
     private let sentencesKey = "sentences_v1"
+    private let sentenceCacheKey = "sentenceCache_v1"
 
     // MARK: - Init
 
@@ -129,23 +145,54 @@ final class AppStore: ObservableObject {
         let language = settings.targetLanguage
         let difficulty = currentLangProfile.currentDifficultyLevel
         let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
+        let isListening = settings.practiceMode == .listening
 
         var newSentences: [Sentence] = []
 
         for _ in 0..<n {
             do {
-                let text = try await openAI.generateSentence(
-                    difficulty: difficulty,
-                    targetLanguage: language,
-                    excludingTexts: recent + newSentences.map(\.englishText),
-                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
-                )
-                let sentence = Sentence(
-                    englishText: text,
-                    targetLanguage: language,
-                    difficultyLevel: difficulty
-                )
+                let sentence: Sentence
+                if isListening {
+                    let (targetText, englishMeaning) = try await languageService.generateListeningSentence(
+                        difficulty: difficulty,
+                        targetLanguage: language,
+                        excludingTexts: recent + newSentences.map(\.englishText)
+                    )
+                    sentence = Sentence(
+                        englishText: englishMeaning,
+                        targetLanguage: language,
+                        difficultyLevel: difficulty,
+                        listeningTargetText: targetText
+                    )
+                } else {
+                    let text = try await languageService.generateSentence(
+                        difficulty: difficulty,
+                        targetLanguage: language,
+                        excludingTexts: recent + newSentences.map(\.englishText),
+                        grammarFocusAreas: currentLangProfile.grammarFocusAreas
+                    )
+                    sentence = Sentence(
+                        englishText: text,
+                        targetLanguage: language,
+                        difficultyLevel: difficulty
+                    )
+                }
                 newSentences.append(sentence)
+            } catch let error as OpenAIError {
+                if case .networkError = error {
+                    // Offline: fill remaining slots from cache
+                    let needed = n - newSentences.count
+                    let cached = popCachedSentences(count: needed, language: language, difficulty: difficulty)
+                    newSentences.append(contentsOf: cached)
+                    if newSentences.isEmpty {
+                        practicePhase = .error("You're offline and have no cached sentences. Download some in Settings → Offline Mode.")
+                        return
+                    }
+                    break  // use what we have
+                } else {
+                    practicePhase = .error("Failed to generate sentences: \(error.localizedDescription)")
+                    return
+                }
             } catch {
                 practicePhase = .error("Failed to generate sentences: \(error.localizedDescription)")
                 return
@@ -214,11 +261,12 @@ final class AppStore: ObservableObject {
         let attemptNumber = sentence.attemptCount + 1
 
         do {
-            let result = try await openAI.evaluateAttempt(
+            let result = try await languageService.evaluateAttempt(
                 englishSentence: sentence.englishText,
                 transcript: transcript.isEmpty ? "[no speech detected]" : transcript,
                 language: settings.targetLanguage,
-                attemptNumber: attemptNumber
+                attemptNumber: attemptNumber,
+                listeningTargetText: sentence.listeningTargetText
             )
 
             lastEvaluation = result
@@ -410,18 +458,47 @@ final class AppStore: ObservableObject {
         let language = settings.targetLanguage
         let difficulty = currentLangProfile.currentDifficultyLevel
         let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
+        let isListening = settings.practiceMode == .listening
 
         var newSentences: [Sentence] = []
         for _ in 0..<count {
             do {
-                let text = try await openAI.generateSentence(
-                    difficulty: difficulty,
-                    targetLanguage: language,
-                    excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText),
-                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
-                )
-                let sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
+                let sentence: Sentence
+                if isListening {
+                    let (targetText, englishMeaning) = try await languageService.generateListeningSentence(
+                        difficulty: difficulty,
+                        targetLanguage: language,
+                        excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText)
+                    )
+                    sentence = Sentence(
+                        englishText: englishMeaning,
+                        targetLanguage: language,
+                        difficultyLevel: difficulty,
+                        listeningTargetText: targetText
+                    )
+                } else {
+                    let text = try await languageService.generateSentence(
+                        difficulty: difficulty,
+                        targetLanguage: language,
+                        excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText),
+                        grammarFocusAreas: currentLangProfile.grammarFocusAreas
+                    )
+                    sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
+                }
                 newSentences.append(sentence)
+            } catch let error as OpenAIError {
+                if case .networkError = error {
+                    let cached = popCachedSentences(count: count - newSentences.count, language: language, difficulty: difficulty)
+                    newSentences.append(contentsOf: cached)
+                    if newSentences.isEmpty {
+                        practicePhase = .error("You're offline and have no cached sentences.")
+                        return
+                    }
+                    break
+                } else {
+                    practicePhase = .error("Failed to generate sentence: \(error.localizedDescription)")
+                    return
+                }
             } catch {
                 practicePhase = .error("Failed to generate sentence: \(error.localizedDescription)")
                 return
@@ -446,6 +523,88 @@ final class AppStore: ObservableObject {
         xpJustEarned = 0
         isEndlessMode = false
         practicePhase = .idle
+    }
+
+    // MARK: - Practice Mode
+
+    func togglePracticeMode() {
+        settings.practiceMode = settings.practiceMode == .translation ? .listening : .translation
+        // Reset session so new sentences are generated for the selected mode
+        todaySession = nil
+        todaySentences = []
+        currentSentenceIndex = 0
+        practicePhase = .idle
+        lastEvaluation = nil
+        pendingTranscript = ""
+        pendingAudioURL = nil
+        save()
+        Task { await prepareOrResumeTodaySession() }
+    }
+
+    // MARK: - Offline Sentence Cache
+
+    /// Download and store `count` sentences for the current language + difficulty.
+    func prefetchSentences(count: Int) async {
+        guard !isCachingOffline else { return }
+        isCachingOffline = true
+        defer { isCachingOffline = false }
+
+        let language = settings.targetLanguage
+        let difficulty = currentLangProfile.currentDifficultyLevel
+        let existingTexts = loadCache().map(\.englishText)
+        let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
+
+        var fetched: [Sentence] = []
+        for _ in 0..<count {
+            do {
+                let text = try await languageService.generateSentence(
+                    difficulty: difficulty,
+                    targetLanguage: language,
+                    excludingTexts: recent + existingTexts + fetched.map(\.englishText),
+                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
+                )
+                let sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
+                fetched.append(sentence)
+            } catch {
+                break  // stop on error, keep what we have
+            }
+        }
+
+        if !fetched.isEmpty {
+            var cache = loadCache()
+            cache.append(contentsOf: fetched)
+            saveCache(cache)
+        }
+    }
+
+    func cachedSentenceCount(language: String, difficulty: Int) -> Int {
+        loadCache().filter { $0.targetLanguage == language && $0.difficultyLevel == difficulty }.count
+    }
+
+    private func popCachedSentences(count: Int, language: String, difficulty: Int) -> [Sentence] {
+        var cache = loadCache()
+        let matching = cache.filter { $0.targetLanguage == language && $0.difficultyLevel == difficulty }
+        let popped = Array(matching.prefix(count))
+        let poppedIDs = Set(popped.map(\.id))
+        cache.removeAll { poppedIDs.contains($0.id) }
+        saveCache(cache)
+        return popped
+    }
+
+    private func loadCache() -> [Sentence] {
+        guard let data = UserDefaults.standard.data(forKey: sentenceCacheKey),
+              let sentences = try? JSONDecoder().decode([Sentence].self, from: data) else {
+            return []
+        }
+        return sentences
+    }
+
+    private func saveCache(_ sentences: [Sentence]) {
+        var capped = sentences
+        if capped.count > 500 { capped = Array(capped.suffix(500)) }
+        if let data = try? JSONEncoder().encode(capped) {
+            UserDefaults.standard.set(data, forKey: sentenceCacheKey)
+        }
     }
 
     // MARK: - XP & Gamification
@@ -613,6 +772,7 @@ final class AppStore: ObservableObject {
         UserDefaults.standard.removeObject(forKey: settingsKey)
         UserDefaults.standard.removeObject(forKey: sessionsKey)
         UserDefaults.standard.removeObject(forKey: sentencesKey)
+        UserDefaults.standard.removeObject(forKey: sentenceCacheKey)
     }
 
     // MARK: - Persistence
@@ -725,6 +885,7 @@ final class AppStore: ObservableObject {
     // MARK: - Helpers
 
     private func todaySessionID() -> String {
-        "\(todayISOString())_\(settings.targetLanguage)"
+        let modeSuffix = settings.practiceMode == .listening ? "_listening" : ""
+        return "\(todayISOString())_\(settings.targetLanguage)\(modeSuffix)"
     }
 }

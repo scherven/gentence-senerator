@@ -20,9 +20,12 @@ enum OpenAIError: Error, LocalizedError {
     }
 }
 
-// MARK: - OpenAI Service
+// MARK: - Base OpenAI Service
+// Provides generic prompts suitable for languages without a specialised subclass.
+// Subclass and override generateSentence / generateListeningSentence / evaluateAttempt
+// to supply language-tailored prompts (see MandarinService, GermanService, FrenchService).
 
-final class OpenAIService {
+class OpenAIService {
 
     private let apiKey: String
     private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
@@ -31,42 +34,31 @@ final class OpenAIService {
         self.apiKey = apiKey
     }
 
-    // MARK: - Generate English sentence
+    // MARK: - Generate English sentence (generic fallback)
 
-    /// Generates a single English sentence designed for translation practice at the given Mandarin difficulty level.
     func generateSentence(
         difficulty: Int,
         targetLanguage: String,
         excludingTexts: [String] = [],
         grammarFocusAreas: [String] = []
     ) async throws -> String {
-        let difficultyDescription = mandarinDifficultyDescription(difficulty)
-        let exclusionHint = excludingTexts.isEmpty ? "" : " Do NOT generate any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
-
-        let varietyInstruction = """
-         Actively vary the following to avoid repetitive patterns: \
-        sentence structure (mix SVO statements, negations with 不/没, yes-no questions with 吗, imperatives, \
-        and topic-comment frames even at lower difficulty levels), \
-        verbs (do NOT default to 是/有/去/喜欢 — draw from a wide range of everyday actions), \
-        and topics (rotate across food, travel, work, family, weather, shopping, hobbies, health, technology).
-        """
-
+        let desc = difficultyDescription(difficulty, for: targetLanguage)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT generate any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
         let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
             " Prioritize sentence structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
 
         let systemPrompt = """
         You are a language learning sentence generator. Generate a single natural English sentence \
         suitable for \(targetLanguage) translation practice at difficulty \(difficulty)/10. \
-        \(difficultyDescription)\(varietyInstruction)\(grammarInstruction)\(exclusionHint)
+        \(desc)\(grammarInstruction)\(exclusionHint)
         Return ONLY the English sentence text — no translation, no explanation, no punctuation beyond the sentence itself.
         """
-
-        let userPrompt = "Generate one English sentence for \(targetLanguage) translation practice at difficulty \(difficulty)/10."
 
         let text = try await performRequest(
             messages: [
                 ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": userPrompt]
+                ["role": "user", "content": "Generate one English sentence for \(targetLanguage) translation practice at difficulty \(difficulty)/10."]
             ],
             temperature: 0.9
         )
@@ -76,52 +68,126 @@ final class OpenAIService {
         return trimmed
     }
 
-    // MARK: - Evaluate attempt
+    // MARK: - Generate listening sentence (generic fallback)
 
-    /// Evaluates a user's spoken translation against the English source sentence.
+    func generateListeningSentence(
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> (targetText: String, englishMeaning: String) {
+        let desc = difficultyDescription(difficulty, for: targetLanguage)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT generate a sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+
+        let systemPrompt = """
+        You are a language learning content generator. Generate a single natural \(targetLanguage) sentence \
+        suitable for listening comprehension practice at difficulty \(difficulty)/10. \
+        \(desc)\(exclusionHint)
+        Also provide the English meaning of the sentence.
+        Return ONLY valid JSON in exactly this format:
+        {
+          "targetText": "<the \(targetLanguage) sentence>",
+          "englishMeaning": "<the English translation of the sentence>"
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate one \(targetLanguage) listening sentence at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object"
+        )
+
+        guard let data = raw.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let targetText = json["targetText"] as? String,
+              let englishMeaning = json["englishMeaning"] as? String,
+              !targetText.isEmpty, !englishMeaning.isEmpty else {
+            throw OpenAIError.decodingFailed("Could not parse listening sentence response")
+        }
+
+        return (targetText.trimmingCharacters(in: .whitespacesAndNewlines),
+                englishMeaning.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    // MARK: - Evaluate attempt (generic fallback)
+
     func evaluateAttempt(
         englishSentence: String,
         transcript: String,
         language: String,
-        attemptNumber: Int
+        attemptNumber: Int,
+        listeningTargetText: String? = nil
     ) async throws -> SentenceEvaluationResult {
-        let systemPrompt = """
-        You are a \(language) language tutor evaluating a student's spoken translation.
+        let systemPrompt: String
 
-        The student was shown this English sentence: "\(englishSentence)"
-        Their speech was recognized as: "\(transcript)"
+        if let targetText = listeningTargetText {
+            systemPrompt = """
+            You are a \(language) language tutor evaluating a student's listening comprehension attempt.
 
-        Evaluate on:
-        1. Translation accuracy — does the \(language) convey the correct meaning?
-        2. Grammar correctness — particles, measure words, word order, aspect markers
-        3. Vocabulary appropriateness for the difficulty level
+            The student heard this \(language) sentence (played via text-to-speech): "\(targetText)"
+            Their response was recognized as: "\(transcript)"
 
-        Important notes for \(language):
-        - Speech recognition cannot detect tone errors. Always include specific tone reminders \
-        for 2-3 key words in the transcript using the "toneReminders" field (e.g. "妈 mā (tone 1)").
-        - If the transcript is empty or clearly not \(language), score 0 and say so.
-        - Be encouraging but specific. Mention what was right and what needs work.
-        - This is attempt \(attemptNumber) of 3.
+            Evaluate how accurately the student reproduced the sentence they heard:
+            1. Did they capture the key words and meaning?
+            2. Grammar and vocabulary accuracy of their reproduction
+            3. Pronunciation quality
 
-        Grammar issue categorization:
-        If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
-          Mandarin: particle_usage, measure_words, word_order, aspect_markers, ba_sentence, \
-        resultative_complement, potential_complement, topic_comment, negation, comparison, \
-        question_formation, verb_complement
-          Other languages: word_order, negation, verb_tense, vocabulary_choice
-        Return [] when score ≥ 85, or only tone/pronunciation errors were found (not grammar). \
-        Pick the most specific category. Never return more than 2 keys. No other strings allowed.
+            Notes:
+            - If the transcript is empty or clearly not \(language), score 0 and say so.
+            - Be encouraging but specific. This is attempt \(attemptNumber) of 3.
+            - Set "correctTranslation" to the original \(language) sentence that was played.
 
-        Return ONLY valid JSON in exactly this format:
-        {
-          "score": <integer 0-100>,
-          "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
-          "toneReminders": ["<word> <pinyin> (tone <N>)", ...],
-          "phonemeHints": ["<difficult sound>", ...],
-          "correctTranslation": "<a natural, correct \(language) translation of the English sentence>",
-          "grammarIssues": ["<category_key>", ...]
+            If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
+              word_order, negation, verb_tense, vocabulary_choice, agreement, preposition_usage
+            Return [] when score ≥ 85, or only pronunciation errors were found.
+            Never return more than 2 keys. No other strings allowed.
+
+            Return ONLY valid JSON in exactly this format:
+            {
+              "score": <integer 0-100>,
+              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "toneReminders": [],
+              "phonemeHints": ["<difficult sound>", ...],
+              "correctTranslation": "\(targetText)",
+              "grammarIssues": ["<category_key>", ...]
+            }
+            """
+        } else {
+            systemPrompt = """
+            You are a \(language) language tutor evaluating a student's spoken translation.
+
+            The student was shown this English sentence: "\(englishSentence)"
+            Their speech was recognized as: "\(transcript)"
+
+            Evaluate on:
+            1. Translation accuracy — does the \(language) convey the correct meaning?
+            2. Grammar correctness
+            3. Vocabulary appropriateness for the difficulty level
+
+            Notes:
+            - If the transcript is empty or clearly not \(language), score 0 and say so.
+            - Be encouraging but specific. Mention what was right and what needs work.
+            - This is attempt \(attemptNumber) of 3.
+
+            If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
+              word_order, negation, verb_tense, vocabulary_choice, agreement, preposition_usage
+            Return [] when score ≥ 85. Pick the most specific category.
+            Never return more than 2 keys. No other strings allowed.
+
+            Return ONLY valid JSON in exactly this format:
+            {
+              "score": <integer 0-100>,
+              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "toneReminders": [],
+              "phonemeHints": ["<difficult sound>", ...],
+              "correctTranslation": "<a natural, correct \(language) translation of the English sentence>",
+              "grammarIssues": ["<category_key>", ...]
+            }
+            """
         }
-        """
 
         let raw = try await performRequest(
             messages: [
@@ -135,9 +201,9 @@ final class OpenAIService {
         return try parseEvaluationResult(raw)
     }
 
-    // MARK: - Private helpers
+    // MARK: - Internal helpers (accessible to subclasses)
 
-    private func performRequest(
+    func performRequest(
         messages: [[String: String]],
         temperature: Double,
         responseFormat: String? = nil
@@ -183,7 +249,7 @@ final class OpenAIService {
         return content
     }
 
-    private func parseEvaluationResult(_ raw: String) throws -> SentenceEvaluationResult {
+    func parseEvaluationResult(_ raw: String) throws -> SentenceEvaluationResult {
         guard let data = raw.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw OpenAIError.decodingFailed("Could not parse JSON from evaluation response")
@@ -206,29 +272,22 @@ final class OpenAIService {
         )
     }
 
-    // MARK: - Difficulty descriptions
+    // MARK: - Generic difficulty description (fallback)
 
-    private func mandarinDifficultyDescription(_ difficulty: Int) -> String {
+    func difficultyDescription(_ difficulty: Int, for language: String) -> String {
         switch difficulty {
         case 1, 2:
-            return "Use simple everyday nouns and a variety of common verbs (not just 是/有/去). " +
-                   "Mix in simple negations (not, don't) and yes/no questions alongside statements. " +
-                   "The Mandarin translation should not require measure words or aspect particles."
+            return "Use very simple, common vocabulary and short sentences suitable for absolute beginners."
         case 3, 4:
-            return "Use time expressions (today/tomorrow/yesterday), basic adjectives as predicates, " +
-                   "simple negation, and common measure words. Vary between affirmative statements, " +
-                   "negations, and simple questions. Avoid complex particles or complements."
+            return "Use everyday vocabulary with simple grammatical structures, suitable for elementary learners."
         case 5, 6:
-            return "Target sentences requiring aspect particles (了/过/着), serial verb constructions, " +
-                   "or pivotal sentences. Moderate vocabulary difficulty."
+            return "Use intermediate vocabulary with moderately complex sentences. Include some grammatical nuance."
         case 7, 8:
-            return "Target sentences requiring resultative or directional complements, potential " +
-                   "complements (得/不), or ba-sentences (把). Higher vocabulary."
+            return "Use advanced vocabulary and complex grammatical structures for upper-intermediate learners."
         case 9, 10:
-            return "Target sentences requiring complex topic-comment structures, classical-style phrases, " +
-                   "chengyu usage, or sophisticated conditionals. Advanced vocabulary expected."
+            return "Use sophisticated vocabulary, idiomatic expressions, and complex syntax for advanced learners."
         default:
-            return "Generate a natural everyday English sentence appropriate for intermediate language learners."
+            return "Generate a natural everyday sentence appropriate for intermediate language learners."
         }
     }
 }

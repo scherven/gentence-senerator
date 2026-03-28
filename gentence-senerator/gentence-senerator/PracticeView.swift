@@ -95,33 +95,38 @@ private struct SentenceDisplayView: View {
     @EnvironmentObject var store: AppStore
     @State private var showTypeInput = false
     @State private var typedInput = ""
+    @State private var hasPlayedAudio = false
     @FocusState private var isTypingFocused: Bool
 
     private var sentence: Sentence? { store.currentSentence }
     private var attemptNumber: Int { (sentence?.attemptCount ?? 0) + 1 }
+    private var isListeningMode: Bool { store.settings.practiceMode == .listening }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
+                // Mode toggle
+                Picker("Mode", selection: Binding(
+                    get: { store.settings.practiceMode },
+                    set: { newMode in
+                        if newMode != store.settings.practiceMode {
+                            store.togglePracticeMode()
+                        }
+                    }
+                )) {
+                    Text("Translate").tag(PracticeMode.translation)
+                    Text("Listen").tag(PracticeMode.listening)
+                }
+                .pickerStyle(.segmented)
+
                 // Sentence progress
                 sentenceProgress
 
-                // Instruction
-                VStack(spacing: 8) {
-                    Text("Translate and say this in \(store.settings.targetLanguage):")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    // English sentence
-                    Text(sentence?.englishText ?? "")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.accentColor.opacity(0.08))
-                        .cornerRadius(16)
+                // Instruction + sentence display
+                if isListeningMode {
+                    listeningSection
+                } else {
+                    translationSection
                 }
 
                 // Attempt indicator
@@ -139,30 +144,98 @@ private struct SentenceDisplayView: View {
                     .cornerRadius(20)
                 }
 
-                // Mic button or type input
-                if showTypeInput {
-                    typeInputSection
-                } else {
-                    micSection
-                }
-
-                // Toggle to type mode
-                Button {
-                    showTypeInput.toggle()
-                    typedInput = ""
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: showTypeInput ? "mic" : "keyboard")
-                            .font(.caption)
-                        Text(showTypeInput ? "Switch to speaking" : "Type instead")
-                            .font(.caption)
+                // Mic button or type input (only shown after audio plays in listening mode)
+                if !isListeningMode || hasPlayedAudio {
+                    if showTypeInput {
+                        typeInputSection
+                    } else {
+                        micSection
                     }
-                    .foregroundColor(.secondary)
+
+                    // Toggle to type mode
+                    Button {
+                        showTypeInput.toggle()
+                        typedInput = ""
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: showTypeInput ? "mic" : "keyboard")
+                                .font(.caption)
+                            Text(showTypeInput ? "Switch to speaking" : "Type instead")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.secondary)
+                    }
                 }
             }
             .padding()
         }
         .onTapGesture { isTypingFocused = false }
+        .onChange(of: store.currentSentenceIndex) { _ in
+            hasPlayedAudio = false
+        }
+    }
+
+    private var translationSection: some View {
+        VStack(spacing: 8) {
+            Text("Translate and say this in \(store.settings.targetLanguage):")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Text(sentence?.englishText ?? "")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.accentColor.opacity(0.08))
+                .cornerRadius(16)
+        }
+    }
+
+    private var listeningSection: some View {
+        VStack(spacing: 16) {
+            Text("Listen and repeat in \(store.settings.targetLanguage):")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Button {
+                if let text = sentence?.listeningTargetText {
+                    store.speech.speak(text: text, language: store.settings.targetLanguage)
+                    hasPlayedAudio = true
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.purple.opacity(0.12))
+                        .frame(width: 100, height: 100)
+                    Circle()
+                        .fill(Color.purple)
+                        .frame(width: 80, height: 80)
+                    Image(systemName: store.speech.isSpeaking ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .symbolEffect(.pulse, isActive: store.speech.isSpeaking)
+                }
+            }
+            .disabled(store.speech.isSpeaking)
+
+            if !hasPlayedAudio {
+                Text("Tap to hear the sentence")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else if store.speech.isSpeaking {
+                Text("Playing...")
+                    .font(.caption)
+                    .foregroundColor(.purple)
+            } else {
+                Text("Tap again to replay, then speak or type below")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
     }
 
     private var sentenceProgress: some View {
@@ -232,7 +305,7 @@ private struct SentenceDisplayView: View {
                     .font(.caption)
                     .foregroundColor(.orange)
             } else {
-                Text("Tap the mic and speak your translation")
+                Text(isListeningMode ? "Tap the mic and repeat what you heard" : "Tap the mic and speak your translation")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -242,7 +315,7 @@ private struct SentenceDisplayView: View {
 
     private var typeInputSection: some View {
         VStack(spacing: 12) {
-            TextField("Type your \(store.settings.targetLanguage) translation...", text: $typedInput, axis: .vertical)
+            TextField(isListeningMode ? "Type what you heard in \(store.settings.targetLanguage)..." : "Type your \(store.settings.targetLanguage) translation...", text: $typedInput, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(3)
                 .focused($isTypingFocused)
@@ -278,7 +351,11 @@ private struct RecordingView: View {
 
             // Sentence reminder
             if let sentence = store.currentSentence {
-                Text(sentence.englishText)
+                let isListening = store.settings.practiceMode == .listening
+                let reminderText = isListening
+                    ? "Repeat the sentence you heard"
+                    : sentence.englishText
+                Text(reminderText)
                     .font(.title3)
                     .fontWeight(.medium)
                     .multilineTextAlignment(.center)
@@ -380,18 +457,54 @@ private struct FeedbackView: View {
                     .cornerRadius(20)
                 }
 
-                // Original sentence
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Original")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                    Text(sentence?.englishText ?? "")
-                        .font(.body)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.accentColor.opacity(0.08))
-                        .cornerRadius(10)
+                // Sentence context: "You heard" (listening) or "Original" (translation)
+                let isListeningMode = sentence?.listeningTargetText != nil
+                if isListeningMode {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("You heard")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            Spacer()
+                            PlaybackButton(
+                                text: sentence?.listeningTargetText ?? "",
+                                language: store.settings.targetLanguage
+                            )
+                        }
+                        Text(sentence?.listeningTargetText ?? "")
+                            .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.purple.opacity(0.08))
+                            .cornerRadius(10)
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Meaning")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
+                        Text(sentence?.englishText ?? "")
+                            .font(.body)
+                            .italic()
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.accentColor.opacity(0.06))
+                            .cornerRadius(10)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Original")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
+                        Text(sentence?.englishText ?? "")
+                            .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.accentColor.opacity(0.08))
+                            .cornerRadius(10)
+                    }
                 }
 
                 // What you said
@@ -873,19 +986,34 @@ private struct TranscriptionReviewView: View {
         ScrollView {
             VStack(spacing: 24) {
 
-                // English sentence reminder
+                // Sentence reminder
                 if let sentence = store.currentSentence {
+                    let isListening = store.settings.practiceMode == .listening
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Translate")
+                        Text(isListening ? "Listen again" : "Translate")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .textCase(.uppercase)
-                        Text(sentence.englishText)
-                            .font(.body)
+                        if isListening {
+                            HStack {
+                                Spacer()
+                                PlaybackButton(
+                                    text: sentence.listeningTargetText ?? "",
+                                    language: store.settings.targetLanguage
+                                )
+                                Spacer()
+                            }
                             .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.accentColor.opacity(0.08))
+                            .background(Color.purple.opacity(0.08))
                             .cornerRadius(10)
+                        } else {
+                            Text(sentence.englishText)
+                                .font(.body)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.accentColor.opacity(0.08))
+                                .cornerRadius(10)
+                        }
                     }
                 }
 
