@@ -295,6 +295,7 @@ final class AppStore: ObservableObject {
 
     func reRecord() {
         guard practicePhase == .reviewingTranscription else { return }
+        speech.stopSpeaking()
         pendingTranscript = ""
         pendingAudioURL = nil
         speech.resetTranscript()
@@ -356,12 +357,14 @@ final class AppStore: ObservableObject {
 
         let nextIndex = currentSentenceIndex + 1
         if nextIndex >= todaySentences.count {
+            speech.stopSpeaking()
             if isEndlessMode {
                 Task { await generateAndContinue() }
             } else {
                 completeSession()
             }
         } else {
+            speech.stopSpeaking()
             currentSentenceIndex = nextIndex
             speech.resetTranscript()
             pendingTranscript = ""
@@ -375,6 +378,7 @@ final class AppStore: ObservableObject {
 
     func retryCurrentSentence() {
         guard let sentence = currentSentence, sentence.canRetry else { return }
+        speech.stopSpeaking()
         speech.resetTranscript()
         pendingTranscript = ""
         pendingAudioURL = nil
@@ -527,9 +531,14 @@ final class AppStore: ObservableObject {
 
     // MARK: - Practice Mode
 
-    func togglePracticeMode() {
-        settings.practiceMode = settings.practiceMode == .translation ? .listening : .translation
-        // Reset session so new sentences are generated for the selected mode
+    /// Switches to `mode` and loads (or resumes) its session.
+    /// No-op if the mode is already active, so it's safe to call on every tab appear.
+    func activateMode(_ mode: PracticeMode) {
+        guard mode != settings.practiceMode else { return }
+        // Clean up any in-progress activity from the previous mode.
+        speech.stopSpeaking()
+        if speech.isRecording { speech.cancelRecording() }
+        settings.practiceMode = mode
         todaySession = nil
         todaySentences = []
         currentSentenceIndex = 0

@@ -74,16 +74,12 @@ class SpeechService: ObservableObject {
         "Korean":     "ko-KR"
     ]
 
+    private var currentUtteranceID: Int = 0
+
     // MARK: - Init
 
     init() {
         synthesizer.delegate = synthDelegate
-        synthDelegate.onDidFinish = { [weak self] in
-            Task { @MainActor [weak self] in
-                self?.isSpeaking = false
-                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            }
-        }
     }
 
     // MARK: - Authorization
@@ -115,6 +111,10 @@ class SpeechService: ObservableObject {
     func startRecording(language: String) throws {
         guard authorizationStatus == .authorized else { throw SpeechError.notAuthorized }
         guard micAuthorized else { throw SpeechError.micNotAuthorized }
+
+        // Stop any ongoing TTS before switching the audio session to recording mode.
+        if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
+        isSpeaking = false
 
         // Stop any existing session
         stopRecordingInternal()
@@ -208,7 +208,15 @@ class SpeechService: ObservableObject {
         recognitionRequest = nil
         recognitionTask = nil
 
-        try? AVAudioSession.sharedInstance().setActive(false)
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    /// Immediately stops an in-progress recording without waiting for final results.
+    /// Use when the session is being abandoned (e.g. tab switch, mode change).
+    func cancelRecording() {
+        stopRecordingInternal()
+        isRecording = false
+        transcript = ""
     }
 
     func resetTranscript() {
@@ -221,24 +229,39 @@ class SpeechService: ObservableObject {
     func speak(text: String, language: String) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
 
-        // Stop any ongoing playback first
+        // Increment utterance ID before stopping old speech so the stale didCancel
+        // callback fires with an old closure (captured myID won't match currentUtteranceID).
+        currentUtteranceID += 1
+        let myID = currentUtteranceID
+
         if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
 
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            // Non-fatal — TTS may still work on some devices without explicit session config
+            // Audio session setup failed — abort so isSpeaking is never left stuck true.
+            isSpeaking = false
+            return
         }
 
-        let localeIdentifier = localeMap[language] ?? "zh-CN"
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: localeIdentifier)
+        utterance.voice = AVSpeechSynthesisVoice(language: localeMap[language] ?? "zh-CN")
         utterance.rate = 0.45   // slightly slower than default for language learners
         utterance.pitchMultiplier = 1.0
 
         isSpeaking = true
         synthesizer.speak(utterance)
+
+        // Set onDidFinish AFTER stopSpeaking so any didCancel for the old utterance
+        // calls the previous closure (stale myID → guard fails → no-op).
+        synthDelegate.onDidFinish = { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.currentUtteranceID == myID else { return }
+                self.isSpeaking = false
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
+        }
     }
 
     func stopSpeaking() {

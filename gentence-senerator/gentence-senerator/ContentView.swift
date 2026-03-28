@@ -10,19 +10,33 @@ struct ContentView: View {
                 .tabItem { Label("Home", systemImage: "house.fill") }
                 .tag(0)
 
-            PracticeView()
-                .tabItem { Label("Practice", systemImage: "mic.fill") }
+            PracticeView(mode: .translation)
+                .tabItem { Label("Translate", systemImage: "mic.fill") }
                 .tag(1)
+
+            PracticeView(mode: .listening)
+                .tabItem { Label("Listen", systemImage: "ear.fill") }
+                .tag(2)
 
             StatsView()
                 .tabItem { Label("Progress", systemImage: "chart.bar.fill") }
-                .tag(2)
+                .tag(3)
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gear") }
-                .tag(3)
+                .tag(4)
         }
         .environmentObject(store)
+        // Activate the correct mode whenever the user switches to a practice tab.
+        // Using onChange rather than PracticeView.onAppear avoids the TabView quirk
+        // where both tabs' onAppear fire simultaneously on first render.
+        .onChange(of: selectedTab) { tab in
+            switch tab {
+            case 1: store.activateMode(.translation)
+            case 2: store.activateMode(.listening)
+            default: break
+            }
+        }
         .task {
             await store.speech.requestAuthorization()
             await store.prepareOrResumeTodaySession()

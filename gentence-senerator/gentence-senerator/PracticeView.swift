@@ -4,6 +4,7 @@ import SwiftUI
 
 struct PracticeView: View {
     @EnvironmentObject var store: AppStore
+    let mode: PracticeMode
 
     var body: some View {
         NavigationView {
@@ -43,7 +44,7 @@ struct PracticeView: View {
         switch store.practicePhase {
         case .sessionComplete: return "Complete!"
         case .error: return "Error"
-        default: return "Practice"
+        default: return mode == .listening ? "Listen" : "Translate"
         }
     }
 
@@ -105,20 +106,6 @@ private struct SentenceDisplayView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // Mode toggle
-                Picker("Mode", selection: Binding(
-                    get: { store.settings.practiceMode },
-                    set: { newMode in
-                        if newMode != store.settings.practiceMode {
-                            store.togglePracticeMode()
-                        }
-                    }
-                )) {
-                    Text("Translate").tag(PracticeMode.translation)
-                    Text("Listen").tag(PracticeMode.listening)
-                }
-                .pickerStyle(.segmented)
-
                 // Sentence progress
                 sentenceProgress
 
@@ -518,30 +505,19 @@ private struct FeedbackView: View {
                             Spacer()
                             PlaybackButton(text: transcript, language: store.settings.targetLanguage)
                         }
-                        Text(transcript)
-                            .font(.body)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
+                        DiffHighlightView(
+                            userText: transcript,
+                            correctText: evaluation?.correctTranslation ?? "",
+                            language: store.settings.targetLanguage
+                        )
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
                     }
                 }
 
-                // Feedback
                 if let eval = evaluation {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Feedback")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .textCase(.uppercase)
-                        Text(eval.feedback)
-                            .font(.body)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
-                    }
-
                     // Correct translation
                     if !eval.correctTranslation.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
@@ -561,34 +537,6 @@ private struct FeedbackView: View {
                                 .background(Color.green.opacity(0.08))
                                 .cornerRadius(10)
                         }
-                    }
-
-                    // Tone reminders (Mandarin-specific)
-                    if !eval.toneReminders.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Image(systemName: "waveform")
-                                    .foregroundColor(.orange)
-                                Text("Tone Reminders")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .textCase(.uppercase)
-                            }
-                            FlowLayout(spacing: 8) {
-                                ForEach(eval.toneReminders, id: \.self) { reminder in
-                                    Text(reminder)
-                                        .font(.caption)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 5)
-                                        .background(Color.orange.opacity(0.1))
-                                        .foregroundColor(.orange)
-                                        .cornerRadius(8)
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
                     }
 
                     // Learn More — grammar resource links
@@ -757,7 +705,7 @@ private struct SessionCompleteView: View {
                         let totalXP = store.todaySession?.totalXPEarned ?? 0
                         summaryCard(
                             title: "XP Earned",
-                            value: "+\(store.currentLangProfile.totalXP)",
+                            value: "+\(totalXP)",
                             icon: "star.fill",
                             color: .yellow
                         )
@@ -1095,6 +1043,100 @@ private struct TranscriptionReviewView: View {
     }
 }
 
+// MARK: - Word-diff highlight view
+
+/// Returns true for languages whose text runs are character-separated (no spaces between words).
+private func isCJKLanguage(_ language: String) -> Bool {
+    ["Mandarin", "Japanese", "Korean"].contains(language)
+}
+
+/// Splits `text` into display tokens: individual characters for CJK, whitespace-separated words otherwise.
+private func diffTokenize(_ text: String, cjk: Bool) -> [String] {
+    if cjk {
+        return text.unicodeScalars
+            .filter { !CharacterSet.whitespaces.contains($0) }
+            .map { String($0) }
+    }
+    return text.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+}
+
+/// Strips punctuation and lowercases a token for loose comparison.
+private func normalizeToken(_ token: String) -> String {
+    token.lowercased()
+        .trimmingCharacters(in: .punctuationCharacters)
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+}
+
+/// LCS diff of `user` tokens against `reference` tokens.
+/// Returns `(token, isCorrect)` for every user token.
+private func lcsTokenDiff(user: [String], reference: [String]) -> [(String, Bool)] {
+    guard !user.isEmpty else { return [] }
+    guard !reference.isEmpty else { return user.map { ($0, false) } }
+
+    let n = user.count, m = reference.count
+    // dp[i][j] = LCS length for user[0..<i], reference[0..<j]
+    var dp = Array(repeating: Array(repeating: 0, count: m + 1), count: n + 1)
+    for i in 1...n {
+        for j in 1...m {
+            if normalizeToken(user[i-1]) == normalizeToken(reference[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + 1
+            } else {
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+            }
+        }
+    }
+
+    // Backtrack to find which user-token indices are part of the LCS.
+    var matched = Set<Int>()
+    var i = n, j = m
+    while i > 0 && j > 0 {
+        if normalizeToken(user[i-1]) == normalizeToken(reference[j-1]) {
+            matched.insert(i - 1)
+            i -= 1; j -= 1
+        } else if dp[i-1][j] >= dp[i][j-1] {
+            i -= 1
+        } else {
+            j -= 1
+        }
+    }
+
+    return user.enumerated().map { (idx, token) in (token, matched.contains(idx)) }
+}
+
+/// Renders a user transcript with incorrect words highlighted in red.
+/// When `correctText` is empty the text is shown without any highlighting.
+private struct DiffHighlightView: View {
+    let userText: String
+    let correctText: String
+    let language: String
+
+    private var cjk: Bool { isCJKLanguage(language) }
+
+    private var pairs: [(String, Bool)] {
+        guard !correctText.isEmpty else {
+            return diffTokenize(userText, cjk: cjk).map { ($0, true) }
+        }
+        let userTokens = diffTokenize(userText, cjk: cjk)
+        let refTokens  = diffTokenize(correctText, cjk: cjk)
+        return lcsTokenDiff(user: userTokens, reference: refTokens)
+    }
+
+    var body: some View {
+        FlowLayout(spacing: cjk ? 1 : 6) {
+            ForEach(Array(pairs.enumerated()), id: \.offset) { _, pair in
+                let (token, isCorrect) = pair
+                Text(token)
+                    .font(.body)
+                    .padding(.horizontal, cjk ? 2 : 4)
+                    .padding(.vertical, 2)
+                    .background(isCorrect ? Color.clear : Color.red.opacity(0.12))
+                    .foregroundColor(isCorrect ? .primary : Color.red)
+                    .cornerRadius(4)
+            }
+        }
+    }
+}
+
 // MARK: - FlowLayout helper
 
 struct FlowLayout: Layout {
@@ -1139,6 +1181,6 @@ struct FlowLayout: Layout {
 }
 
 #Preview {
-    PracticeView()
+    PracticeView(mode: .translation)
         .environmentObject(AppStore())
 }

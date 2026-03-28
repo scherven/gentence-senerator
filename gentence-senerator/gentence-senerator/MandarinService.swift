@@ -26,7 +26,7 @@ final class MandarinService: OpenAIService {
         \(desc)\(grammarInstruction)\(exclusionHint)
 
         Actively vary these elements to prevent repetitive patterns:
-        - Sentence type: mix SVO statements, 不/没 negations, 吗 yes-no questions, imperatives, and topic-comment frames.
+        - Sentence type: mix SVO statements, 不/没 negations, 吗 yes-no questions, imperatives, and topic-comment frames. Ensure that you are using a sentence structure at least somewhat unique to the ones above.
         - Verbs: do NOT default to 是/有/去/喜欢 — draw from a wide range of everyday actions.
         - Topics: rotate across food, travel, work, family, weather, shopping, hobbies, health, technology, school.
 
