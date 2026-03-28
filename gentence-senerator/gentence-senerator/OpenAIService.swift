@@ -103,12 +103,23 @@ final class OpenAIService {
         - Be encouraging but specific. Mention what was right and what needs work.
         - This is attempt \(attemptNumber) of 3.
 
+        Grammar issue categorization:
+        If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
+          Mandarin: particle_usage, measure_words, word_order, aspect_markers, ba_sentence, \
+        resultative_complement, potential_complement, topic_comment, negation, comparison, \
+        question_formation, verb_complement
+          Other languages: word_order, negation, verb_tense, vocabulary_choice
+        Return [] when score ≥ 85, or only tone/pronunciation errors were found (not grammar). \
+        Pick the most specific category. Never return more than 2 keys. No other strings allowed.
+
         Return ONLY valid JSON in exactly this format:
         {
           "score": <integer 0-100>,
           "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
           "toneReminders": ["<word> <pinyin> (tone <N>)", ...],
-          "phonemeHints": ["<difficult sound>", ...]
+          "phonemeHints": ["<difficult sound>", ...],
+          "correctTranslation": "<a natural, correct \(language) translation of the English sentence>",
+          "grammarIssues": ["<category_key>", ...]
         }
         """
 
@@ -182,12 +193,16 @@ final class OpenAIService {
         let feedback = json["feedback"] as? String ?? "No feedback available."
         let toneReminders = json["toneReminders"] as? [String] ?? []
         let phonemeHints = json["phonemeHints"] as? [String] ?? []
+        let correctTranslation = json["correctTranslation"] as? String ?? ""
+        let grammarIssues = json["grammarIssues"] as? [String] ?? []
 
         return SentenceEvaluationResult(
             score: score,
             feedback: feedback,
             toneReminders: toneReminders,
-            phonemeHints: phonemeHints
+            phonemeHints: phonemeHints,
+            correctTranslation: correctTranslation,
+            grammarIssues: grammarIssues
         )
     }
 

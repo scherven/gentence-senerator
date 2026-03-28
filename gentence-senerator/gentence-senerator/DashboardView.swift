@@ -4,6 +4,12 @@ struct DashboardView: View {
     @EnvironmentObject var store: AppStore
     @Binding var selectedTab: Int
 
+    private let languageFlags: [(String, String)] = [
+        ("Mandarin", "🇨🇳"), ("French", "🇫🇷"), ("German", "🇩🇪"),
+        ("Spanish", "🇪🇸"), ("Italian", "🇮🇹"), ("Portuguese", "🇵🇹"),
+        ("Japanese", "🇯🇵"), ("Korean", "🇰🇷")
+    ]
+
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
@@ -17,10 +23,11 @@ struct DashboardView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
+                    flagSwitcherSection
                     headerSection
                     progressSection
                     statsSection
-                    if !store.profile.unlockedBadges.isEmpty {
+                    if !store.currentLangProfile.unlockedBadges.isEmpty {
                         recentBadgesSection
                     }
                     startButton
@@ -29,6 +36,40 @@ struct DashboardView: View {
             }
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.large)
+        }
+    }
+
+    // MARK: - Flag Switcher
+
+    private var flagSwitcherSection: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(languageFlags, id: \.0) { (language, flag) in
+                    let isActive = store.settings.targetLanguage == language
+                    Button {
+                        store.switchLanguage(to: language)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text(flag)
+                                .font(.title2)
+                            Text(language)
+                                .font(.system(size: 9))
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(isActive ? Color.accentColor.opacity(0.15) : Color(.systemGray6))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(isActive ? Color.accentColor : Color.clear, lineWidth: 1.5)
+                        )
+                        .cornerRadius(10)
+                        .foregroundColor(isActive ? .accentColor : .primary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 4)
         }
     }
 
@@ -56,7 +97,7 @@ struct DashboardView: View {
         HStack(spacing: 4) {
             Image(systemName: "speedometer")
                 .font(.caption)
-            Text("Lvl \(store.profile.currentDifficultyLevel)/10")
+            Text("Lvl \(store.currentLangProfile.currentDifficultyLevel)/10")
                 .font(.caption)
                 .fontWeight(.medium)
         }
@@ -96,7 +137,7 @@ struct DashboardView: View {
 
             VStack(spacing: 4) {
                 HStack {
-                    Text("Level \(store.profile.currentLevel)")
+                    Text("Level \(store.currentLangProfile.currentLevel)")
                         .font(.caption)
                         .fontWeight(.medium)
                     Spacer()
@@ -117,10 +158,10 @@ struct DashboardView: View {
 
     private var statsSection: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            StatCard(title: "Streak", value: "\(store.profile.currentStreak)", color: .orange, icon: "flame.fill")
-            StatCard(title: "Total XP", value: "\(store.profile.totalXP)", color: .yellow, icon: "star.fill")
-            StatCard(title: "Avg Score", value: store.profile.recentScores.isEmpty ? "—" : "\(Int(store.averageScore))%", color: .blue, icon: "chart.line.uptrend.xyaxis")
-            StatCard(title: "Sentences", value: "\(store.profile.totalSentencesCompleted)", color: .purple, icon: "text.bubble.fill")
+            StatCard(title: "Streak", value: "\(store.currentLangProfile.currentStreak)", color: .orange, icon: "flame.fill")
+            StatCard(title: "Total XP", value: "\(store.currentLangProfile.totalXP)", color: .yellow, icon: "star.fill")
+            StatCard(title: "Avg Score", value: store.currentLangProfile.recentScores.isEmpty ? "—" : "\(Int(store.averageScore))%", color: .blue, icon: "chart.line.uptrend.xyaxis")
+            StatCard(title: "Sentences", value: "\(store.currentLangProfile.totalSentencesCompleted)", color: .purple, icon: "text.bubble.fill")
         }
     }
 
@@ -133,7 +174,7 @@ struct DashboardView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(store.profile.unlockedBadges.suffix(5).reversed()) { badge in
+                    ForEach(store.currentLangProfile.unlockedBadges.suffix(5).reversed()) { badge in
                         BadgeView(badge: badge, isLocked: false, compact: true)
                     }
                 }

@@ -45,6 +45,7 @@ class SpeechService: ObservableObject {
     @Published var micAuthorized: Bool = false
     @Published var error: SpeechError?
     @Published var isSpeaking: Bool = false
+    @Published var lastRecordingURL: URL?
 
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
@@ -52,6 +53,14 @@ class SpeechService: ObservableObject {
     private let audioEngine = AVAudioEngine()
     private let synthesizer = AVSpeechSynthesizer()
     private let synthDelegate = SynthDelegate()
+
+    /// Folder inside Documents where all recorded attempts are stored.
+    static func audioRecordingsDirectory() -> URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let dir = docs.appendingPathComponent("AudioRecordings", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
 
     // Language → Locale mapping
     private let localeMap: [String: String] = [
@@ -111,6 +120,7 @@ class SpeechService: ObservableObject {
         stopRecordingInternal()
         transcript = ""
         error = nil
+        lastRecordingURL = nil
 
         let localeIdentifier = localeMap[language] ?? "zh-CN"
         let locale = Locale(identifier: localeIdentifier)
@@ -155,11 +165,20 @@ class SpeechService: ObservableObject {
             }
         }
 
-        // Install audio tap
+        // Install audio tap — also writes buffers to a .caf file for later analysis
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
+
+        let filename = UUID().uuidString + ".caf"
+        let fileURL = SpeechService.audioRecordingsDirectory().appendingPathComponent(filename)
+        // Capture the AVAudioFile as a local so the background tap thread never touches MainActor state.
+        let capturedFile: AVAudioFile? = try? AVAudioFile(forWriting: fileURL,
+                                                          settings: recordingFormat.settings)
+        lastRecordingURL = capturedFile != nil ? fileURL : nil
+
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
             request.append(buffer)
+            try? capturedFile?.write(from: buffer)
         }
 
         audioEngine.prepare()

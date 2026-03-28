@@ -31,8 +31,53 @@ struct Attempt: Codable, Identifiable {
     var feedback: String
     var toneReminders: [String]
     var phonemeHints: [String]
+    var correctTranslation: String
     var attemptNumber: Int
     var createdAt: Date
+    var audioFilename: String?   // filename only (not full path) inside AudioRecordings/
+    var grammarIssues: [String]  // closed-vocabulary category keys, e.g. ["ba_sentence"]
+
+    // Memberwise initializer (allows call sites to omit grammarIssues)
+    init(id: UUID = UUID(), sentenceID: UUID, transcript: String, score: Int,
+         feedback: String, toneReminders: [String], phonemeHints: [String],
+         correctTranslation: String, attemptNumber: Int, createdAt: Date = Date(),
+         audioFilename: String? = nil, grammarIssues: [String] = []) {
+        self.id = id
+        self.sentenceID = sentenceID
+        self.transcript = transcript
+        self.score = score
+        self.feedback = feedback
+        self.toneReminders = toneReminders
+        self.phonemeHints = phonemeHints
+        self.correctTranslation = correctTranslation
+        self.attemptNumber = attemptNumber
+        self.createdAt = createdAt
+        self.audioFilename = audioFilename
+        self.grammarIssues = grammarIssues
+    }
+
+    // Backward-compatible decoder: handles old records missing recently-added fields
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id                 = try  c.decode(UUID.self,     forKey: .id)
+        sentenceID         = try  c.decode(UUID.self,     forKey: .sentenceID)
+        transcript         = try  c.decode(String.self,   forKey: .transcript)
+        score              = try  c.decode(Int.self,      forKey: .score)
+        feedback           = try  c.decode(String.self,   forKey: .feedback)
+        toneReminders      = try  c.decode([String].self, forKey: .toneReminders)
+        phonemeHints       = try  c.decode([String].self, forKey: .phonemeHints)
+        correctTranslation = (try? c.decodeIfPresent(String.self,   forKey: .correctTranslation)) ?? ""
+        attemptNumber      = try  c.decode(Int.self,      forKey: .attemptNumber)
+        createdAt          = try  c.decode(Date.self,     forKey: .createdAt)
+        audioFilename      = try? c.decodeIfPresent(String.self,   forKey: .audioFilename)
+        grammarIssues      = (try? c.decodeIfPresent([String].self, forKey: .grammarIssues)) ?? []
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, sentenceID, transcript, score, feedback, toneReminders,
+             phonemeHints, correctTranslation, attemptNumber, createdAt,
+             audioFilename, grammarIssues
+    }
 }
 
 // MARK: - Sentence
@@ -65,14 +110,41 @@ struct Sentence: Codable, Identifiable {
 // MARK: - Daily Session
 
 struct DailySession: Codable, Identifiable {
-    var id: String           // ISO date string "2026-03-27"
+    var id: String           // keyed as "2026-03-27_Mandarin"
     var date: Date
     var sentenceIDs: [UUID]
     var completedIDs: [UUID]
     var isComplete: Bool
     var totalXPEarned: Int
+    var targetLanguage: String   // NEW — default "Mandarin" for backward compat
 
     var completionCount: Int { completedIDs.count }
+
+    init(id: String, date: Date, sentenceIDs: [UUID], completedIDs: [UUID],
+         isComplete: Bool, totalXPEarned: Int, targetLanguage: String = "Mandarin") {
+        self.id = id
+        self.date = date
+        self.sentenceIDs = sentenceIDs
+        self.completedIDs = completedIDs
+        self.isComplete = isComplete
+        self.totalXPEarned = totalXPEarned
+        self.targetLanguage = targetLanguage
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id             = try  c.decode(String.self,  forKey: .id)
+        date           = try  c.decode(Date.self,    forKey: .date)
+        sentenceIDs    = try  c.decode([UUID].self,  forKey: .sentenceIDs)
+        completedIDs   = try  c.decode([UUID].self,  forKey: .completedIDs)
+        isComplete     = try  c.decode(Bool.self,    forKey: .isComplete)
+        totalXPEarned  = try  c.decode(Int.self,     forKey: .totalXPEarned)
+        targetLanguage = (try? c.decodeIfPresent(String.self, forKey: .targetLanguage)) ?? "Mandarin"
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, date, sentenceIDs, completedIDs, isComplete, totalXPEarned, targetLanguage
+    }
 }
 
 // MARK: - Badge
@@ -161,10 +233,32 @@ enum BadgeDefinition: String, CaseIterable {
     }
 }
 
+// MARK: - Language Profile (per-language progress)
+
+struct LanguageProfile: Codable {
+    var currentDifficultyLevel: Int = 3
+    var difficultyLocked: Bool = false
+    var dailySentenceGoal: Int = 5
+    var grammarFocusAreas: [String] = []
+    var totalXP: Int = 0
+    var currentLevel: Int = 1
+    var currentStreak: Int = 0
+    var longestStreak: Int = 0
+    var lastCompletedDate: String?
+    var recentScores: [Int] = []
+    var seenSentenceTexts: [String] = []
+    var totalSentencesCompleted: Int = 0
+    var retryImprovements: Int = 0
+    var unlockedBadges: [Badge] = []
+}
+
 // MARK: - User Profile
 
 struct UserProfile: Codable {
     var selectedLanguage: String = "Mandarin"
+    var languageProfiles: [String: LanguageProfile] = [:]
+
+    // ── Legacy flat fields — kept for one-time migration only ──
     var dailySentenceGoal: Int = 5
     var currentDifficultyLevel: Int = 3
     var totalXP: Int = 0
@@ -174,10 +268,10 @@ struct UserProfile: Codable {
     var lastCompletedDate: String?
     var unlockedBadgeIDs: [String] = []
     var unlockedBadges: [Badge] = []
-    var seenSentenceTexts: [String] = []   // last 50, for dedup prompt
-    var recentScores: [Int] = []           // last 10 for difficulty scaling
+    var seenSentenceTexts: [String] = []
+    var recentScores: [Int] = []
     var totalSentencesCompleted: Int = 0
-    var retryImprovements: Int = 0         // for retry_improver badge
+    var retryImprovements: Int = 0
 }
 
 // MARK: - App Settings
@@ -188,6 +282,7 @@ struct AppSettings: Codable {
     var difficultyLocked: Bool = false
     var showRomanization: Bool = true
     var autoAdvance: Bool = false
+    // grammarFocusAreas moved to LanguageProfile — kept here only for one-time migration
     var grammarFocusAreas: [String] = []
 }
 
@@ -198,6 +293,8 @@ struct SentenceEvaluationResult {
     let feedback: String
     let toneReminders: [String]
     let phonemeHints: [String]
+    let correctTranslation: String
+    let grammarIssues: [String]   // closed-vocabulary category keys from the LLM
 }
 
 // MARK: - XP Helpers

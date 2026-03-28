@@ -20,6 +20,7 @@ final class AppStore: ObservableObject {
     @Published var xpJustEarned: Int = 0
     @Published var isEndlessMode: Bool = false
     @Published var pendingTranscript: String = ""
+    @Published var pendingAudioURL: URL?
 
     // MARK: - Services
 
@@ -39,6 +40,15 @@ final class AppStore: ObservableObject {
         load()
     }
 
+    // MARK: - Per-Language Profile Accessor
+
+    /// Computed get/set for the active language's progress.
+    /// Because `profile` is a @Published struct, assigning to its nested dict triggers SwiftUI re-render.
+    var currentLangProfile: LanguageProfile {
+        get { profile.languageProfiles[settings.targetLanguage] ?? LanguageProfile() }
+        set { profile.languageProfiles[settings.targetLanguage] = newValue }
+    }
+
     // MARK: - Computed Properties
 
     var currentSentence: Sentence? {
@@ -50,16 +60,16 @@ final class AppStore: ObservableObject {
         todaySentences.filter { $0.status == .complete }.count
     }
 
-    var todayGoal: Int { settings.dailyGoal }
+    var todayGoal: Int { currentLangProfile.dailySentenceGoal }
 
     var averageScore: Double {
-        guard !profile.recentScores.isEmpty else { return 0 }
-        return Double(profile.recentScores.reduce(0, +)) / Double(profile.recentScores.count)
+        guard !currentLangProfile.recentScores.isEmpty else { return 0 }
+        return Double(currentLangProfile.recentScores.reduce(0, +)) / Double(currentLangProfile.recentScores.count)
     }
 
-    var xpForCurrentLevel: Int { xpForLevel(profile.currentLevel) }
-    var xpForNextLevel: Int { xpForLevel(profile.currentLevel + 1) }
-    var xpProgressInLevel: Int { profile.totalXP - xpForCurrentLevel }
+    var xpForCurrentLevel: Int { xpForLevel(currentLangProfile.currentLevel) }
+    var xpForNextLevel: Int { xpForLevel(currentLangProfile.currentLevel + 1) }
+    var xpProgressInLevel: Int { currentLangProfile.totalXP - xpForCurrentLevel }
     var xpNeededForNextLevel: Int { xpForNextLevel - xpForCurrentLevel }
     var levelProgress: Double {
         guard xpNeededForNextLevel > 0 else { return 1.0 }
@@ -69,10 +79,10 @@ final class AppStore: ObservableObject {
     // MARK: - Session Management
 
     func prepareOrResumeTodaySession() async {
-        let today = todayISOString()
+        let sessionID = todaySessionID()
 
-        // Check if today's session already exists in our sentences
-        if let session = todaySession, session.id == today {
+        // Check if today's session for this language is already loaded
+        if let session = todaySession, session.id == sessionID {
             if session.isComplete {
                 practicePhase = .sessionComplete
             } else {
@@ -83,7 +93,7 @@ final class AppStore: ObservableObject {
 
         // Try to load from UserDefaults
         let sessions = loadSessions()
-        if let existing = sessions.first(where: { $0.id == today }) {
+        if let existing = sessions.first(where: { $0.id == sessionID }) {
             todaySession = existing
             let allSentences = loadSentences()
             todaySentences = allSentences.filter { existing.sentenceIDs.contains($0.id) }
@@ -105,7 +115,6 @@ final class AppStore: ObservableObject {
     }
 
     private func resumeSession() {
-        // Find first incomplete sentence
         currentSentenceIndex = todaySentences.firstIndex(where: { $0.status != .complete }) ?? 0
         practicePhase = .readyToRecord
     }
@@ -115,11 +124,11 @@ final class AppStore: ObservableObject {
         isLoadingAI = true
         defer { isLoadingAI = false }
 
-        let today = todayISOString()
-        let n = settings.dailyGoal
+        let sessionID = todaySessionID()
+        let n = currentLangProfile.dailySentenceGoal
         let language = settings.targetLanguage
-        let difficulty = profile.currentDifficultyLevel
-        let recent = Array(profile.seenSentenceTexts.suffix(50))
+        let difficulty = currentLangProfile.currentDifficultyLevel
+        let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
 
         var newSentences: [Sentence] = []
 
@@ -129,7 +138,7 @@ final class AppStore: ObservableObject {
                     difficulty: difficulty,
                     targetLanguage: language,
                     excludingTexts: recent + newSentences.map(\.englishText),
-                    grammarFocusAreas: settings.grammarFocusAreas
+                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
                 )
                 let sentence = Sentence(
                     englishText: text,
@@ -145,19 +154,20 @@ final class AppStore: ObservableObject {
 
         todaySentences = newSentences
 
-        // Add to seen list (cap at 200)
-        profile.seenSentenceTexts.append(contentsOf: newSentences.map(\.englishText))
-        if profile.seenSentenceTexts.count > 200 {
-            profile.seenSentenceTexts = Array(profile.seenSentenceTexts.suffix(200))
+        // Update seen sentence list (cap at 200)
+        currentLangProfile.seenSentenceTexts.append(contentsOf: newSentences.map(\.englishText))
+        if currentLangProfile.seenSentenceTexts.count > 200 {
+            currentLangProfile.seenSentenceTexts = Array(currentLangProfile.seenSentenceTexts.suffix(200))
         }
 
         let session = DailySession(
-            id: today,
+            id: sessionID,
             date: Date(),
             sentenceIDs: newSentences.map(\.id),
             completedIDs: [],
             isComplete: false,
-            totalXPEarned: 0
+            totalXPEarned: 0,
+            targetLanguage: language
         )
         todaySession = session
 
@@ -187,6 +197,7 @@ final class AppStore: ObservableObject {
 
         let transcript = await speech.stopRecording()
         pendingTranscript = transcript
+        pendingAudioURL = speech.lastRecordingURL
         practicePhase = .reviewingTranscription
     }
 
@@ -220,8 +231,11 @@ final class AppStore: ObservableObject {
                 feedback: result.feedback,
                 toneReminders: result.toneReminders,
                 phonemeHints: result.phonemeHints,
+                correctTranslation: result.correctTranslation,
                 attemptNumber: attemptNumber,
-                createdAt: Date()
+                createdAt: Date(),
+                audioFilename: pendingAudioURL?.lastPathComponent,
+                grammarIssues: result.grammarIssues
             )
 
             processAttemptResult(attempt: attempt, result: result)
@@ -234,6 +248,7 @@ final class AppStore: ObservableObject {
     func reRecord() {
         guard practicePhase == .reviewingTranscription else { return }
         pendingTranscript = ""
+        pendingAudioURL = nil
         speech.resetTranscript()
         practicePhase = .readyToRecord
     }
@@ -247,9 +262,8 @@ final class AppStore: ObservableObject {
         if let prev = previousBest {
             if attempt.score > prev {
                 todaySentences[currentSentenceIndex].bestScore = attempt.score
-                // Track retry improvement
                 if attempt.attemptNumber > 1 {
-                    profile.retryImprovements += 1
+                    currentLangProfile.retryImprovements += 1
                 }
             }
         } else {
@@ -268,7 +282,6 @@ final class AppStore: ObservableObject {
         let newBadges = checkAndAwardBadges()
         newlyUnlockedBadges = newBadges
 
-        // Save sentences
         saveSentences(todaySentences)
         save()
 
@@ -281,7 +294,6 @@ final class AppStore: ObservableObject {
         // Mark current sentence complete
         todaySentences[currentSentenceIndex].status = .complete
 
-        // Mark in session
         if var session = todaySession {
             if !session.completedIDs.contains(todaySentences[currentSentenceIndex].id) {
                 session.completedIDs.append(todaySentences[currentSentenceIndex].id)
@@ -290,7 +302,7 @@ final class AppStore: ObservableObject {
             saveSession(session)
         }
 
-        profile.totalSentencesCompleted += 1
+        currentLangProfile.totalSentencesCompleted += 1
         saveSentences(todaySentences)
         save()
 
@@ -305,6 +317,7 @@ final class AppStore: ObservableObject {
             currentSentenceIndex = nextIndex
             speech.resetTranscript()
             pendingTranscript = ""
+            pendingAudioURL = nil
             lastEvaluation = nil
             newlyUnlockedBadges = []
             xpJustEarned = 0
@@ -316,6 +329,7 @@ final class AppStore: ObservableObject {
         guard let sentence = currentSentence, sentence.canRetry else { return }
         speech.resetTranscript()
         pendingTranscript = ""
+        pendingAudioURL = nil
         lastEvaluation = nil
         newlyUnlockedBadges = []
         xpJustEarned = 0
@@ -323,8 +337,24 @@ final class AppStore: ObservableObject {
     }
 
     func setDifficulty(_ level: Int) {
-        profile.currentDifficultyLevel = min(10, max(1, level))
+        currentLangProfile.currentDifficultyLevel = min(10, max(1, level))
+        currentLangProfile.difficultyLocked = true
         settings.difficultyLocked = true
+        save()
+        // Regenerate sentences at the new difficulty level
+        todaySession = nil
+        todaySentences = []
+        currentSentenceIndex = 0
+        practicePhase = .idle
+        lastEvaluation = nil
+        pendingTranscript = ""
+        pendingAudioURL = nil
+        Task { await generateDailySentences() }
+    }
+
+    func setDifficultyLocked(_ locked: Bool) {
+        settings.difficultyLocked = locked
+        currentLangProfile.difficultyLocked = locked
         save()
     }
 
@@ -340,8 +370,7 @@ final class AppStore: ObservableObject {
 
         session.isComplete = true
 
-        // Completion bonus XP
-        let bonus = 50 + (profile.currentStreak * 5)
+        let bonus = 50 + (currentLangProfile.currentStreak * 5)
         awardXP(bonus)
         session.totalXPEarned = todaySentences.compactMap(\.bestScore).reduce(0, +)
 
@@ -368,7 +397,7 @@ final class AppStore: ObservableObject {
     private func generateAndContinue() async {
         practicePhase = .generatingSentences
         await generateAdditionalSentences(count: 1)
-        guard case .generatingSentences = practicePhase else { return } // error check
+        guard case .generatingSentences = practicePhase else { return }
         currentSentenceIndex = todaySentences.count - 1
         speech.resetTranscript()
         lastEvaluation = nil
@@ -379,8 +408,8 @@ final class AppStore: ObservableObject {
 
     private func generateAdditionalSentences(count: Int) async {
         let language = settings.targetLanguage
-        let difficulty = profile.currentDifficultyLevel
-        let recent = Array(profile.seenSentenceTexts.suffix(50))
+        let difficulty = currentLangProfile.currentDifficultyLevel
+        let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
 
         var newSentences: [Sentence] = []
         for _ in 0..<count {
@@ -389,7 +418,7 @@ final class AppStore: ObservableObject {
                     difficulty: difficulty,
                     targetLanguage: language,
                     excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText),
-                    grammarFocusAreas: settings.grammarFocusAreas
+                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
                 )
                 let sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
                 newSentences.append(sentence)
@@ -400,9 +429,9 @@ final class AppStore: ObservableObject {
         }
 
         todaySentences.append(contentsOf: newSentences)
-        profile.seenSentenceTexts.append(contentsOf: newSentences.map(\.englishText))
-        if profile.seenSentenceTexts.count > 200 {
-            profile.seenSentenceTexts = Array(profile.seenSentenceTexts.suffix(200))
+        currentLangProfile.seenSentenceTexts.append(contentsOf: newSentences.map(\.englishText))
+        if currentLangProfile.seenSentenceTexts.count > 200 {
+            currentLangProfile.seenSentenceTexts = Array(currentLangProfile.seenSentenceTexts.suffix(200))
         }
         saveSentences(newSentences)
         save()
@@ -423,7 +452,7 @@ final class AppStore: ObservableObject {
 
     private func calculateXP(score: Int, attemptNumber: Int) -> Int {
         let baseXP = score / 5
-        let diffMult = 1.0 + Double(profile.currentDifficultyLevel - 1) * 0.15
+        let diffMult = 1.0 + Double(currentLangProfile.currentDifficultyLevel - 1) * 0.15
         let attemptPenalty: Double
         switch attemptNumber {
         case 1: attemptPenalty = 1.0
@@ -431,7 +460,7 @@ final class AppStore: ObservableObject {
         default: attemptPenalty = 0.5
         }
         let streakBonus: Double
-        switch profile.currentStreak {
+        switch currentLangProfile.currentStreak {
         case 0..<3: streakBonus = 1.0
         case 3..<7: streakBonus = 1.1
         case 7..<14: streakBonus = 1.25
@@ -443,21 +472,21 @@ final class AppStore: ObservableObject {
     }
 
     private func awardXP(_ xp: Int) {
-        profile.totalXP += xp
-        profile.currentLevel = levelForXP(profile.totalXP)
+        currentLangProfile.totalXP += xp
+        currentLangProfile.currentLevel = levelForXP(currentLangProfile.totalXP)
     }
 
     private func updateDifficulty(with score: Int) {
-        profile.recentScores.append(score)
-        if profile.recentScores.count > 10 {
-            profile.recentScores.removeFirst()
+        currentLangProfile.recentScores.append(score)
+        if currentLangProfile.recentScores.count > 10 {
+            currentLangProfile.recentScores.removeFirst()
         }
 
-        guard profile.recentScores.count >= 5 else { return }
-        guard !settings.difficultyLocked else { return }
+        guard currentLangProfile.recentScores.count >= 5 else { return }
+        guard !currentLangProfile.difficultyLocked else { return }
 
-        let avg = Double(profile.recentScores.reduce(0, +)) / Double(profile.recentScores.count)
-        let current = profile.currentDifficultyLevel
+        let avg = Double(currentLangProfile.recentScores.reduce(0, +)) / Double(currentLangProfile.recentScores.count)
+        let current = currentLangProfile.currentDifficultyLevel
 
         let newLevel: Int
         switch avg {
@@ -469,8 +498,8 @@ final class AppStore: ObservableObject {
         }
 
         if newLevel != current {
-            profile.currentDifficultyLevel = newLevel
-            profile.recentScores = []
+            currentLangProfile.currentDifficultyLevel = newLevel
+            currentLangProfile.recentScores = []
         }
     }
 
@@ -478,28 +507,28 @@ final class AppStore: ObservableObject {
         let today = todayISOString()
         let yesterday = yesterdayISOString()
 
-        guard let last = profile.lastCompletedDate else {
-            profile.currentStreak = 1
-            profile.longestStreak = max(1, profile.longestStreak)
-            profile.lastCompletedDate = today
+        guard let last = currentLangProfile.lastCompletedDate else {
+            currentLangProfile.currentStreak = 1
+            currentLangProfile.longestStreak = max(1, currentLangProfile.longestStreak)
+            currentLangProfile.lastCompletedDate = today
             return
         }
 
         if last == today { return }
 
         if last == yesterday {
-            profile.currentStreak += 1
+            currentLangProfile.currentStreak += 1
         } else {
-            profile.currentStreak = 1
+            currentLangProfile.currentStreak = 1
         }
-        profile.longestStreak = max(profile.longestStreak, profile.currentStreak)
-        profile.lastCompletedDate = today
+        currentLangProfile.longestStreak = max(currentLangProfile.longestStreak, currentLangProfile.currentStreak)
+        currentLangProfile.lastCompletedDate = today
     }
 
     @discardableResult
     private func checkAndAwardBadges() -> [Badge] {
         var newBadges: [Badge] = []
-        let unlockedIDs = Set(profile.unlockedBadges.map(\.id))
+        let unlockedIDs = Set(currentLangProfile.unlockedBadges.map(\.id))
 
         func unlock(_ def: BadgeDefinition) {
             guard !unlockedIDs.contains(def.rawValue) else { return }
@@ -510,39 +539,62 @@ final class AppStore: ObservableObject {
                 iconSystemName: def.iconSystemName,
                 unlockedAt: Date()
             )
-            profile.unlockedBadges.append(badge)
+            currentLangProfile.unlockedBadges.append(badge)
             newBadges.append(badge)
         }
 
-        if profile.totalSentencesCompleted >= 1 { unlock(.firstSentence) }
+        if currentLangProfile.totalSentencesCompleted >= 1 { unlock(.firstSentence) }
         if todaySentences.compactMap(\.bestScore).contains(100) { unlock(.perfectScore) }
-        if profile.currentStreak >= 3 { unlock(.day3Streak) }
-        if profile.currentStreak >= 7 { unlock(.day7Streak) }
-        if profile.currentStreak >= 30 { unlock(.day30Streak) }
-        if profile.currentLevel >= 5 { unlock(.level5) }
-        if profile.currentLevel >= 10 { unlock(.level10) }
-        if profile.currentLevel >= 25 { unlock(.level25) }
-        if profile.recentScores.count >= 10 && averageScore >= 50 { unlock(.score50Avg) }
-        if profile.recentScores.count >= 10 && averageScore >= 75 { unlock(.score75Avg) }
-        if profile.currentDifficultyLevel >= 5 { unlock(.difficulty5) }
-        if profile.currentDifficultyLevel >= 10 { unlock(.difficulty10) }
-        if profile.totalSentencesCompleted >= 100 { unlock(.sentences100) }
-        if profile.retryImprovements >= 10 { unlock(.retryImprover) }
+        if currentLangProfile.currentStreak >= 3 { unlock(.day3Streak) }
+        if currentLangProfile.currentStreak >= 7 { unlock(.day7Streak) }
+        if currentLangProfile.currentStreak >= 30 { unlock(.day30Streak) }
+        if currentLangProfile.currentLevel >= 5 { unlock(.level5) }
+        if currentLangProfile.currentLevel >= 10 { unlock(.level10) }
+        if currentLangProfile.currentLevel >= 25 { unlock(.level25) }
+        if currentLangProfile.recentScores.count >= 10 && averageScore >= 50 { unlock(.score50Avg) }
+        if currentLangProfile.recentScores.count >= 10 && averageScore >= 75 { unlock(.score75Avg) }
+        if currentLangProfile.currentDifficultyLevel >= 5 { unlock(.difficulty5) }
+        if currentLangProfile.currentDifficultyLevel >= 10 { unlock(.difficulty10) }
+        if currentLangProfile.totalSentencesCompleted >= 100 { unlock(.sentences100) }
+        if currentLangProfile.retryImprovements >= 10 { unlock(.retryImprover) }
 
         return newBadges
     }
 
     // MARK: - Settings
 
-    func updateLanguage(_ language: String) {
+    func switchLanguage(to language: String) {
+        guard language != settings.targetLanguage else { return }
         settings.targetLanguage = language
         profile.selectedLanguage = language
+        // Sync AppSettings mirrors from the incoming language profile
+        let lp = profile.languageProfiles[language] ?? LanguageProfile()
+        settings.dailyGoal = lp.dailySentenceGoal
+        settings.difficultyLocked = lp.difficultyLocked
+        // Reset in-progress session state
+        todaySession = nil
+        todaySentences = []
+        currentSentenceIndex = 0
+        practicePhase = .idle
+        lastEvaluation = nil
+        pendingTranscript = ""
+        pendingAudioURL = nil
         save()
+        Task { await prepareOrResumeTodaySession() }
+    }
+
+    func updateLanguage(_ language: String) {
+        switchLanguage(to: language)
     }
 
     func updateDailyGoal(_ goal: Int) {
         settings.dailyGoal = goal
-        profile.dailySentenceGoal = goal
+        currentLangProfile.dailySentenceGoal = goal
+        save()
+    }
+
+    func setGrammarFocusAreas(_ areas: [String]) {
+        currentLangProfile.grammarFocusAreas = areas
         save()
     }
 
@@ -585,6 +637,31 @@ final class AppStore: ObservableObject {
            let saved = try? decoder.decode(AppSettings.self, from: data) {
             settings = saved
         }
+
+        // One-time migration: lift legacy flat fields → Mandarin LanguageProfile
+        if profile.languageProfiles.isEmpty {
+            var lp = LanguageProfile()
+            lp.currentDifficultyLevel  = profile.currentDifficultyLevel
+            lp.dailySentenceGoal       = profile.dailySentenceGoal
+            lp.grammarFocusAreas       = settings.grammarFocusAreas
+            lp.totalXP                 = profile.totalXP
+            lp.currentLevel            = profile.currentLevel
+            lp.currentStreak           = profile.currentStreak
+            lp.longestStreak           = profile.longestStreak
+            lp.lastCompletedDate       = profile.lastCompletedDate
+            lp.seenSentenceTexts       = profile.seenSentenceTexts
+            lp.recentScores            = profile.recentScores
+            lp.totalSentencesCompleted = profile.totalSentencesCompleted
+            lp.retryImprovements       = profile.retryImprovements
+            lp.unlockedBadges          = profile.unlockedBadges
+            lp.difficultyLocked        = settings.difficultyLocked
+            profile.languageProfiles["Mandarin"] = lp
+        }
+
+        // Sync AppSettings mirrors from the active language profile
+        let lp = profile.languageProfiles[settings.targetLanguage] ?? LanguageProfile()
+        settings.dailyGoal = lp.dailySentenceGoal
+        settings.difficultyLocked = lp.difficultyLocked
     }
 
     private func loadSessions() -> [DailySession] {
@@ -602,9 +679,9 @@ final class AppStore: ObservableObject {
         } else {
             sessions.append(session)
         }
-        // Keep only last 30 sessions
-        if sessions.count > 30 {
-            sessions = Array(sessions.suffix(30))
+        // Keep only last 30 sessions per language (90 total across 3 languages typical)
+        if sessions.count > 90 {
+            sessions = Array(sessions.suffix(90))
         }
         if let data = try? JSONEncoder().encode(sessions) {
             UserDefaults.standard.set(data, forKey: sessionsKey)
@@ -643,5 +720,11 @@ final class AppStore: ObservableObject {
 
     func allSentences() -> [Sentence] {
         loadSentences()
+    }
+
+    // MARK: - Helpers
+
+    private func todaySessionID() -> String {
+        "\(todayISOString())_\(settings.targetLanguage)"
     }
 }

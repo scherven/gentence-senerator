@@ -429,6 +429,27 @@ private struct FeedbackView: View {
                             .cornerRadius(10)
                     }
 
+                    // Correct translation
+                    if !eval.correctTranslation.isEmpty {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("Correct Translation")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .textCase(.uppercase)
+                                Spacer()
+                                PlaybackButton(text: eval.correctTranslation,
+                                               language: store.settings.targetLanguage)
+                            }
+                            Text(eval.correctTranslation)
+                                .font(.title3)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.green.opacity(0.08))
+                                .cornerRadius(10)
+                        }
+                    }
+
                     // Tone reminders (Mandarin-specific)
                     if !eval.toneReminders.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
@@ -456,7 +477,51 @@ private struct FeedbackView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                     }
-                }
+
+                    // Learn More — grammar resource links
+                    if !eval.grammarIssues.isEmpty {
+                        let resources = Array(eval.grammarIssues
+                            .flatMap { GrammarResources.resources(for: $0, language: store.settings.targetLanguage) }
+                            .prefix(4))    // cap: 2 issues × 2 links = 4 max
+
+                        if !resources.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "book.pages.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.caption)
+                                    Text("Learn More")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .textCase(.uppercase)
+                                }
+                                VStack(alignment: .leading, spacing: 8) {
+                                    ForEach(resources) { resource in
+                                        Link(destination: resource.url) {
+                                            HStack(spacing: 8) {
+                                                Image(systemName: "arrow.up.right.square")
+                                                    .font(.caption)
+                                                    .foregroundColor(.blue)
+                                                Text(resource.title)
+                                                    .font(.subheadline)
+                                                    .foregroundColor(.blue)
+                                                    .multilineTextAlignment(.leading)
+                                                Spacer()
+                                            }
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .background(Color.blue.opacity(0.06))
+                                            .cornerRadius(8)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                        }
+                    }
+                }   // end if let eval = evaluation
 
                 // New badges
                 if !store.newlyUnlockedBadges.isEmpty {
@@ -557,11 +622,11 @@ private struct SessionCompleteView: View {
                     .fontWeight(.bold)
 
                 // Streak
-                if store.profile.currentStreak > 0 {
+                if store.currentLangProfile.currentStreak > 0 {
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
                             .foregroundColor(.orange)
-                        Text("\(store.profile.currentStreak)-day streak!")
+                        Text("\(store.currentLangProfile.currentStreak)-day streak!")
                             .fontWeight(.semibold)
                     }
                     .font(.headline)
@@ -579,7 +644,7 @@ private struct SessionCompleteView: View {
                         let totalXP = store.todaySession?.totalXPEarned ?? 0
                         summaryCard(
                             title: "XP Earned",
-                            value: "+\(store.profile.totalXP)",
+                            value: "+\(store.currentLangProfile.totalXP)",
                             icon: "star.fill",
                             color: .yellow
                         )
@@ -595,7 +660,7 @@ private struct SessionCompleteView: View {
                         )
                         summaryCard(
                             title: "Level",
-                            value: "\(store.profile.currentLevel)",
+                            value: "\(store.currentLangProfile.currentLevel)",
                             icon: "trophy.fill",
                             color: .purple
                         )

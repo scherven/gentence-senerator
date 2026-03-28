@@ -5,11 +5,11 @@ struct StatsView: View {
     @EnvironmentObject var store: AppStore
 
     private var recentScores: [(index: Int, score: Int)] {
-        store.profile.recentScores.enumerated().map { (index: $0.offset, score: $0.element) }
+        store.currentLangProfile.recentScores.enumerated().map { (index: $0.offset, score: $0.element) }
     }
 
     private var allBadgeDefs: [BadgeDefinition] { BadgeDefinition.allCases }
-    private var unlockedBadgeIDs: Set<String> { Set(store.profile.unlockedBadges.map(\.id)) }
+    private var unlockedBadgeIDs: Set<String> { Set(store.currentLangProfile.unlockedBadges.map(\.id)) }
 
     var body: some View {
         NavigationView {
@@ -35,10 +35,10 @@ struct StatsView: View {
         VStack(spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Level \(store.profile.currentLevel)")
+                    Text("Level \(store.currentLangProfile.currentLevel)")
                         .font(.title2)
                         .fontWeight(.bold)
-                    Text("\(store.profile.totalXP) total XP")
+                    Text("\(store.currentLangProfile.totalXP) total XP")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -55,7 +55,7 @@ struct StatsView: View {
 
             VStack(spacing: 4) {
                 HStack {
-                    Text("Progress to Level \(store.profile.currentLevel + 1)")
+                    Text("Progress to Level \(store.currentLangProfile.currentLevel + 1)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -125,7 +125,7 @@ struct StatsView: View {
 
             HStack(spacing: 24) {
                 VStack(spacing: 4) {
-                    Text("\(store.profile.currentStreak)")
+                    Text("\(store.currentLangProfile.currentStreak)")
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.orange)
@@ -135,7 +135,7 @@ struct StatsView: View {
                 }
                 Divider().frame(height: 40)
                 VStack(spacing: 4) {
-                    Text("\(store.profile.longestStreak)")
+                    Text("\(store.currentLangProfile.longestStreak)")
                         .font(.title)
                         .fontWeight(.bold)
                     Text("Best")
@@ -153,14 +153,17 @@ struct StatsView: View {
     }
 
     private var lastSevenDaysRow: some View {
+        let lang = store.settings.targetLanguage
         let sessions = store.allSessions()
-        let completedDates = Set(sessions.filter(\.isComplete).map(\.id))
+        let completedDates = Set(
+            sessions.filter { $0.isComplete && $0.targetLanguage == lang }.map(\.id)
+        )
 
         return HStack(spacing: 6) {
             ForEach(-6...0, id: \.self) { offset in
                 let date = Calendar.current.date(byAdding: .day, value: offset, to: Date())!
                 let iso = isoDateString(date)
-                let isComplete = completedDates.contains(iso)
+                let isComplete = completedDates.contains("\(iso)_\(lang)")
                 let isToday = offset == 0
 
                 VStack(spacing: 4) {
@@ -192,7 +195,7 @@ struct StatsView: View {
                 Text("Badges")
                     .font(.headline)
                 Spacer()
-                Text("\(store.profile.unlockedBadges.count)/\(allBadgeDefs.count)")
+                Text("\(store.currentLangProfile.unlockedBadges.count)/\(allBadgeDefs.count)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -200,7 +203,7 @@ struct StatsView: View {
             LazyVStack(spacing: 10) {
                 ForEach(allBadgeDefs, id: \.rawValue) { def in
                     let isUnlocked = unlockedBadgeIDs.contains(def.rawValue)
-                    let badge = store.profile.unlockedBadges.first(where: { $0.id == def.rawValue })
+                    let badge = store.currentLangProfile.unlockedBadges.first(where: { $0.id == def.rawValue })
                         ?? Badge(id: def.rawValue, name: def.name, description: def.description,
                                  iconSystemName: def.iconSystemName, unlockedAt: Date())
                     BadgeView(badge: badge, isLocked: !isUnlocked)

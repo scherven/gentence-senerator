@@ -7,6 +7,20 @@ struct SettingsView: View {
 
     let languages = ["Mandarin", "French", "German", "Spanish", "Italian", "Portuguese", "Japanese", "Korean"]
 
+    private func flag(for language: String) -> String {
+        switch language {
+        case "Mandarin":   return "🇨🇳"
+        case "French":     return "🇫🇷"
+        case "German":     return "🇩🇪"
+        case "Spanish":    return "🇪🇸"
+        case "Italian":    return "🇮🇹"
+        case "Portuguese": return "🇵🇹"
+        case "Japanese":   return "🇯🇵"
+        case "Korean":     return "🇰🇷"
+        default:           return "🌐"
+        }
+    }
+
     private let suggestedGrammarPatterns = [
         "把-sentences",
         "比较 comparisons",
@@ -29,7 +43,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                     .onChange(of: store.settings.targetLanguage) { _, newValue in
-                        store.updateLanguage(newValue)
+                        store.switchLanguage(to: newValue)
                     }
                 }
 
@@ -45,7 +59,7 @@ struct SettingsView: View {
                     HStack {
                         Text("Current Level")
                         Spacer()
-                        Text("\(store.profile.currentDifficultyLevel)/10")
+                        Text("\(store.currentLangProfile.currentDifficultyLevel)/10")
                             .foregroundColor(.secondary)
                         if store.settings.difficultyLocked {
                             Image(systemName: "lock.fill")
@@ -66,15 +80,15 @@ struct SettingsView: View {
                                     } label: {
                                         Text("\(level)")
                                             .font(.subheadline)
-                                            .fontWeight(store.profile.currentDifficultyLevel == level ? .bold : .regular)
+                                            .fontWeight(store.currentLangProfile.currentDifficultyLevel == level ? .bold : .regular)
                                             .frame(width: 36, height: 36)
                                             .background(
-                                                store.profile.currentDifficultyLevel == level
+                                                store.currentLangProfile.currentDifficultyLevel == level
                                                     ? Color.accentColor
                                                     : Color(.systemGray5)
                                             )
                                             .foregroundColor(
-                                                store.profile.currentDifficultyLevel == level ? .white : .primary
+                                                store.currentLangProfile.currentDifficultyLevel == level ? .white : .primary
                                             )
                                             .clipShape(Circle())
                                     }
@@ -84,14 +98,16 @@ struct SettingsView: View {
                             .padding(.vertical, 4)
                         }
                         Text(store.settings.difficultyLocked
-                             ? "Locked at level \(store.profile.currentDifficultyLevel). Tap a circle to change."
+                             ? "Locked at level \(store.currentLangProfile.currentDifficultyLevel). Tap a circle to change."
                              : "Auto-adjusting based on performance. Tap a circle to override.")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
 
                     Toggle("Lock Difficulty", isOn: $store.settings.difficultyLocked)
-                        .onChange(of: store.settings.difficultyLocked) { _, _ in store.save() }
+                        .onChange(of: store.settings.difficultyLocked) { _, locked in
+                            store.setDifficultyLocked(locked)
+                        }
                 }
 
                 Section(header: Text("Display")) {
@@ -105,22 +121,22 @@ struct SettingsView: View {
                     HStack {
                         Text("Total Sentences")
                         Spacer()
-                        Text("\(store.profile.totalSentencesCompleted)").foregroundColor(.secondary)
+                        Text("\(store.currentLangProfile.totalSentencesCompleted)").foregroundColor(.secondary)
                     }
                     HStack {
                         Text("Total XP")
                         Spacer()
-                        Text("\(store.profile.totalXP)").foregroundColor(.secondary)
+                        Text("\(store.currentLangProfile.totalXP)").foregroundColor(.secondary)
                     }
                     HStack {
                         Text("Level")
                         Spacer()
-                        Text("\(store.profile.currentLevel)").foregroundColor(.secondary)
+                        Text("\(store.currentLangProfile.currentLevel)").foregroundColor(.secondary)
                     }
                     HStack {
                         Text("Longest Streak")
                         Spacer()
-                        Text("\(store.profile.longestStreak) days").foregroundColor(.secondary)
+                        Text("\(store.currentLangProfile.longestStreak) days").foregroundColor(.secondary)
                     }
                 }
 
@@ -136,14 +152,15 @@ struct SettingsView: View {
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 6) {
                                 ForEach(suggestedGrammarPatterns, id: \.self) { pattern in
-                                    let isActive = store.settings.grammarFocusAreas.contains(pattern)
+                                    let isActive = store.currentLangProfile.grammarFocusAreas.contains(pattern)
                                     Button {
+                                        var areas = store.currentLangProfile.grammarFocusAreas
                                         if isActive {
-                                            store.settings.grammarFocusAreas.removeAll { $0 == pattern }
+                                            areas.removeAll { $0 == pattern }
                                         } else {
-                                            store.settings.grammarFocusAreas.append(pattern)
+                                            areas.append(pattern)
                                         }
-                                        store.save()
+                                        store.setGrammarFocusAreas(areas)
                                     } label: {
                                         HStack(spacing: 4) {
                                             Image(systemName: isActive ? "checkmark.circle.fill" : "plus.circle")
@@ -163,19 +180,20 @@ struct SettingsView: View {
                         }
                     }
 
-                    if !store.settings.grammarFocusAreas.isEmpty {
+                    if !store.currentLangProfile.grammarFocusAreas.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Active Focus Areas")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 6) {
-                                ForEach(store.settings.grammarFocusAreas, id: \.self) { area in
+                                ForEach(store.currentLangProfile.grammarFocusAreas, id: \.self) { area in
                                     HStack(spacing: 4) {
                                         Text(area)
                                             .font(.caption)
                                         Button {
-                                            store.settings.grammarFocusAreas.removeAll { $0 == area }
-                                            store.save()
+                                            var areas = store.currentLangProfile.grammarFocusAreas
+                                            areas.removeAll { $0 == area }
+                                            store.setGrammarFocusAreas(areas)
                                         } label: {
                                             Image(systemName: "xmark.circle.fill")
                                                 .font(.caption)
@@ -200,9 +218,10 @@ struct SettingsView: View {
                         Button("Add") {
                             let trimmed = newGrammarArea.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty,
-                                  !store.settings.grammarFocusAreas.contains(trimmed) else { return }
-                            store.settings.grammarFocusAreas.append(trimmed)
-                            store.save()
+                                  !store.currentLangProfile.grammarFocusAreas.contains(trimmed) else { return }
+                            var areas = store.currentLangProfile.grammarFocusAreas
+                            areas.append(trimmed)
+                            store.setGrammarFocusAreas(areas)
                             newGrammarArea = ""
                         }
                         .disabled(newGrammarArea.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -216,7 +235,7 @@ struct SettingsView: View {
                     .foregroundColor(.red)
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("\(flag(for: store.settings.targetLanguage)) \(store.settings.targetLanguage)")
             .alert("Reset Progress?", isPresented: $showResetAlert) {
                 Button("Reset", role: .destructive) { store.resetProgress() }
                 Button("Cancel", role: .cancel) {}
