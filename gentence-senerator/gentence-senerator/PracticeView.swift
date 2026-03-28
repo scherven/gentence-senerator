@@ -1,222 +1,951 @@
-//
-//  PracticeView.swift
-//  gentence-senerator
-//
-//  Created by Simon Chervenak on 12/30/25.
-//
 import SwiftUI
 
+// MARK: - Main Practice View
+
 struct PracticeView: View {
-    @State var selectedLanguage: String
-    @State private var userTranslation = ""
-    @State private var showFeedback = false
-    @State private var feedbackText = ""
-    @State private var englishSentence = "Loading..."
-    @State private var isLoading = false
-    @Environment(\.presentationMode) var presentationMode
-    
-    let apiKey = Key.key
-    
+    @EnvironmentObject var store: AppStore
+
     var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
-            
-            // English sentence to translate
-            VStack(spacing: 10) {
-                Text("Translate this sentence:")
-                    .font(.headline)
+        NavigationView {
+            Group {
+                switch store.practicePhase {
+                case .idle, .generatingSentences:
+                    PracticeLoadingView()
+                case .readyToRecord:
+                    SentenceDisplayView()
+                case .recording:
+                    RecordingView()
+                case .transcribing:
+                    ProcessingView(message: "Transcribing...")
+                case .reviewingTranscription:
+                    TranscriptionReviewView()
+                case .evaluating:
+                    ProcessingView(message: "Evaluating your response...")
+                case .showingFeedback(let score):
+                    FeedbackView(score: score)
+                case .sessionComplete:
+                    SessionCompleteView()
+                case .error(let msg):
+                    PracticeErrorView(message: msg)
+                }
+            }
+            .navigationTitle(navTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    progressIndicator
+                }
+            }
+        }
+    }
+
+    private var navTitle: String {
+        switch store.practicePhase {
+        case .sessionComplete: return "Complete!"
+        case .error: return "Error"
+        default: return "Practice"
+        }
+    }
+
+    private var progressIndicator: some View {
+        Group {
+            if store.todaySentences.isEmpty { EmptyView() }
+            else if store.isEndlessMode {
+                HStack(spacing: 4) {
+                    Image(systemName: "infinity")
+                        .font(.caption)
+                    Text("\(store.todayCompletedCount)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.accentColor)
+            } else {
+                Text("\(store.todayCompletedCount)/\(store.todayGoal)")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
-                
-                if isLoading && englishSentence == "Loading..." {
-                    ProgressView()
-                        .padding()
-                } else {
-                    Text(englishSentence)
+            }
+        }
+    }
+}
+
+// MARK: - Loading View
+
+private struct PracticeLoadingView: View {
+    @EnvironmentObject var store: AppStore
+
+    var body: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+            Text("Generating today's sentences...")
+                .font(.headline)
+                .foregroundColor(.secondary)
+            Text("This may take a few moments")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Sentence Display View
+
+private struct SentenceDisplayView: View {
+    @EnvironmentObject var store: AppStore
+    @State private var showTypeInput = false
+    @State private var typedInput = ""
+    @FocusState private var isTypingFocused: Bool
+
+    private var sentence: Sentence? { store.currentSentence }
+    private var attemptNumber: Int { (sentence?.attemptCount ?? 0) + 1 }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Sentence progress
+                sentenceProgress
+
+                // Instruction
+                VStack(spacing: 8) {
+                    Text("Translate and say this in \(store.settings.targetLanguage):")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    // English sentence
+                    Text(sentence?.englishText ?? "")
                         .font(.title2)
                         .fontWeight(.semibold)
                         .multilineTextAlignment(.center)
                         .padding()
-                        .background(Color.blue.opacity(0.1))
+                        .frame(maxWidth: .infinity)
+                        .background(Color.accentColor.opacity(0.08))
+                        .cornerRadius(16)
+                }
+
+                // Attempt indicator
+                if attemptNumber > 1 {
+                    HStack {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.caption)
+                        Text("Attempt \(attemptNumber) of 3")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.orange)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(20)
+                }
+
+                // Mic button or type input
+                if showTypeInput {
+                    typeInputSection
+                } else {
+                    micSection
+                }
+
+                // Toggle to type mode
+                Button {
+                    showTypeInput.toggle()
+                    typedInput = ""
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: showTypeInput ? "mic" : "keyboard")
+                            .font(.caption)
+                        Text(showTypeInput ? "Switch to speaking" : "Type instead")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+        }
+        .onTapGesture { isTypingFocused = false }
+    }
+
+    private var sentenceProgress: some View {
+        Group {
+            if store.isEndlessMode {
+                endlessProgressRow
+            } else {
+                HStack(spacing: 8) {
+                    ForEach(0..<store.todayGoal, id: \.self) { i in
+                        Capsule()
+                            .fill(progressColor(for: i))
+                            .frame(height: 6)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Endless mode: show last 10 sentences as capsules + ∞ label
+    private var endlessProgressRow: some View {
+        HStack(spacing: 6) {
+            let visible = min(store.todaySentences.count, 10)
+            let start = store.todaySentences.count - visible
+            ForEach(start..<store.todaySentences.count, id: \.self) { i in
+                Capsule()
+                    .fill(progressColor(for: i))
+                    .frame(width: i == store.currentSentenceIndex ? 24 : 10, height: 6)
+                    .animation(.easeInOut(duration: 0.2), value: store.currentSentenceIndex)
+            }
+            Image(systemName: "infinity")
+                .font(.caption2)
+                .foregroundColor(.accentColor)
+        }
+    }
+
+    private func progressColor(for index: Int) -> Color {
+        if index < store.todaySentences.count {
+            switch store.todaySentences[index].status {
+            case .complete: return .green
+            case .inProgress: return .accentColor
+            case .pending:
+                return index == store.currentSentenceIndex ? .accentColor.opacity(0.5) : .gray.opacity(0.3)
+            }
+        }
+        return .gray.opacity(0.3)
+    }
+
+    private var micSection: some View {
+        VStack(spacing: 16) {
+            Button {
+                store.startRecording()
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.accentColor)
+                        .frame(width: 80, height: 80)
+                        .shadow(color: Color.accentColor.opacity(0.4), radius: 12)
+                    Image(systemName: "mic.fill")
+                        .font(.title)
+                        .foregroundColor(.white)
+                }
+            }
+            .disabled(!store.speech.isFullyAuthorized)
+
+            if !store.speech.isFullyAuthorized {
+                Text("Tap to grant microphone access")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            } else {
+                Text("Tap the mic and speak your translation")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 20)
+    }
+
+    private var typeInputSection: some View {
+        VStack(spacing: 12) {
+            TextField("Type your \(store.settings.targetLanguage) translation...", text: $typedInput, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(3)
+                .focused($isTypingFocused)
+
+            Button {
+                guard !typedInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                Task {
+                    await store.evaluateTypedInput(transcript: typedInput)
+                }
+            } label: {
+                Text("Review")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(typedInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+            }
+            .disabled(typedInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+    }
+}
+
+// MARK: - Recording View
+
+private struct RecordingView: View {
+    @EnvironmentObject var store: AppStore
+    @State private var pulseScale: CGFloat = 1.0
+
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+
+            // Sentence reminder
+            if let sentence = store.currentSentence {
+                Text(sentence.englishText)
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .background(Color.accentColor.opacity(0.08))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+            }
+
+            // Live transcript
+            if !store.speech.transcript.isEmpty {
+                Text(store.speech.transcript)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .transition(.opacity)
+            }
+
+            // Pulsing stop button
+            Button {
+                Task {
+                    await store.stopAndReview()
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.red.opacity(0.15))
+                        .frame(width: 100, height: 100)
+                        .scaleEffect(pulseScale)
+                        .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: pulseScale)
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 80, height: 80)
+                    Image(systemName: "stop.fill")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                }
+            }
+            .onAppear { pulseScale = 1.15 }
+
+            Text("Tap to stop recording")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Processing View
+
+private struct ProcessingView: View {
+    let message: String
+
+    var body: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+            Text(message)
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Feedback View
+
+private struct FeedbackView: View {
+    @EnvironmentObject var store: AppStore
+    let score: Int
+
+    private var evaluation: SentenceEvaluationResult? { store.lastEvaluation }
+    private var sentence: Sentence? { store.currentSentence }
+    private var canRetry: Bool { sentence?.canRetry ?? false }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Score ring
+                ScoreRingView(score: score)
+                    .padding(.top, 8)
+
+                // XP earned
+                if store.xpJustEarned > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                        Text("+\(store.xpJustEarned) XP")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.yellow)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.yellow.opacity(0.1))
+                    .cornerRadius(20)
+                }
+
+                // Original sentence
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Original")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .textCase(.uppercase)
+                    Text(sentence?.englishText ?? "")
+                        .font(.body)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.accentColor.opacity(0.08))
                         .cornerRadius(10)
                 }
-            }
-            .padding(.horizontal)
-            
-            // Current language display
-            Text("Target Language: \(selectedLanguage)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            // Text input field
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Your translation:")
-                    .font(.headline)
-                
-                TextField("Type your translation here...", text: $userTranslation)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .font(.body)
-                    .onSubmit {
-                        checkTranslation()
-                    }
-                    .disabled(isLoading)
-            }
-            .padding(.horizontal)
-            
-            // Submit button
-            HStack {
-                Button(action: checkTranslation) {
-                    if isLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else {
-                        Text("Submit")
-                    }
-                }
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(isLoading ? Color.gray : Color.blue)
-                .cornerRadius(10)
-                .disabled(isLoading || userTranslation.isEmpty)
-            }.padding(.horizontal)
-            
-            // Feedback area
-            if showFeedback && !feedbackText.isEmpty {
-                VStack(spacing: 15) {
-                    ScrollView {
-                        Text(feedbackText)
+
+                // What you said
+                if let transcript = sentence?.attempts.last?.transcript, !transcript.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("You said")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            Spacer()
+                            PlaybackButton(text: transcript, language: store.settings.targetLanguage)
+                        }
+                        Text(transcript)
                             .font(.body)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.gray.opacity(0.1))
+                            .background(Color(.systemGray6))
                             .cornerRadius(10)
                     }
-                    .frame(maxHeight: 200)
-                    .padding(.horizontal)
-                    
-                    Button(action: generateNewSentence) {
-                        Text("New Sentence")
+                }
+
+                // Feedback
+                if let eval = evaluation {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Feedback")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
+                        Text(eval.feedback)
+                            .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
                     }
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
+
+                    // Tone reminders (Mandarin-specific)
+                    if !eval.toneReminders.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "waveform")
+                                    .foregroundColor(.orange)
+                                Text("Tone Reminders")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .textCase(.uppercase)
+                            }
+                            FlowLayout(spacing: 8) {
+                                ForEach(eval.toneReminders, id: \.self) { reminder in
+                                    Text(reminder)
+                                        .font(.caption)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(Color.orange.opacity(0.1))
+                                        .foregroundColor(.orange)
+                                        .cornerRadius(8)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                    }
+                }
+
+                // New badges
+                if !store.newlyUnlockedBadges.isEmpty {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Image(systemName: "gift.fill")
+                                .foregroundColor(.yellow)
+                            Text("Badge Unlocked!")
+                                .font(.headline)
+                        }
+                        ForEach(store.newlyUnlockedBadges) { badge in
+                            BadgeView(badge: badge, isLocked: false)
+                        }
+                    }
+                    .padding()
+                    .background(Color.yellow.opacity(0.08))
+                    .cornerRadius(12)
+                }
+
+                // Action buttons
+                HStack(spacing: 12) {
+                    if canRetry {
+                        Button {
+                            store.retryCurrentSentence()
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.counterclockwise")
+                                Text("Retry")
+                            }
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color(.systemGray5))
+                            .foregroundColor(.primary)
+                            .cornerRadius(12)
+                        }
+                    }
+
+                    Button {
+                        store.advanceToNextSentence()
+                    } label: {
+                        HStack {
+                            Text(nextButtonLabel)
+                            Image(systemName: nextButtonIcon)
+                        }
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+
+    private var isLastSentence: Bool {
+        store.currentSentenceIndex >= store.todaySentences.count - 1
+    }
+
+    private var nextButtonLabel: String {
+        if store.isEndlessMode { return "Next" }
+        return isLastSentence ? "Finish" : "Next"
+    }
+
+    private var nextButtonIcon: String {
+        if store.isEndlessMode { return "arrow.right" }
+        return isLastSentence ? "checkmark" : "arrow.right"
+    }
+}
+
+// MARK: - Session Complete View
+
+private struct SessionCompleteView: View {
+    @EnvironmentObject var store: AppStore
+    @State private var showConfetti = false
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // Celebration icon
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.1))
+                        .frame(width: 120, height: 120)
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.green)
+                        .symbolEffect(.bounce, value: showConfetti)
+                }
+                .padding(.top, 20)
+                .onAppear { showConfetti = true }
+
+                Text("Session Complete!")
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                // Streak
+                if store.profile.currentStreak > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flame.fill")
+                            .foregroundColor(.orange)
+                        Text("\(store.profile.currentStreak)-day streak!")
+                            .fontWeight(.semibold)
+                    }
+                    .font(.headline)
+                }
+
+                // Stats
+                VStack(spacing: 12) {
+                    HStack(spacing: 16) {
+                        summaryCard(
+                            title: "Sentences",
+                            value: "\(store.todayGoal)",
+                            icon: "text.bubble.fill",
+                            color: .accentColor
+                        )
+                        let totalXP = store.todaySession?.totalXPEarned ?? 0
+                        summaryCard(
+                            title: "XP Earned",
+                            value: "+\(store.profile.totalXP)",
+                            icon: "star.fill",
+                            color: .yellow
+                        )
+                    }
+                    HStack(spacing: 16) {
+                        let scores = store.todaySentences.compactMap(\.bestScore)
+                        let avg = scores.isEmpty ? 0 : scores.reduce(0, +) / scores.count
+                        summaryCard(
+                            title: "Avg Score",
+                            value: "\(avg)%",
+                            icon: "chart.bar.fill",
+                            color: .blue
+                        )
+                        summaryCard(
+                            title: "Level",
+                            value: "\(store.profile.currentLevel)",
+                            icon: "trophy.fill",
+                            color: .purple
+                        )
+                    }
+                }
+
+                // New badges from session
+                if !store.newlyUnlockedBadges.isEmpty {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Image(systemName: "gift.fill")
+                                .foregroundColor(.yellow)
+                            Text("New Badges!")
+                                .font(.headline)
+                        }
+                        ForEach(store.newlyUnlockedBadges) { badge in
+                            BadgeView(badge: badge, isLocked: false)
+                        }
+                    }
+                    .padding()
+                    .background(Color.yellow.opacity(0.08))
+                    .cornerRadius(12)
+                }
+
+                // Keep Going button
+                Button {
+                    Task { await store.startEndlessMode() }
+                } label: {
+                    HStack {
+                        Image(systemName: "infinity")
+                        Text("Keep Going")
+                            .fontWeight(.semibold)
+                    }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green)
-                    .cornerRadius(10)
-                    .disabled(isLoading)
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(16)
+                }
+
+                Text("Come back tomorrow to keep your streak!")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+        }
+    }
+
+    private func summaryCard(title: String, value: String, icon: String, color: Color) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            Text(value)
+                .font(.title3)
+                .fontWeight(.bold)
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Error View
+
+private struct PracticeErrorView: View {
+    @EnvironmentObject var store: AppStore
+    let message: String
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.red)
+
+            Text("Something went wrong")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            Text(message)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Button {
+                Task {
+                    await store.prepareOrResumeTodaySession()
+                }
+            } label: {
+                Text("Try Again")
+                    .fontWeight(.semibold)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+            }
+            .padding(.horizontal)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Pinyin helpers
+
+/// Converts Chinese characters to pinyin with tone diacritics (e.g. 你好 → "nǐ hǎo").
+/// Safe to call on non-Chinese strings; non-Chinese characters are left unchanged.
+func toPinyin(_ text: String) -> String {
+    let s = NSMutableString(string: text)
+    CFStringTransform(s, nil, kCFStringTransformMandarinLatin, false)
+    return s as String
+}
+
+struct CharacterWithPinyin: Identifiable {
+    let id = UUID()
+    let character: String
+    let pinyin: String
+}
+
+/// Splits a Chinese string into per-character pinyin pairs.
+/// Returns [] if the character / syllable counts don't align (fallback to two-line display).
+func splitWithPinyin(_ text: String) -> [CharacterWithPinyin] {
+    guard !text.isEmpty else { return [] }
+    let chars = text.map { String($0) }
+    let syllables = toPinyin(text).components(separatedBy: " ")
+    guard chars.count == syllables.count else { return [] }
+    return zip(chars, syllables).map { CharacterWithPinyin(character: $0, pinyin: $1) }
+}
+
+// MARK: - Pinyin Annotation View
+
+private struct PinyinAnnotationView: View {
+    let text: String
+
+    var body: some View {
+        let pairs = splitWithPinyin(text)
+        if pairs.isEmpty {
+            // Fallback: characters on one line, full pinyin below
+            VStack(alignment: .leading, spacing: 4) {
+                Text(text)
+                    .font(.title3)
+                Text(toPinyin(text))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        } else {
+            FlowLayout(spacing: 4) {
+                ForEach(pairs) { pair in
+                    VStack(spacing: 1) {
+                        Text(pair.pinyin)
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                        Text(pair.character)
+                            .font(.title3)
+                    }
+                    .padding(.horizontal, 2)
                 }
             }
-            
-            Spacer()
-        }
-        .navigationTitle("Practice")
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            if englishSentence == "Loading..." {
-                generateNewSentence()
-            }
         }
     }
-    
-    func generateNewSentence() {
-        isLoading = true
-        showFeedback = false
-        feedbackText = ""
-        userTranslation = ""
-        
-        let prompt = "Generate a simple English sentence suitable for language learning. It should be practical and useful for everyday conversation. Just provide the sentence, nothing else."
-        
-        callGPT(prompt: prompt) { response in
-            DispatchQueue.main.async {
-                self.englishSentence = response
-                self.isLoading = false
+}
+
+// MARK: - Playback Button
+
+/// A small speaker button that reads `text` aloud in `language` using TTS.
+private struct PlaybackButton: View {
+    @EnvironmentObject var store: AppStore
+    let text: String
+    let language: String
+
+    private var isSpeaking: Bool { store.speech.isSpeaking }
+
+    var body: some View {
+        Button {
+            if isSpeaking {
+                store.speech.stopSpeaking()
+            } else {
+                store.speech.speak(text: text, language: language)
             }
+        } label: {
+            Image(systemName: isSpeaking ? "stop.circle.fill" : "speaker.wave.2.fill")
+                .font(.caption)
+                .foregroundColor(.accentColor)
+                .padding(6)
+                .background(Color.accentColor.opacity(0.1))
+                .clipShape(Circle())
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isSpeaking ? "Stop playback" : "Play back your response")
     }
-    
-    func checkTranslation() {
-        guard !userTranslation.isEmpty else { return }
-        
-        isLoading = true
-        showFeedback = false
-        
-        let languageName = selectedLanguage
-        let prompt = """
-        The student is learning \(languageName). They were asked to translate this English sentence:
-        "\(englishSentence)"
-        
-        Their translation in \(languageName) is:
-        "\(userTranslation)"
-        
-        Please provide detailed feedback:
-        1. Is the translation correct or incorrect?
-        2. What's the correct translation?
-        3. Explain any mistakes they made
-        
-        Be strict and educational in your response. Provide no extraneous feedback (words of encouragement, etc.). 
-        """
-        
-        callGPT(prompt: prompt) { response in
-            DispatchQueue.main.async {
-                self.feedbackText = response
-                self.showFeedback = true
-                self.isLoading = false
-            }
-        }
-    }
-    
-    func callGPT(prompt: String, completion: @escaping (String) -> Void) {
-        return completion("Hello!")
-        
-        guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
-            completion("Error: Invalid URL")
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        
-        let body: [String: Any] = [
-            "model": "gpt-4",
-            "messages": [
-                ["role": "user", "content": prompt]
-            ],
-            "temperature": 0.7
-        ]
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion("Error: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let data = data else {
-                completion("Error: No data received")
-                return
-            }
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let choices = json["choices"] as? [[String: Any]],
-                   let firstChoice = choices.first,
-                   let message = firstChoice["message"] as? [String: Any],
-                   let content = message["content"] as? String {
-                    completion(content)
-                } else {
-                    completion("Error: Unexpected response format")
+}
+
+// MARK: - Transcription Review View
+
+private struct TranscriptionReviewView: View {
+    @EnvironmentObject var store: AppStore
+
+    private var isMandarin: Bool { store.settings.targetLanguage == "Mandarin" }
+    private var showPinyin: Bool { isMandarin && store.settings.showRomanization }
+    private var transcript: String { store.pendingTranscript }
+    private var isEmpty: Bool { transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+
+                // English sentence reminder
+                if let sentence = store.currentSentence {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Translate")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
+                        Text(sentence.englishText)
+                            .font(.body)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.accentColor.opacity(0.08))
+                            .cornerRadius(10)
+                    }
                 }
-            } catch {
-                completion("Error: Failed to parse response")
+
+                // Transcription with optional pinyin
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("You said")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .textCase(.uppercase)
+                        Spacer()
+                        if !isEmpty {
+                            PlaybackButton(text: transcript, language: store.settings.targetLanguage)
+                        }
+                    }
+
+                    if isEmpty {
+                        HStack {
+                            Image(systemName: "mic.slash")
+                                .foregroundColor(.orange)
+                            Text("No speech detected")
+                                .foregroundColor(.orange)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.orange.opacity(0.08))
+                        .cornerRadius(10)
+                    } else if showPinyin {
+                        PinyinAnnotationView(text: transcript)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                    } else {
+                        Text(transcript)
+                            .font(.title3)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                    }
+                }
+
+                // Action buttons
+                VStack(spacing: 12) {
+                    Button {
+                        Task { await store.submitForEvaluation() }
+                    } label: {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                            Text(isEmpty ? "Submit Anyway" : "Submit")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+
+                    Button {
+                        store.reRecord()
+                    } label: {
+                        HStack {
+                            Image(systemName: "mic.fill")
+                            Text("Re-record")
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemGray5))
+                        .foregroundColor(.primary)
+                        .cornerRadius(12)
+                    }
+                }
             }
-        }.resume()
+            .padding()
+        }
+    }
+}
+
+// MARK: - FlowLayout helper
+
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > maxWidth && x > 0 {
+                y += rowHeight + spacing
+                x = 0
+                rowHeight = 0
+            }
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
+        return CGSize(width: maxWidth, height: y + rowHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX
+        var y = bounds.minY
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > bounds.maxX && x > bounds.minX {
+                y += rowHeight + spacing
+                x = bounds.minX
+                rowHeight = 0
+            }
+            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
     }
 }
 
 #Preview {
-    PracticeView(selectedLanguage: "Mandarin")
+    PracticeView()
+        .environmentObject(AppStore())
 }
