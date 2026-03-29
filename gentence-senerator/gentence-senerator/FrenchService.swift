@@ -12,18 +12,21 @@ final class FrenchService: OpenAIService {
         difficulty: Int,
         targetLanguage: String,
         excludingTexts: [String] = [],
+        sessionTexts: [String] = [],
         grammarFocusAreas: [String] = []
     ) async throws -> String {
         let desc = frenchDifficultyDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
-            " Do NOT generate any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let sessionHint = sessionTexts.isEmpty ? "" :
+            " This session has already used these sentences — choose a DIFFERENT sentence structure and topic: \(sessionTexts.joined(separator: "; "))."
         let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
             " Prioritize sentence structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
 
         let systemPrompt = """
         You are a French language learning sentence generator.
         Generate a single natural English sentence designed for French translation practice at difficulty \(difficulty)/10.
-        \(desc)\(grammarInstruction)\(exclusionHint)
+        \(desc)\(grammarInstruction)\(exclusionHint)\(sessionHint)
 
         Vary these elements to prevent repetitive patterns:
         - Sentence type: mix declarative statements, questions (inversion and est-ce que), negations (ne...pas), and imperatives.
@@ -44,6 +47,110 @@ final class FrenchService: OpenAIService {
             .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
         guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
         return trimmed
+    }
+
+    // MARK: - Generate sentence batch
+
+    override func generateSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = [],
+        grammarFocusAreas: [String] = []
+    ) async throws -> [String] {
+        let desc = frenchDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
+            " Prioritize structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
+
+        let structures = ["declarative/affirmative statement",
+                          "negation (ne...pas)",
+                          "question (inversion or est-ce que)",
+                          "imperative or command",
+                          "subordinate clause or conditional"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a French language learning sentence generator.
+        Generate exactly \(count) English sentences for French translation practice at difficulty \(difficulty)/10.
+        \(desc)\(grammarInstruction)\(exclusionHint)
+
+        Each sentence MUST require a DIFFERENT French grammatical structure — assign one per sentence:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic from: daily routines, travel, food, family, hobbies, work, school, health, shopping, weather.
+        Avoid over-using 'être' and 'avoir' — draw from a wide range of everyday verbs.
+
+        Return ONLY valid JSON in exactly this format:
+        {"sentences": ["<sentence 1>", "<sentence 2>", ..., "<sentence \(count)>"]}
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) English sentences for French practice at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 600
+        )
+
+        return try parseSentenceBatch(raw, expected: count)
+    }
+
+    // MARK: - Generate listening sentence batch
+
+    override func generateListeningSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> [(targetText: String, englishMeaning: String)] {
+        let desc = frenchDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+
+        let structures = ["declarative/affirmative statement",
+                          "negation (ne...pas)",
+                          "question",
+                          "imperative or command",
+                          "subordinate clause"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a French language learning content generator.
+        Generate exactly \(count) natural French sentences for listening comprehension practice at difficulty \(difficulty)/10.
+        \(desc)\(exclusionHint)
+
+        Each sentence MUST use a DIFFERENT grammatical structure:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic.
+        Use standard spoken French. Include correct accents and punctuation.
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "sentences": [
+            {"targetText": "<French sentence>", "englishMeaning": "<English translation>"},
+            ...
+          ]
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) French listening sentences at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 800
+        )
+
+        return try parseListeningSentenceBatch(raw)
     }
 
     // MARK: - Generate listening sentence
@@ -121,8 +228,16 @@ final class FrenchService: OpenAIService {
               (e.g. "nasal vowels (an/en/in/on/un)", "silent letters", "liaison", "u vs ou", "r-sound").
             - "toneReminders" should be [] — French has no lexical tones.
             - If the transcript is empty or clearly not French, score 0 and say so.
-            - Be encouraging but specific. This is attempt \(attemptNumber) of 3.
+            - This is attempt \(attemptNumber) of 3.
             - Set "correctTranslation" to the original French sentence that was played.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Excellent!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural French phrasings, if any. Return [] if only one is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or grammatical form is used (1–2 sentences each). Include gender agreements, verb forms, pronoun placements, and partitive articles where relevant.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               gender_agreement, verb_conjugation, tense_choice, negation_structure,
@@ -134,10 +249,12 @@ final class FrenchService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": [],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "\(targetText)",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<word>", "explanation": "<why>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -160,8 +277,15 @@ final class FrenchService: OpenAIService {
               (e.g. "nasal vowels", "silent final consonants", "liaison rules", "u vs ou", "guttural r").
             - "toneReminders" should be [] — French has no lexical tones.
             - If the transcript is empty or clearly not French, score 0 and say so.
-            - Be encouraging but specific. Mention what was right and what needs work.
             - This is attempt \(attemptNumber) of 3.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Très bien!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural French translations of the English sentence, if any. Return [] if only one is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or grammatical form is used (1–2 sentences each). Include gender agreements, verb forms, pronoun placements, and partitive articles where relevant.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               gender_agreement, verb_conjugation, tense_choice, negation_structure,
@@ -173,10 +297,12 @@ final class FrenchService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": [],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "<a natural, correct French translation of the English sentence>",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<word>", "explanation": "<why>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -188,7 +314,8 @@ final class FrenchService: OpenAIService {
                 ["role": "user", "content": "Please evaluate the student's attempt."]
             ],
             temperature: 0.3,
-            responseFormat: "json_object"
+            responseFormat: "json_object",
+            maxTokens: 1500
         )
 
         return try parseEvaluationResult(raw)

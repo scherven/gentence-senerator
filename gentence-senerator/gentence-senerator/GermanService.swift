@@ -12,18 +12,21 @@ final class GermanService: OpenAIService {
         difficulty: Int,
         targetLanguage: String,
         excludingTexts: [String] = [],
+        sessionTexts: [String] = [],
         grammarFocusAreas: [String] = []
     ) async throws -> String {
         let desc = germanDifficultyDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
-            " Do NOT generate any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let sessionHint = sessionTexts.isEmpty ? "" :
+            " This session has already used these sentences — choose a DIFFERENT sentence structure and topic: \(sessionTexts.joined(separator: "; "))."
         let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
             " Prioritize sentence structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
 
         let systemPrompt = """
         You are a German language learning sentence generator.
         Generate a single natural English sentence designed for German translation practice at difficulty \(difficulty)/10.
-        \(desc)\(grammarInstruction)\(exclusionHint)
+        \(desc)\(grammarInstruction)\(exclusionHint)\(sessionHint)
 
         Vary these elements to prevent repetitive patterns:
         - Sentence type: mix declarative statements, questions (W-Fragen and Ja/Nein-Fragen), negations, and commands.
@@ -44,6 +47,110 @@ final class GermanService: OpenAIService {
             .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
         guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
         return trimmed
+    }
+
+    // MARK: - Generate sentence batch
+
+    override func generateSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = [],
+        grammarFocusAreas: [String] = []
+    ) async throws -> [String] {
+        let desc = germanDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
+            " Prioritize structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
+
+        let structures = ["declarative/affirmative statement",
+                          "negation (nicht or kein)",
+                          "question (W-Frage or Ja/Nein-Frage)",
+                          "imperative or command",
+                          "subordinate clause or modal construction"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a German language learning sentence generator.
+        Generate exactly \(count) English sentences for German translation practice at difficulty \(difficulty)/10.
+        \(desc)\(grammarInstruction)\(exclusionHint)
+
+        Each sentence MUST require a DIFFERENT German grammatical structure — assign one per sentence:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic from: daily routines, travel, work, family, food, hobbies, health, school, shopping, weather.
+        Avoid over-using 'sein' and 'haben' — draw from a wide range of everyday verbs.
+
+        Return ONLY valid JSON in exactly this format:
+        {"sentences": ["<sentence 1>", "<sentence 2>", ..., "<sentence \(count)>"]}
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) English sentences for German practice at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 600
+        )
+
+        return try parseSentenceBatch(raw, expected: count)
+    }
+
+    // MARK: - Generate listening sentence batch
+
+    override func generateListeningSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> [(targetText: String, englishMeaning: String)] {
+        let desc = germanDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+
+        let structures = ["declarative/affirmative statement",
+                          "negation",
+                          "question",
+                          "imperative or command",
+                          "subordinate clause"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a German language learning content generator.
+        Generate exactly \(count) natural German sentences for listening comprehension practice at difficulty \(difficulty)/10.
+        \(desc)\(exclusionHint)
+
+        Each sentence MUST use a DIFFERENT grammatical structure:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic.
+        Use standard spoken German (no dialect, no overly formal Schriftdeutsch).
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "sentences": [
+            {"targetText": "<German sentence>", "englishMeaning": "<English translation>"},
+            ...
+          ]
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) German listening sentences at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 800
+        )
+
+        return try parseListeningSentenceBatch(raw)
     }
 
     // MARK: - Generate listening sentence
@@ -121,8 +228,16 @@ final class GermanService: OpenAIService {
               (e.g. "ü vs u", "ch (ich-Laut) vs ch (ach-Laut)", "ß vs ss", "long vs short vowels").
             - "toneReminders" should be [] for German (German has no lexical tones).
             - If the transcript is empty or clearly not German, score 0 and say so.
-            - Be encouraging but specific. This is attempt \(attemptNumber) of 3.
+            - This is attempt \(attemptNumber) of 3.
             - Set "correctTranslation" to the original German sentence.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Ausgezeichnet!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural German phrasings, if any. Return [] if only one is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or grammatical form is used (1–2 sentences each). Include article genders, case endings, verb positions, and separable prefixes where relevant.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               article_gender, case_usage, word_order, verb_position, separable_verb,
@@ -133,10 +248,12 @@ final class GermanService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": [],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "\(targetText)",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<word>", "explanation": "<why>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -159,8 +276,15 @@ final class GermanService: OpenAIService {
               (e.g. "ü vs u", "ch (ich-Laut)", "r-sound", "umlauts").
             - "toneReminders" should be [] — German has no lexical tones.
             - If the transcript is empty or clearly not German, score 0 and say so.
-            - Be encouraging but specific. Mention what was right and what needs work.
             - This is attempt \(attemptNumber) of 3.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Sehr gut!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural German translations of the English sentence, if any. Return [] if only one is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or grammatical form is used (1–2 sentences each). Include article genders, case endings, verb positions, and separable prefixes where relevant.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               article_gender, case_usage, word_order, verb_position, separable_verb,
@@ -171,10 +295,12 @@ final class GermanService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": [],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "<a natural, correct German translation of the English sentence>",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<word>", "explanation": "<why>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -186,7 +312,8 @@ final class GermanService: OpenAIService {
                 ["role": "user", "content": "Please evaluate the student's attempt."]
             ],
             temperature: 0.3,
-            responseFormat: "json_object"
+            responseFormat: "json_object",
+            maxTokens: 1500
         )
 
         return try parseEvaluationResult(raw)

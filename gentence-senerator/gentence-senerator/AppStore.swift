@@ -148,36 +148,44 @@ final class AppStore: ObservableObject {
         let isListening = settings.practiceMode == .listening
 
         var newSentences: [Sentence] = []
+        let batchSize = 5
 
-        for _ in 0..<n {
+        var remaining = n
+        while remaining > 0 {
+            let batchCount = min(batchSize, remaining)
             do {
-                let sentence: Sentence
                 if isListening {
-                    let (targetText, englishMeaning) = try await languageService.generateListeningSentence(
+                    let pairs = try await languageService.generateListeningSentenceBatch(
+                        count: batchCount,
                         difficulty: difficulty,
                         targetLanguage: language,
                         excludingTexts: recent + newSentences.map(\.englishText)
                     )
-                    sentence = Sentence(
-                        englishText: englishMeaning,
-                        targetLanguage: language,
-                        difficultyLevel: difficulty,
-                        listeningTargetText: targetText
-                    )
+                    for (targetText, englishMeaning) in pairs {
+                        newSentences.append(Sentence(
+                            englishText: englishMeaning,
+                            targetLanguage: language,
+                            difficultyLevel: difficulty,
+                            listeningTargetText: targetText
+                        ))
+                    }
                 } else {
-                    let text = try await languageService.generateSentence(
+                    let texts = try await languageService.generateSentenceBatch(
+                        count: batchCount,
                         difficulty: difficulty,
                         targetLanguage: language,
                         excludingTexts: recent + newSentences.map(\.englishText),
                         grammarFocusAreas: currentLangProfile.grammarFocusAreas
                     )
-                    sentence = Sentence(
-                        englishText: text,
-                        targetLanguage: language,
-                        difficultyLevel: difficulty
-                    )
+                    for text in texts {
+                        newSentences.append(Sentence(
+                            englishText: text,
+                            targetLanguage: language,
+                            difficultyLevel: difficulty
+                        ))
+                    }
                 }
-                newSentences.append(sentence)
+                remaining = n - newSentences.count
             } catch let error as OpenAIError {
                 if case .networkError = error {
                     // Offline: fill remaining slots from cache
@@ -472,7 +480,7 @@ final class AppStore: ObservableObject {
                     let (targetText, englishMeaning) = try await languageService.generateListeningSentence(
                         difficulty: difficulty,
                         targetLanguage: language,
-                        excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText)
+                        excludingTexts: recent + todaySentences.map(\.englishText)
                     )
                     sentence = Sentence(
                         englishText: englishMeaning,
@@ -484,7 +492,8 @@ final class AppStore: ObservableObject {
                     let text = try await languageService.generateSentence(
                         difficulty: difficulty,
                         targetLanguage: language,
-                        excludingTexts: recent + todaySentences.map(\.englishText) + newSentences.map(\.englishText),
+                        excludingTexts: recent + todaySentences.map(\.englishText),
+                        sessionTexts: newSentences.map(\.englishText),
                         grammarFocusAreas: currentLangProfile.grammarFocusAreas
                     )
                     sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
@@ -564,16 +573,23 @@ final class AppStore: ObservableObject {
         let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
 
         var fetched: [Sentence] = []
-        for _ in 0..<count {
+        let batchSize = 5
+        var remaining = count
+        while remaining > 0 {
+            let batchCount = min(batchSize, remaining)
             do {
-                let text = try await languageService.generateSentence(
+                let texts = try await languageService.generateSentenceBatch(
+                    count: batchCount,
                     difficulty: difficulty,
                     targetLanguage: language,
                     excludingTexts: recent + existingTexts + fetched.map(\.englishText),
                     grammarFocusAreas: currentLangProfile.grammarFocusAreas
                 )
-                let sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
-                fetched.append(sentence)
+                for text in texts {
+                    fetched.append(Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty))
+                }
+                remaining -= texts.count
+                if texts.count < batchCount { break }  // API returned fewer than requested
             } catch {
                 break  // stop on error, keep what we have
             }

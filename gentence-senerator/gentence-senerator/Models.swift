@@ -316,6 +316,14 @@ struct AppSettings: Codable {
     var grammarFocusAreas: [String] = []
 }
 
+// MARK: - Word explanation (ephemeral, not persisted)
+
+struct WordExplanation: Identifiable {
+    let id = UUID()
+    let word: String
+    let explanation: String
+}
+
 // MARK: - Evaluation Result (ephemeral, not persisted)
 
 struct SentenceEvaluationResult {
@@ -324,6 +332,8 @@ struct SentenceEvaluationResult {
     let toneReminders: [String]
     let phonemeHints: [String]
     let correctTranslation: String
+    let alternativeTranslations: [String]   // other equally valid phrasings
+    let wordExplanations: [WordExplanation] // tappable word → explanation pairs
     let grammarIssues: [String]   // closed-vocabulary category keys from the LLM
 }
 

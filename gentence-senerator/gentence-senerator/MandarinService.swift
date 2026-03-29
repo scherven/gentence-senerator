@@ -12,18 +12,21 @@ final class MandarinService: OpenAIService {
         difficulty: Int,
         targetLanguage: String,
         excludingTexts: [String] = [],
+        sessionTexts: [String] = [],
         grammarFocusAreas: [String] = []
     ) async throws -> String {
         let desc = mandarinDifficultyDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
-            " Do NOT generate any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let sessionHint = sessionTexts.isEmpty ? "" :
+            " This session has already used these sentences — pick a DIFFERENT sentence structure (e.g. if a 不 negation is listed, use a 吗 question or imperative instead) and a DIFFERENT topic: \(sessionTexts.joined(separator: "; "))."
         let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
             " Prioritize sentence structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
 
         let systemPrompt = """
         You are a Mandarin Chinese language learning sentence generator.
         Generate a single natural English sentence designed for Mandarin translation practice at difficulty \(difficulty)/10.
-        \(desc)\(grammarInstruction)\(exclusionHint)
+        \(desc)\(grammarInstruction)\(exclusionHint)\(sessionHint)
 
         Actively vary these elements to prevent repetitive patterns:
         - Sentence type: mix SVO statements, 不/没 negations, 吗 yes-no questions, imperatives, and topic-comment frames. Ensure that you are using a sentence structure at least somewhat unique to the ones above.
@@ -44,6 +47,111 @@ final class MandarinService: OpenAIService {
             .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
         guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
         return trimmed
+    }
+
+    // MARK: - Generate sentence batch
+
+    override func generateSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = [],
+        grammarFocusAreas: [String] = []
+    ) async throws -> [String] {
+        let desc = mandarinDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
+            " Prioritize structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
+
+        // Build an explicit structure assignment for each slot
+        let structures = ["simple SVO affirmative statement",
+                          "不/没 negation",
+                          "吗 yes-no question",
+                          "imperative or command",
+                          "topic-comment frame or compound sentence"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a Mandarin Chinese language learning sentence generator.
+        Generate exactly \(count) English sentences for Mandarin translation practice at difficulty \(difficulty)/10.
+        \(desc)\(grammarInstruction)\(exclusionHint)
+
+        Each sentence MUST require a DIFFERENT Mandarin grammatical structure — assign one per sentence:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic from: food, travel, work, family, weather, shopping, hobbies, health, technology, school.
+        Verbs: do NOT default to 是/有/去/喜欢 — draw from a wide range of everyday actions.
+
+        Return ONLY valid JSON in exactly this format:
+        {"sentences": ["<sentence 1>", "<sentence 2>", ..., "<sentence \(count)>"]}
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) English sentences for Mandarin practice at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 600
+        )
+
+        return try parseSentenceBatch(raw, expected: count)
+    }
+
+    // MARK: - Generate listening sentence batch
+
+    override func generateListeningSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> [(targetText: String, englishMeaning: String)] {
+        let desc = mandarinDifficultyDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+
+        let structures = ["simple SVO affirmative statement",
+                          "不/没 negation",
+                          "吗 yes-no question",
+                          "imperative or command",
+                          "topic-comment frame"]
+        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
+            .joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a Mandarin Chinese language learning content generator.
+        Generate exactly \(count) natural Mandarin sentences for listening comprehension practice at difficulty \(difficulty)/10.
+        \(desc)\(exclusionHint)
+
+        Each sentence MUST use a DIFFERENT grammatical structure:
+        \(structureList)
+
+        Each sentence MUST cover a DIFFERENT topic.
+        Include characters only — no pinyin in the targetText fields.
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "sentences": [
+            {"targetText": "<Mandarin characters>", "englishMeaning": "<English translation>"},
+            ...
+          ]
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(count) Mandarin listening sentences at difficulty \(difficulty)/10."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 800
+        )
+
+        return try parseListeningSentenceBatch(raw)
     }
 
     // MARK: - Generate listening sentence
@@ -120,8 +228,16 @@ final class MandarinService: OpenAIService {
               e.g. ["妈 mā (tone 1)", "买 mǎi (tone 3)"].
             - Include pinyin pronunciation hints for any phonologically tricky sounds in "phonemeHints".
             - If the transcript is empty or clearly not Mandarin, score 0 and say so.
-            - Be encouraging but specific. This is attempt \(attemptNumber) of 3.
+            - This is attempt \(attemptNumber) of 3.
             - Set "correctTranslation" to the original Mandarin sentence that was played.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Great job!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention tone or pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural Mandarin phrasings of the same sentence, if any exist. Return [] if only one phrasing is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or structure is used (1–2 sentences each). Use complete Chinese words/phrases (词 cí), not individual characters. Include particles (了/过/着), measure words, resultative complements, and key vocabulary.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               particle_usage, measure_words, word_order, aspect_markers, ba_sentence,
@@ -133,10 +249,12 @@ final class MandarinService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": ["<character> <pinyin> (tone <N>)", ...],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "\(targetText)",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<词>", "explanation": "<why in English>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -159,8 +277,15 @@ final class MandarinService: OpenAIService {
             - Include pinyin hints for phonologically tricky sounds in "phonemeHints"
               (e.g. "x vs sh", "zh vs z", "ü vs u").
             - If the transcript is empty or clearly not Mandarin, score 0 and say so.
-            - Be encouraging but specific. Mention what was right and what needs work.
             - This is attempt \(attemptNumber) of 3.
+
+            For "feedback":
+            - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Great job!").
+            - If grammar mistakes are present: explain each mistake in full detail — what structure was expected, what the student used, and exactly why it is wrong. Do NOT write vague phrases like "wrong structure". Do NOT mention tone or pronunciation in this field.
+
+            For "alternativeTranslations": list other equally natural Mandarin phrasings of the English sentence, if any exist. Return [] if only one translation is natural.
+
+            For "wordExplanations": for 3–5 notable words/phrases in correctTranslation, explain in English why that word or structure is used (1–2 sentences each). Use complete Chinese words/phrases (词 cí), not individual characters. Include particles (了/过/着), measure words, resultative complements, and key vocabulary.
 
             If grammar mistakes are present, add 1-2 keys to "grammarIssues" chosen ONLY from:
               particle_usage, measure_words, word_order, aspect_markers, ba_sentence,
@@ -172,10 +297,12 @@ final class MandarinService: OpenAIService {
             Return ONLY valid JSON in exactly this format:
             {
               "score": <integer 0-100>,
-              "feedback": "<2-3 sentences of specific, encouraging feedback in English>",
+              "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": ["<character> <pinyin> (tone <N>)", ...],
               "phonemeHints": ["<difficult sound>", ...],
               "correctTranslation": "<a natural, correct Mandarin translation in Chinese characters>",
+              "alternativeTranslations": ["<alt phrasing>", ...],
+              "wordExplanations": [{"word": "<词>", "explanation": "<why in English>"}, ...],
               "grammarIssues": ["<category_key>", ...]
             }
             """
@@ -187,7 +314,8 @@ final class MandarinService: OpenAIService {
                 ["role": "user", "content": "Please evaluate the student's attempt."]
             ],
             temperature: 0.3,
-            responseFormat: "json_object"
+            responseFormat: "json_object",
+            maxTokens: 1500
         )
 
         return try parseEvaluationResult(raw)

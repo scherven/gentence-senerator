@@ -496,6 +496,8 @@ private struct FeedbackView: View {
 
                 // What you said
                 if let transcript = sentence?.attempts.last?.transcript, !transcript.isEmpty {
+                    let isMandarin = store.settings.targetLanguage == "Mandarin"
+                    let showPinyin = isMandarin && store.settings.showRomanization
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text("You said")
@@ -505,20 +507,41 @@ private struct FeedbackView: View {
                             Spacer()
                             PlaybackButton(text: transcript, language: store.settings.targetLanguage)
                         }
-                        DiffHighlightView(
-                            userText: transcript,
-                            correctText: evaluation?.correctTranslation ?? "",
-                            language: store.settings.targetLanguage
-                        )
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
+                        if showPinyin {
+                            PinyinAnnotationView(text: transcript)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                        } else {
+                            Text(transcript)
+                                .font(.body)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                        }
                     }
                 }
 
                 if let eval = evaluation {
-                    // Correct translation
+                    // Feedback (grammar-only or "good job")
+                    if !eval.feedback.isEmpty {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Feedback")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            Text(eval.feedback)
+                                .font(.body)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.accentColor.opacity(0.06))
+                                .cornerRadius(10)
+                        }
+                    }
+
+                    // Correct translation with tappable word explanations
                     if !eval.correctTranslation.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
                             HStack {
@@ -530,12 +553,35 @@ private struct FeedbackView: View {
                                 PlaybackButton(text: eval.correctTranslation,
                                                language: store.settings.targetLanguage)
                             }
-                            Text(eval.correctTranslation)
-                                .font(.title3)
+                            TappableTranslationView(
+                                wordExplanations: eval.wordExplanations,
+                                fallbackText: eval.correctTranslation
+                            )
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.green.opacity(0.08))
+                            .cornerRadius(10)
+                        }
+                    }
+
+                    // Alternative translations
+                    if !eval.alternativeTranslations.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Also accepted")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            ForEach(eval.alternativeTranslations, id: \.self) { alt in
+                                HStack {
+                                    Text(alt)
+                                        .font(.body)
+                                    Spacer()
+                                    PlaybackButton(text: alt, language: store.settings.targetLanguage)
+                                }
                                 .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.green.opacity(0.08))
+                                .background(Color.green.opacity(0.05))
                                 .cornerRadius(10)
+                            }
                         }
                     }
 
@@ -1043,95 +1089,66 @@ private struct TranscriptionReviewView: View {
     }
 }
 
-// MARK: - Word-diff highlight view
+// MARK: - Tappable translation view
 
-/// Returns true for languages whose text runs are character-separated (no spaces between words).
-private func isCJKLanguage(_ language: String) -> Bool {
-    ["Mandarin", "Japanese", "Korean"].contains(language)
-}
-
-/// Splits `text` into display tokens: individual characters for CJK, whitespace-separated words otherwise.
-private func diffTokenize(_ text: String, cjk: Bool) -> [String] {
-    if cjk {
-        return text.unicodeScalars
-            .filter { !CharacterSet.whitespaces.contains($0) }
-            .map { String($0) }
-    }
-    return text.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-}
-
-/// Strips punctuation and lowercases a token for loose comparison.
-private func normalizeToken(_ token: String) -> String {
-    token.lowercased()
-        .trimmingCharacters(in: .punctuationCharacters)
-        .trimmingCharacters(in: .whitespacesAndNewlines)
-}
-
-/// LCS diff of `user` tokens against `reference` tokens.
-/// Returns `(token, isCorrect)` for every user token.
-private func lcsTokenDiff(user: [String], reference: [String]) -> [(String, Bool)] {
-    guard !user.isEmpty else { return [] }
-    guard !reference.isEmpty else { return user.map { ($0, false) } }
-
-    let n = user.count, m = reference.count
-    // dp[i][j] = LCS length for user[0..<i], reference[0..<j]
-    var dp = Array(repeating: Array(repeating: 0, count: m + 1), count: n + 1)
-    for i in 1...n {
-        for j in 1...m {
-            if normalizeToken(user[i-1]) == normalizeToken(reference[j-1]) {
-                dp[i][j] = dp[i-1][j-1] + 1
-            } else {
-                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
-            }
-        }
-    }
-
-    // Backtrack to find which user-token indices are part of the LCS.
-    var matched = Set<Int>()
-    var i = n, j = m
-    while i > 0 && j > 0 {
-        if normalizeToken(user[i-1]) == normalizeToken(reference[j-1]) {
-            matched.insert(i - 1)
-            i -= 1; j -= 1
-        } else if dp[i-1][j] >= dp[i][j-1] {
-            i -= 1
-        } else {
-            j -= 1
-        }
-    }
-
-    return user.enumerated().map { (idx, token) in (token, matched.contains(idx)) }
-}
-
-/// Renders a user transcript with incorrect words highlighted in red.
-/// When `correctText` is empty the text is shown without any highlighting.
-private struct DiffHighlightView: View {
-    let userText: String
-    let correctText: String
-    let language: String
-
-    private var cjk: Bool { isCJKLanguage(language) }
-
-    private var pairs: [(String, Bool)] {
-        guard !correctText.isEmpty else {
-            return diffTokenize(userText, cjk: cjk).map { ($0, true) }
-        }
-        let userTokens = diffTokenize(userText, cjk: cjk)
-        let refTokens  = diffTokenize(correctText, cjk: cjk)
-        return lcsTokenDiff(user: userTokens, reference: refTokens)
-    }
+/// Shows the full correct translation sentence, then a row of tappable word chips
+/// for each notable word/phrase. Tapping a chip slides down its grammar explanation.
+private struct TappableTranslationView: View {
+    let wordExplanations: [WordExplanation]
+    let fallbackText: String
+    @State private var selected: WordExplanation? = nil
 
     var body: some View {
-        FlowLayout(spacing: cjk ? 1 : 6) {
-            ForEach(Array(pairs.enumerated()), id: \.offset) { _, pair in
-                let (token, isCorrect) = pair
-                Text(token)
-                    .font(.body)
-                    .padding(.horizontal, cjk ? 2 : 4)
-                    .padding(.vertical, 2)
-                    .background(isCorrect ? Color.clear : Color.red.opacity(0.12))
-                    .foregroundColor(isCorrect ? .primary : Color.red)
-                    .cornerRadius(4)
+        VStack(alignment: .leading, spacing: 10) {
+            // Always show the complete sentence
+            Text(fallbackText)
+                .font(.title3)
+
+            // Tappable chips for notable words (only when explanations exist)
+            if !wordExplanations.isEmpty {
+                FlowLayout(spacing: 6) {
+                    ForEach(wordExplanations) { we in
+                        Text(we.word)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(selected?.id == we.id
+                                ? Color.accentColor.opacity(0.18)
+                                : Color.accentColor.opacity(0.07))
+                            .foregroundColor(selected?.id == we.id
+                                ? Color.accentColor
+                                : Color.primary)
+                            .cornerRadius(6)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.accentColor.opacity(
+                                        selected?.id == we.id ? 0.5 : 0.2), lineWidth: 1)
+                            )
+                            .onTapGesture {
+                                withAnimation(.spring(duration: 0.25)) {
+                                    selected = (selected?.id == we.id) ? nil : we
+                                }
+                            }
+                    }
+                }
+
+                // Sliding explanation panel
+                if let sel = selected {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(sel.word)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text(sel.explanation)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.accentColor.opacity(0.06))
+                    .cornerRadius(10)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
         }
     }
