@@ -118,26 +118,20 @@ struct SettingsView: View {
                         .onChange(of: store.settings.autoAdvance) { _, _ in store.save() }
                 }
 
-                Section(header: Text("Stats")) {
-                    HStack {
-                        Text("Total Sentences")
-                        Spacer()
-                        Text("\(store.currentLangProfile.totalSentencesCompleted)").foregroundColor(.secondary)
-                    }
-                    HStack {
-                        Text("Total XP")
-                        Spacer()
-                        Text("\(store.currentLangProfile.totalXP)").foregroundColor(.secondary)
-                    }
-                    HStack {
-                        Text("Level")
-                        Spacer()
-                        Text("\(store.currentLangProfile.currentLevel)").foregroundColor(.secondary)
-                    }
-                    HStack {
-                        Text("Longest Streak")
-                        Spacer()
-                        Text("\(store.currentLangProfile.longestStreak) days").foregroundColor(.secondary)
+                Section(header: Text("Progress")) {
+                    NavigationLink(destination: StatsView()) {
+                        HStack {
+                            Label("View Progress", systemImage: "chart.bar.fill")
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("Level \(store.currentLangProfile.currentLevel)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Text("\(store.currentLangProfile.currentStreak) day streak")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
                 }
 

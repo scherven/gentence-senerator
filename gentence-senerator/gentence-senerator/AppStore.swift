@@ -22,6 +22,12 @@ final class AppStore: ObservableObject {
     @Published var pendingTranscript: String = ""
     @Published var pendingAudioURL: URL?
     @Published var isCachingOffline: Bool = false
+    @Published var isRetryMode: Bool = false
+
+    private var retryOriginalSentence: Sentence?
+    /// In-flight Azure pronunciation assessment task, started during stopAndReview()
+    /// so it can complete while the user reviews the transcript.
+    private var pendingAzureTask: Task<PronunciationAssessment?, Never>?
 
     // MARK: - Services
 
@@ -30,6 +36,7 @@ final class AppStore: ObservableObject {
     private let germanService   = GermanService()
     private let frenchService   = FrenchService()
     let speech = SpeechService()
+    private let azureService = AzureSpeechService()
 
     /// Returns the language-specialised service for the active target language,
     /// falling back to the generic OpenAIService for languages without a dedicated service.
@@ -254,6 +261,20 @@ final class AppStore: ObservableObject {
         pendingTranscript = transcript
         pendingAudioURL = speech.lastRecordingURL
         practicePhase = .reviewingTranscription
+
+        // Fire Azure pronunciation assessment immediately (Mandarin only) so it can
+        // complete in the background while the user reviews the transcript.
+        if settings.targetLanguage == "Mandarin", let audioURL = speech.lastRecordingURL {
+            // Use the listening target text if available; otherwise fall back to the transcript.
+            // For translation mode we'll use the LLM's correctTranslation in processAttemptResult,
+            // but we need something now — the transcript is the best available reference.
+            let referenceText = currentSentence?.listeningTargetText ?? transcript
+            pendingAzureTask = Task {
+                await azureService.assessPronunciation(audioURL: audioURL, referenceText: referenceText)
+            }
+        } else {
+            pendingAzureTask = nil
+        }
     }
 
     func submitForEvaluation() async {
@@ -294,7 +315,7 @@ final class AppStore: ObservableObject {
                 grammarIssues: result.grammarIssues
             )
 
-            processAttemptResult(attempt: attempt, result: result)
+            await processAttemptResult(attempt: attempt, result: result)
 
         } catch {
             practicePhase = .error("Evaluation failed: \(error.localizedDescription)")
@@ -310,25 +331,44 @@ final class AppStore: ObservableObject {
         practicePhase = .readyToRecord
     }
 
-    private func processAttemptResult(attempt: Attempt, result: SentenceEvaluationResult) {
+    private func processAttemptResult(attempt: Attempt, result: SentenceEvaluationResult) async {
         guard currentSentenceIndex < todaySentences.count else { return }
 
-        todaySentences[currentSentenceIndex].attempts.append(attempt)
+        // Await Azure assessment (should already be done since user spent time on transcript review)
+        var finalAttempt = attempt
+        if let azureTask = pendingAzureTask {
+            let assessment = await azureTask.value
+            finalAttempt.pronunciationAssessment = assessment
+            pendingAzureTask = nil
+            // Track pronunciation scores in language profile
+            if let a = assessment {
+                currentLangProfile.recentToneScores.append(a.toneScore)
+                if currentLangProfile.recentToneScores.count > 10 {
+                    currentLangProfile.recentToneScores.removeFirst()
+                }
+                currentLangProfile.recentPronunciationScores.append(a.overallScore)
+                if currentLangProfile.recentPronunciationScores.count > 10 {
+                    currentLangProfile.recentPronunciationScores.removeFirst()
+                }
+            }
+        }
+
+        todaySentences[currentSentenceIndex].attempts.append(finalAttempt)
 
         let previousBest = todaySentences[currentSentenceIndex].bestScore
         if let prev = previousBest {
-            if attempt.score > prev {
-                todaySentences[currentSentenceIndex].bestScore = attempt.score
-                if attempt.attemptNumber > 1 {
+            if finalAttempt.score > prev {
+                todaySentences[currentSentenceIndex].bestScore = finalAttempt.score
+                if finalAttempt.attemptNumber > 1 {
                     currentLangProfile.retryImprovements += 1
                 }
             }
         } else {
-            todaySentences[currentSentenceIndex].bestScore = attempt.score
+            todaySentences[currentSentenceIndex].bestScore = finalAttempt.score
         }
 
         // Award XP
-        let xp = calculateXP(score: result.score, attemptNumber: attempt.attemptNumber)
+        let xp = calculateXP(score: result.score, attemptNumber: finalAttempt.attemptNumber)
         awardXP(xp)
         xpJustEarned = xp
 
@@ -339,7 +379,20 @@ final class AppStore: ObservableObject {
         let newBadges = checkAndAwardBadges()
         newlyUnlockedBadges = newBadges
 
-        saveSentences(todaySentences)
+        // In retry mode, merge the new attempt into the original stored sentence
+        // (the in-memory copy has cleared attempts, so we persist to the real record)
+        if isRetryMode, var original = retryOriginalSentence {
+            original.attempts.append(finalAttempt)
+            if let prev = original.bestScore {
+                if finalAttempt.score > prev { original.bestScore = finalAttempt.score }
+            } else {
+                original.bestScore = finalAttempt.score
+            }
+            retryOriginalSentence = original
+            saveSentences([original])
+        } else {
+            saveSentences(todaySentences)
+        }
         save()
 
         practicePhase = .showingFeedback(score: result.score)
@@ -366,7 +419,9 @@ final class AppStore: ObservableObject {
         let nextIndex = currentSentenceIndex + 1
         if nextIndex >= todaySentences.count {
             speech.stopSpeaking()
-            if isEndlessMode {
+            if isRetryMode {
+                practicePhase = .sessionComplete
+            } else if isEndlessMode {
                 Task { await generateAndContinue() }
             } else {
                 completeSession()
@@ -525,6 +580,40 @@ final class AppStore: ObservableObject {
         }
         saveSentences(newSentences)
         save()
+    }
+
+    // MARK: - Retry Mode
+
+    func startRetrySession(sentence: Sentence) {
+        isRetryMode = true
+        retryOriginalSentence = sentence
+        speech.stopSpeaking()
+        if speech.isRecording { speech.cancelRecording() }
+        // Use a fresh in-memory copy so canRetry is true and attempt counting starts at 0
+        var fresh = sentence
+        fresh.attempts = []
+        fresh.bestScore = nil
+        fresh.status = .pending
+        todaySentences = [fresh]
+        currentSentenceIndex = 0
+        practicePhase = .readyToRecord
+        lastEvaluation = nil
+        pendingTranscript = ""
+        pendingAudioURL = nil
+        newlyUnlockedBadges = []
+        xpJustEarned = 0
+    }
+
+    func endRetrySession() {
+        isRetryMode = false
+        retryOriginalSentence = nil
+        todaySentences = []
+        currentSentenceIndex = 0
+        practicePhase = .idle
+        lastEvaluation = nil
+        pendingTranscript = ""
+        pendingAudioURL = nil
+        Task { await prepareOrResumeTodaySession() }
     }
 
     func resetForNewDay() {

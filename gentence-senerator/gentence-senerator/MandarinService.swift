@@ -36,17 +36,21 @@ final class MandarinService: OpenAIService {
         Return ONLY the English sentence — no translation, no explanation, no extra punctuation.
         """
 
-        let text = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate one English sentence for Mandarin translation practice at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9
-        )
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-            .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
-        guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
-        return trimmed
+        for attempt in 1...2 {
+            let text = try await performRequest(
+                messages: [
+                    ["role": "system", "content": systemPrompt],
+                    ["role": "user", "content": "Generate one English sentence for Mandarin translation practice at difficulty \(difficulty)/10."]
+                ],
+                temperature: 0.9
+            )
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
+            guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
+            if !containsCJK(trimmed) { return trimmed }
+            print("[MandarinService] generateSentence attempt \(attempt) returned CJK text, retrying: \(trimmed)")
+        }
+        throw OpenAIError.emptyResponse
     }
 
     // MARK: - Generate sentence batch
@@ -98,7 +102,12 @@ final class MandarinService: OpenAIService {
             maxTokens: 600
         )
 
-        return try parseSentenceBatch(raw, expected: count)
+        let parsed = try parseSentenceBatch(raw, expected: count)
+        let filtered = parsed.filter { !containsCJK($0) }
+        if filtered.count < parsed.count {
+            print("[MandarinService] generateSentenceBatch filtered \(parsed.count - filtered.count) CJK sentences out of \(parsed.count)")
+        }
+        return filtered
     }
 
     // MARK: - Generate listening sentence batch
@@ -319,6 +328,19 @@ final class MandarinService: OpenAIService {
         )
 
         return try parseEvaluationResult(raw)
+    }
+
+    // MARK: - CJK Validation
+
+    /// Returns true if `text` contains any CJK Unified Ideograph (U+4E00–U+9FFF),
+    /// CJK Extension A/B, or CJK Compatibility Ideographs.
+    private func containsCJK(_ text: String) -> Bool {
+        text.unicodeScalars.contains { scalar in
+            (0x4E00...0x9FFF).contains(scalar.value) ||   // CJK Unified Ideographs
+            (0x3400...0x4DBF).contains(scalar.value) ||   // CJK Extension A
+            (0x20000...0x2A6DF).contains(scalar.value) || // CJK Extension B
+            (0xF900...0xFAFF).contains(scalar.value)      // CJK Compatibility Ideographs
+        }
     }
 
     // MARK: - Mandarin difficulty descriptions (10 distinct levels)

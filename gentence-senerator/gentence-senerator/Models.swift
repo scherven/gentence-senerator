@@ -43,12 +43,14 @@ struct Attempt: Codable, Identifiable {
     var createdAt: Date
     var audioFilename: String?   // filename only (not full path) inside AudioRecordings/
     var grammarIssues: [String]  // closed-vocabulary category keys, e.g. ["ba_sentence"]
+    var pronunciationAssessment: PronunciationAssessment?  // nil for non-Mandarin or pre-feature attempts
 
-    // Memberwise initializer (allows call sites to omit grammarIssues)
+    // Memberwise initializer (allows call sites to omit optional fields)
     init(id: UUID = UUID(), sentenceID: UUID, transcript: String, score: Int,
          feedback: String, toneReminders: [String], phonemeHints: [String],
          correctTranslation: String, attemptNumber: Int, createdAt: Date = Date(),
-         audioFilename: String? = nil, grammarIssues: [String] = []) {
+         audioFilename: String? = nil, grammarIssues: [String] = [],
+         pronunciationAssessment: PronunciationAssessment? = nil) {
         self.id = id
         self.sentenceID = sentenceID
         self.transcript = transcript
@@ -61,6 +63,7 @@ struct Attempt: Codable, Identifiable {
         self.createdAt = createdAt
         self.audioFilename = audioFilename
         self.grammarIssues = grammarIssues
+        self.pronunciationAssessment = pronunciationAssessment
     }
 
     // Backward-compatible decoder: handles old records missing recently-added fields
@@ -77,13 +80,14 @@ struct Attempt: Codable, Identifiable {
         attemptNumber      = try  c.decode(Int.self,      forKey: .attemptNumber)
         createdAt          = try  c.decode(Date.self,     forKey: .createdAt)
         audioFilename      = try? c.decodeIfPresent(String.self,   forKey: .audioFilename)
-        grammarIssues      = (try? c.decodeIfPresent([String].self, forKey: .grammarIssues)) ?? []
+        grammarIssues          = (try? c.decodeIfPresent([String].self,              forKey: .grammarIssues)) ?? []
+        pronunciationAssessment = try? c.decodeIfPresent(PronunciationAssessment.self, forKey: .pronunciationAssessment)
     }
 
     enum CodingKeys: String, CodingKey {
         case id, sentenceID, transcript, score, feedback, toneReminders,
              phonemeHints, correctTranslation, attemptNumber, createdAt,
-             audioFilename, grammarIssues
+             audioFilename, grammarIssues, pronunciationAssessment
     }
 }
 
@@ -262,6 +266,30 @@ enum BadgeDefinition: String, CaseIterable {
     }
 }
 
+// MARK: - Pronunciation Assessment
+
+/// Per-syllable result from Azure Pronunciation Assessment.
+struct SyllableResult: Codable, Identifiable {
+    var id: UUID = UUID()
+    var character: String       // e.g. "买"
+    var syllable: String        // pinyin with tone mark, e.g. "mǎi"
+    var accuracyScore: Int      // 0–100 overall phoneme accuracy
+    var toneScore: Int          // 0–100 tone accuracy
+    var initialScore: Int?      // consonant (声母) accuracy (nil if no initial, e.g. vowel-only syllables)
+    var finalScore: Int?        // vowel/final (韵母) accuracy
+    var errorType: String       // "None", "Mispronunciation", "Omission", "Insertion"
+}
+
+/// Top-level pronunciation assessment result attached to an Attempt.
+struct PronunciationAssessment: Codable {
+    var overallScore: Int
+    var toneScore: Int          // average tone accuracy across syllables
+    var accuracyScore: Int      // average phoneme accuracy across syllables
+    var consonantScore: Int     // average initial (声母) accuracy
+    var vowelScore: Int         // average final (韵母) accuracy
+    var syllables: [SyllableResult]
+}
+
 // MARK: - Language Profile (per-language progress)
 
 struct LanguageProfile: Codable {
@@ -279,6 +307,8 @@ struct LanguageProfile: Codable {
     var totalSentencesCompleted: Int = 0
     var retryImprovements: Int = 0
     var unlockedBadges: [Badge] = []
+    var recentToneScores: [Int] = []           // last 10 tone scores for trend chart
+    var recentPronunciationScores: [Int] = []  // last 10 overall pronunciation scores
 }
 
 // MARK: - User Profile

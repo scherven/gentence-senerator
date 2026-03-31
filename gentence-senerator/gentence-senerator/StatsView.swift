@@ -8,25 +8,36 @@ struct StatsView: View {
         store.currentLangProfile.recentScores.enumerated().map { (index: $0.offset, score: $0.element) }
     }
 
+    private var recentToneScores: [(index: Int, score: Int)] {
+        store.currentLangProfile.recentToneScores.enumerated().map { (index: $0.offset, score: $0.element) }
+    }
+
+    private var recentPronunciationScores: [(index: Int, score: Int)] {
+        store.currentLangProfile.recentPronunciationScores.enumerated().map { (index: $0.offset, score: $0.element) }
+    }
+
+    private var isMandarin: Bool { store.settings.targetLanguage == "Mandarin" }
+
     private var allBadgeDefs: [BadgeDefinition] { BadgeDefinition.allCases }
     private var unlockedBadgeIDs: Set<String> { Set(store.currentLangProfile.unlockedBadges.map(\.id)) }
 
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    levelSection
-                    if !recentScores.isEmpty {
-                        scoreChartSection
-                    }
-                    streakSection
-                    badgesSection
+        ScrollView {
+            VStack(spacing: 20) {
+                levelSection
+                if !recentScores.isEmpty {
+                    scoreChartSection
                 }
-                .padding()
+                if isMandarin && !recentToneScores.isEmpty {
+                    pronunciationSection
+                }
+                streakSection
+                badgesSection
             }
-            .navigationTitle("Progress")
-            .navigationBarTitleDisplayMode(.large)
+            .padding()
         }
+        .navigationTitle("Progress")
+        .navigationBarTitleDisplayMode(.large)
     }
 
     // MARK: - Level Section
@@ -110,6 +121,82 @@ struct StatsView: View {
         case 50..<75: return .yellow
         default: return .green
         }
+    }
+
+    // MARK: - Pronunciation Section (Mandarin only)
+
+    private var pronunciationSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "waveform")
+                    .foregroundColor(.purple)
+                Text("Pronunciation")
+                    .font(.headline)
+            }
+
+            // Summary stat cards
+            HStack(spacing: 12) {
+                let avgTone = recentToneScores.isEmpty ? 0 : recentToneScores.map(\.score).reduce(0, +) / recentToneScores.count
+                let avgPronun = recentPronunciationScores.isEmpty ? 0 : recentPronunciationScores.map(\.score).reduce(0, +) / recentPronunciationScores.count
+
+                pronunciationStatCard(title: "Avg Tone", value: "\(avgTone)%",
+                                      icon: "music.note", color: .purple)
+                pronunciationStatCard(title: "Avg Accuracy", value: "\(avgPronun)%",
+                                      icon: "mic.fill", color: .blue)
+            }
+
+            // Tone trend chart
+            if recentToneScores.count >= 2 {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Tone accuracy trend")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Chart(recentToneScores, id: \.index) { item in
+                        LineMark(
+                            x: .value("Attempt", item.index + 1),
+                            y: .value("Tone", item.score)
+                        )
+                        .foregroundStyle(Color.purple)
+                        .interpolationMethod(.catmullRom)
+
+                        PointMark(
+                            x: .value("Attempt", item.index + 1),
+                            y: .value("Tone", item.score)
+                        )
+                        .foregroundStyle(scoreColor(item.score))
+                    }
+                    .chartYScale(domain: 0...100)
+                    .chartYAxis {
+                        AxisMarks(values: [0, 50, 75, 100])
+                    }
+                    .frame(height: 120)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+    }
+
+    private func pronunciationStatCard(title: String, value: String, icon: String, color: Color) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(color)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(value)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(color.opacity(0.08))
+        .cornerRadius(12)
     }
 
     // MARK: - Streak Calendar
@@ -217,6 +304,8 @@ struct StatsView: View {
 }
 
 #Preview {
-    StatsView()
-        .environmentObject(AppStore())
+    NavigationView {
+        StatsView()
+    }
+    .environmentObject(AppStore())
 }

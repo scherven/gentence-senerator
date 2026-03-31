@@ -541,6 +541,11 @@ private struct FeedbackView: View {
                         }
                     }
 
+                    // Pronunciation breakdown (Mandarin only, when Azure assessment is available)
+                    if let assessment = sentence?.attempts.last?.pronunciationAssessment {
+                        PronunciationBreakdownView(assessment: assessment)
+                    }
+
                     // Correct translation with tappable word explanations
                     if !eval.correctTranslation.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
@@ -1194,6 +1199,255 @@ struct FlowLayout: Layout {
             x += size.width + spacing
             rowHeight = max(rowHeight, size.height)
         }
+    }
+}
+
+// MARK: - Pronunciation Breakdown View
+
+private struct PronunciationBreakdownView: View {
+    let assessment: PronunciationAssessment
+    @State private var expandedSyllableID: UUID? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Pronunciation")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+
+            // Summary pills: Tone | Consonants | Vowels
+            HStack(spacing: 10) {
+                PronunciationScorePill(label: "Tone", score: assessment.toneScore)
+                PronunciationScorePill(label: "Consonants", score: assessment.consonantScore)
+                PronunciationScorePill(label: "Vowels", score: assessment.vowelScore)
+            }
+
+            // Per-syllable row
+            if !assessment.syllables.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(assessment.syllables) { syllable in
+                            SyllableCardView(
+                                syllable: syllable,
+                                isExpanded: expandedSyllableID == syllable.id
+                            )
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    expandedSyllableID = expandedSyllableID == syllable.id ? nil : syllable.id
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                }
+            }
+
+            // "What to work on" — shown only when something scores below 75
+            let warnings = buildWarnings(from: assessment)
+            if !warnings.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(warnings, id: \.self) { warning in
+                        HStack(alignment: .top, spacing: 6) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                            Text(warning)
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+                .padding(10)
+                .background(Color.orange.opacity(0.07))
+                .cornerRadius(8)
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+    }
+
+    private func buildWarnings(from assessment: PronunciationAssessment) -> [String] {
+        var result: [String] = []
+
+        if assessment.toneScore < 75 {
+            let bad = assessment.syllables
+                .filter { $0.toneScore < 75 }
+                .map { "\($0.character) (\($0.syllable.isEmpty ? "?" : $0.syllable)): \($0.toneScore)" }
+                .prefix(3)
+            if !bad.isEmpty {
+                result.append("Tones need work: " + bad.joined(separator: ", "))
+            }
+        }
+
+        if assessment.consonantScore < 75 {
+            result.append("Consonants need work: \(assessment.consonantScore)/100")
+        }
+
+        if assessment.vowelScore < 75 {
+            result.append("Vowels need work: \(assessment.vowelScore)/100")
+        }
+
+        return result
+    }
+}
+
+private struct PronunciationScorePill: View {
+    let label: String
+    let score: Int
+
+    private var color: Color {
+        if score >= 80 { return .green }
+        if score >= 60 { return .orange }
+        return .red
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text("\(score)")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(color)
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(color.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+private struct SyllableCardView: View {
+    let syllable: SyllableResult
+    let isExpanded: Bool
+
+    private var borderColor: Color {
+        if syllable.accuracyScore >= 80 { return .green }
+        if syllable.accuracyScore >= 60 { return .orange }
+        return .red
+    }
+
+    private var toneIndicator: String {
+        syllable.errorType == "None" || syllable.toneScore >= 75 ? "✓" : "✗"
+    }
+
+    var body: some View {
+        VStack(spacing: 3) {
+            // Tone check indicator
+            Text(toneIndicator)
+                .font(.caption2)
+                .foregroundColor(syllable.toneScore >= 75 ? .green : .red)
+
+            // Pinyin (if available)
+            if !syllable.syllable.isEmpty {
+                Text(syllable.syllable)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // Character
+            Text(syllable.character)
+                .font(.title3)
+
+            // Overall score
+            Text("\(syllable.accuracyScore)")
+                .font(.caption2)
+                .foregroundColor(borderColor)
+
+            // Expanded: show initial/final sub-scores
+            if isExpanded {
+                Divider()
+                if let ini = syllable.initialScore {
+                    Text("声母 \(ini)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                if let fin = syllable.finalScore {
+                    Text("韵母 \(fin)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(borderColor.opacity(0.6), lineWidth: 1.5)
+        )
+        .cornerRadius(8)
+        .animation(.easeInOut(duration: 0.2), value: isExpanded)
+    }
+}
+
+// MARK: - Retry Practice View
+
+/// Presented as a sheet from RetryView. Reuses all the existing practice sub-views
+/// and shows a simple completion screen (instead of the full SessionCompleteView).
+struct RetryPracticeView: View {
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            Group {
+                switch store.practicePhase {
+                case .idle, .generatingSentences:
+                    PracticeLoadingView()
+                case .readyToRecord:
+                    SentenceDisplayView()
+                case .recording:
+                    RecordingView()
+                case .transcribing:
+                    ProcessingView(message: "Transcribing...")
+                case .reviewingTranscription:
+                    TranscriptionReviewView()
+                case .evaluating:
+                    ProcessingView(message: "Evaluating your response...")
+                case .showingFeedback(let score):
+                    FeedbackView(score: score)
+                case .sessionComplete:
+                    RetryDoneView(dismiss: { dismiss() })
+                case .error(let msg):
+                    PracticeErrorView(message: msg)
+                }
+            }
+            .navigationTitle("Retry Practice")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+private struct RetryDoneView: View {
+    @EnvironmentObject var store: AppStore
+    let dismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 70))
+                .foregroundColor(.green)
+            Text("Nice work!")
+                .font(.title)
+                .fontWeight(.bold)
+            if let score = store.todaySentences.first?.bestScore {
+                Text("Session best: \(score)")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+            }
+            Button("Done") { dismiss() }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

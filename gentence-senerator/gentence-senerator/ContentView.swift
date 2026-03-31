@@ -18,8 +18,8 @@ struct ContentView: View {
                 .tabItem { Label("Listen", systemImage: "ear.fill") }
                 .tag(2)
 
-            StatsView()
-                .tabItem { Label("Progress", systemImage: "chart.bar.fill") }
+            RetryView()
+                .tabItem { Label("Retry", systemImage: "arrow.counterclockwise.circle.fill") }
                 .tag(3)
 
             SettingsView()
