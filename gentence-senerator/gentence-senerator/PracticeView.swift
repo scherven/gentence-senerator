@@ -653,6 +653,9 @@ private struct FeedbackView: View {
                     .cornerRadius(12)
                 }
 
+                // Follow-up questions
+                FollowUpChatView()
+
                 // Action buttons
                 HStack(spacing: 12) {
                     if canRetry {
@@ -704,6 +707,83 @@ private struct FeedbackView: View {
     private var nextButtonIcon: String {
         if store.isEndlessMode { return "arrow.right" }
         return isLastSentence ? "checkmark" : "arrow.right"
+    }
+}
+
+// MARK: - Follow-up Chat View
+
+private struct FollowUpChatView: View {
+    @EnvironmentObject var store: AppStore
+    @State private var inputText: String = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Ask the tutor")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+
+            if !store.followUpMessages.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(store.followUpMessages.enumerated()), id: \.offset) { _, msg in
+                        HStack {
+                            if msg.role == "user" {
+                                Spacer()
+                                Text(msg.content)
+                                    .font(.body)
+                                    .padding(10)
+                                    .background(Color.accentColor.opacity(0.15))
+                                    .cornerRadius(12)
+                                    .frame(maxWidth: 280, alignment: .trailing)
+                            } else {
+                                Text(msg.content)
+                                    .font(.body)
+                                    .padding(10)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(12)
+                                    .frame(maxWidth: 280, alignment: .leading)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+            }
+
+            if store.isLoadingFollowUp {
+                HStack {
+                    ProgressView()
+                        .padding(10)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    Spacer()
+                }
+            }
+
+            HStack(spacing: 8) {
+                TextField("Ask a follow-up question…", text: $inputText)
+                    .textFieldStyle(.roundedBorder)
+                    .submitLabel(.send)
+                    .onSubmit { sendQuestion() }
+
+                Button(action: sendQuestion) {
+                    Image(systemName: "paperplane.fill")
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.isLoadingFollowUp
+                            ? Color.accentColor.opacity(0.4)
+                            : Color.accentColor)
+                        .cornerRadius(8)
+                }
+                .disabled(inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.isLoadingFollowUp)
+            }
+        }
+    }
+
+    private func sendQuestion() {
+        let q = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty, !store.isLoadingFollowUp else { return }
+        inputText = ""
+        Task { await store.askFollowUpQuestion(q) }
     }
 }
 

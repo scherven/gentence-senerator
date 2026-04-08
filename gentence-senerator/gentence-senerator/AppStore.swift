@@ -23,8 +23,10 @@ final class AppStore: ObservableObject {
     @Published var pendingAudioURL: URL?
     @Published var isCachingOffline: Bool = false
     @Published var isRetryMode: Bool = false
+    @Published var followUpMessages: [(role: String, content: String)] = []
+    @Published var isLoadingFollowUp: Bool = false
 
-    private var retryOriginalSentence: Sentence?
+    public var retryOriginalSentence: Sentence?
     /// In-flight Azure pronunciation assessment task, started during stopAndReview()
     /// so it can complete while the user reviews the transcript.
     private var pendingAzureTask: Task<PronunciationAssessment?, Never>?
@@ -97,6 +99,51 @@ final class AppStore: ObservableObject {
     var levelProgress: Double {
         guard xpNeededForNextLevel > 0 else { return 1.0 }
         return Double(xpProgressInLevel) / Double(xpNeededForNextLevel)
+    }
+
+    // MARK: - Phoneme Performance
+
+    struct PhonemeStats {
+        var phoneme: String
+        var avgScore: Int
+        var count: Int
+    }
+
+    /// Aggregates per-phoneme accuracy scores from all saved Mandarin attempts.
+    /// Returns (initials, finals) each sorted worst → best (lowest avgScore first).
+    /// Only includes phonemes seen in ≥2 syllables.
+    func phonemeStats() -> (initials: [PhonemeStats], finals: [PhonemeStats]) {
+        var initialScores: [String: [Int]] = [:]
+        var finalScores: [String: [Int]] = [:]
+
+        for sentence in allSentences() {
+            for attempt in sentence.attempts {
+                guard let assessment = attempt.pronunciationAssessment else { continue }
+                for syllable in assessment.syllables {
+                    let syl = syllable.syllable
+                    guard !syl.isEmpty else { continue }
+                    let initial = pinyinInitialStr(syl)
+                    let final_ = syl.hasPrefix(initial) && !initial.isEmpty
+                        ? String(syl.dropFirst(initial.count))
+                        : syl
+                    if !initial.isEmpty, let score = syllable.initialScore {
+                        initialScores[initial, default: []].append(score)
+                    }
+                    if !final_.isEmpty, let score = syllable.finalScore {
+                        finalScores[final_, default: []].append(score)
+                    }
+                }
+            }
+        }
+
+        func toStats(_ dict: [String: [Int]]) -> [PhonemeStats] {
+            dict.compactMap { key, scores -> PhonemeStats? in
+                guard scores.count >= 2 else { return nil }
+                return PhonemeStats(phoneme: key, avgScore: scores.reduce(0, +) / scores.count, count: scores.count)
+            }.sorted { $0.avgScore < $1.avgScore }
+        }
+
+        return (initials: toStats(initialScores), finals: toStats(finalScores))
     }
 
     // MARK: - Session Management
@@ -435,6 +482,7 @@ final class AppStore: ObservableObject {
             lastEvaluation = nil
             newlyUnlockedBadges = []
             xpJustEarned = 0
+            followUpMessages = []
             practicePhase = .readyToRecord
         }
     }
@@ -448,7 +496,44 @@ final class AppStore: ObservableObject {
         lastEvaluation = nil
         newlyUnlockedBadges = []
         xpJustEarned = 0
+        followUpMessages = []
         practicePhase = .readyToRecord
+    }
+
+    func askFollowUpQuestion(_ question: String) async {
+        guard !question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard let sentence = currentSentence, let eval = lastEvaluation else { return }
+
+        let transcript = sentence.attempts.last?.transcript ?? ""
+        let systemPrompt = """
+        You are a \(settings.targetLanguage) language tutor helping a student understand a sentence they just practiced.
+
+        Context:
+        - English sentence: "\(sentence.englishText)"
+        - Student said: "\(transcript)"
+        - Score: \(eval.score)/100
+        - Feedback given: \(eval.feedback)
+        - Correct translation: \(eval.correctTranslation)
+
+        Answer the student's follow-up question clearly and concisely. Focus on the specific aspect they are asking about. Keep your reply to 2–4 sentences unless a longer explanation is truly needed.
+        """
+
+        followUpMessages.append((role: "user", content: question))
+        isLoadingFollowUp = true
+
+        do {
+            var messages: [[String: String]] = [["role": "system", "content": systemPrompt]]
+            messages += followUpMessages.map { ["role": $0.role, "content": $0.content] }
+            let reply = try await languageService.performRequest(
+                messages: messages,
+                temperature: 0.5,
+                maxTokens: 512
+            )
+            followUpMessages.append((role: "assistant", content: reply))
+        } catch {
+            followUpMessages.append((role: "assistant", content: "Sorry, I couldn't answer that right now. Please try again."))
+        }
+        isLoadingFollowUp = false
     }
 
     func setDifficulty(_ level: Int) {
@@ -1002,4 +1087,18 @@ final class AppStore: ObservableObject {
         let modeSuffix = settings.practiceMode == .listening ? "_listening" : ""
         return "\(todayISOString())_\(settings.targetLanguage)\(modeSuffix)"
     }
+}
+
+// MARK: - Pinyin Helpers
+
+/// Extracts the initial consonant (声母) from a bare pinyin syllable (no tone number).
+/// Returns empty string if the syllable has no initial.
+fileprivate func pinyinInitialStr(_ syllable: String) -> String {
+    for initial in ["zh", "ch", "sh"] {
+        if syllable.hasPrefix(initial) { return initial }
+    }
+    for initial in ["b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s"] {
+        if syllable.hasPrefix(initial) { return initial }
+    }
+    return ""
 }

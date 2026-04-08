@@ -18,6 +18,10 @@ struct StatsView: View {
 
     private var isMandarin: Bool { store.settings.targetLanguage == "Mandarin" }
 
+    private var phonemeData: (initials: [AppStore.PhonemeStats], finals: [AppStore.PhonemeStats]) {
+        store.phonemeStats()
+    }
+
     private var allBadgeDefs: [BadgeDefinition] { BadgeDefinition.allCases }
     private var unlockedBadgeIDs: Set<String> { Set(store.currentLangProfile.unlockedBadges.map(\.id)) }
 
@@ -30,6 +34,9 @@ struct StatsView: View {
                 }
                 if isMandarin && !recentToneScores.isEmpty {
                     pronunciationSection
+                }
+                if isMandarin {
+                    phonemeSection
                 }
                 streakSection
                 badgesSection
@@ -197,6 +204,84 @@ struct StatsView: View {
         .padding()
         .background(color.opacity(0.08))
         .cornerRadius(12)
+    }
+
+    // MARK: - Phoneme Performance Section
+
+    private var phonemeSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "mouth.fill")
+                    .foregroundColor(.indigo)
+                Text("Sound Breakdown")
+                    .font(.headline)
+            }
+
+            if !phonemeData.initials.isEmpty {
+                phonemeSubsection(title: "Consonants (声母)", items: phonemeData.initials)
+            }
+            if !phonemeData.finals.isEmpty {
+                phonemeSubsection(title: "Vowels (韵母)", items: phonemeData.finals)
+            }
+
+            NavigationLink(destination: PinyinTableView(phonemeData: phonemeData)) {
+                HStack {
+                    Image(systemName: "table.fill")
+                    Text("Pinyin Reference Chart")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(12)
+                .background(Color.indigo.opacity(0.08))
+                .cornerRadius(10)
+            }
+            .foregroundColor(.indigo)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+    }
+
+    private func phonemeSubsection(title: String, items: [AppStore.PhonemeStats]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+            ForEach(items, id: \.phoneme) { stat in
+                HStack(spacing: 10) {
+                    Text(stat.phoneme)
+                        .font(.system(.body, design: .monospaced))
+                        .fontWeight(.semibold)
+                        .frame(width: 30, alignment: .leading)
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(.systemGray4))
+                                .frame(height: 8)
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(phonemeColor(stat.avgScore))
+                                .frame(width: geo.size.width * CGFloat(stat.avgScore) / 100, height: 8)
+                        }
+                    }
+                    .frame(height: 8)
+                    Text("\(stat.avgScore)%")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(width: 38, alignment: .trailing)
+                }
+            }
+        }
+    }
+
+    private func phonemeColor(_ score: Int) -> Color {
+        switch score {
+        case 0..<50: return .red
+        case 50..<75: return .orange
+        default: return .green
+        }
     }
 
     // MARK: - Streak Calendar
