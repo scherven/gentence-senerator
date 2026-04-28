@@ -331,6 +331,8 @@ private struct SentenceDisplayView: View {
 private struct RecordingView: View {
     @EnvironmentObject var store: AppStore
     @State private var pulseScale: CGFloat = 1.0
+    @State private var displayTranscript: String = ""
+    @State private var userHasEdited: Bool = false
 
     var body: some View {
         VStack(spacing: 32) {
@@ -352,14 +354,37 @@ private struct RecordingView: View {
                     .padding(.horizontal)
             }
 
-            // Live transcript
-            if !store.speech.transcript.isEmpty {
-                Text(store.speech.transcript)
+            // Live transcript (editable)
+            VStack(alignment: .leading, spacing: 4) {
+                TextField("Transcript will appear here…", text: $displayTranscript, axis: .vertical)
                     .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .padding(10)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
                     .padding(.horizontal)
-                    .transition(.opacity)
+                    .onChange(of: displayTranscript) { newVal in
+                        userHasEdited = true
+                        store.pendingUserEdit = newVal
+                    }
+                if userHasEdited {
+                    Text("Edited")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal)
+                }
+            }
+            .opacity(displayTranscript.isEmpty && !userHasEdited ? 0 : 1)
+            .onChange(of: store.speech.transcript) { newVal in
+                if !userHasEdited {
+                    displayTranscript = newVal
+                }
+            }
+            .onAppear {
+                displayTranscript = store.speech.transcript
+                userHasEdited = false
+                store.pendingUserEdit = nil
             }
 
             // Pulsing stop button
@@ -943,20 +968,48 @@ private struct PracticeErrorView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            Button {
-                Task {
-                    await store.prepareOrResumeTodaySession()
+            if store.canRetrySubmission {
+                Button {
+                    Task { await store.submitForEvaluation() }
+                } label: {
+                    Text("Retry")
+                        .fontWeight(.semibold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
                 }
-            } label: {
-                Text("Try Again")
-                    .fontWeight(.semibold)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.accentColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                .padding(.horizontal)
+
+                Button {
+                    store.reRecord()
+                } label: {
+                    Text("Re-record")
+                        .fontWeight(.medium)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color(.systemGray5))
+                        .foregroundColor(.primary)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
+            } else {
+                Button {
+                    Task {
+                        await store.prepareOrResumeTodaySession()
+                    }
+                } label: {
+                    Text("Try Again")
+                        .fontWeight(.semibold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -1060,6 +1113,9 @@ private struct TranscriptionReviewView: View {
     private var showPinyin: Bool { isMandarin && store.settings.showRomanization }
     private var transcript: String { store.pendingTranscript }
     private var isEmpty: Bool { transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    private var transcriptBinding: Binding<String> {
+        Binding(get: { store.pendingTranscript }, set: { store.pendingTranscript = $0 })
+    }
 
     var body: some View {
         ScrollView {
@@ -1110,24 +1166,36 @@ private struct TranscriptionReviewView: View {
                     }
 
                     if isEmpty {
-                        HStack {
-                            Image(systemName: "mic.slash")
-                                .foregroundColor(.orange)
-                            Text("No speech detected")
-                                .foregroundColor(.orange)
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "mic.slash")
+                                    .foregroundColor(.orange)
+                                Text("No speech detected — type it below")
+                                    .foregroundColor(.orange)
+                            }
+                            TextField("Type your answer…", text: transcriptBinding, axis: .vertical)
+                                .font(.title3)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
                         }
                         .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.orange.opacity(0.08))
                         .cornerRadius(10)
                     } else if showPinyin {
-                        PinyinAnnotationView(text: transcript)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
+                        VStack(alignment: .leading, spacing: 6) {
+                            PinyinAnnotationView(text: transcript)
+                            TextField("Edit transcript…", text: transcriptBinding, axis: .vertical)
+                                .font(.title3)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
                     } else {
-                        Text(transcript)
+                        TextField("Edit transcript…", text: transcriptBinding, axis: .vertical)
                             .font(.title3)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)

@@ -25,6 +25,9 @@ final class AppStore: ObservableObject {
     @Published var isRetryMode: Bool = false
     @Published var followUpMessages: [(role: String, content: String)] = []
     @Published var isLoadingFollowUp: Bool = false
+    @Published var canRetrySubmission: Bool = false
+    /// User-edited transcript during recording; overrides speech recognizer result when set.
+    @Published var pendingUserEdit: String? = nil
 
     public var retryOriginalSentence: Sentence?
     /// In-flight Azure pronunciation assessment task, started during stopAndReview()
@@ -292,6 +295,8 @@ final class AppStore: ObservableObject {
 
     func startRecording() {
         guard practicePhase == .readyToRecord else { return }
+        canRetrySubmission = false
+        pendingUserEdit = nil
         do {
             try speech.startRecording(language: settings.targetLanguage)
             practicePhase = .recording
@@ -304,7 +309,9 @@ final class AppStore: ObservableObject {
         guard practicePhase == .recording else { return }
         practicePhase = .transcribing
 
-        let transcript = await speech.stopRecording()
+        let rawTranscript = await speech.stopRecording()
+        let transcript = pendingUserEdit ?? rawTranscript
+        pendingUserEdit = nil
         pendingTranscript = transcript
         pendingAudioURL = speech.lastRecordingURL
         practicePhase = .reviewingTranscription
@@ -325,7 +332,8 @@ final class AppStore: ObservableObject {
     }
 
     func submitForEvaluation() async {
-        guard practicePhase == .reviewingTranscription else { return }
+        guard practicePhase == .reviewingTranscription || canRetrySubmission else { return }
+        canRetrySubmission = false
         practicePhase = .evaluating
 
         guard let sentence = currentSentence else {
@@ -365,6 +373,7 @@ final class AppStore: ObservableObject {
             await processAttemptResult(attempt: attempt, result: result)
 
         } catch {
+            canRetrySubmission = true
             practicePhase = .error("Evaluation failed: \(error.localizedDescription)")
         }
     }
@@ -374,6 +383,8 @@ final class AppStore: ObservableObject {
         speech.stopSpeaking()
         pendingTranscript = ""
         pendingAudioURL = nil
+        pendingUserEdit = nil
+        canRetrySubmission = false
         speech.resetTranscript()
         practicePhase = .readyToRecord
     }
