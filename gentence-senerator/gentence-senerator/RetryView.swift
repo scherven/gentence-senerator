@@ -11,28 +11,26 @@ struct RetryView: View {
     private var allDone: Bool { !pickedSentences.isEmpty && completedIDs.count >= pickedSentences.count }
 
     var body: some View {
-        NavigationView {
-            Group {
-                if pickedSentences.isEmpty {
-                    emptyState
-                } else if allDone {
-                    allDoneState
-                } else {
-                    practiceSet
-                }
+        Group {
+            if pickedSentences.isEmpty {
+                emptyState
+            } else if allDone {
+                allDoneState
+            } else {
+                practiceSet
             }
-            .navigationTitle("Retry")
-            .navigationBarTitleDisplayMode(.large)
-            .onAppear { if pickedSentences.isEmpty { pickSentences() } }
-            .sheet(isPresented: $showPractice, onDismiss: {
-                if let s = store.retryOriginalSentence {
-                    completedIDs.insert(s.id)
-                }
-                store.endRetrySession()
-                refreshPickedSentences()
-            }) {
-                RetryPracticeView()
+        }
+        .navigationTitle("Retry")
+        .navigationBarTitleDisplayMode(.large)
+        .onAppear { if pickedSentences.isEmpty { pickSentences() } }
+        .sheet(isPresented: $showPractice, onDismiss: {
+            if let s = store.retryOriginalSentence {
+                completedIDs.insert(s.id)
             }
+            store.endRetrySession()
+            refreshPickedSentences()
+        }) {
+            RetryPracticeView()
         }
     }
 
@@ -266,6 +264,8 @@ private struct RetryCard: View {
 }
 
 #Preview {
-    RetryView()
-        .environmentObject(AppStore())
+    NavigationView {
+        RetryView()
+    }
+    .environmentObject(AppStore())
 }

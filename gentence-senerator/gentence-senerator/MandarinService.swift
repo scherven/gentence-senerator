@@ -2,36 +2,66 @@ import Foundation
 
 // MARK: - Mandarin Service
 // Specialised prompts for Mandarin Chinese practice.
-// Each difficulty level targets a distinct grammar structure or vocabulary tier.
+//
+// Sentence generation runs on two independent axes:
+//   1. Vocab band (difficulty 1-10) — controls vocabulary sophistication and sentence length only.
+//   2. Grammar point — sampled per-sentence from MandarinGrammarBank's cumulative pool of every
+//      point unlocked at or below the current difficulty, weighted toward least-recently-used /
+//      weakest points. This is what actually drives structural variety: a learner parked at
+//      difficulty 5 draws from 15 eligible grammar points, not the single point difficulty 5 used
+//      to mandate.
+// Each selected point is grounded with a real example sentence (the "data bank") so the model
+// varies a concrete template instead of inventing a structure from a text description alone.
+
+struct MandarinGeneratedSentence {
+    let text: String
+    let grammarPointID: String
+}
+
+struct MandarinGeneratedListeningSentence {
+    let targetText: String
+    let englishMeaning: String
+    let grammarPointID: String
+}
 
 final class MandarinService: OpenAIService {
 
-    // MARK: - Generate English sentence
+    private static let topics = [
+        "food", "travel", "work", "family", "weather", "shopping",
+        "hobbies", "health", "technology", "school", "sports", "money"
+    ]
 
-    override func generateSentence(
+    // MARK: - Point-aware generation (primary API — see AppStore)
+
+    func generateSentenceWithPoint(
         difficulty: Int,
-        targetLanguage: String,
         excludingTexts: [String] = [],
         sessionTexts: [String] = [],
-        grammarFocusAreas: [String] = []
-    ) async throws -> String {
-        let desc = mandarinDifficultyDescription(difficulty)
+        context: GrammarPointSampleContext = GrammarPointSampleContext(),
+        recentPointIDs: [String] = []
+    ) async throws -> MandarinGeneratedSentence {
+        guard let point = MandarinGrammarBank.selectPoints(
+            count: 1, difficulty: difficulty, context: context, avoiding: recentPointIDs
+        ).first else {
+            throw OpenAIError.emptyResponse
+        }
+
+        let vocabDesc = mandarinVocabBandDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
             " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
         let sessionHint = sessionTexts.isEmpty ? "" :
-            " This session has already used these sentences — pick a DIFFERENT sentence structure (e.g. if a 不 negation is listed, use a 吗 question or imperative instead) and a DIFFERENT topic: \(sessionTexts.joined(separator: "; "))."
-        let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
-            " Prioritize sentence structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
+            " This session has already used these sentences — choose a DIFFERENT topic: \(sessionTexts.joined(separator: "; "))."
+        let topic = Self.topics.randomElement() ?? "daily life"
+        let example = point.examples.randomElement() ?? ""
 
         let systemPrompt = """
         You are a Mandarin Chinese language learning sentence generator.
-        Generate a single natural English sentence designed for Mandarin translation practice at difficulty \(difficulty)/10.
-        \(desc)\(grammarInstruction)\(exclusionHint)\(sessionHint)
+        Generate a single natural English sentence designed for Mandarin translation practice.
+        \(vocabDesc)\(exclusionHint)\(sessionHint)
 
-        Actively vary these elements to prevent repetitive patterns:
-        - Sentence type: mix SVO statements, 不/没 negations, 吗 yes-no questions, imperatives, and topic-comment frames. Ensure that you are using a sentence structure at least somewhat unique to the ones above.
-        - Verbs: do NOT default to 是/有/去/喜欢 — draw from a wide range of everyday actions.
-        - Topics: rotate across food, travel, work, family, weather, shopping, hobbies, health, technology, school.
+        Grammar target: \(point.name) — \(point.instruction)
+        Structural template (do NOT reuse its topic or vocabulary — only its grammar pattern): \(example)
+        Topic: \(topic)
 
         Return ONLY the English sentence — no translation, no explanation, no extra punctuation.
         """
@@ -40,146 +70,98 @@ final class MandarinService: OpenAIService {
             let text = try await performRequest(
                 messages: [
                     ["role": "system", "content": systemPrompt],
-                    ["role": "user", "content": "Generate one English sentence for Mandarin translation practice at difficulty \(difficulty)/10."]
+                    ["role": "user", "content": "Generate one English sentence for Mandarin translation practice."]
                 ],
                 temperature: 0.9
             )
             let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
             guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
-            if !containsCJK(trimmed) { return trimmed }
-            print("[MandarinService] generateSentence attempt \(attempt) returned CJK text, retrying: \(trimmed)")
+            if !containsCJK(trimmed) {
+                return MandarinGeneratedSentence(text: trimmed, grammarPointID: point.id)
+            }
+            print("[MandarinService] generateSentenceWithPoint attempt \(attempt) returned CJK text, retrying: \(trimmed)")
         }
         throw OpenAIError.emptyResponse
     }
 
-    // MARK: - Generate sentence batch
-
-    override func generateSentenceBatch(
+    func generateSentenceBatchWithPoints(
         count: Int,
         difficulty: Int,
-        targetLanguage: String,
         excludingTexts: [String] = [],
-        grammarFocusAreas: [String] = []
-    ) async throws -> [String] {
-        let desc = mandarinDifficultyDescription(difficulty)
+        context: GrammarPointSampleContext = GrammarPointSampleContext()
+    ) async throws -> [MandarinGeneratedSentence] {
+        let points = MandarinGrammarBank.selectPoints(count: count, difficulty: difficulty, context: context)
+        guard !points.isEmpty else { throw OpenAIError.emptyResponse }
+
+        let vocabDesc = mandarinVocabBandDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
             " Do NOT repeat any of these previously seen sentences: \(excludingTexts.prefix(10).joined(separator: "; "))."
-        let grammarInstruction = grammarFocusAreas.isEmpty ? "" :
-            " Prioritize structures that require one of these grammar patterns: \(grammarFocusAreas.joined(separator: ", "))."
-
-        // Build an explicit structure assignment for each slot
-        let structures = ["simple SVO affirmative statement",
-                          "不/没 negation",
-                          "吗 yes-no question",
-                          "imperative or command",
-                          "topic-comment frame or compound sentence"]
-        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
-            .joined(separator: "\n")
+        let slots = buildSlotDescriptions(points: points).joined(separator: "\n\n")
 
         let systemPrompt = """
         You are a Mandarin Chinese language learning sentence generator.
-        Generate exactly \(count) English sentences for Mandarin translation practice at difficulty \(difficulty)/10.
-        \(desc)\(grammarInstruction)\(exclusionHint)
+        Generate exactly \(points.count) English sentences for Mandarin translation practice.
+        \(vocabDesc)\(exclusionHint)
 
-        Each sentence MUST require a DIFFERENT Mandarin grammatical structure — assign one per sentence:
-        \(structureList)
+        Each sentence below targets a DIFFERENT Mandarin grammar pattern. A short example sentence \
+        demonstrating each pattern is given as a structural template only — your English sentence must \
+        translate naturally into a NEW Mandarin sentence using that grammar pattern, with a different \
+        topic and different vocabulary than the template.
 
-        Each sentence MUST cover a DIFFERENT topic from: food, travel, work, family, weather, shopping, hobbies, health, technology, school.
-        Verbs: do NOT default to 是/有/去/喜欢 — draw from a wide range of everyday actions.
+        \(slots)
 
         Return ONLY valid JSON in exactly this format:
-        {"sentences": ["<sentence 1>", "<sentence 2>", ..., "<sentence \(count)>"]}
+        {"sentences": ["<sentence 1>", "<sentence 2>", ..., "<sentence \(points.count)>"]}
         """
 
         let raw = try await performRequest(
             messages: [
                 ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(count) English sentences for Mandarin practice at difficulty \(difficulty)/10."]
+                ["role": "user", "content": "Generate \(points.count) English sentences for Mandarin translation practice."]
             ],
             temperature: 0.9,
             responseFormat: "json_object",
-            maxTokens: 600
+            maxTokens: 700
         )
 
-        let parsed = try parseSentenceBatch(raw, expected: count)
-        let filtered = parsed.filter { !containsCJK($0) }
-        if filtered.count < parsed.count {
-            print("[MandarinService] generateSentenceBatch filtered \(parsed.count - filtered.count) CJK sentences out of \(parsed.count)")
+        let texts = try parseSentenceBatch(raw, expected: points.count)
+        let pairs = zip(texts, points).filter { !containsCJK($0.0) }
+        if pairs.count < texts.count {
+            print("[MandarinService] generateSentenceBatchWithPoints filtered \(texts.count - pairs.count) CJK sentences out of \(texts.count)")
         }
-        return filtered
+        guard !pairs.isEmpty else { throw OpenAIError.emptyResponse }
+        return pairs.map { MandarinGeneratedSentence(text: $0.0, grammarPointID: $0.1.id) }
     }
 
-    // MARK: - Generate listening sentence batch
-
-    override func generateListeningSentenceBatch(
-        count: Int,
+    func generateListeningSentenceWithPoint(
         difficulty: Int,
-        targetLanguage: String,
-        excludingTexts: [String] = []
-    ) async throws -> [(targetText: String, englishMeaning: String)] {
-        let desc = mandarinDifficultyDescription(difficulty)
-        let exclusionHint = excludingTexts.isEmpty ? "" :
-            " Do NOT repeat any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
-
-        let structures = ["simple SVO affirmative statement",
-                          "不/没 negation",
-                          "吗 yes-no question",
-                          "imperative or command",
-                          "topic-comment frame"]
-        let structureList = (0..<count).map { "Sentence \($0 + 1): \(structures[$0 % structures.count])" }
-            .joined(separator: "\n")
-
-        let systemPrompt = """
-        You are a Mandarin Chinese language learning content generator.
-        Generate exactly \(count) natural Mandarin sentences for listening comprehension practice at difficulty \(difficulty)/10.
-        \(desc)\(exclusionHint)
-
-        Each sentence MUST use a DIFFERENT grammatical structure:
-        \(structureList)
-
-        Each sentence MUST cover a DIFFERENT topic.
-        Include characters only — no pinyin in the targetText fields.
-
-        Return ONLY valid JSON in exactly this format:
-        {
-          "sentences": [
-            {"targetText": "<Mandarin characters>", "englishMeaning": "<English translation>"},
-            ...
-          ]
+        excludingTexts: [String] = [],
+        context: GrammarPointSampleContext = GrammarPointSampleContext(),
+        recentPointIDs: [String] = []
+    ) async throws -> MandarinGeneratedListeningSentence {
+        guard let point = MandarinGrammarBank.selectPoints(
+            count: 1, difficulty: difficulty, context: context, avoiding: recentPointIDs
+        ).first else {
+            throw OpenAIError.emptyResponse
         }
-        """
 
-        let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(count) Mandarin listening sentences at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object",
-            maxTokens: 800
-        )
-
-        return try parseListeningSentenceBatch(raw)
-    }
-
-    // MARK: - Generate listening sentence
-
-    override func generateListeningSentence(
-        difficulty: Int,
-        targetLanguage: String,
-        excludingTexts: [String] = []
-    ) async throws -> (targetText: String, englishMeaning: String) {
-        let desc = mandarinDifficultyDescription(difficulty)
+        let vocabDesc = mandarinVocabBandDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
             " Do NOT generate a sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let topic = Self.topics.randomElement() ?? "daily life"
+        let example = point.examples.randomElement() ?? ""
 
         let systemPrompt = """
         You are a Mandarin Chinese language learning content generator.
-        Generate a single natural Mandarin sentence suitable for listening comprehension practice at difficulty \(difficulty)/10.
-        \(desc)\(exclusionHint)
+        Generate a single natural Mandarin sentence for listening comprehension practice.
+        \(vocabDesc)\(exclusionHint)
 
-        The sentence should be natural spoken Mandarin (not literary). Include characters only — no pinyin in the targetText field.
+        Grammar target: \(point.name) — \(point.instruction)
+        Structural template (do NOT reuse its topic or vocabulary — only its grammar pattern): \(example)
+        Topic: \(topic)
+
+        The sentence should be natural spoken Mandarin (not literary). Include characters only — no pinyin.
         Also provide the English meaning.
 
         Return ONLY valid JSON in exactly this format:
@@ -192,7 +174,7 @@ final class MandarinService: OpenAIService {
         let raw = try await performRequest(
             messages: [
                 ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate one Mandarin listening sentence at difficulty \(difficulty)/10."]
+                ["role": "user", "content": "Generate one Mandarin listening sentence."]
             ],
             temperature: 0.9,
             responseFormat: "json_object"
@@ -206,8 +188,123 @@ final class MandarinService: OpenAIService {
             throw OpenAIError.decodingFailed("Could not parse Mandarin listening sentence response")
         }
 
-        return (targetText.trimmingCharacters(in: .whitespacesAndNewlines),
-                englishMeaning.trimmingCharacters(in: .whitespacesAndNewlines))
+        return MandarinGeneratedListeningSentence(
+            targetText: targetText.trimmingCharacters(in: .whitespacesAndNewlines),
+            englishMeaning: englishMeaning.trimmingCharacters(in: .whitespacesAndNewlines),
+            grammarPointID: point.id)
+    }
+
+    func generateListeningSentenceBatchWithPoints(
+        count: Int,
+        difficulty: Int,
+        excludingTexts: [String] = [],
+        context: GrammarPointSampleContext = GrammarPointSampleContext()
+    ) async throws -> [MandarinGeneratedListeningSentence] {
+        let points = MandarinGrammarBank.selectPoints(count: count, difficulty: difficulty, context: context)
+        guard !points.isEmpty else { throw OpenAIError.emptyResponse }
+
+        let vocabDesc = mandarinVocabBandDescription(difficulty)
+        let exclusionHint = excludingTexts.isEmpty ? "" :
+            " Do NOT repeat any sentence similar to: \(excludingTexts.prefix(10).joined(separator: "; "))."
+        let slots = buildSlotDescriptions(points: points).joined(separator: "\n\n")
+
+        let systemPrompt = """
+        You are a Mandarin Chinese language learning content generator.
+        Generate exactly \(points.count) natural Mandarin sentences for listening comprehension practice.
+        \(vocabDesc)\(exclusionHint)
+
+        Each sentence below targets a DIFFERENT Mandarin grammar pattern. A short example sentence \
+        demonstrating each pattern is given as a structural template only — write a NEW sentence using \
+        that grammar pattern, with a different topic and different vocabulary than the template. \
+        Include characters only — no pinyin.
+
+        \(slots)
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "sentences": [
+            {"targetText": "<Mandarin characters>", "englishMeaning": "<English translation>"},
+            ...
+          ]
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Generate \(points.count) Mandarin listening sentences."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 900
+        )
+
+        let pairs = try parseListeningSentenceBatch(raw)
+        return zip(pairs, points).map { pair, point in
+            MandarinGeneratedListeningSentence(targetText: pair.targetText, englishMeaning: pair.englishMeaning, grammarPointID: point.id)
+        }
+    }
+
+    private func buildSlotDescriptions(points: [GrammarPoint]) -> [String] {
+        let shuffledTopics = Self.topics.shuffled()
+        return points.enumerated().map { idx, point in
+            let topic = shuffledTopics[idx % shuffledTopics.count]
+            let example = point.examples.randomElement() ?? ""
+            return """
+            Sentence \(idx + 1) — topic: \(topic). Grammar target: \(point.name) — \(point.instruction) \
+            Structural template: \(example)
+            """
+        }
+    }
+
+    // MARK: - OpenAIService interface overrides (thin wrappers, kept for polymorphic callers)
+
+    override func generateSentence(
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = [],
+        sessionTexts: [String] = [],
+        grammarFocusAreas: [String] = []
+    ) async throws -> String {
+        var context = GrammarPointSampleContext()
+        context.focusAreas = grammarFocusAreas
+        let result = try await generateSentenceWithPoint(
+            difficulty: difficulty, excludingTexts: excludingTexts, sessionTexts: sessionTexts, context: context)
+        return result.text
+    }
+
+    override func generateSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = [],
+        grammarFocusAreas: [String] = []
+    ) async throws -> [String] {
+        var context = GrammarPointSampleContext()
+        context.focusAreas = grammarFocusAreas
+        let results = try await generateSentenceBatchWithPoints(
+            count: count, difficulty: difficulty, excludingTexts: excludingTexts, context: context)
+        return results.map(\.text)
+    }
+
+    override func generateListeningSentenceBatch(
+        count: Int,
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> [(targetText: String, englishMeaning: String)] {
+        let results = try await generateListeningSentenceBatchWithPoints(
+            count: count, difficulty: difficulty, excludingTexts: excludingTexts)
+        return results.map { ($0.targetText, $0.englishMeaning) }
+    }
+
+    override func generateListeningSentence(
+        difficulty: Int,
+        targetLanguage: String,
+        excludingTexts: [String] = []
+    ) async throws -> (targetText: String, englishMeaning: String) {
+        let result = try await generateListeningSentenceWithPoint(difficulty: difficulty, excludingTexts: excludingTexts)
+        return (result.targetText, result.englishMeaning)
     }
 
     // MARK: - Evaluate attempt
@@ -330,6 +427,74 @@ final class MandarinService: OpenAIService {
         return try parseEvaluationResult(raw)
     }
 
+    // MARK: - Produce mode (grammar-point-biased follow-up questions)
+    // Not an override of critiqueProduceResponse — a plain additional method, called via an
+    // `as? MandarinService` downcast in AppStore, matching the existing downcast pattern used
+    // for generateSentenceBatchWithPoints etc. rather than threading extra params through the
+    // shared OpenAIService interface.
+
+    func critiqueProduceResponseWithPoint(
+        targetLanguage: String,
+        difficulty: Int,
+        priorQuestion: String,
+        transcript: String,
+        conversationSoFar: [(question: String, transcript: String)] = [],
+        context: GrammarPointSampleContext = GrammarPointSampleContext()
+    ) async throws -> ProduceCritiqueResult {
+        let point = MandarinGrammarBank.selectPoints(count: 1, difficulty: difficulty, context: context).first
+
+        let vocabDesc = mandarinVocabBandDescription(difficulty)
+        let historyBlock = conversationSoFar.isEmpty ? "" : "\n\nConversation so far:\n" +
+            conversationSoFar.map { "Q: \($0.question)\nA: \($0.transcript)" }.joined(separator: "\n")
+        let grammarHint = point.map {
+            "\n\nIf it fits naturally, phrase your follow-up question so a good answer would naturally use this grammar pattern: \($0.name) — \($0.instruction) (Do NOT force it if it would make the question feel unnatural.)"
+        } ?? ""
+
+        let systemPrompt = """
+        You are a warm, encouraging Mandarin Chinese conversation partner and tutor. \(vocabDesc)
+
+        You just asked: "\(priorQuestion)"
+        The student responded in Mandarin: "\(transcript)"
+        \(historyBlock)
+
+        Do three things:
+        1. Split the student's response into individual sentences and critique EACH one for grammar/vocabulary/naturalness. \
+        For a sentence with no issues, set "issue" and "correction" to "" and "grammarIssueCategory" to "". \
+        For a sentence with an issue, choose ONE "grammarIssueCategory" from ONLY: particle_usage, measure_words, \
+        word_order, aspect_markers, ba_sentence, resultative_complement, potential_complement, topic_comment, \
+        negation, comparison, question_formation, verb_complement.
+        2. Give ONE brief, warm, natural reaction to the CONTENT of what they said (1 sentence, conversational, NOT a grade).
+        3. Ask ONE natural follow-up question in English that continues the conversation.\(grammarHint)
+
+        Notes:
+        - If the transcript is empty or clearly not Mandarin, return one critique entry noting no speech was \
+        detected, score 0, and still provide an encouraging reaction and follow-up question.
+        - Keep individual critique "issue" explanations concise — 1 sentence max.
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "overallReaction": "<1 sentence, conversational>",
+          "critiques": [
+            {"text": "<sentence segment as spoken>", "score": <0-100>, "issue": "<what's wrong, or empty>", "correction": "<corrected version, or empty>", "grammarIssueCategory": "<category_key, or empty>"},
+            ...
+          ],
+          "followUpQuestion": "<English follow-up question>",
+          "followUpQuestionTargetText": "<same question in Mandarin, or null>"
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Critique my response and ask a follow-up."]
+            ],
+            temperature: 0.4,
+            responseFormat: "json_object",
+            maxTokens: 1200
+        )
+        return try parseProduceCritiqueResult(raw, grammarPointID: point?.id)
+    }
+
     // MARK: - CJK Validation
 
     /// Returns true if `text` contains any CJK Unified Ideograph (U+4E00–U+9FFF),
@@ -343,79 +508,22 @@ final class MandarinService: OpenAIService {
         }
     }
 
-    // MARK: - Mandarin difficulty descriptions (10 distinct levels)
+    // MARK: - Mandarin vocab-band description (vocabulary/length only — grammar comes from MandarinGrammarBank)
 
-    private func mandarinDifficultyDescription(_ difficulty: Int) -> String {
+    private func mandarinVocabBandDescription(_ difficulty: Int) -> String {
         switch difficulty {
-        case 1:
-            return """
-            Difficulty 1 — HSK 1 core only. Use simple subject-verb-object sentences with the most \
-            basic everyday verbs (eat 吃, drink 喝, see 看, buy 买, like 喜欢). \
-            No negation, no questions, no measure words, no particles. \
-            The Mandarin translation should be 4–6 characters with zero grammar structures.
-            """
-        case 2:
-            return """
-            Difficulty 2 — Introduce 不 negation OR a 吗 yes-no question (not both). \
-            Add simple 1–2 word time phrases (every day 每天, right now 现在, today 今天). \
-            Still no measure words or aspect particles. Mix affirmative statements with \
-            one negation or one question per session.
-            """
-        case 3:
-            return """
-            Difficulty 3 — Require a time expression (今天/昨天/明天/这周) alongside a concrete action. \
-            Sentences should alternate between affirmative statements, 不 negations, and 吗 questions. \
-            Introduce 也 (also) or 都 (all/both). No measure words or aspect particles yet.
-            """
-        case 4:
-            return """
-            Difficulty 4 — Require at least one measure word + noun (一本书/两杯水/三个人/一件事). \
-            The quantity and object must be central to the sentence. \
-            Mix affirmative and negative forms. No aspect particles yet.
-            """
-        case 5:
-            return """
-            Difficulty 5 — Require the completion particle 了 (action completed or change of state). \
-            The Mandarin answer must naturally use 了 — e.g. 'I already ate', 'She has left', \
-            'It became cold'. Do not target 过 or 着 here; focus entirely on 了.
-            """
-        case 6:
-            return """
-            Difficulty 6 — Require the experiential particle 过 ('have ever done') OR the \
-            durative/progressive particle 着. Choose only ONE per sentence. \
-            E.g. 'Have you ever been to Shanghai?' (过) or 'She is wearing a red coat' (着). \
-            Avoid 了 at this level; the new particle is the grammatical focus.
-            """
-        case 7:
-            return """
-            Difficulty 7 — Require a resultative verb complement (verb + result morpheme): \
-            写完 (finish writing), 听懂 (understand by listening), 做好 (do well/finish), \
-            说清楚 (explain clearly), 找到 (find successfully). \
-            The complement must be essential to the meaning of the sentence.
-            """
-        case 8:
-            return """
-            Difficulty 8 — Require a potential complement with 得 or 不 to express possibility \
-            or impossibility: 听得懂/听不懂, 做得完/做不完, 吃得下/吃不下, 看得见/看不见. \
-            The core meaning must hinge on whether the action can or cannot be accomplished.
-            """
-        case 9:
-            return """
-            Difficulty 9 — Require a 把-sentence (disposal construction) where the object is \
-            specifically moved, changed, placed, or disposed of by the action: \
-            把书放在桌上, 把作业交给老师, 把房间打扫干净. \
-            The 把 structure must be the most natural way to express the idea in Mandarin.
-            """
-        case 10:
-            return """
-            Difficulty 10 — Require one of: (a) a complex topic-comment structure with an \
-            embedded relative clause; (b) a chengyu (4-character idiom) used naturally in context; \
-            (c) a sophisticated conditional (如果...就.../只要...才...); \
-            or (d) a formal/literary expression that would appear in written Chinese. \
-            Advanced vocabulary expected. Challenge a high-intermediate to advanced learner.
-            """
+        case 1, 2:
+            return "Use only the most basic HSK 1 vocabulary and very short sentences (roughly 4-8 characters when translated). Avoid abstract or descriptive words."
+        case 3, 4:
+            return "Use everyday HSK 2-3 vocabulary. Sentences may be slightly longer (roughly 6-12 characters) but should stay concrete and simple."
+        case 5, 6:
+            return "Use HSK 3-4 vocabulary, including some descriptive and abstract words. Sentences can be moderately complex (roughly 10-16 characters)."
+        case 7, 8:
+            return "Use HSK 4-5 vocabulary with more nuanced word choices. Sentences can be longer and combine multiple clauses where natural."
+        case 9, 10:
+            return "Use HSK 5-6 vocabulary, including idiomatic and sophisticated phrasing appropriate for an advanced learner. Sentences may be long and stylistically natural."
         default:
-            return "Generate a natural everyday English sentence for Mandarin translation practice."
+            return "Use natural, everyday vocabulary appropriate for an intermediate learner."
         }
     }
 }

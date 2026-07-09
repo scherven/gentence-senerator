@@ -30,6 +30,7 @@ struct DashboardView: View {
                     if !store.currentLangProfile.unlockedBadges.isEmpty {
                         recentBadgesSection
                     }
+                    retryLink
                     startButton
                 }
                 .padding()
@@ -183,6 +184,37 @@ struct DashboardView: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(16)
+    }
+
+    // MARK: - Retry Link
+
+    private var retryEligibleCount: Int {
+        store.allSentences()
+            .filter { $0.targetLanguage == store.settings.targetLanguage }
+            .filter { ($0.bestScore ?? 0) < 85 }
+            .count
+    }
+
+    private var retryLink: some View {
+        NavigationLink(destination: RetryView()) {
+            HStack {
+                Label("Retry Practice", systemImage: "arrow.counterclockwise.circle.fill")
+                Spacer()
+                if retryEligibleCount > 0 {
+                    Text("\(retryEligibleCount)")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                }
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+        .foregroundColor(.primary)
     }
 
     // MARK: - Start Button

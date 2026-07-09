@@ -18,8 +18,8 @@ struct ContentView: View {
                 .tabItem { Label("Listen", systemImage: "ear.fill") }
                 .tag(2)
 
-            RetryView()
-                .tabItem { Label("Retry", systemImage: "arrow.counterclockwise.circle.fill") }
+            ProduceView()
+                .tabItem { Label("Produce", systemImage: "bubble.left.and.text.bubble.right.fill") }
                 .tag(3)
 
             SettingsView()
@@ -34,6 +34,7 @@ struct ContentView: View {
             switch tab {
             case 1: store.activateMode(.translation)
             case 2: store.activateMode(.listening)
+            case 3: store.activateProduceMode()
             default: break
             }
         }

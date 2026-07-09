@@ -29,6 +29,21 @@ final class AppStore: ObservableObject {
     /// User-edited transcript during recording; overrides speech recognizer result when set.
     @Published var pendingUserEdit: String? = nil
 
+    // MARK: - Produce Mode Published State
+    // Mirrors the Translate/Listen fields above with a produce-prefix so in-flight recording
+    // state never collides if a user switches modes mid-flow.
+    @Published var producePhase: ProducePhase = .idle
+    @Published var produceSession: ProduceSession?
+    @Published var produceCurrentQuestion: String = ""
+     @Published var produceCurrentQuestionTargetText: String?
+    @Published var produceLastTurn: ProduceTurn?
+    @Published var isProduceEndlessMode: Bool = false
+    @Published var produceNewlyUnlockedBadges: [Badge] = []
+    @Published var produceXPJustEarned: Int = 0
+    @Published var producePendingTranscript: String = ""
+    @Published var producePendingAudioURL: URL?
+    @Published var producePendingUserEdit: String? = nil
+
     public var retryOriginalSentence: Sentence?
     /// In-flight Azure pronunciation assessment task, started during stopAndReview()
     /// so it can complete while the user reviews the transcript.
@@ -61,6 +76,7 @@ final class AppStore: ObservableObject {
     private let sessionsKey = "dailySessions_v1"
     private let sentencesKey = "sentences_v1"
     private let sentenceCacheKey = "sentenceCache_v1"
+    private let produceSessionsKey = "produceSessions_v1"
 
     // MARK: - Init
 
@@ -89,6 +105,8 @@ final class AppStore: ObservableObject {
     }
 
     var todayGoal: Int { currentLangProfile.dailySentenceGoal }
+    var produceTurnGoal: Int { currentLangProfile.dailySentenceGoal }
+    var produceTurnCount: Int { produceSession?.turns.count ?? 0 }
 
     var averageScore: Double {
         guard !currentLangProfile.recentScores.isEmpty else { return 0 }
@@ -206,12 +224,49 @@ final class AppStore: ObservableObject {
 
         var newSentences: [Sentence] = []
         let batchSize = 5
+        let mandarin = languageService as? MandarinService
 
         var remaining = n
         while remaining > 0 {
             let batchCount = min(batchSize, remaining)
             do {
-                if isListening {
+                if let mandarin {
+                    let context = grammarPointContext
+                    if isListening {
+                        let results = try await mandarin.generateListeningSentenceBatchWithPoints(
+                            count: batchCount,
+                            difficulty: difficulty,
+                            excludingTexts: recent + newSentences.map(\.englishText),
+                            context: context
+                        )
+                        for r in results {
+                            newSentences.append(Sentence(
+                                englishText: r.englishMeaning,
+                                targetLanguage: language,
+                                difficultyLevel: difficulty,
+                                listeningTargetText: r.targetText,
+                                targetGrammarPointID: r.grammarPointID
+                            ))
+                        }
+                        recordGrammarPointUsage(results.map(\.grammarPointID))
+                    } else {
+                        let results = try await mandarin.generateSentenceBatchWithPoints(
+                            count: batchCount,
+                            difficulty: difficulty,
+                            excludingTexts: recent + newSentences.map(\.englishText),
+                            context: context
+                        )
+                        for r in results {
+                            newSentences.append(Sentence(
+                                englishText: r.text,
+                                targetLanguage: language,
+                                difficultyLevel: difficulty,
+                                targetGrammarPointID: r.grammarPointID
+                            ))
+                        }
+                        recordGrammarPointUsage(results.map(\.grammarPointID))
+                    }
+                } else if isListening {
                     let pairs = try await languageService.generateListeningSentenceBatch(
                         count: batchCount,
                         difficulty: difficulty,
@@ -432,6 +487,7 @@ final class AppStore: ObservableObject {
 
         // Update difficulty tracking
         updateDifficulty(with: result.score)
+        updateGrammarPointWeakness(sentence: todaySentences[currentSentenceIndex], result: result)
 
         // Check badges
         let newBadges = checkAndAwardBadges()
@@ -576,6 +632,14 @@ final class AppStore: ObservableObject {
         practicePhase = .reviewingTranscription
     }
 
+    /// Produce-mode equivalent of evaluateTypedInput — routes typed input through the same
+    /// review screen as a spoken response.
+    func evaluateProduceTypedInput(transcript: String) async {
+        guard producePhase == .readyToRecord else { return }
+        producePendingTranscript = transcript
+        producePhase = .reviewingTranscript
+    }
+
     func completeSession() {
         guard var session = todaySession else { return }
 
@@ -622,12 +686,41 @@ final class AppStore: ObservableObject {
         let difficulty = currentLangProfile.currentDifficultyLevel
         let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
         let isListening = settings.practiceMode == .listening
+        let mandarin = languageService as? MandarinService
 
         var newSentences: [Sentence] = []
         for _ in 0..<count {
             do {
                 let sentence: Sentence
-                if isListening {
+                if let mandarin {
+                    let context = grammarPointContext
+                    let recentPointIDs = Array((todaySentences + newSentences).suffix(2).compactMap(\.targetGrammarPointID))
+                    if isListening {
+                        let result = try await mandarin.generateListeningSentenceWithPoint(
+                            difficulty: difficulty,
+                            excludingTexts: recent + todaySentences.map(\.englishText),
+                            context: context,
+                            recentPointIDs: recentPointIDs
+                        )
+                        sentence = Sentence(
+                            englishText: result.englishMeaning,
+                            targetLanguage: language,
+                            difficultyLevel: difficulty,
+                            listeningTargetText: result.targetText,
+                            targetGrammarPointID: result.grammarPointID
+                        )
+                    } else {
+                        let result = try await mandarin.generateSentenceWithPoint(
+                            difficulty: difficulty,
+                            excludingTexts: recent + todaySentences.map(\.englishText),
+                            sessionTexts: newSentences.map(\.englishText),
+                            context: context,
+                            recentPointIDs: recentPointIDs
+                        )
+                        sentence = Sentence(englishText: result.text, targetLanguage: language, difficultyLevel: difficulty, targetGrammarPointID: result.grammarPointID)
+                    }
+                    recordGrammarPointUsage(sentence.targetGrammarPointID.map { [$0] } ?? [])
+                } else if isListening {
                     let (targetText, englishMeaning) = try await languageService.generateListeningSentence(
                         difficulty: difficulty,
                         targetLanguage: language,
@@ -744,6 +837,327 @@ final class AppStore: ObservableObject {
         Task { await prepareOrResumeTodaySession() }
     }
 
+    // MARK: - Produce Mode
+
+    /// Activates Produce mode. Not routed through activateMode(_:) since Produce isn't a
+    /// PracticeMode case — it doesn't participate in that enum's Translate/Listen machinery.
+    func activateProduceMode() {
+        speech.stopSpeaking()
+        if speech.isRecording { speech.cancelRecording() }
+        producePhase = .idle
+        produceLastTurn = nil
+        producePendingTranscript = ""
+        producePendingAudioURL = nil
+        isProduceEndlessMode = false
+        Task { await prepareOrResumeProduceSession() }
+    }
+
+    func prepareOrResumeProduceSession() async {
+        let sessionID = produceSessionID()
+
+        if let session = produceSession, session.id == sessionID {
+            if session.isComplete {
+                producePhase = .sessionComplete
+            } else {
+                await resumeProduceSession(session)
+            }
+            return
+        }
+
+        let sessions = loadProduceSessions()
+        if let existing = sessions.first(where: { $0.id == sessionID }) {
+            produceSession = existing
+            if existing.isComplete {
+                producePhase = .sessionComplete
+            } else {
+                await resumeProduceSession(existing)
+            }
+            return
+        }
+
+        await startProduceSession()
+    }
+
+    private func resumeProduceSession(_ session: ProduceSession) async {
+        produceLastTurn = session.turns.last
+        // The staged follow-up question only lives in memory (produceCurrentQuestion) — if the
+        // app was relaunched mid-session it's gone, so ask the model to continue the conversation.
+        if produceCurrentQuestion.isEmpty {
+            await generateProduceContinuationQuestion()
+        } else {
+            producePhase = .readyToRecord
+        }
+    }
+
+    func startProduceSession() async {
+        producePhase = .generatingQuestion
+        isLoadingAI = true
+        defer { isLoadingAI = false }
+
+        let sessionID = produceSessionID()
+        let language = settings.targetLanguage
+        let difficulty = currentLangProfile.currentDifficultyLevel
+
+        do {
+            let (question, targetText) = try await languageService.startProduceConversation(
+                difficulty: difficulty, targetLanguage: language)
+            produceCurrentQuestion = question
+            produceCurrentQuestionTargetText = targetText
+
+            let session = ProduceSession(
+                id: sessionID, date: Date(), targetLanguage: language, difficultyLevel: difficulty)
+            produceSession = session
+            saveProduceSession(session)
+
+            producePhase = .readyToRecord
+        } catch let error as OpenAIError {
+            producePhase = .error("Failed to start conversation: \(error.localizedDescription)")
+        } catch {
+            producePhase = .error("Failed to start conversation: \(error.localizedDescription)")
+        }
+    }
+
+    private func generateProduceContinuationQuestion() async {
+        producePhase = .generatingQuestion
+        let language = settings.targetLanguage
+        let difficulty = currentLangProfile.currentDifficultyLevel
+        do {
+            let (question, targetText) = try await languageService.startProduceConversation(
+                difficulty: difficulty, targetLanguage: language)
+            produceCurrentQuestion = question
+            produceCurrentQuestionTargetText = targetText
+            producePhase = .readyToRecord
+        } catch {
+            producePhase = .error("Failed to continue conversation: \(error.localizedDescription)")
+        }
+    }
+
+    func startProduceRecording() {
+        guard producePhase == .readyToRecord else { return }
+        producePendingUserEdit = nil
+        do {
+            try speech.startRecording(language: settings.targetLanguage)
+            producePhase = .recording
+        } catch {
+            producePhase = .error(error.localizedDescription)
+        }
+    }
+
+    func stopProduceRecordingAndReview() async {
+        guard producePhase == .recording else { return }
+        producePhase = .transcribing
+
+        let rawTranscript = await speech.stopRecording()
+        let transcript = producePendingUserEdit ?? rawTranscript
+        producePendingUserEdit = nil
+        producePendingTranscript = transcript
+        producePendingAudioURL = speech.lastRecordingURL
+        producePhase = .reviewingTranscript
+    }
+
+    func reRecordProduce() {
+        guard producePhase == .reviewingTranscript else { return }
+        speech.stopSpeaking()
+        producePendingTranscript = ""
+        producePendingAudioURL = nil
+        producePendingUserEdit = nil
+        speech.resetTranscript()
+        producePhase = .readyToRecord
+    }
+
+    func submitProduceResponse() async {
+        guard producePhase == .reviewingTranscript else { return }
+        producePhase = .critiquing
+
+        guard var session = produceSession else {
+            producePhase = .error("No active conversation.")
+            return
+        }
+
+        let transcript = producePendingTranscript
+        let question = produceCurrentQuestion
+        let language = settings.targetLanguage
+        let difficulty = currentLangProfile.currentDifficultyLevel
+        let history = session.turns.map { (question: $0.question, transcript: $0.transcript) }
+        let mandarin = languageService as? MandarinService
+
+        do {
+            let result: ProduceCritiqueResult
+            if let mandarin {
+                result = try await mandarin.critiqueProduceResponseWithPoint(
+                    targetLanguage: language, difficulty: difficulty, priorQuestion: question,
+                    transcript: transcript.isEmpty ? "[no speech detected]" : transcript,
+                    conversationSoFar: history, context: grammarPointContext)
+            } else {
+                result = try await languageService.critiqueProduceResponse(
+                    targetLanguage: language, difficulty: difficulty, priorQuestion: question,
+                    transcript: transcript.isEmpty ? "[no speech detected]" : transcript,
+                    conversationSoFar: history)
+            }
+
+            let turn = ProduceTurn(
+                question: question,
+                questionTargetText: produceCurrentQuestionTargetText,
+                transcript: transcript,
+                overallReaction: result.overallReaction,
+                critiques: result.critiques,
+                audioFilename: producePendingAudioURL?.lastPathComponent,
+                targetGrammarPointID: result.grammarPointID
+            )
+
+            session.turns.append(turn)
+            produceLastTurn = turn
+
+            // Feed the same shared progress signals Translation/Listening feed per attempt.
+            currentLangProfile.totalSentencesCompleted += 1
+            updateDifficulty(with: turn.averageScore)
+            if let pointID = result.grammarPointID {
+                recordGrammarPointUsage([pointID])
+                updateGrammarPointWeakness(
+                    pointID: pointID,
+                    categoryScorePairs: turn.critiques.map { (category: $0.grammarIssueCategory, score: $0.score) })
+            }
+
+            let xp = calculateProduceXP(turn: turn)
+            awardXP(xp)
+            produceXPJustEarned = xp
+            session.totalXPEarned += xp
+            produceSession = session
+            saveProduceSession(session)
+
+            let newBadges = checkAndAwardBadges()
+            produceNewlyUnlockedBadges = newBadges
+
+            save()
+
+            // Stage the follow-up question this same call already generated for the next turn.
+            produceCurrentQuestion = result.followUpQuestion
+            produceCurrentQuestionTargetText = result.followUpQuestionTargetText
+            producePendingTranscript = ""
+            producePendingAudioURL = nil
+
+            producePhase = .showingCritique
+        } catch {
+            producePhase = .error("Failed to get feedback: \(error.localizedDescription)")
+        }
+    }
+
+    func continueProduceConversation() {
+        guard let session = produceSession else { return }
+        speech.stopSpeaking()
+        speech.resetTranscript()
+        produceLastTurn = nil
+        produceNewlyUnlockedBadges = []
+        produceXPJustEarned = 0
+
+        if session.turns.count >= produceTurnGoal && !isProduceEndlessMode {
+            completeProduceSession()
+        } else {
+            producePhase = .readyToRecord
+        }
+    }
+
+    func startProduceEndlessMode() async {
+        isProduceEndlessMode = true
+        produceNewlyUnlockedBadges = []
+        // The staged follow-up question normally already lives in produceCurrentQuestion from
+        // the last submitProduceResponse call — but if this session was completed in a prior
+        // app launch and just resumed, that in-memory value is gone, so regenerate it.
+        if produceCurrentQuestion.isEmpty {
+            await generateProduceContinuationQuestion()
+        } else {
+            producePhase = .readyToRecord
+        }
+    }
+
+    /// Ends the session early. Already-submitted turns keep their XP/progress — only the
+    /// in-flight (not-yet-submitted) turn, if any, is discarded.
+    func endProduceSessionEarly() {
+        speech.stopSpeaking()
+        if speech.isRecording { speech.cancelRecording() }
+        completeProduceSession()
+    }
+
+    private func completeProduceSession() {
+        guard var session = produceSession else { return }
+        // Endless mode can call this again after the session already completed once (the user
+        // taps "Keep Going" then later ends) — track that separately from `isComplete` so a
+        // second call still refreshes streak/badges and shows the complete screen, it just
+        // doesn't re-award the flat completion bonus.
+        let alreadyCompletedOnce = session.isComplete
+        session.isComplete = true
+
+        // Same completion bonus Translate/Listen award via completeSession() — gated on
+        // actually reaching the turn goal so ending early doesn't grant the full bonus for
+        // a single turn (per-turn XP is still kept either way, awarded in submitProduceResponse),
+        // and gated on not having already awarded it once this session.
+        if !alreadyCompletedOnce && session.turns.count >= produceTurnGoal {
+            let bonus = 50 + (currentLangProfile.currentStreak * 5)
+            awardXP(bonus)
+            session.totalXPEarned += bonus
+        }
+        produceSession = session
+
+        updateStreak()
+        let newBadges = checkAndAwardBadges()
+        produceNewlyUnlockedBadges.append(contentsOf: newBadges)
+
+        saveProduceSession(session)
+        save()
+
+        producePhase = .sessionComplete
+    }
+
+    private func calculateProduceXP(turn: ProduceTurn) -> Int {
+        // Same shape as calculateXP(score:attemptNumber:), always at "first attempt" weight
+        // since Produce turns aren't retried — each turn is a first (and only) attempt.
+        let baseXP = turn.averageScore / 5
+        let diffMult = 1.0 + Double(currentLangProfile.currentDifficultyLevel - 1) * 0.15
+        let streakBonus: Double
+        switch currentLangProfile.currentStreak {
+        case 0..<3: streakBonus = 1.0
+        case 3..<7: streakBonus = 1.1
+        case 7..<14: streakBonus = 1.25
+        case 14..<30: streakBonus = 1.5
+        default: streakBonus = 2.0
+        }
+        // Small bonus for multi-sentence responses — rewards elaboration, a Produce-specific signal.
+        let elaborationBonus = 1.0 + min(0.3, Double(max(0, turn.critiques.count - 1)) * 0.1)
+        let xp = Int(Double(baseXP) * diffMult * streakBonus * elaborationBonus)
+        return max(1, xp)
+    }
+
+    private func produceSessionID() -> String {
+        "\(todayISOString())_\(settings.targetLanguage)_produce"
+    }
+
+    private func loadProduceSessions() -> [ProduceSession] {
+        guard let data = UserDefaults.standard.data(forKey: produceSessionsKey),
+              let sessions = try? JSONDecoder().decode([ProduceSession].self, from: data) else {
+            return []
+        }
+        return sessions
+    }
+
+    private func saveProduceSession(_ session: ProduceSession) {
+        var sessions = loadProduceSessions()
+        if let idx = sessions.firstIndex(where: { $0.id == session.id }) {
+            sessions[idx] = session
+        } else {
+            sessions.append(session)
+        }
+        if sessions.count > 90 {
+            sessions = Array(sessions.suffix(90))
+        }
+        if let data = try? JSONEncoder().encode(sessions) {
+            UserDefaults.standard.set(data, forKey: produceSessionsKey)
+        }
+    }
+
+    func allProduceSessions() -> [ProduceSession] {
+        loadProduceSessions()
+    }
+
     // MARK: - Offline Sentence Cache
 
     /// Download and store `count` sentences for the current language + difficulty.
@@ -756,6 +1170,7 @@ final class AppStore: ObservableObject {
         let difficulty = currentLangProfile.currentDifficultyLevel
         let existingTexts = loadCache().map(\.englishText)
         let recent = Array(currentLangProfile.seenSentenceTexts.suffix(50))
+        let mandarin = languageService as? MandarinService
 
         var fetched: [Sentence] = []
         let batchSize = 5
@@ -763,18 +1178,33 @@ final class AppStore: ObservableObject {
         while remaining > 0 {
             let batchCount = min(batchSize, remaining)
             do {
-                let texts = try await languageService.generateSentenceBatch(
-                    count: batchCount,
-                    difficulty: difficulty,
-                    targetLanguage: language,
-                    excludingTexts: recent + existingTexts + fetched.map(\.englishText),
-                    grammarFocusAreas: currentLangProfile.grammarFocusAreas
-                )
-                for text in texts {
-                    fetched.append(Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty))
+                if let mandarin {
+                    let results = try await mandarin.generateSentenceBatchWithPoints(
+                        count: batchCount,
+                        difficulty: difficulty,
+                        excludingTexts: recent + existingTexts + fetched.map(\.englishText),
+                        context: grammarPointContext
+                    )
+                    for r in results {
+                        fetched.append(Sentence(englishText: r.text, targetLanguage: language, difficultyLevel: difficulty, targetGrammarPointID: r.grammarPointID))
+                    }
+                    recordGrammarPointUsage(results.map(\.grammarPointID))
+                    remaining -= results.count
+                    if results.count < batchCount { break }
+                } else {
+                    let texts = try await languageService.generateSentenceBatch(
+                        count: batchCount,
+                        difficulty: difficulty,
+                        targetLanguage: language,
+                        excludingTexts: recent + existingTexts + fetched.map(\.englishText),
+                        grammarFocusAreas: currentLangProfile.grammarFocusAreas
+                    )
+                    for text in texts {
+                        fetched.append(Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty))
+                    }
+                    remaining -= texts.count
+                    if texts.count < batchCount { break }  // API returned fewer than requested
                 }
-                remaining -= texts.count
-                if texts.count < batchCount { break }  // API returned fewer than requested
             } catch {
                 break  // stop on error, keep what we have
             }
@@ -872,6 +1302,46 @@ final class AppStore: ObservableObject {
         }
     }
 
+    // MARK: - Grammar Point Tracking (Mandarin)
+
+    /// Snapshot of per-point usage/weakness + user-pinned focus areas, handed to MandarinService
+    /// so it can sample the next grammar point(s) from the cumulative unlocked pool instead of
+    /// a single difficulty-mandated structure.
+    private var grammarPointContext: GrammarPointSampleContext {
+        GrammarPointSampleContext(
+            usage: currentLangProfile.grammarPointUsage,
+            weakness: currentLangProfile.grammarPointWeakness,
+            focusAreas: currentLangProfile.grammarFocusAreas
+        )
+    }
+
+    private func recordGrammarPointUsage(_ ids: [String]) {
+        for id in ids {
+            currentLangProfile.grammarPointUsage[id, default: 0] += 1
+        }
+    }
+
+    /// Bumps a point's weakness score when a sub-85 attempt's evaluator-flagged grammarIssues
+    /// includes the category the targeted sentence was actually drilling — feeds performance
+    /// back into future sampling so struggled-with points resurface more often.
+    private func updateGrammarPointWeakness(sentence: Sentence, result: SentenceEvaluationResult) {
+        // A single attempt has one score but up to 2 grammarIssues categories — each category
+        // is paired with that same score (not zipped positionally, since the two arrays don't
+        // share cardinality).
+        let pairs = result.grammarIssues.map { (category: $0, score: result.score) }
+        updateGrammarPointWeakness(pointID: sentence.targetGrammarPointID, categoryScorePairs: pairs)
+    }
+
+    /// Same as above but for a Produce turn, which yields one (category, score) pair per
+    /// critiqued sentence from a single multi-sentence transcript.
+    private func updateGrammarPointWeakness(pointID: String?, categoryScorePairs: [(category: String, score: Int)]) {
+        guard let pointID, let point = MandarinGrammarBank.byID[pointID] else { return }
+        let anyWeak = categoryScorePairs.contains { $0.score < 85 && $0.category == point.issueCategory }
+        if anyWeak {
+            currentLangProfile.grammarPointWeakness[pointID, default: 0] += 1
+        }
+    }
+
     private func updateStreak() {
         let today = todayISOString()
         let yesterday = yesterdayISOString()
@@ -948,6 +1418,10 @@ final class AppStore: ObservableObject {
         lastEvaluation = nil
         pendingTranscript = ""
         pendingAudioURL = nil
+        produceSession = nil
+        producePhase = .idle
+        producePendingTranscript = ""
+        producePendingAudioURL = nil
         save()
         Task { await prepareOrResumeTodaySession() }
     }
@@ -977,12 +1451,17 @@ final class AppStore: ObservableObject {
         lastEvaluation = nil
         newlyUnlockedBadges = []
         xpJustEarned = 0
+        produceSession = nil
+        producePhase = .idle
+        produceNewlyUnlockedBadges = []
+        produceXPJustEarned = 0
 
         UserDefaults.standard.removeObject(forKey: profileKey)
         UserDefaults.standard.removeObject(forKey: settingsKey)
         UserDefaults.standard.removeObject(forKey: sessionsKey)
         UserDefaults.standard.removeObject(forKey: sentencesKey)
         UserDefaults.standard.removeObject(forKey: sentenceCacheKey)
+        UserDefaults.standard.removeObject(forKey: produceSessionsKey)
     }
 
     // MARK: - Persistence

@@ -334,10 +334,19 @@ private struct RecordingView: View {
     @State private var displayTranscript: String = ""
     @State private var userHasEdited: Bool = false
 
-    var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
+    private var transcriptBinding: Binding<String> {
+        Binding(
+            get: { displayTranscript },
+            set: { newVal in
+                displayTranscript = newVal
+                userHasEdited = true
+                store.pendingUserEdit = newVal
+            }
+        )
+    }
 
+    var body: some View {
+        VStack(spacing: 24) {
             // Sentence reminder
             if let sentence = store.currentSentence {
                 let isListening = store.settings.practiceMode == .listening
@@ -354,44 +363,11 @@ private struct RecordingView: View {
                     .padding(.horizontal)
             }
 
-            // Live transcript (editable)
-            VStack(alignment: .leading, spacing: 4) {
-                TextField("Transcript will appear here…", text: $displayTranscript, axis: .vertical)
-                    .font(.body)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-                    .onChange(of: displayTranscript) { newVal in
-                        userHasEdited = true
-                        store.pendingUserEdit = newVal
-                    }
-                if userHasEdited {
-                    Text("Edited")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
-                }
-            }
-            .opacity(displayTranscript.isEmpty && !userHasEdited ? 0 : 1)
-            .onChange(of: store.speech.transcript) { newVal in
-                if !userHasEdited {
-                    displayTranscript = newVal
-                }
-            }
-            .onAppear {
-                displayTranscript = store.speech.transcript
-                userHasEdited = false
-                store.pendingUserEdit = nil
-            }
+            Spacer()
 
             // Pulsing stop button
             Button {
-                Task {
-                    await store.stopAndReview()
-                }
+                Task { await store.stopAndReview() }
             } label: {
                 ZStack {
                     Circle()
@@ -413,14 +389,50 @@ private struct RecordingView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
+            // Live transcript (always visible, editable)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Transcript")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .textCase(.uppercase)
+                    Spacer()
+                    if userHasEdited {
+                        Text("Edited")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal)
+
+                TextField("Listening…", text: transcriptBinding, axis: .vertical)
+                    .font(.body)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+            }
+            .onChange(of: store.speech.transcript) { newVal in
+                if !userHasEdited {
+                    displayTranscript = newVal
+                }
+            }
+            .onAppear {
+                displayTranscript = store.speech.transcript
+                userHasEdited = false
+                store.pendingUserEdit = nil
+            }
+
             Spacer()
         }
+        .padding(.top)
     }
 }
 
 // MARK: - Processing View
 
-private struct ProcessingView: View {
+struct ProcessingView: View {
     let message: String
 
     var body: some View {
@@ -1077,7 +1089,7 @@ private struct PinyinAnnotationView: View {
 // MARK: - Playback Button
 
 /// A small speaker button that reads `text` aloud in `language` using TTS.
-private struct PlaybackButton: View {
+struct PlaybackButton: View {
     @EnvironmentObject var store: AppStore
     let text: String
     let language: String

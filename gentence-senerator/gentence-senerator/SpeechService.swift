@@ -172,8 +172,20 @@ class SpeechService: ObservableObject {
         // Install audio tap — converts hardware buffers (float32 44.1/48kHz) to
         // 16kHz 16-bit mono PCM using AVAudioConverter, accumulates raw PCM bytes,
         // and writes a proper WAV file in stopRecording().
+        //
+        // prepare() must be called before reading outputFormat — the engine must be
+        // configured so that inputNode reports a valid sample rate / channel count.
+        audioEngine.prepare()
+
         let inputNode = audioEngine.inputNode
         let hardwareFormat = inputNode.outputFormat(forBus: 0)
+
+        guard hardwareFormat.sampleRate > 0, hardwareFormat.channelCount > 0 else {
+            throw SpeechError.audioEngineFailure(
+                NSError(domain: "SpeechService", code: -3,
+                        userInfo: [NSLocalizedDescriptionKey: "Audio input format is invalid (sampleRate=\(hardwareFormat.sampleRate), channels=\(hardwareFormat.channelCount))"]))
+        }
+
         let targetFormat = AVAudioFormat(commonFormat: .pcmFormatInt16,
                                          sampleRate: 16000,
                                          channels: 1,
@@ -215,7 +227,6 @@ class SpeechService: ObservableObject {
             capture.append(bytes)
         }
 
-        audioEngine.prepare()
         do {
             try audioEngine.start()
         } catch {

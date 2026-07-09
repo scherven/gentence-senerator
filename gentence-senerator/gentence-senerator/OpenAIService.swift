@@ -332,6 +332,143 @@ class OpenAIService {
         return try parseEvaluationResult(raw)
     }
 
+    // MARK: - Produce mode (generic fallback — conversational storytelling practice)
+    // Overridden per-language only where richer behavior is warranted (see MandarinService,
+    // which adds grammar-point-biased follow-up questions via a separate downcast-only method
+    // rather than an override — see critiqueProduceResponseWithPoint).
+
+    func startProduceConversation(
+        difficulty: Int,
+        targetLanguage: String
+    ) async throws -> (question: String, questionTargetText: String?) {
+        let desc = difficultyDescription(difficulty, for: targetLanguage)
+        let systemPrompt = """
+        You are a friendly \(targetLanguage) conversation partner helping a language learner practice \
+        telling a story or describing an experience in \(targetLanguage), difficulty \(difficulty)/10. \(desc)
+
+        Ask ONE natural, open-ended opening question in English that invites the learner to describe \
+        something personal (e.g. their weekend, a memorable trip, their daily routine, a hobby, a favorite meal). \
+        The question should be simple enough to answer in \(targetLanguage) at this difficulty level.
+
+        Return ONLY valid JSON in exactly this format:
+        {"question": "<English question>", "questionTargetText": "<same question translated naturally into \(targetLanguage), or null>"}
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Ask me an opening question."]
+            ],
+            temperature: 0.9,
+            responseFormat: "json_object",
+            maxTokens: 300
+        )
+
+        guard let data = raw.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let question = json["question"] as? String, !question.isEmpty else {
+            throw OpenAIError.decodingFailed("Could not parse produce conversation start")
+        }
+        let targetText = json["questionTargetText"] as? String
+        return (question.trimmingCharacters(in: .whitespacesAndNewlines), targetText)
+    }
+
+    func critiqueProduceResponse(
+        targetLanguage: String,
+        difficulty: Int,
+        priorQuestion: String,
+        transcript: String,
+        conversationSoFar: [(question: String, transcript: String)] = []
+    ) async throws -> ProduceCritiqueResult {
+        let desc = difficultyDescription(difficulty, for: targetLanguage)
+        let historyBlock = conversationSoFar.isEmpty ? "" : "\n\nConversation so far:\n" +
+            conversationSoFar.map { "Q: \($0.question)\nA: \($0.transcript)" }.joined(separator: "\n")
+
+        let systemPrompt = """
+        You are a warm, encouraging \(targetLanguage) conversation partner and tutor. \(desc)
+
+        You just asked: "\(priorQuestion)"
+        The student responded in \(targetLanguage): "\(transcript)"
+        \(historyBlock)
+
+        Do three things:
+        1. Split the student's response into individual sentences (or clauses if run-on) and critique EACH \
+        one for grammar/vocabulary/naturalness. For a sentence with no issues, set "issue" and "correction" \
+        to "" and "grammarIssueCategory" to "". For a sentence with an issue, choose ONE "grammarIssueCategory" \
+        from ONLY: word_order, negation, verb_tense, vocabulary_choice, agreement, preposition_usage.
+        2. Give ONE brief, warm, natural reaction to the CONTENT of what they said (1 sentence, conversational, \
+        NOT a grade or score commentary — e.g. "That sounds like a relaxing weekend!").
+        3. Ask ONE natural follow-up question in English that continues the conversation, building on what \
+        they just said.
+
+        Notes:
+        - If the transcript is empty or clearly not \(targetLanguage), return one critique entry noting no \
+        speech was detected, score 0, and still provide an encouraging reaction and follow-up question.
+        - Keep individual critique "issue" explanations concise — 1 sentence max.
+
+        Return ONLY valid JSON in exactly this format:
+        {
+          "overallReaction": "<1 sentence, conversational>",
+          "critiques": [
+            {"text": "<sentence segment as spoken>", "score": <0-100>, "issue": "<what's wrong, or empty>", "correction": "<corrected version, or empty>", "grammarIssueCategory": "<category_key, or empty>"},
+            ...
+          ],
+          "followUpQuestion": "<English follow-up question>",
+          "followUpQuestionTargetText": "<same question in \(targetLanguage), or null>"
+        }
+        """
+
+        let raw = try await performRequest(
+            messages: [
+                ["role": "system", "content": systemPrompt],
+                ["role": "user", "content": "Critique my response and ask a follow-up."]
+            ],
+            temperature: 0.4,
+            responseFormat: "json_object",
+            maxTokens: 1200
+        )
+        return try parseProduceCritiqueResult(raw, grammarPointID: nil)
+    }
+
+    // MARK: - Produce parsing helper (accessible to subclasses)
+
+    func parseProduceCritiqueResult(_ raw: String, grammarPointID: String?) throws -> ProduceCritiqueResult {
+        guard let data = raw.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw OpenAIError.decodingFailed("Could not parse produce critique response")
+        }
+
+        let overallReaction = json["overallReaction"] as? String ?? ""
+        let followUpQuestion = (json["followUpQuestion"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !followUpQuestion.isEmpty else {
+            throw OpenAIError.decodingFailed("Missing followUpQuestion in produce critique response")
+        }
+        let followUpTargetText = json["followUpQuestionTargetText"] as? String
+
+        let critiques: [ProduceSentenceCritique]
+        if let rawCritiques = json["critiques"] as? [[String: Any]] {
+            critiques = rawCritiques.compactMap { dict in
+                guard let text = dict["text"] as? String, !text.isEmpty else { return nil }
+                let score = min(100, max(0, dict["score"] as? Int ?? 0))
+                let issue = dict["issue"] as? String ?? ""
+                let correction = dict["correction"] as? String ?? ""
+                let grammarIssueCategory = dict["grammarIssueCategory"] as? String ?? ""
+                return ProduceSentenceCritique(text: text, score: score, issue: issue,
+                                                correction: correction, grammarIssueCategory: grammarIssueCategory)
+            }
+        } else {
+            critiques = []
+        }
+
+        return ProduceCritiqueResult(
+            overallReaction: overallReaction,
+            critiques: critiques,
+            followUpQuestion: followUpQuestion,
+            followUpQuestionTargetText: followUpTargetText,
+            grammarPointID: grammarPointID
+        )
+    }
+
     // MARK: - Internal helpers (accessible to subclasses)
 
     func performRequest(
