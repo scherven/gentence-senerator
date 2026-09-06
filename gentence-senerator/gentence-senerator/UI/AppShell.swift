@@ -21,6 +21,8 @@ struct AppShell: View {
 struct ModeScreen: View {
     @Bindable var store: Store
     @State private var typing = ""
+    @State private var showingSettings = false
+    @State private var showingHistory = false
 
     var body: some View {
         Group {
@@ -51,12 +53,26 @@ struct ModeScreen: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Text(progressLabel)
-                    .font(Theme.F.label)
-                    .foregroundStyle(Theme.C.ink3)
+            if case .idle = store.phase {
+                ToolbarItem(placement: .topBarLeading) {
+                    TinyButton(title: "History") { showingHistory = true }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    TinyButton(title: store.settings.language.flag) { showingSettings = true }
+                }
+            } else {
+                ToolbarItem(placement: .topBarLeading) {
+                    TinyButton(title: "End") { store.endSession() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Text(progressLabel)
+                        .font(Theme.F.label)
+                        .foregroundStyle(Theme.C.ink3)
+                }
             }
         }
+        .sheet(isPresented: $showingSettings) { SettingsScreen(store: store) }
+        .sheet(isPresented: $showingHistory) { HistoryScreen(store: store) }
     }
 
     /// Before a mode is picked there is no mode to name, so the title carries
@@ -77,7 +93,7 @@ struct ModeScreen: View {
 
     private var start: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Practice")
+            ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
             ForEach(Mode.allCases) { mode in
                 Button { Task { await store.begin(mode) } } label: {
                     VStack(alignment: .leading, spacing: 3) {
@@ -123,6 +139,7 @@ struct ModeScreen: View {
                     TextField("Type it…", text: $typing, axis: .vertical)
                         .font(Theme.F.target)
                         .textFieldStyle(.plain)
+                        .targetLanguageInput()
                         .lineLimit(2...5)
                         .padding(Theme.M.pad)
                         .background(Theme.C.sunk)
@@ -152,13 +169,22 @@ struct ModeScreen: View {
                         } else {
                             if let target = turn.prompt.target {
                                 HStack(alignment: .firstTextBaseline, spacing: Theme.M.pad) {
-                                    Text(target).font(Theme.F.target)
+                                    if store.settings.mode == .listen {
+                                        Text("Play it, then write what you heard.")
+                                            .font(Theme.F.body)
+                                    } else {
+                                        Text(target).font(Theme.F.target)
+                                    }
                                     Spacer()
                                     TinyButton(title: "Hear") { store.say(target) }
                                 }
                             }
-                            if let english = turn.prompt.english {
+                            if let english = turn.prompt.english, store.settings.mode != .listen {
                                 Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                            }
+                            if store.settings.mode == .listen {
+                                Text(store.hearingRealVoice ? "A real recording" : "Synthesised")
+                                    .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                             }
                         }
                     }
@@ -177,20 +203,25 @@ struct ModeScreen: View {
 
     private var confirm: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Is this what you said?")
+            ModuleLabel(text: store.current?.attempt.wasTyped == true
+                        ? "Ready?" : "Is this what you said?")
             TextField("", text: $store.draft, axis: .vertical)
                 .font(Theme.F.target)
                 .textFieldStyle(.plain)
+                .targetLanguageInput()
                 .lineLimit(2...6)
                 .padding(Theme.M.pad)
                 .background(Theme.C.sunk)
                 .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-            Text("Fix anything the microphone got wrong. Only this is marked.")
+            Text(store.current?.attempt.wasTyped == true
+                 ? "Only this is marked."
+                 : "Fix anything the microphone got wrong. Only this is marked.")
                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
             }
-            TinyButton(title: "Say it again") { store.reRecord() }
+            TinyButton(title: store.current?.attempt.wasTyped == true
+                       ? "Change it" : "Say it again") { store.reRecord() }
             Spacer()
         }
         .padding(Theme.M.gap)
@@ -205,8 +236,18 @@ struct ModeScreen: View {
                     knowledge: store.knowledge,
                     onOpenAtom: { store.open($0) },
                     onClassify: { store.classify($0, as: $1) },
-                    onAsk: { _ in },
-                    ask: turn.review?.ask ?? []
+                    onAsk: { question in
+                        Task {
+                            await store.ask(question,
+                                            about: .init(subject: turn.attempt.confirmed,
+                                                         context: turn.attempt.confirmed,
+                                                         pointID: turn.prompt.pointID),
+                                            context: turn.id.uuidString)
+                        }
+                    },
+                    ask: turn.review?.ask ?? [],
+                    answers: store.asked[turn.id.uuidString] ?? [],
+                    isAsking: store.asking.contains(turn.id.uuidString)
                 )
                 MainButton(title: "Next") { Task { await store.advance() } }
             }
@@ -241,7 +282,15 @@ struct LessonHost: View {
                     onOpenAtom: { store.open($0) },
                     onOpenSeed: { store.open(seed: $0, kind: $1) },
                     onDrillOutcome: { store.recordDrill(correct: $0, at: $1) },
-                    onAsk: { _ in }
+                    onAsk: { question in
+                        Task {
+                            await store.ask(question, about: request.seed,
+                                            context: request.cacheKey)
+                        }
+                    },
+                    grade: { await store.grade($0, against: $1) },
+                    answers: store.asked[request.cacheKey] ?? [],
+                    isAsking: store.asking.contains(request.cacheKey)
                 )
             } else if let error = store.lessonError {
                 Trouble(message: error) { }

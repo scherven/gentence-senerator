@@ -21,6 +21,12 @@ final class Voice: NSObject, SpeechIO {
     private let synth = AVSpeechSynthesizer()
     private var player: AVAudioPlayer?
 
+    /// The recording, written as 16 kHz mono PCM because that is what
+    /// pronunciation assessment accepts.
+    private var file: AVAudioFile?
+    private var converter: AVAudioConverter?
+    private(set) var lastRecording: URL?
+
     enum Trouble: LocalizedError {
         case denied
         case unavailable(String)
@@ -72,8 +78,12 @@ final class Voice: NSObject, SpeechIO {
         }
 
         let input = engine.inputNode
-        input.installTap(onBus: 0, bufferSize: 1024, format: input.outputFormat(forBus: 0)) { buffer, _ in
+        let inputFormat = input.outputFormat(forBus: 0)
+        startWriting(from: inputFormat)
+
+        input.installTap(onBus: 0, bufferSize: 1024, format: inputFormat) { [weak self] buffer, _ in
             request.append(buffer)
+            self?.write(buffer)
         }
         engine.prepare()
         try engine.start()
@@ -87,11 +97,46 @@ final class Voice: NSObject, SpeechIO {
         return partial
     }
 
+    /// 16 kHz mono PCM16, converted from whatever the microphone gives us.
+    private func startWriting(from inputFormat: AVAudioFormat) {
+        guard let target = AVAudioFormat(commonFormat: .pcmFormatInt16,
+                                         sampleRate: 16_000, channels: 1,
+                                         interleaved: true) else { return }
+        converter = AVAudioConverter(from: inputFormat, to: target)
+
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("attempt-\(UUID().uuidString).wav")
+        file = try? AVAudioFile(forWriting: url, settings: target.settings,
+                                commonFormat: .pcmFormatInt16, interleaved: true)
+        lastRecording = file == nil ? nil : url
+    }
+
+    private nonisolated func write(_ buffer: AVAudioPCMBuffer) {
+        Task { @MainActor in
+            guard let converter, let file else { return }
+            let ratio = 16_000 / buffer.format.sampleRate
+            let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 512
+            guard let out = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+                                             frameCapacity: capacity) else { return }
+            var supplied = false
+            var error: NSError?
+            converter.convert(to: out, error: &error) { _, status in
+                if supplied { status.pointee = .noDataNow; return nil }
+                supplied = true
+                status.pointee = .haveData
+                return buffer
+            }
+            if error == nil, out.frameLength > 0 { try? file.write(from: out) }
+        }
+    }
+
     private func stopEngine() {
         if engine.isRunning {
             engine.stop()
             engine.inputNode.removeTap(onBus: 0)
         }
+        file = nil
+        converter = nil
         request?.endAudio()
         task?.cancel()
         request = nil

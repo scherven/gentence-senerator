@@ -88,8 +88,8 @@ enum Schemas {
 
         let drill = object([
             "id": string,
-            "rungs": ["type": "array", "items": rung, "minItems": 2,
-                      "description": "Hardest first. Index 0 is unaided production; each later rung removes something the learner has to build."],
+            "rungs": ["type": "array", "items": rung,
+                      "description": "At least two, hardest first. Index 0 is unaided production; each later rung removes something the learner has to build."],
             "correct": string,
             "incorrect": string,
             "atoms": array(atom(for: language))
@@ -139,7 +139,7 @@ enum Schemas {
         ], required: ["id", "instruction", "accept", "correct", "incorrect"])
 
         return object([
-            "score": ["type": "integer", "minimum": 0, "maximum": 100],
+            "score": ["type": "integer", "description": "0 to 100."],
             "readOfScore": ["type": "string", "description": "One clause on what the score means. Not a breakdown."],
             "atoms": ["type": "array", "items": atom(for: language),
                       "description": "Every finding, including what the learner got right. Exactly one has weight start."],

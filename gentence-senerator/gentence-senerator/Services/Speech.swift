@@ -8,6 +8,8 @@ protocol SpeechIO: AnyObject {
     /// Live partial transcript while listening.
     var partial: String { get }
     var isListening: Bool { get }
+    /// The last attempt as 16 kHz mono PCM, for pronunciation assessment.
+    var lastRecording: URL? { get }
 
     func requestAccess() async -> Bool
     func startListening(locale: String) throws

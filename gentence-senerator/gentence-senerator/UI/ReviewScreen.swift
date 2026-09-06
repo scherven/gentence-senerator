@@ -8,6 +8,8 @@ struct ReviewScreen: View {
     let onClassify: (Atom, Progress.Encounter.Knowledge) -> Void
     let onAsk: (String) -> Void
     let ask: [AskItem]
+    let answers: [AskItem]
+    let isAsking: Bool
 
     @State private var stages: [String: Int] = [:]
 
@@ -17,6 +19,10 @@ struct ReviewScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 specimen
+
+                if let sounds = turn.attempt.pronunciation, !sounds.units.isEmpty {
+                    pronunciation(sounds)
+                }
 
                 if let review {
                     findings(review)
@@ -28,9 +34,8 @@ struct ReviewScreen: View {
                     }
                 }
 
-                if !ask.isEmpty {
-                    AskView(items: ask, onOpenAtom: onOpenAtom, onAsk: onAsk)
-                }
+                AskView(items: ask, answers: answers, isAsking: isAsking,
+                        onOpenAtom: onOpenAtom, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
         }
@@ -117,6 +122,57 @@ struct ReviewScreen: View {
         }
     }
 
+    /// The weakest sounds, worst first, each openable. Names are absent outside
+    /// English and Mandarin, so a unit falls back to the word it sat in.
+    private func pronunciation(_ result: PronunciationResult) -> some View {
+        let weak = result.units.filter { $0.score < 70 }.sorted { $0.score < $1.score }.prefix(4)
+        return VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Sounds · \(result.overall)")
+            if weak.isEmpty {
+                Text("Nothing stood out.")
+                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            }
+            VStack(spacing: 0) {
+                ForEach(Array(weak)) { unit in
+                    Button {
+                        onOpenAtom(Atom(
+                            id: "pronunciation/\(unit.name ?? unit.gloss ?? "\(unit.index)")",
+                            kind: .pronunciation, verdict: .weakens,
+                            anchor: unit.gloss,
+                            stages: .init(
+                                locate: "This sound came out at \(unit.score).",
+                                name: unit.name.map { "The sound \($0)." }
+                                    ?? "A sound in \(unit.gloss ?? "this word").",
+                                fix: unit.gloss ?? "",
+                                note: ""
+                            ),
+                            seed: .init(subject: unit.name ?? unit.gloss ?? "",
+                                        context: turn.attempt.confirmed, pointID: nil)
+                        ))
+                    } label: {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text(unit.name ?? unit.gloss ?? "—")
+                                .font(Theme.F.targetSmall)
+                            Text(unit.name == nil ? "sound \(unit.index + 1)" : (unit.gloss ?? ""))
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(unit.score)")
+                                .font(Theme.F.meta).foregroundStyle(Theme.C.warn)
+                            Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                        }
+                        .padding(Theme.M.padTight)
+                        .background(Theme.C.surface)
+                        .overlay(alignment: .leading) {
+                            Rectangle().fill(Theme.C.warn).frame(width: Theme.M.edge)
+                        }
+                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
     private func sentence(_ text: String, label: String, edge: Color) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: label)
@@ -168,6 +224,7 @@ struct RespeakView: View {
                 TextField("Say it…", text: $input)
                     .font(Theme.F.targetSmall)
                     .textFieldStyle(.plain)
+                    .targetLanguageInput()
                     .padding(Theme.M.padTight)
                     .background(Theme.C.sunk)
                     .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))

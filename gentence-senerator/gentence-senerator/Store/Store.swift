@@ -33,13 +33,23 @@ final class Store {
     /// Slip or gap, per atom, for the review on screen.
     private(set) var knowledge: [String: Progress.Encounter.Knowledge] = [:]
 
+    /// Answers to questions the learner typed, keyed by what they were asking
+    /// about. Answers carry atoms, so asking is another way down.
+    private(set) var asked: [String: [AskItem]] = [:]
+    private(set) var asking: Set<String> = []
+
     /// A structure the learner has never reached for, offered this session.
     private(set) var stretch: GrammarPoint?
 
     private let tutor: Tutor
     private let speech: SpeechIO?
+    private let pronunciation: Pronunciation
+    private let clips = ClipLibrary()
+    private var usedClips: Set<String> = []
 
-    init(tutor: Tutor, speech: SpeechIO? = nil) {
+    init(tutor: Tutor, speech: SpeechIO? = nil,
+         pronunciation: Pronunciation = Pronunciation(key: Key.azureKey, region: Key.azureRegion)) {
+        self.pronunciation = pronunciation
         self.tutor = tutor
         self.speech = speech
         settings = Vault.load(Settings.self, Vault.settings) ?? Settings()
@@ -49,6 +59,20 @@ final class Store {
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
+
+    /// Switching language abandons the current session rather than carrying it
+    /// over — the sentences and the level mean something different.
+    func switchLanguage(_ language: Language) {
+        guard language != settings.language else { return }
+        settings.language = language
+        // HSK runs to 9, CEFR to 6.
+        settings.level = min(settings.level, language == .mandarin ? 9 : 6)
+        session = nil
+        current = nil
+        phase = .idle
+        path = []
+        knowledge = [:]
+    }
 
     // MARK: Session
 
@@ -78,6 +102,26 @@ final class Store {
     func nextPrompt() async {
         phase = .preparing
         draft = ""
+
+        // Real speech where the library has it. Falls through to a generated
+        // sentence and synthesis otherwise, which is the normal case for
+        // Mandarin.
+        if settings.mode == .listen,
+           let clip = clips.pick(language: settings.language,
+                                 level: settings.level, excluding: usedClips) {
+            usedClips.insert(clip.id)
+            current = Turn(
+                id: UUID(), mode: .listen, language: settings.language, createdAt: .now,
+                prompt: .init(english: clip.english, target: clip.text,
+                              audioSource: clips.source(for: clip), pointID: nil),
+                attempt: .init(heard: "", confirmed: "", wasTyped: false,
+                               audioFilename: nil, pronunciation: nil),
+                review: nil
+            )
+            phase = .ready
+            return
+        }
+
         do {
             let used = (session?.turns ?? []).compactMap { $0.prompt.english }
             let (made, usage) = try await tutor.nextPrompt(
@@ -157,6 +201,19 @@ final class Store {
         }
 
         phase = .assessing
+
+        // Scored against what they should have said: the played sentence in
+        // listen mode, their own words otherwise.
+        if !turn.attempt.wasTyped, let wav = speech?.lastRecording {
+            let reference = turn.mode == .listen
+                ? (turn.prompt.target ?? turn.attempt.confirmed)
+                : turn.attempt.confirmed
+            turn.attempt.pronunciation = try? await pronunciation.assess(
+                wav: wav, reference: reference, locale: settings.language.localeID
+            )
+            current = turn
+        }
+
         do {
             let history = settings.mode.reviewsEachAttempt ? [] : (session?.turns ?? [])
             let (review, usage) = try await tutor.assess(
@@ -194,6 +251,20 @@ final class Store {
         } else {
             await nextPrompt()
         }
+    }
+
+    /// Leave a session unfinished. Whatever was completed is kept.
+    func endSession() {
+        if let live = session, live.completedCount > 0 {
+            past.append(live)
+            Vault.save(Array(past.suffix(120)), Vault.sessions)
+        }
+        session = nil
+        current = nil
+        phase = .idle
+        path = []
+        knowledge = [:]
+        usedClips = []
     }
 
     /// Past the daily goal, by choice.
@@ -251,19 +322,81 @@ final class Store {
         save()
     }
 
+    /// A typed question about whatever is on screen. `context` scopes the
+    /// answer so it appears under the thing it was asked about.
+    func ask(_ question: String, about seed: Atom.Seed, context: String) async {
+        guard !question.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        asking.insert(context)
+        do {
+            let (item, usage) = try await tutor.answer(
+                question: question, about: seed, in: settings.language
+            )
+            note(usage)
+            asked[context, default: []].append(item)
+        } catch {
+            asked[context, default: []].append(
+                AskItem(id: UUID().uuidString, question: question,
+                        answer: "Couldn't answer that: \(error.localizedDescription)",
+                        atoms: [])
+            )
+        }
+        asking.remove(context)
+    }
+
+    /// Exact match first — instant and free. Only when that fails does the
+    /// model decide, so a right answer the author didn't list is not marked
+    /// wrong.
+    func grade(_ answer: String, against rung: Rung) async -> Tutor.DrillVerdict {
+        if rung.accepts(answer) {
+            return Tutor.DrillVerdict(correct: true, note: "", oneGoodAnswer: rung.accept.first ?? "")
+        }
+        do {
+            let (verdict, usage) = try await tutor.grade(
+                answer: answer, to: rung, in: settings.language
+            )
+            note(usage)
+            return verdict
+        } catch {
+            return Tutor.DrillVerdict(
+                correct: false,
+                note: "Couldn't check that just now.",
+                oneGoodAnswer: rung.accept.first ?? ""
+            )
+        }
+    }
+
+    /// Reach counts unaided production only — a multiple-choice hit is
+    /// recognition, a different and easier skill. XP still lands on the lower
+    /// rungs, at a lower rate, so climbing down to find the answer is not
+    /// punished.
     func recordDrill(correct: Bool, at support: Rung.Support) {
-        // Only unaided production counts toward reach; a multiple-choice hit is
-        // recognition, which is a different and easier skill.
-        guard support == .free, correct else { return }
-        progress.xp += 5
+        guard correct else { return }
+        switch support {
+        case .free:      progress.xp += 5
+        case .transform: progress.xp += 3
+        case .frame:     progress.xp += 2
+        case .choice:    progress.xp += 1
+        }
         save()
     }
 
     // MARK: Speaking
 
+    /// Plays the recording where there is one, synthesises otherwise.
     func say(_ text: String) {
-        speech?.speak(text, locale: settings.language.localeID)
+        if let source = current?.prompt.audioSource, source.kind == .recording {
+            Task { try? await speech?.play(source) }
+        } else {
+            speech?.speak(text, locale: settings.language.localeID)
+        }
     }
+
+    /// Whether the learner is hearing a person or a synthesiser.
+    var hearingRealVoice: Bool {
+        current?.prompt.audioSource?.kind == .recording
+    }
+
+    var clipCredits: [String] { clips.credits }
 
     // MARK: Bookkeeping
 

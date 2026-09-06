@@ -11,6 +11,9 @@ struct LessonScreen: View {
     let onOpenSeed: (Atom.Seed, AtomKind) -> Void
     let onDrillOutcome: (Bool, Rung.Support) -> Void
     let onAsk: (String) -> Void
+    let grade: (String, Rung) async -> Tutor.DrillVerdict
+    let answers: [AskItem]
+    let isAsking: Bool
 
     @State private var showRuleAnyway = false
 
@@ -33,7 +36,8 @@ struct LessonScreen: View {
                     BlockView(block: patternBlock,
                               onOpenAtom: onOpenAtom,
                               onOpenSeed: onOpenSeed,
-                              onDrillOutcome: onDrillOutcome)
+                              onDrillOutcome: onDrillOutcome,
+                              grade: grade)
                     if !showRuleAnyway {
                         TinyButton(title: "Show the rule anyway") { showRuleAnyway = true }
                     }
@@ -45,12 +49,12 @@ struct LessonScreen: View {
                     BlockView(block: block,
                               onOpenAtom: onOpenAtom,
                               onOpenSeed: onOpenSeed,
-                              onDrillOutcome: onDrillOutcome)
+                              onDrillOutcome: onDrillOutcome,
+                              grade: grade)
                 }
 
-                if !lesson.ask.isEmpty {
-                    AskView(items: lesson.ask, onOpenAtom: onOpenAtom, onAsk: onAsk)
-                }
+                AskView(items: lesson.ask, answers: answers, isAsking: isAsking,
+                        onOpenAtom: onOpenAtom, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
         }

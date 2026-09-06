@@ -6,10 +6,15 @@ struct DrillView: View {
     let drill: Drill
     let onOpenAtom: (Atom) -> Void
     let onOutcome: (Bool, Rung.Support) -> Void
+    /// Exact match first, model second — so an answer a speaker would accept
+    /// is not marked wrong for being absent from the list.
+    let grade: (String, Rung) async -> Tutor.DrillVerdict
 
     @State private var rungIndex = 0
     @State private var input = ""
     @State private var result: Bool?
+    @State private var extra: String?
+    @State private var checking = false
     @State private var steppedDown = false
 
     private var rung: Rung { drill.rungs[min(rungIndex, drill.rungs.count - 1)] }
@@ -35,7 +40,7 @@ struct DrillView: View {
             if rung.support == .choice, let options = rung.options {
                 VStack(spacing: 0) {
                     ForEach(Array(options.enumerated()), id: \.offset) { index, option in
-                        Button { check(choice: index) } label: {
+                        Button { Task { await check(choice: index) } } label: {
                             Text(option)
                                 .font(Theme.F.targetSmall)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,12 +56,16 @@ struct DrillView: View {
                     TextField("Type it…", text: $input)
                         .font(Theme.F.targetSmall)
                         .textFieldStyle(.plain)
+                        .targetLanguageInput()
                         .padding(Theme.M.padTight)
                         .background(Theme.C.sunk)
                         .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
                         .submitLabel(.done)
-                        .onSubmit { check(choice: nil) }
-                    TinyButton(title: "Check") { check(choice: nil) }
+                        .onSubmit { Task { await check(choice: nil) } }
+                        .disabled(checking)
+                    TinyButton(title: checking ? "…" : "Check") {
+                        Task { await check(choice: nil) }
+                    }
                 }
             }
 
@@ -91,7 +100,7 @@ struct DrillView: View {
                 .tracking(1.2)
                 .foregroundStyle(correct ? Theme.C.good : Theme.C.bad)
 
-            Text(correct ? drill.correct : drill.incorrect)
+            Text(extra ?? (correct ? drill.correct : drill.incorrect))
                 .font(Theme.F.bodyTight)
                 .foregroundStyle(Theme.C.ink)
 
@@ -114,11 +123,22 @@ struct DrillView: View {
         }
     }
 
-    private func check(choice: Int?) {
+    private func check(choice: Int?) async {
         let correct: Bool
-        if let choice { correct = choice == rung.answerIndex }
-        else { correct = rung.accepts(input) }
+        var note: String?
 
+        if let choice {
+            correct = choice == rung.answerIndex
+        } else {
+            guard !input.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+            checking = true
+            let verdict = await grade(input, rung)
+            checking = false
+            correct = verdict.correct
+            if !verdict.note.isEmpty { note = verdict.note }
+        }
+
+        extra = note
         onOutcome(correct, rung.support)
 
         if correct {
@@ -136,5 +156,6 @@ struct DrillView: View {
     private func reset() {
         input = ""
         result = nil
+        extra = nil
     }
 }

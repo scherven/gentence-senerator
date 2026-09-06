@@ -106,18 +106,19 @@ struct Panel<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
-        HStack(spacing: 0) {
-            if let edge {
-                Rectangle().fill(edge).frame(width: Theme.M.edge)
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.M.pad)
+            .padding(.leading, edge == nil ? 0 : Theme.M.edge)
+            .background(fill)
+            // As an overlay rather than a sibling: a Rectangle in an HStack is
+            // greedy vertically and stretches the panel to fill the screen.
+            .overlay(alignment: .leading) {
+                if let edge {
+                    Rectangle().fill(edge).frame(width: Theme.M.edge)
+                }
             }
-            content
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(Theme.M.pad)
-        }
-        .background(fill)
-        .overlay(
-            Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair)
-        )
+            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
     }
 }
 
@@ -162,5 +163,18 @@ struct MainButton: View {
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
+    }
+}
+
+
+/// Autocorrect is trained on the interface language, so it rewrites the
+/// language being learned into English-looking words. Every field that takes
+/// target-language input turns it off.
+extension View {
+    func targetLanguageInput() -> some View {
+        self
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+            .keyboardType(.default)
     }
 }

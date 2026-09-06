@@ -7,6 +7,7 @@ struct BlockView: View {
     let onOpenAtom: (Atom) -> Void
     let onOpenSeed: (Atom.Seed, AtomKind) -> Void
     let onDrillOutcome: (Bool, Rung.Support) -> Void
+    let grade: (String, Rung) async -> Tutor.DrillVerdict
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -44,7 +45,8 @@ struct BlockView: View {
                 ForEach(block.drills ?? []) { drill in
                     DrillView(drill: drill,
                               onOpenAtom: onOpenAtom,
-                              onOutcome: onDrillOutcome)
+                              onOutcome: onDrillOutcome,
+                              grade: grade)
                 }
             }
 
@@ -111,6 +113,9 @@ struct BlockView: View {
 /// field. Appears at the foot of every review and every lesson.
 struct AskView: View {
     let items: [AskItem]
+    /// Answers to questions the learner typed here.
+    let answers: [AskItem]
+    let isAsking: Bool
     let onOpenAtom: (Atom) -> Void
     let onAsk: (String) -> Void
 
@@ -161,8 +166,29 @@ struct AskView: View {
                 }
             }
 
+            ForEach(answers) { item in
+                VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                    Text(item.question)
+                        .font(Theme.F.note)
+                        .foregroundStyle(Theme.C.ink2)
+                    Text(item.answer)
+                        .font(Theme.F.bodyTight)
+                        .fixedSize(horizontal: false, vertical: true)
+                    ForEach(item.atoms) { atom in
+                        AtomRow(atom: atom) { onOpenAtom(atom) }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.M.pad)
+                .background(Theme.C.sunk)
+                .overlay(alignment: .leading) {
+                    Rectangle().fill(Theme.C.ink3).frame(width: Theme.M.edge)
+                }
+                .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+            }
+
             HStack(spacing: 0) {
-                TextField("Ask something else…", text: $typed)
+                TextField(isAsking ? "Thinking…" : "Ask something else…", text: $typed)
                     .font(Theme.F.bodyTight)
                     .textFieldStyle(.plain)
                     .padding(Theme.M.padTight)
@@ -170,7 +196,8 @@ struct AskView: View {
                     .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
                     .submitLabel(.send)
                     .onSubmit(send)
-                TinyButton(title: "Ask", action: send)
+                    .disabled(isAsking)
+                TinyButton(title: isAsking ? "…" : "Ask", action: send)
             }
         }
     }
