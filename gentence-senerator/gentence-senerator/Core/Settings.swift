@@ -66,4 +66,6 @@ enum Vault {
     static let progress = "progress.v2"
     static let spend = "spend.v2"
     static let sessions = "sessions.v2"
+    /// A session left unfinished, with the turn that was on screen.
+    static let inProgress = "inProgress.v2"
 }

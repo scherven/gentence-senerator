@@ -23,6 +23,9 @@ struct ModeScreen: View {
     @State private var typing = ""
     @State private var showingSettings = false
     @State private var showingHistory = false
+    /// The English is a fallback, not the prompt. Reading it first turns
+    /// producing into translating.
+    @State private var showGloss = false
 
     var body: some View {
         Group {
@@ -97,8 +100,16 @@ struct ModeScreen: View {
             ForEach(Mode.allCases) { mode in
                 Button { Task { await store.begin(mode) } } label: {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(mode.name).font(Theme.F.title)
-                        Text(mode.blurb).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(mode.name).font(Theme.F.title)
+                            Spacer()
+                            if let held = store.resumable(mode) {
+                                Text("\(held.completedCount)/\(held.goal) SO FAR")
+                                    .font(Theme.F.label).foregroundStyle(Theme.C.accent)
+                            }
+                        }
+                        Text(store.resumable(mode) == nil ? mode.blurb : "Carry on where you left off.")
+                            .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(Theme.M.pad)
@@ -155,6 +166,7 @@ struct ModeScreen: View {
             Spacer()
         }
         .padding(Theme.M.gap)
+        .onChange(of: store.current?.id) { showGloss = false }
     }
 
     @ViewBuilder
@@ -179,10 +191,15 @@ struct ModeScreen: View {
                                     TinyButton(title: "Hear") { store.say(target) }
                                 }
                             }
-                            if let english = turn.prompt.english, store.settings.mode != .listen {
-                                Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                            if let english = turn.prompt.english, turn.mode != .listen {
+                                if showGloss {
+                                    Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                                    TinyButton(title: "Hide translation") { showGloss = false }
+                                } else {
+                                    TinyButton(title: "Show translation") { showGloss = true }
+                                }
                             }
-                            if store.settings.mode == .listen {
+                            if turn.mode == .listen {
                                 Text(store.hearingRealVoice ? "A real recording" : "Synthesised")
                                     .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                             }

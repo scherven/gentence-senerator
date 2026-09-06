@@ -42,6 +42,14 @@ final class Store {
     /// A structure the learner has never reached for, offered this session.
     private(set) var stretch: GrammarPoint?
 
+    /// A session the learner stepped out of. Picking the same mode resumes it
+    /// rather than starting over.
+    private struct Unfinished: Codable {
+        var session: Session
+        var turn: Turn?
+    }
+    private var unfinished: Unfinished?
+
     private let tutor: Tutor
     private let speech: SpeechIO?
     private let pronunciation: Pronunciation
@@ -57,6 +65,15 @@ final class Store {
         progress = Vault.load(Progress.self, Vault.progress) ?? Progress()
         spend = Vault.load(Spend.self, Vault.spend) ?? Spend()
         past = Vault.load([Session].self, Vault.sessions) ?? []
+        unfinished = Vault.load(Unfinished.self, Vault.inProgress)
+    }
+
+    /// What picking this mode would resume, if anything.
+    func resumable(_ mode: Mode) -> Session? {
+        guard let held = unfinished?.session,
+              held.mode == mode, held.language == settings.language,
+              !held.isComplete else { return nil }
+        return held
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
@@ -81,6 +98,22 @@ final class Store {
         settings.mode = mode
         knowledge = [:]
         path = []
+
+        // Pick up where it was left, rather than throwing the turns away.
+        if let held = unfinished, resumable(mode) != nil {
+            session = held.session
+            current = held.turn
+            draft = ""
+            unfinished = nil
+            UserDefaults.standard.removeObject(forKey: Vault.inProgress)
+            if current == nil {
+                await nextPrompt()
+            } else {
+                phase = .ready
+            }
+            return
+        }
+
         stretch = settings.offerStretch ? pickStretch(for: mode) : nil
 
         session = Session(
@@ -145,6 +178,7 @@ final class Store {
                 review: nil
             )
             phase = .ready
+            hold()
         } catch {
             phase = .failed(error.localizedDescription)
         }
@@ -199,6 +233,7 @@ final class Store {
         let unreviewed = session?.turns.reversed().prefix { $0.review == nil }.count ?? 0
         if !settings.mode.reviewsEachAttempt, unreviewed < settings.turnsBeforeReview - 1 {
             session?.turns.append(turn)
+            hold()
             await nextPrompt()
             return
         }
@@ -231,6 +266,7 @@ final class Store {
             session?.turns.append(turn)
             recordReach(for: turn, review: opening)
             phase = .reviewing
+            hold()
 
             // The rest lands while the learner is still reading where the
             // problems are and trying to fix them. By the time they ask for a
@@ -276,23 +312,31 @@ final class Store {
             phase = .complete
             past.append(live)
             Vault.save(Array(past.suffix(120)), Vault.sessions)
+            unfinished = nil
+            usedClips = []
+            UserDefaults.standard.removeObject(forKey: Vault.inProgress)
         } else {
             await nextPrompt()
         }
     }
 
-    /// Leave a session unfinished. Whatever was completed is kept.
+    /// Held after every turn, not only when the learner steps out, so a crash
+    /// or a force-quit does not cost them the session either.
+    private func hold() {
+        guard let live = session, !live.isComplete else { return }
+        unfinished = Unfinished(session: live, turn: phase == .reviewing ? nil : current)
+        Vault.save(unfinished, Vault.inProgress)
+    }
+
+    /// Step out of a session without finishing it. It is held, not archived —
+    /// picking the same mode again carries on from here.
     func endSession() {
-        if let live = session, live.completedCount > 0 {
-            past.append(live)
-            Vault.save(Array(past.suffix(120)), Vault.sessions)
-        }
+        hold()
         session = nil
         current = nil
         phase = .idle
         path = []
         knowledge = [:]
-        usedClips = []
     }
 
     /// Past the daily goal, by choice.
