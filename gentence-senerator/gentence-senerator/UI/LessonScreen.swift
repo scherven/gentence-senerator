@@ -53,8 +53,22 @@ struct LessonScreen: View {
                               grade: grade)
                 }
 
-                AskView(items: lesson.ask, answers: answers, isAsking: isAsking,
-                        onOpenLink: onOpenLink, onAsk: onAsk)
+                // Practice arrives in a second call. Without this the lesson
+                // reads as though it simply has none.
+                if lesson.ask.isEmpty {
+                    HStack(spacing: Theme.M.gapTight) {
+                        ProgressView().tint(Theme.C.accent)
+                        Text("Writing practice for this…")
+                            .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(Theme.M.pad)
+                    .background(Theme.C.surface)
+                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                } else {
+                    AskView(items: lesson.ask, answers: answers, isAsking: isAsking,
+                            onOpenLink: onOpenLink, onAsk: onAsk)
+                }
             }
             .padding(Theme.M.gap)
         }
