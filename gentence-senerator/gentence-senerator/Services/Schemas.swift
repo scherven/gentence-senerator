@@ -148,9 +148,22 @@ enum Schemas {
                         "description": "What a speaker would actually say, which is often not the minimal correction."],
             "understood": ["type": ["string", "null"],
                            "description": "Produce mode only: what you understood the learner to mean, in English."],
-            "respeaks": array(respeak)
-        ], required: ["score", "readOfScore", "atoms", "fixed", "natural", "understood", "respeaks"])
+            "respeaks": array(respeak),
+            "ask": array(askItem(for: language))
+        ], required: ["score", "readOfScore", "atoms", "fixed", "natural",
+                      "understood", "respeaks", "ask"])
     }
+
+    // MARK: Prompt generation
+
+    static let prompt: [String: Any] = object([
+        "english": ["type": "string",
+                    "description": "The English side. For translate this is what the learner reads; elsewhere it is the gloss."],
+        "target": ["type": ["string", "null"],
+                   "description": "The target-language side: the sentence to be played, or the question to be answered. Null for translate."],
+        "pointID": ["type": ["string", "null"],
+                    "description": "The grammar point this was built to exercise, if any."]
+    ], required: ["english", "target", "pointID"])
 
     // MARK: Drill grading
 

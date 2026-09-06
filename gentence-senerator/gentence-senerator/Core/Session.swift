@@ -111,6 +111,9 @@ struct Review: Codable, Hashable {
     var understood: String?
 
     var respeaks: [Respeak]
+    /// Questions the learner plausibly has about this attempt. Answers carry
+    /// atoms, so asking is another way down.
+    var ask: [AskItem]
 
     var problems: [Atom] { atoms.filter { $0.verdict.isProblem } }
     var kept: [Atom] { atoms.filter { !$0.verdict.isProblem } }

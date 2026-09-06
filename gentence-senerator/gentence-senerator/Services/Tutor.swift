@@ -36,20 +36,80 @@ actor Tutor {
         return (lesson, usage)
     }
 
+    // MARK: Generation
+
+    struct Generated: Codable { var english: String; var target: String?; var pointID: String? }
+
+    /// `revisit` are points due for retrieval — woven into an ordinary sentence
+    /// rather than served as a card. `stretch` is a point the learner has never
+    /// reached for, when we are deliberately pushing range.
+    func nextPrompt(mode: Mode,
+                    language: Language,
+                    level: Int,
+                    revisit: [String],
+                    stretch: GrammarPoint?,
+                    avoid: [String]) async throws -> (Generated, Anthropic.Usage) {
+
+        let pack = LanguagePacks.pack(for: language)
+        var facts = """
+        Mode: \(mode.rawValue)
+        Level: \(pack.level(level))
+        """
+        if !revisit.isEmpty {
+            facts += "\nWork these in without drawing attention to them: \(revisit.joined(separator: ", "))"
+        }
+        if let stretch {
+            facts += """
+
+            Build this so the learner has to reach for \(stretch.name).
+            \(stretch.instruction)
+            """
+        }
+        if !avoid.isEmpty {
+            facts += "\nAlready used today, do not repeat: \(avoid.suffix(20).joined(separator: " | "))"
+        }
+
+        return try await api.send(
+            Generated.self,
+            cachedSystem: Self.generateSystem(pack),
+            user: facts,
+            schema: Schemas.prompt,
+            effort: .medium
+        )
+    }
+
     // MARK: Assessment
 
-    func assess(turn: Turn, level: Int) async throws -> (Review, Anthropic.Usage) {
+    /// `history` is the rest of the exchange in produce mode, so corrections can
+    /// wait for the end of a conversation instead of interrupting it. Empty for
+    /// translate and listen, which review each attempt.
+    func assess(turn: Turn, history: [Turn] = [], level: Int)
+    async throws -> (Review, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: turn.language)
+
+        var facts = """
+        Mode: \(turn.mode.rawValue)
+        Level: \(pack.level(level))
+        Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
+        """
+        if !history.isEmpty {
+            facts += "\n\nThe exchange so far:\n"
+            for past in history {
+                facts += "Q: \(past.prompt.target ?? past.prompt.english ?? "—")\n"
+                facts += "A: \(past.attempt.confirmed)\n"
+            }
+        }
+        facts += """
+
+        Asked (English): \(turn.prompt.english ?? "—")
+        Asked (\(pack.language.name)): \(turn.prompt.target ?? "—")
+        The learner said: \(turn.attempt.confirmed)
+        """
+
         return try await api.send(
             Review.self,
             cachedSystem: Self.assessSystem(pack),
-            user: """
-            Mode: \(turn.mode.rawValue)
-            Level: \(pack.level(level))
-            Asked (English): \(turn.prompt.english ?? "—")
-            Asked (\(pack.language.name)): \(turn.prompt.target ?? "—")
-            The learner said: \(turn.attempt.confirmed)
-            """,
+            user: facts,
             schema: Schemas.review(for: turn.language)
         )
     }
@@ -121,6 +181,7 @@ actor Tutor {
         that names a real choice teaches; praise that is generic does not.
 
         Available kinds for \(pack.language.name): \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+        When the attempt was spoken, never use \(pack.kinds.filter(\.isWrittenOnly).map(\.rawValue).joined(separator: ", ").isEmpty ? "any written-only kind" : pack.kinds.filter(\.isWrittenOnly).map(\.rawValue).joined(separator: ", ")) — silent orthography is not something a speaker got wrong.
 
         Routing. missing-piece, extra-piece, word-order and word-choice are
         catch-alls: almost any error can be described as one of them, so reach
@@ -128,6 +189,30 @@ actor Tutor {
         \(pack.routing)
 
         \(pack.assessmentNotes)
+        """
+    }
+
+    private static func generateSystem(_ pack: LanguagePack) -> String {
+        """
+        \(voice(pack))
+
+        You write one thing for the learner to attempt.
+
+        translate — `english` is a sentence to render in \(pack.language.name);
+        leave `target` null. Write it so a natural rendering needs the target
+        structure, rather than naming the structure.
+
+        listen — `target` is the sentence to be played, written first and in
+        \(pack.language.name); `english` is its meaning.
+
+        produce — `target` is a question to answer in \(pack.language.name),
+        written first and in \(pack.language.name); `english` is its meaning.
+        Ask about the learner's own life, and make it answerable in two or three
+        sentences.
+
+        Sentences are things a person would actually say. No textbook filler, no
+        sentences that exist only to contain a grammar point.
+        \(pack.generationNotes)
         """
     }
 
@@ -177,6 +262,10 @@ actor Tutor {
         thing deliberately changed: a different subject, a different tense, an
         added detail. Never a plain repeat — the point is transfer, not recall
         of the correction. Two or three, each with the forms you would accept.
+
+        `ask` holds two questions the learner plausibly has about this attempt,
+        in their own words, each answered in one or two sentences and carrying
+        atoms so the answer opens further.
 
         `readOfScore` is one clause on what the score means. Not a breakdown,
         not a pep talk.

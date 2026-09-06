@@ -1,17 +1,15 @@
-//
-//  gentence_seneratorApp.swift
-//  gentence-senerator
-//
-//  Created by Simon Chervenak on 12/30/25.
-//
-
 import SwiftUI
 
 @main
-struct gentence_seneratorApp: App {
+struct GentenceApp: App {
+    @State private var store = Store(
+        tutor: Tutor(api: Anthropic(key: Key.anthropicKey)),
+        speech: Voice()
+    )
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppShell(store: store)
         }
     }
 }
