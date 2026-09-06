@@ -60,12 +60,27 @@ struct Progress: Codable, Hashable {
         structures[pointID] = u
     }
 
-    /// Produces no errors, so error-driven scheduling never surfaces it.
-    func neverAttempted(from inventory: [String], language: Language) -> [String] {
-        inventory.filter { id in
-            guard let u = structures[id] else { return true }
-            return u.language == language && u.attempts == 0
-        }
+    /// A point has three states, not two, and only the first is a reach signal:
+    /// never attempted, attempted and failing, attempted and holding. Something
+    /// never attempted produces no errors, so error-driven scheduling can never
+    /// surface it.
+    ///
+    /// Pass points already filtered to what the learner could reach at their
+    /// level and in this mode — the passé simple is absent from speech because
+    /// that is correct, not because it is missing.
+    func neverReached(among candidates: [GrammarPoint]) -> [GrammarPoint] {
+        candidates.filter { (structures[$0.id]?.attempts ?? 0) == 0 }
+    }
+
+    func state(of pointID: String) -> Reach {
+        guard let u = structures[pointID], u.attempts > 0 else { return .neverAttempted }
+        return u.successes > 0 ? .holding : .failing
+    }
+
+    enum Reach: String, Codable, Hashable {
+        case neverAttempted
+        case failing
+        case holding
     }
 
     // MARK: Records

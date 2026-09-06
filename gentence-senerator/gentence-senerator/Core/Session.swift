@@ -120,9 +120,14 @@ struct PronunciationResult: Codable, Hashable {
     var overall: Int
     var units: [Unit]
 
+    /// Azure names phonemes only for en-US and zh-CN. German and French come
+    /// back as an ordered array of scores with no labels, so `name` is nil and
+    /// `index` is the only handle — a diagnosis there has to align positionally
+    /// against our own grapheme-to-phoneme pass.
     struct Unit: Identifiable, Codable, Hashable {
         let id: String
-        var text: String
+        var index: Int
+        var name: String?
         var score: Int
         /// Absent rather than zero where the language has no tones.
         var toneScore: Int?

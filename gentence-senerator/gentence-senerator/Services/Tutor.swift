@@ -121,6 +121,12 @@ actor Tutor {
         that names a real choice teaches; praise that is generic does not.
 
         Available kinds for \(pack.language.name): \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+
+        Routing. missing-piece, extra-piece, word-order and word-choice are
+        catch-alls: almost any error can be described as one of them, so reach
+        for a specific kind first and fall back only when nothing fits.
+        \(pack.routing)
+
         \(pack.assessmentNotes)
         """
     }
@@ -174,6 +180,12 @@ actor Tutor {
 
         `readOfScore` is one clause on what the score means. Not a breakdown,
         not a pep talk.
+
+        Severity follows the level. Below B1 or HSK 4, being understood matters
+        more than being formally correct: a morphological slip that leaves the
+        meaning intact is "weakens", not "breaks". Reserve "breaks" for what
+        actually stops a listener — a wrong tone, a case that reverses direction
+        for position, a verb the listener cannot locate.
 
         \(atomRules(pack))
         """

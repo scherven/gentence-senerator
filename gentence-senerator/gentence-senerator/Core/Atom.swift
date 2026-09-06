@@ -56,10 +56,17 @@ struct Atom: Identifiable, Codable, Hashable {
     var cacheKey: String { "\(kind.rawValue)|\(seed.subject)" }
 }
 
-/// Learner-facing labels. `LanguagePack` decides which are reachable per language.
+/// Learner-facing labels, naming *the decision the learner got wrong* rather
+/// than the morpheme that surfaced. Two tests decide whether a kind earns its
+/// place: one sentence of explanation should repair every error under it, and
+/// it should be possible to write a drill that hits it and nothing else.
+///
+/// The set is universal; `LanguagePack` gates which are reachable. Encoding the
+/// language in the case name was the wrong axis — gender, negation, particles
+/// and agreement are language-general with language-specific content.
 enum AtomKind: String, Codable, Hashable, CaseIterable {
 
-    // Universal
+    // Everywhere
     case wordOrder      = "word-order"
     case wordChoice     = "word-choice"
     case missingPiece   = "missing-piece"
@@ -67,49 +74,72 @@ enum AtomKind: String, Codable, Hashable, CaseIterable {
     case register       = "register"
     case collocation    = "collocation"
     case comprehension  = "comprehension"
+    case pronunciation  = "pronunciation"
+    case negation       = "negation"
+    case preposition    = "preposition"
+    case tenseAspect    = "tense-aspect"
+    case mood           = "mood"
+    case gender         = "gender"
+    case particle       = "particle"
+
+    // German word order. Three separately-acquired rules, not one:
+    // fronting-with-inversion, the bracket, and verb-final each arrive at a
+    // different stage and take a different repair.
+    case verbSecond     = "verb-second"
+    case bracket        = "bracket"
+    case verbFinal      = "verb-final"
+
+    // German nominal morphology. Choosing the wrong case and marking the right
+    // case wrongly are different mistakes; wrong gender makes the ending
+    // unreachable, so it is diagnosed first.
+    case caseChoice     = "case-choice"
+    case caseForm       = "case-form"
+    case adjectiveEnding = "adjective-ending"
+
+    // French. Split by audibility: only one of these is detectable in speech.
+    case agreementHeard   = "agreement-heard"
+    case agreementWritten = "agreement-written"
+    case auxiliary        = "auxiliary"
+    case pronounPlacement = "pronoun-placement"
+    case liaison          = "liaison"
 
     // Mandarin
     case tone           = "tone"
-    case particle       = "particle"
     case measureWord    = "measure-word"
-    case aspect         = "aspect"
-
-    // German
-    case caseEnding     = "case"
-    case gender         = "gender"
-    case verbPosition   = "verb-position"
-    case separableVerb  = "separable-verb"
-
-    // French
-    case agreement      = "agreement"
-    case auxiliary      = "auxiliary"
-    case mood           = "mood"
-    case elision        = "elision"
-
-    case pronunciation  = "pronunciation"
 
     var label: String {
         switch self {
-        case .wordOrder:     return "Word order"
-        case .wordChoice:    return "Word choice"
-        case .missingPiece:  return "Missing"
-        case .extraPiece:    return "Not needed"
-        case .register:      return "Register"
-        case .collocation:   return "Pairing"
-        case .comprehension: return "Meaning"
-        case .tone:          return "Tone"
-        case .particle:      return "Particle"
-        case .measureWord:   return "Measure word"
-        case .aspect:        return "Aspect"
-        case .caseEnding:    return "Case"
-        case .gender:        return "Gender"
-        case .verbPosition:  return "Verb position"
-        case .separableVerb: return "Separable verb"
-        case .agreement:     return "Agreement"
-        case .auxiliary:     return "Auxiliary"
-        case .mood:          return "Mood"
-        case .elision:       return "Elision"
-        case .pronunciation: return "Sound"
+        case .wordOrder:         return "Word order"
+        case .wordChoice:        return "Word choice"
+        case .missingPiece:      return "Missing"
+        case .extraPiece:        return "Not needed"
+        case .register:          return "Register"
+        case .collocation:       return "Pairing"
+        case .comprehension:     return "Meaning"
+        case .pronunciation:     return "Sound"
+        case .negation:          return "Negation"
+        case .preposition:       return "Preposition"
+        case .tenseAspect:       return "Tense"
+        case .mood:              return "Mood"
+        case .gender:            return "Gender"
+        case .particle:          return "Particle"
+        case .verbSecond:        return "Verb second"
+        case .bracket:           return "Verb bracket"
+        case .verbFinal:         return "Verb last"
+        case .caseChoice:        return "Case"
+        case .caseForm:          return "Ending"
+        case .adjectiveEnding:   return "Adjective ending"
+        case .agreementHeard:    return "Agreement"
+        case .agreementWritten:  return "Written form"
+        case .auxiliary:         return "Auxiliary"
+        case .pronounPlacement:  return "Pronoun"
+        case .liaison:           return "Liaison"
+        case .tone:              return "Tone"
+        case .measureWord:       return "Measure word"
         }
     }
+
+    /// Silent in speech. Suppressed when the attempt was spoken, so recognition
+    /// and orthography are never scored as grammar.
+    var isWrittenOnly: Bool { self == .agreementWritten }
 }
