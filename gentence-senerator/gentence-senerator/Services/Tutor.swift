@@ -333,37 +333,6 @@ actor Tutor {
         """
     }
 
-    private static func atomRules(_ pack: LanguagePack) -> String {
-        """
-        Every observation you make is an atom, and every atom must be openable —
-        its `seed.subject` is what a whole lesson about it would be about, so it
-        must be a real teachable point, never a restatement of the sentence.
-
-        Ids are stable: the same point in the same language always gets the same
-        id. Use kind-slug/anchor, e.g. word-order/已经.
-
-        The three stages are a reveal, in order:
-        - locate says where, and must not give away what. The learner should be
-          able to try repairing the sentence from this alone.
-        - name says what is wrong, still without the corrected text.
-        - fix is the corrected text.
-        Never let locate leak the answer; that is the whole point of the split.
-
-        Report what the learner got right as well, with verdict "kept". Praise
-        that names a real choice teaches; praise that is generic does not.
-
-        Available kinds for \(pack.language.name): \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
-        When the attempt was spoken, never use \(pack.kinds.filter(\.isWrittenOnly).map(\.rawValue).joined(separator: ", ").isEmpty ? "any written-only kind" : pack.kinds.filter(\.isWrittenOnly).map(\.rawValue).joined(separator: ", ")) — silent orthography is not something a speaker got wrong.
-
-        Routing. missing-piece, extra-piece, word-order and word-choice are
-        catch-alls: almost any error can be described as one of them, so reach
-        for a specific kind first and fall back only when nothing fits.
-        \(pack.routing)
-
-        \(pack.assessmentNotes)
-        """
-    }
-
     private static func generateSystem(_ pack: LanguagePack) -> String {
         """
         \(voice(pack))
@@ -427,7 +396,10 @@ actor Tutor {
         `patterns` replaces the rule on a third visit: examples only, no
         explanation. If explaining twice did not work, a third will not either.
 
-        \(atomRules(pack))
+        Every `links` entry is a way onward: `subject` is what a lesson about it
+        would be about — a real teachable point, never a restatement — and
+        `headline` is one line on what opening it would teach.
+        Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
         """
     }
 
@@ -488,9 +460,13 @@ actor Tutor {
         added detail. Never a plain repeat: the point is transfer, not recall of
         the correction. Two or three, each with the forms you would accept.
 
-        `ask` is two questions the learner plausibly has about this attempt.
+        `ask` is two questions the learner plausibly has about this attempt, in
+        their own words, each answered in a sentence or two.
 
-        \(atomRules(pack))
+        Every `links` entry is a way onward: `subject` is what a lesson about it
+        would be about — a real teachable point, never a restatement of the
+        sentence — and `headline` is one line on what opening it would teach.
+        Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
         """
     }
 
@@ -507,9 +483,10 @@ actor Tutor {
         \(voice(pack))
 
         Answer the learner's question about one point in one or two sentences,
-        then attach atoms for anything in your answer worth opening.
-
-        \(atomRules(pack))
+        then attach links for anything in your answer worth opening: `subject`
+        is what a lesson about it would be about, `headline` one line on what it
+        teaches.
+        Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
         """
     }
 }
