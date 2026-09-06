@@ -403,8 +403,8 @@ class LanguageService {
 
     static func produceQuestionSchema(targetLanguage: String) -> [String: Any] {
         objectSchema([
-            "question": stringField("The question, in English only."),
-            "questionTargetText": stringField("The same question in \(targetLanguage) only.")
+            "questionTargetText": stringField("The question as written in \(targetLanguage). Required."),
+            "question": stringField("The English translation of that question.")
         ])
     }
 
@@ -428,8 +428,8 @@ class LanguageService {
             "understoodMeaning": stringField("English readback of what they said and what you think they meant. At most two sentences."),
             "overallReaction": stringField("One conversational English sentence about the content."),
             "critiques": ["type": "array", "items": critique],
-            "followUpQuestion": stringField("The follow-up question, in English only."),
-            "followUpQuestionTargetText": stringField("The same follow-up question, in \(languageName) only.")
+            "followUpQuestionTargetText": stringField("The follow-up question as written in \(languageName). Required."),
+            "followUpQuestion": stringField("The English translation of that follow-up question.")
         ])
     }
 
@@ -469,13 +469,14 @@ class LanguageService {
         You are a friendly \(targetLanguage) conversation partner helping a language learner practice \
         telling a story or describing an experience in \(targetLanguage), difficulty \(difficulty)/10. \(desc)
 
-        Ask ONE natural, open-ended opening question that invites the learner to describe \
-        something personal (e.g. their weekend, a memorable trip, their daily routine, a hobby, a favorite meal). \
-        The question should be simple enough to answer in \(targetLanguage) at this difficulty level.
+        Ask ONE natural, open-ended opening question that invites the learner to describe something personal \
+        (e.g. their weekend, a memorable trip, their daily routine, a hobby, a favorite meal). The question \
+        should be simple enough to answer in \(targetLanguage) at this difficulty level. The learner will see \
+        the question primarily in \(targetLanguage), so it MUST read naturally there — write it in \
+        \(targetLanguage) first, then translate it into English.
 
-        Return BOTH phrasings of that one question, and keep the two fields strictly in their own languages:
-        - "question" must be written in ENGLISH ONLY, with no \(targetLanguage) in it.
-        - "questionTargetText" must be the same question in \(targetLanguage) ONLY. It is required — never null.
+        "questionTargetText" is the question as you wrote it in \(targetLanguage); it is required, never null. \
+        "question" is its English translation.
 
         """
 
@@ -580,11 +581,14 @@ class LanguageService {
         restructures the sentence. Leave "" if the correction is already what a native would say.
 
         4. REACT. One brief, warm, natural reaction to the CONTENT of what they said (1 sentence, \
-        conversational, NOT a grade or score commentary — e.g. "That sounds like a relaxing weekend!").
+        conversational, NOT a grade or score commentary — e.g. "That sounds like a relaxing weekend!"). \
+        Write it in English.
 
         5. ASK. One natural follow-up question that continues the conversation, building on what they \
         just said. If the user message names a grammar pattern to steer toward, phrase the question so \
-        a good answer would naturally use it — but never at the cost of the question sounding natural.
+        a good answer would naturally use it — but never at the cost of the question sounding natural. \
+        The learner will see this primarily in \(languageName), so it MUST read naturally there — write \
+        it in \(languageName) first, then translate it into English.
 
         Scoring: "score" is 0-100 per sentence — how close that sentence is to what a native speaker \
         would accept without hesitation.
@@ -602,8 +606,8 @@ class LanguageService {
         that needs a paragraph belongs in the tap-through explanation, not here.
         - Language discipline: "understoodMeaning", "issue", "explanation" and "overallReaction" are ENGLISH. \
         "text", "correction", "naturalVersion", "expression" and "better" are \(languageName). \
-        "followUpQuestion" is ENGLISH ONLY and "followUpQuestionTargetText" is \(languageName) ONLY — the \
-        latter is required, never null.
+        "followUpQuestionTargetText" is the follow-up question as you wrote it in \(languageName) — required, \
+        never null — and "followUpQuestion" is its English translation.
 
         """
     }
@@ -785,11 +789,11 @@ class LanguageService {
     // MARK: - Question language normalization
 
     /// Keeps the English/target-language halves of a generated question in their intended
-    /// fields. The model is told which language each field takes, but at conversational
-    /// temperatures it sometimes answers the opening question entirely in the target
-    /// language — which made Produce mode open in Mandarin and then flip to English on the
-    /// first follow-up. When the two fields are swapped, swap them back; when the target
-    /// half is missing but the "English" half is plainly target-script, keep it as the
+    /// fields. The prompt has the model write the question in the target language first and
+    /// translate it after, which is the real fix for Produce mode opening in Mandarin and then
+    /// flipping to English on the first follow-up — this is the backstop for when it fills the
+    /// fields the wrong way round anyway. When the two are swapped, swap them back; when the
+    /// target half is missing but the "English" half is plainly target-script, keep it as the
     /// target text so the UI still has something to show and speak.
     static func normalizedQuestionPair(
         english: String, target: String?, targetLanguage: String

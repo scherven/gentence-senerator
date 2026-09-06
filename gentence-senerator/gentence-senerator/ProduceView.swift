@@ -90,43 +90,42 @@ private struct ProduceLoadingView: View {
     }
 }
 
-// MARK: - Question Text (one rendering of the prompt, used by every Produce phase)
+// MARK: - Question/Follow-up Text (target-language primary, optional English reveal)
+// Used everywhere a question is shown — the opening prompt, follow-ups, and the growing
+// conversation thread — so the learner reads and answers in the target language by default,
+// with a tap to peek at the English translation if they're stuck. Rendering every question
+// the same way in every phase is also what keeps the mode from appearing to switch languages
+// between the opening question and the follow-ups.
 
-/// The question the learner is answering, shown the same way in every phase: the target
-/// language leads — it is the language they are about to answer in — with the English
-/// underneath as a gloss. Rendering both, always, is what keeps the mode from appearing to
-/// switch languages between the opening question and the follow-ups.
-private struct ProduceQuestionText: View {
-    let english: String
-    let targetText: String?
-    var alignment: HorizontalAlignment = .leading
-    var primaryFont: Font = .title3
+struct ProduceQuestionText: View {
+    let targetText: String
+    let englishText: String
+    var font: Font = .body
+    @State private var showTranslation = false
 
-    private var textAlignment: TextAlignment { alignment == .center ? .center : .leading }
-    private var frameAlignment: Alignment { alignment == .center ? .center : .leading }
-
-    private var hasTarget: Bool {
-        !(targetText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
+    /// Falls back to English as the primary line only in the rare case the model didn't
+    /// provide a target-language version despite the prompt requiring one.
+    private var hasTargetText: Bool { !targetText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     var body: some View {
-        VStack(alignment: alignment, spacing: 6) {
-            if hasTarget, let targetText {
-                line(targetText, font: primaryFont, weight: .medium, color: .primary)
-                line(english, font: .subheadline, weight: .regular, color: .secondary)
-            } else {
-                line(english, font: primaryFont, weight: .medium, color: .primary)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(hasTargetText ? targetText : englishText)
+                .font(font)
+            if showTranslation && hasTargetText && !englishText.isEmpty {
+                Text(englishText)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            if hasTargetText && !englishText.isEmpty {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) { showTranslation.toggle() }
+                } label: {
+                    Text(showTranslation ? "Hide translation" : "Show translation")
+                        .font(.caption2)
+                        .foregroundColor(.accentColor)
+                }
             }
         }
-    }
-
-    private func line(_ text: String, font: Font, weight: Font.Weight, color: Color) -> some View {
-        Text(text)
-            .font(font)
-            .fontWeight(weight)
-            .foregroundColor(color)
-            .multilineTextAlignment(textAlignment)
-            .frame(maxWidth: .infinity, alignment: frameAlignment)
     }
 }
 
@@ -149,8 +148,7 @@ private struct ProduceConversationThreadView: View {
 
     private func aiQuestionBubble(_ turn: ProduceTurn) -> some View {
         HStack {
-            ProduceQuestionText(english: turn.question, targetText: turn.questionTargetText,
-                                primaryFont: .body)
+            ProduceQuestionText(targetText: turn.questionTargetText ?? "", englishText: turn.question)
                 .padding(10)
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
@@ -254,8 +252,12 @@ private struct ProduceQuestionView: View {
 
     private var currentQuestionCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ProduceQuestionText(english: store.produceCurrentQuestion,
-                                targetText: store.produceCurrentQuestionTargetText)
+            ProduceQuestionText(
+                targetText: store.produceCurrentQuestionTargetText ?? "",
+                englishText: store.produceCurrentQuestion,
+                font: .title3.weight(.medium)
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if let targetText = store.produceCurrentQuestionTargetText, !targetText.isEmpty {
                 HStack(spacing: 8) {
@@ -349,9 +351,12 @@ private struct ProduceRecordingView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            ProduceQuestionText(english: store.produceCurrentQuestion,
-                                targetText: store.produceCurrentQuestionTargetText,
-                                alignment: .center)
+            ProduceQuestionText(
+                targetText: store.produceCurrentQuestionTargetText ?? "",
+                englishText: store.produceCurrentQuestion,
+                font: .title3.weight(.medium)
+            )
+                .multilineTextAlignment(.center)
                 .padding()
                 .background(Color.accentColor.opacity(0.08))
                 .cornerRadius(12)
@@ -444,9 +449,10 @@ private struct ProduceTranscriptReviewView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
-                    ProduceQuestionText(english: store.produceCurrentQuestion,
-                                        targetText: store.produceCurrentQuestionTargetText,
-                                        primaryFont: .body)
+                    ProduceQuestionText(
+                        targetText: store.produceCurrentQuestionTargetText ?? "",
+                        englishText: store.produceCurrentQuestion
+                    )
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.accentColor.opacity(0.08))
@@ -624,9 +630,10 @@ private struct ProduceCritiqueView: View {
                             .foregroundColor(.secondary)
                             .textCase(.uppercase)
                         HStack {
-                            ProduceQuestionText(english: store.produceCurrentQuestion,
-                                                targetText: store.produceCurrentQuestionTargetText,
-                                                primaryFont: .body)
+                            ProduceQuestionText(
+                                targetText: store.produceCurrentQuestionTargetText ?? "",
+                                englishText: store.produceCurrentQuestion
+                            )
                                 .padding(12)
                                 .background(Color(.systemGray6))
                                 .cornerRadius(12)
