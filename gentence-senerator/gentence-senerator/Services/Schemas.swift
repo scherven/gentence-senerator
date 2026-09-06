@@ -30,11 +30,10 @@ enum Schemas {
     /// compiled grammar too large for the model to accept.
     static func atomLink(for language: Language) -> [String: Any] {
         object([
-            "id": ["type": "string", "description": "Stable: kind-slug/subject."],
             "kind": enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category."),
             "headline": ["type": "string", "description": "One line. What opening this would teach."],
             "subject": ["type": "string", "description": "What a lesson about this would be about."]
-        ], required: ["id", "kind", "headline", "subject"])
+        ], required: ["kind", "headline", "subject"])
     }
 
     /// One answer to one typed question.
@@ -111,7 +110,6 @@ enum Schemas {
             "readOfScore": ["type": "string", "description": "One clause on what it means. Not a breakdown."],
             "fixed": ["type": ["string", "null"], "description": "The minimal correction."],
             "findings": array(object([
-                "id": ["type": "string", "description": "Stable: kind-slug/anchor."],
                 "kind": enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category."),
                 "verdict": enumOf(["breaks", "weakens", "kept"],
                                   "breaks stops comprehension; weakens marks a learner; kept is right and worth knowing why."),
@@ -120,7 +118,7 @@ enum Schemas {
                 "locate": ["type": "string",
                            "description": "Where, without saying what. The learner should be able to try repairing it from this alone. Never name the fix here."],
                 "subject": ["type": "string", "description": "What a lesson about this would be about."]
-            ], required: ["id", "kind", "verdict", "weight", "anchor", "locate", "subject"]))
+            ], required: ["kind", "verdict", "weight", "anchor", "locate", "subject"]))
         ], required: ["score", "readOfScore", "fixed", "findings"])
     }
 

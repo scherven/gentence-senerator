@@ -55,7 +55,7 @@ actor Anthropic {
     func send(cachedSystem: String,
               user: String,
               schema: [String: Any]? = nil,
-              effort: Effort = .high,
+              effort: Effort = .medium,
               maxTokens: Int = 8000) async throws -> Reply {
 
         guard !key.isEmpty else { throw Failure.noKey }
@@ -126,7 +126,7 @@ actor Anthropic {
                             cachedSystem: String,
                             user: String,
                             schema: [String: Any],
-                            effort: Effort = .high,
+                            effort: Effort = .medium,
                             maxTokens: Int = 8000) async throws -> (T, Usage) {
 
         let reply = try await send(cachedSystem: cachedSystem, user: user,

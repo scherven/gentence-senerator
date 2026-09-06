@@ -135,7 +135,10 @@ struct PastReview: View {
             },
             ask: turn.review?.ask ?? [],
             answers: store.asked[turn.id.uuidString] ?? [],
-            isAsking: store.asking.contains(turn.id.uuidString)
+            isAsking: store.asking.contains(turn.id.uuidString),
+            deepening: false,
+            depthError: nil,
+            onRetryDepth: {}
         )
         .navigationTitle(turn.mode.name)
         .navigationBarTitleDisplayMode(.inline)

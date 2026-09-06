@@ -7,8 +7,13 @@ import Foundation
 /// to generate the expansion, so `expand` has one signature at every depth.
 struct Atom: Identifiable, Codable, Hashable {
 
-    /// `word-order/已经`. Same point, same id, across sessions.
+    /// `word-order/已经`. Same point, same id, across sessions — derived, so it
+    /// cannot drift between calls.
     let id: String
+
+    static func identify(_ kind: AtomKind, _ subject: String) -> String {
+        "\(kind.rawValue)/\(subject.lowercased())"
+    }
 
     let kind: AtomKind
     let verdict: Verdict
@@ -63,7 +68,7 @@ struct Atom: Identifiable, Codable, Hashable {
     var cacheKey: String { "\(kind.rawValue)|\(seed.subject)" }
 
     var link: AtomLink {
-        AtomLink(id: id, kind: kind, headline: stages.name, subject: seed.subject)
+        AtomLink(kind: kind, headline: stages.name, subject: seed.subject)
     }
 }
 
@@ -72,12 +77,15 @@ struct Atom: Identifiable, Codable, Hashable {
 /// Atom out of nested positions is also what keeps the response schema small
 /// enough for the model to compile.
 struct AtomLink: Identifiable, Codable, Hashable {
-    let id: String
     var kind: AtomKind
     var headline: String
     /// What a lesson about this would be about. The context comes from wherever
     /// the link was tapped.
     var subject: String
+
+    /// Built from the point, not minted by the model: the same point always
+    /// gets the same id, without spending instructions or tokens asking for it.
+    var id: String { Atom.identify(kind, subject) }
 
     func request(in language: Language, context: String, priorVisits: Int = 0) -> LessonRequest {
         LessonRequest(

@@ -30,6 +30,7 @@ final class Store {
     private(set) var loadingLesson: Set<String> = []
     private(set) var lessonError: String?
     private(set) var reviewDepthError: String?
+    private(set) var deepening = false
 
     /// Slip or gap, per atom, for the review on screen.
     private(set) var knowledge: [String: Progress.Encounter.Knowledge] = [:]
@@ -278,20 +279,35 @@ final class Store {
     }
 
     private func deepen(turn: Turn, opening: Review, history: [Turn]) async {
+        deepening = true
+        reviewDepthError = nil
+        defer { deepening = false }
         do {
             let (full, usage) = try await tutor.assessDepth(
                 turn: turn, opening: opening, history: history, level: settings.level
             )
             note(usage)
-            guard current?.id == turn.id else { return }
-            current?.review = full
+            guard var live = current, live.id == turn.id else { return }
+            live.review = full
+            current = live
             if let index = session?.turns.firstIndex(where: { $0.id == turn.id }) {
                 session?.turns[index].review = full
             }
+            hold()
         } catch {
-            // The opening still stands; the learner just waits on a tap.
+            // The opening still stands. Say so rather than leaving half a
+            // review on screen with no explanation.
             reviewDepthError = error.localizedDescription
         }
+    }
+
+    /// Ask for the rest again after a failure.
+    func retryDepth() async {
+        guard let turn = current, let opening = turn.review, !opening.isDeep else { return }
+        let history = settings.mode.reviewsEachAttempt
+            ? []
+            : Array((session?.turns ?? []).dropLast().suffix(settings.turnsBeforeReview))
+        await deepen(turn: turn, opening: opening, history: history)
     }
 
     /// A point counts as attempted whether or not it worked — that is what

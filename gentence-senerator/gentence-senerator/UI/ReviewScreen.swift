@@ -11,6 +11,9 @@ struct ReviewScreen: View {
     let ask: [AskItem]
     let answers: [AskItem]
     let isAsking: Bool
+    let deepening: Bool
+    let depthError: String?
+    let onRetryDepth: () -> Void
 
     @State private var stages: [String: Int] = [:]
 
@@ -27,6 +30,7 @@ struct ReviewScreen: View {
 
                 if let review {
                     findings(review)
+                    if !review.isDeep { rest }
                     if let natural = review.natural {
                         sentence(natural, label: "What a speaker would say", edge: Theme.C.accent)
                     }
@@ -190,6 +194,37 @@ struct ReviewScreen: View {
                     .buttonStyle(.plain)
                 }
             }
+        }
+    }
+
+    /// The second call is still out, or it failed. Either way the learner is
+    /// told, rather than shown half a review and left to wonder.
+    @ViewBuilder
+    private var rest: some View {
+        if let depthError {
+            VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                Text("Couldn't fetch the rest: \(depthError)")
+                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+                TinyButton(title: "Try again", action: onRetryDepth)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.M.pad)
+            .background(Theme.C.surface)
+            .overlay(alignment: .leading) {
+                Rectangle().fill(Theme.C.bad).frame(width: Theme.M.edge)
+            }
+            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        } else if deepening {
+            HStack(spacing: Theme.M.gapTight) {
+                ProgressView().tint(Theme.C.accent)
+                Text("Working out the fixes…")
+                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.M.pad)
+            .background(Theme.C.surface)
+            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }
     }
 

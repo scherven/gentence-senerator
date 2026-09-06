@@ -265,7 +265,10 @@ struct ModeScreen: View {
                     },
                     ask: turn.review?.ask ?? [],
                     answers: store.asked[turn.id.uuidString] ?? [],
-                    isAsking: store.asking.contains(turn.id.uuidString)
+                    isAsking: store.asking.contains(turn.id.uuidString),
+                    deepening: store.deepening,
+                    depthError: store.reviewDepthError,
+                    onRetryDepth: { Task { await store.retryDepth() } }
                 )
                 MainButton(title: "Next") { Task { await store.advance() } }
             }

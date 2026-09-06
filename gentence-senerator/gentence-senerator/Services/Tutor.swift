@@ -134,7 +134,7 @@ actor Tutor {
 
     struct Opening: Codable {
         struct Finding: Codable {
-            var id: String; var kind: AtomKind; var verdict: Atom.Verdict
+            var kind: AtomKind; var verdict: Atom.Verdict
             var weight: Atom.Weight; var anchor: String?; var locate: String; var subject: String
         }
         var score: Int
@@ -170,7 +170,8 @@ actor Tutor {
             score: opening.score,
             readOfScore: opening.readOfScore,
             atoms: opening.findings.map {
-                Atom(id: $0.id, kind: $0.kind, verdict: $0.verdict, anchor: $0.anchor,
+                Atom(id: Atom.identify($0.kind, $0.subject),
+                     kind: $0.kind, verdict: $0.verdict, anchor: $0.anchor,
                      stages: .init(locate: $0.locate),
                      seed: .init(subject: $0.subject, context: turn.attempt.confirmed,
                                  pointID: turn.prompt.pointID),
@@ -455,7 +456,18 @@ actor Tutor {
         meaning intact is "weakens", not "breaks". Reserve "breaks" for what
         actually stops a listener.
 
-        \(atomRules(pack))
+        `subject` is what a lesson about the finding would be about: a real
+        teachable point, never a restatement of the sentence.
+
+        Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+        When the attempt was spoken, never use a written-only kind — silent
+        orthography is not something a speaker got wrong.
+
+        Routing. missing-piece, extra-piece, word-order and word-choice are
+        catch-alls: almost any error fits one, so reach for a specific kind
+        first and fall back only when nothing else does.
+        \(pack.routing)
+        \(pack.assessmentNotes)
         """
     }
 
