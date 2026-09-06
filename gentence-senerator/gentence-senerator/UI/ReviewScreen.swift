@@ -48,14 +48,20 @@ struct ReviewScreen: View {
 
     private var specimen: some View {
         VStack(spacing: 0) {
-            if let english = turn.prompt.english {
-                specimenRow("Asked") {
-                    Text(english).font(Theme.F.body).foregroundStyle(Theme.C.ink)
-                }
-            }
+            // The target-language side carries the English as a gloss beneath
+            // it rather than as a second row, which read as two questions.
             if let target = turn.prompt.target {
                 specimenRow(turn.mode == .listen ? "Played" : "Asked") {
-                    Text(target).font(Theme.F.target).foregroundStyle(Theme.C.ink)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(target).font(Theme.F.target).foregroundStyle(Theme.C.ink)
+                        if let english = turn.prompt.english {
+                            Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        }
+                    }
+                }
+            } else if let english = turn.prompt.english {
+                specimenRow("Asked") {
+                    Text(english).font(Theme.F.body).foregroundStyle(Theme.C.ink)
                 }
             }
             specimenRow("You said") {
