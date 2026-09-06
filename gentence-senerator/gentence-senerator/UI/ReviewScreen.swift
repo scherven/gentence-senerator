@@ -39,6 +39,7 @@ struct ReviewScreen: View {
                         onOpenLink: onOpenLink, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
+            .padding(.bottom, Theme.M.gap)
         }
         .background(Theme.C.surface)
     }
@@ -94,21 +95,33 @@ struct ReviewScreen: View {
         .padding(Theme.M.padTight)
     }
 
+    /// Problems and praise are listed apart, so the count in the header names
+    /// what is under it. Both are shown; only problems stage their reveal.
     private func findings(_ review: Review) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: label(for: review.problems.count))
-            VStack(spacing: 0) {
-                ForEach(review.atoms) { atom in
-                    if atom.verdict.isProblem {
-                        StagedAtomRow(
-                            atom: atom,
-                            stage: binding(for: atom),
-                            knowledge: knowledge[atom.id] ?? .unclassified,
-                            onClassify: { onClassify(atom, $0) },
-                            onOpen: { onOpenAtom(atom) }
-                        )
-                    } else {
-                        AtomRow(link: atom.link, tint: Theme.C.good) { onOpenAtom(atom) }
+        VStack(alignment: .leading, spacing: Theme.M.gap) {
+            if !review.problems.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    ModuleLabel(text: label(for: review.problems.count))
+                    VStack(spacing: 0) {
+                        ForEach(review.problems) { atom in
+                            StagedAtomRow(
+                                atom: atom,
+                                stage: binding(for: atom),
+                                knowledge: knowledge[atom.id] ?? .unclassified,
+                                onClassify: { onClassify(atom, $0) },
+                                onOpen: { onOpenAtom(atom) }
+                            )
+                        }
+                    }
+                }
+            }
+            if !review.kept.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    ModuleLabel(text: "What you got right")
+                    VStack(spacing: 0) {
+                        ForEach(review.kept) { atom in
+                            AtomRow(link: atom.link, tint: Theme.C.good) { onOpenAtom(atom) }
+                        }
                     }
                 }
             }

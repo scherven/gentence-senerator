@@ -14,26 +14,233 @@ actor Tutor {
     init(api: Anthropic) { self.api = api }
 
     // MARK: Expansion — the recursive call
+    //
+    // Two calls. The rule and its examples come back first because that is what
+    // the learner reads; the drills follow while they are reading.
 
+    struct Core: Codable {
+        struct Ex: Codable { var target: String; var gloss: String; var subject: String? }
+        var title: String
+        var rule: String
+        var contrastTerm: String?
+        var contrastNote: String?
+        var contrastSubject: String?
+        var examples: [Ex]
+    }
+
+    struct Practice: Codable {
+        struct R: Codable {
+            var support: Rung.Support; var prompt: String; var accept: [String]
+            var options: [String]?; var answerIndex: Int?
+        }
+        struct D: Codable { var rungs: [R]; var correct: String; var incorrect: String; var links: [AtomLink] }
+        struct A: Codable { var question: String; var answer: String; var links: [AtomLink] }
+        struct P: Codable { var target: String; var gloss: String }
+        var drills: [D]
+        var ask: [A]
+        var patterns: [P]
+    }
+
+    /// First stage. Enough to put a lesson on screen.
     func expand(_ request: LessonRequest) async throws -> (Lesson, Anthropic.Usage?) {
         if let cached = lessons[request.cacheKey] { return (cached, nil) }
 
         let pack = LanguagePacks.pack(for: request.language)
-        let (lesson, usage) = try await api.send(
-            Lesson.self,
-            cachedSystem: Self.expandSystem(pack),
-            user: """
-            Subject: \(request.seed.subject)
-            Kind: \(request.kind.rawValue)
-            The learner wrote: \(request.seed.context)
-            Grammar point: \(request.seed.pointID ?? "none")
-            Times the learner has opened this before: \(request.priorVisits)
-            """,
-            schema: Schemas.lesson(for: request.language)
+        let (core, usage) = try await api.send(
+            Core.self,
+            cachedSystem: Self.coreSystem(pack),
+            user: Self.lessonFacts(request, pack),
+            schema: Schemas.lessonCore(for: request.language),
+            effort: .medium
         )
+
+        var blocks: [Block] = [
+            Block(id: "rule", kind: .rule, label: nil, text: core.rule)
+        ]
+        if let term = core.contrastTerm, let note = core.contrastNote {
+            blocks.append(Block(
+                id: "contrast", kind: .contrast, label: "Not to be confused with",
+                sides: [
+                    Side(id: "a", term: request.seed.subject, note: "What you were doing.", seed: nil),
+                    Side(id: "b", term: term, note: note,
+                         seed: core.contrastSubject.map {
+                             Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
+                         })
+                ]
+            ))
+        }
+        blocks.append(Block(
+            id: "examples", kind: .examples, label: "In the wild",
+            examples: core.examples.enumerated().map { index, example in
+                Example(id: "ex\(index)", target: example.target, gloss: example.gloss,
+                        seed: example.subject.map {
+                            Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
+                        })
+            }
+        ))
+
+        let lesson = Lesson(id: request.cacheKey, title: core.title,
+                            blocks: blocks, ask: [], patterns: [])
+        lessons[request.cacheKey] = lesson
+        return (lesson, usage)
+    }
+
+    /// Second stage. Merged into the lesson already on screen.
+    func practice(for request: LessonRequest) async throws -> (Lesson, Anthropic.Usage)? {
+        guard var lesson = lessons[request.cacheKey], lesson.ask.isEmpty else { return nil }
+
+        let pack = LanguagePacks.pack(for: request.language)
+        let (practice, usage) = try await api.send(
+            Practice.self,
+            cachedSystem: Self.practiceSystem(pack),
+            user: Self.lessonFacts(request, pack) + "\nThe rule as written: \(lesson.blocks.first?.text ?? "")",
+            schema: Schemas.lessonPractice(for: request.language)
+        )
+
+        lesson.blocks.append(Block(
+            id: "drills", kind: .drills, label: "Your turn",
+            drills: practice.drills.enumerated().map { index, drill in
+                Drill(id: "d\(index)",
+                      rungs: drill.rungs.enumerated().map { rungIndex, rung in
+                          Rung(id: "d\(index)r\(rungIndex)", support: rung.support,
+                               prompt: rung.prompt, accept: rung.accept,
+                               options: rung.options, answerIndex: rung.answerIndex)
+                      },
+                      correct: drill.correct, incorrect: drill.incorrect, atoms: drill.links)
+            }
+        ))
+        lesson.ask = practice.ask.enumerated().map { index, item in
+            AskItem(id: "a\(index)", question: item.question, answer: item.answer, atoms: item.links)
+        }
+        lesson.patterns = practice.patterns.enumerated().map { index, pattern in
+            Example(id: "p\(index)", target: pattern.target, gloss: pattern.gloss, seed: nil)
+        }
 
         lessons[request.cacheKey] = lesson
         return (lesson, usage)
+    }
+
+    private static func lessonFacts(_ request: LessonRequest, _ pack: LanguagePack) -> String {
+        """
+        Subject: \(request.seed.subject)
+        Kind: \(request.kind.rawValue)
+        The learner wrote: \(request.seed.context)
+        Grammar point: \(request.seed.pointID ?? "none")
+        Times opened before: \(request.priorVisits)
+        """
+    }
+
+    // MARK: Assessment — two stages
+
+    struct Opening: Codable {
+        struct Finding: Codable {
+            var id: String; var kind: AtomKind; var verdict: Atom.Verdict
+            var weight: Atom.Weight; var anchor: String?; var locate: String; var subject: String
+        }
+        var score: Int
+        var readOfScore: String
+        var fixed: String?
+        var findings: [Finding]
+    }
+
+    struct Depth: Codable {
+        struct Filled: Codable { var id: String; var name: String; var fix: String; var note: String }
+        struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
+        struct A: Codable { var question: String; var answer: String; var links: [AtomLink] }
+        var natural: String?
+        var understood: String?
+        var findings: [Filled]
+        var respeaks: [Say]
+        var ask: [A]
+    }
+
+    /// What the learner sees at once.
+    func assessOpening(turn: Turn, history: [Turn] = [], level: Int)
+    async throws -> (Review, Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: turn.language)
+        let (opening, usage) = try await api.send(
+            Opening.self,
+            cachedSystem: Self.openingSystem(pack),
+            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
+            schema: Schemas.reviewOpening(for: turn.language),
+            effort: .medium
+        )
+
+        let review = Review(
+            score: opening.score,
+            readOfScore: opening.readOfScore,
+            atoms: opening.findings.map {
+                Atom(id: $0.id, kind: $0.kind, verdict: $0.verdict, anchor: $0.anchor,
+                     stages: .init(locate: $0.locate),
+                     seed: .init(subject: $0.subject, context: turn.attempt.confirmed,
+                                 pointID: turn.prompt.pointID),
+                     weight: $0.weight)
+            },
+            fixed: opening.fixed, natural: nil, understood: nil
+        )
+        return (review, usage)
+    }
+
+    /// Fetched while the learner is still looking at where the problem is.
+    func assessDepth(turn: Turn, opening: Review, history: [Turn] = [], level: Int)
+    async throws -> (Review, Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: turn.language)
+        let listed = opening.atoms
+            .map { "\($0.id): \($0.stages.locate)" }
+            .joined(separator: "\n")
+
+        let (depth, usage) = try await api.send(
+            Depth.self,
+            cachedSystem: Self.depthSystem(pack),
+            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack)
+                + "\n\nFindings to fill in, by id:\n" + listed,
+            schema: Schemas.reviewDepth(for: turn.language),
+            effort: .medium
+        )
+
+        var merged = opening
+        let byID = Dictionary(uniqueKeysWithValues: depth.findings.map { ($0.id, $0) })
+        merged.atoms = opening.atoms.map { atom in
+            guard let filled = byID[atom.id] else { return atom }
+            var copy = atom
+            copy.stages.name = filled.name
+            copy.stages.fix = filled.fix
+            copy.stages.note = filled.note
+            return copy
+        }
+        merged.natural = depth.natural
+        merged.understood = depth.understood
+        merged.respeaks = depth.respeaks.enumerated().map { index, say in
+            Respeak(id: "r\(index)", instruction: say.instruction, accept: say.accept,
+                    correct: say.correct, incorrect: say.incorrect)
+        }
+        merged.ask = depth.ask.enumerated().map { index, item in
+            AskItem(id: "q\(index)", question: item.question, answer: item.answer, atoms: item.links)
+        }
+        merged.isDeep = true
+        return (merged, usage)
+    }
+
+    private static func attemptFacts(turn: Turn, history: [Turn], level: Int, pack: LanguagePack) -> String {
+        var facts = """
+        Mode: \(turn.mode.rawValue)
+        Level: \(pack.level(level))
+        Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
+        """
+        if !history.isEmpty {
+            facts += "\n\nThe exchange so far:\n"
+            for past in history {
+                facts += "Q: \(past.prompt.target ?? past.prompt.english ?? "—")\n"
+                facts += "A: \(past.attempt.confirmed)\n"
+            }
+        }
+        facts += """
+
+        Asked (English): \(turn.prompt.english ?? "—")
+        Asked (\(pack.language.name)): \(turn.prompt.target ?? "—")
+        The learner said: \(turn.attempt.confirmed)
+        """
+        return facts
     }
 
     // MARK: Generation
@@ -78,42 +285,6 @@ actor Tutor {
         )
     }
 
-    // MARK: Assessment
-
-    /// `history` is the rest of the exchange in produce mode, so corrections can
-    /// wait for the end of a conversation instead of interrupting it. Empty for
-    /// translate and listen, which review each attempt.
-    func assess(turn: Turn, history: [Turn] = [], level: Int)
-    async throws -> (Review, Anthropic.Usage) {
-        let pack = LanguagePacks.pack(for: turn.language)
-
-        var facts = """
-        Mode: \(turn.mode.rawValue)
-        Level: \(pack.level(level))
-        Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
-        """
-        if !history.isEmpty {
-            facts += "\n\nThe exchange so far:\n"
-            for past in history {
-                facts += "Q: \(past.prompt.target ?? past.prompt.english ?? "—")\n"
-                facts += "A: \(past.attempt.confirmed)\n"
-            }
-        }
-        facts += """
-
-        Asked (English): \(turn.prompt.english ?? "—")
-        Asked (\(pack.language.name)): \(turn.prompt.target ?? "—")
-        The learner said: \(turn.attempt.confirmed)
-        """
-
-        return try await api.send(
-            Review.self,
-            cachedSystem: Self.assessSystem(pack),
-            user: facts,
-            schema: Schemas.review(for: turn.language)
-        )
-    }
-
     // MARK: Drills and questions
 
     struct DrillVerdict: Codable { var correct: Bool; var note: String; var oneGoodAnswer: String }
@@ -144,7 +315,7 @@ actor Tutor {
             The learner wrote: \(seed.context)
             Their question: \(question)
             """,
-            schema: Schemas.askItem(for: language)
+            schema: Schemas.freeAnswer(for: language)
         )
     }
 
@@ -216,56 +387,65 @@ actor Tutor {
         """
     }
 
-    private static func expandSystem(_ pack: LanguagePack) -> String {
+    private static func coreSystem(_ pack: LanguagePack) -> String {
         """
         \(voice(pack))
 
-        You write one lesson about one point, built from blocks.
+        You explain one point, and only explain it — the practice is written
+        separately, so do not include drills or questions here.
 
-        Use `rule` for the explanation — a short paragraph, not an essay.
-        Use `contrast` for the confusable neighbour, which is usually what the
-        learner needs next; give each side a seed so it opens.
-        Use `examples` for the pattern in use; give each a seed.
-        Use `drills` for production. Every drill needs at least two rungs,
-        ordered hardest first: rung 0 is unaided production, and each later rung
-        removes something the learner has to build — a frame with a gap, then a
-        choice between two. A learner who fails drops a rung, so the lower rungs
-        must test the same point with less to construct.
+        `rule` is the explanation: a short paragraph. Say what governs the
+        choice, not what the learner did.
+        The contrast is the confusable neighbour, which is usually what they
+        need next; give it a subject so it opens. Null it only when there
+        genuinely is no near neighbour.
+        `examples` are the pattern in use — three or four, each something a
+        person would say. Give an example a subject when opening it would
+        teach something further.
+        """
+    }
 
-        `ask` holds two questions the learner plausibly has after reading this,
-        in their own words, each answered in one or two sentences, each carrying
-        atoms so the answer is a way further in rather than a full stop.
+    private static func practiceSystem(_ pack: LanguagePack) -> String {
+        """
+        \(voice(pack))
 
-        `patterns` is shown instead of the rule when the learner has been here
-        three times. Pattern only, no explanation — if explaining twice failed,
-        a third explanation will fail too.
+        You write the practice for a rule that has already been explained.
+
+        Every drill needs at least two rungs, hardest first. Rung 0 is unaided
+        production. Each later rung removes something the learner has to build
+        — a frame with a gap, then a choice between two. A learner who fails
+        drops a rung, so the lower rungs must test the same point with less to
+        construct, never a different point.
+
+        `accept` lists every form a speaker would accept, not just the neatest.
+
+        `ask` is two questions the learner plausibly has after reading the rule,
+        in their own words, each answered in a sentence or two and carrying
+        links so the answer opens further.
+
+        `patterns` replaces the rule on a third visit: examples only, no
+        explanation. If explaining twice did not work, a third will not either.
 
         \(atomRules(pack))
         """
     }
 
-    private static func assessSystem(_ pack: LanguagePack) -> String {
+    private static func openingSystem(_ pack: LanguagePack) -> String {
         """
         \(voice(pack))
 
-        You assess one attempt and return every finding.
+        You return a score and where each problem is — nothing more. Naming and
+        fixing happen in a second pass, so `locate` must not give the answer
+        away: the learner reads it and tries to repair the sentence themselves.
+        "Something is in the wrong place in the second half" is right.
+        "已经 should come before the verb" is not.
 
-        Rank them: exactly one atom has weight "start" — the one that most
-        stops the learner being understood. Every other finding is still
-        returned. Never omit a real error because it is minor; silence reads as
-        approval.
+        Rank them: exactly one finding has weight "start", the one that most
+        stops the learner being understood. Return every other finding too.
+        Never omit a real error because it is minor — silence reads as approval.
 
-        `fixed` is the minimal correction. `natural` is what a speaker would
-        actually say, which is often different — give both when they differ.
-
-        `respeaks` ask the learner to say their own sentence again with one
-        thing deliberately changed: a different subject, a different tense, an
-        added detail. Never a plain repeat — the point is transfer, not recall
-        of the correction. Two or three, each with the forms you would accept.
-
-        `ask` holds two questions the learner plausibly has about this attempt,
-        in their own words, each answered in one or two sentences and carrying
-        atoms so the answer opens further.
+        Report what they got right as well, with verdict "kept". Praise that
+        names a real choice teaches; generic praise does not.
 
         `readOfScore` is one clause on what the score means. Not a breakdown,
         not a pep talk.
@@ -273,8 +453,30 @@ actor Tutor {
         Severity follows the level. Below B1 or HSK 4, being understood matters
         more than being formally correct: a morphological slip that leaves the
         meaning intact is "weakens", not "breaks". Reserve "breaks" for what
-        actually stops a listener — a wrong tone, a case that reverses direction
-        for position, a verb the listener cannot locate.
+        actually stops a listener.
+
+        \(atomRules(pack))
+        """
+    }
+
+    private static func depthSystem(_ pack: LanguagePack) -> String {
+        """
+        \(voice(pack))
+
+        You fill in findings that have already been located. For each id you are
+        given, say what is wrong (`name`, still without the corrected text),
+        then the correction (`fix`), then one or two sentences on why (`note`).
+        Return every id you are given and invent no others.
+
+        `natural` is what a speaker would actually say when that differs from
+        the minimal correction. Null when it does not.
+
+        `respeaks` ask the learner to say their own sentence again with one
+        thing deliberately changed — a different subject, a different tense, an
+        added detail. Never a plain repeat: the point is transfer, not recall of
+        the correction. Two or three, each with the forms you would accept.
+
+        `ask` is two questions the learner plausibly has about this attempt.
 
         \(atomRules(pack))
         """

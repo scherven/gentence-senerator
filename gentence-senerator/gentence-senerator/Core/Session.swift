@@ -104,16 +104,19 @@ struct Review: Codable, Hashable {
     var atoms: [Atom]
 
     var fixed: String?
-    /// Often not the minimal correction.
+    /// Often not the minimal correction. Second stage.
     var natural: String?
 
     /// Produce only. Correctable before it is graded.
     var understood: String?
 
-    var respeaks: [Respeak]
+    /// Second stage. Empty until it arrives.
+    var respeaks: [Respeak] = []
     /// Questions the learner plausibly has about this attempt. Answers carry
-    /// atoms, so asking is another way down.
-    var ask: [AskItem]
+    /// atoms, so asking is another way down. Second stage.
+    var ask: [AskItem] = []
+    /// True once the second call has filled in the rest.
+    var isDeep = false
 
     var problems: [Atom] { atoms.filter { $0.verdict.isProblem } }
     var kept: [Atom] { atoms.filter { !$0.verdict.isProblem } }

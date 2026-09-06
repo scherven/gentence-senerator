@@ -29,6 +29,7 @@ final class Store {
     private(set) var lessons: [String: Lesson] = [:]
     private(set) var loadingLesson: Set<String> = []
     private(set) var lessonError: String?
+    private(set) var reviewDepthError: String?
 
     /// Slip or gap, per atom, for the review on screen.
     private(set) var knowledge: [String: Progress.Encounter.Knowledge] = [:]
@@ -214,19 +215,41 @@ final class Store {
             current = turn
         }
 
+        let history = settings.mode.reviewsEachAttempt ? [] : (session?.turns ?? [])
         do {
-            let history = settings.mode.reviewsEachAttempt ? [] : (session?.turns ?? [])
-            let (review, usage) = try await tutor.assess(
+            let (opening, usage) = try await tutor.assessOpening(
                 turn: turn, history: history, level: settings.level
             )
             note(usage)
-            turn.review = review
+            turn.review = opening
             current = turn
             session?.turns.append(turn)
-            recordReach(for: turn, review: review)
+            recordReach(for: turn, review: opening)
             phase = .reviewing
+
+            // The rest lands while the learner is still reading where the
+            // problems are and trying to fix them. By the time they ask for a
+            // name, it is usually already here.
+            Task { await deepen(turn: turn, opening: opening, history: history) }
         } catch {
             phase = .failed(error.localizedDescription)
+        }
+    }
+
+    private func deepen(turn: Turn, opening: Review, history: [Turn]) async {
+        do {
+            let (full, usage) = try await tutor.assessDepth(
+                turn: turn, opening: opening, history: history, level: settings.level
+            )
+            note(usage)
+            guard current?.id == turn.id else { return }
+            current?.review = full
+            if let index = session?.turns.firstIndex(where: { $0.id == turn.id }) {
+                session?.turns[index].review = full
+            }
+        } catch {
+            // The opening still stands; the learner just waits on a tap.
+            reviewDepthError = error.localizedDescription
         }
     }
 
@@ -319,10 +342,17 @@ final class Store {
             let (lesson, usage) = try await tutor.expand(request)
             if let usage { note(usage) }
             lessons[request.cacheKey] = lesson
+            loadingLesson.remove(request.cacheKey)
+
+            // Drills and questions arrive while the rule is being read.
+            if let (full, practiceUsage) = try await tutor.practice(for: request) {
+                note(practiceUsage)
+                lessons[request.cacheKey] = full
+            }
         } catch {
             lessonError = error.localizedDescription
+            loadingLesson.remove(request.cacheKey)
         }
-        loadingLesson.remove(request.cacheKey)
     }
 
     func classify(_ atom: Atom, as verdict: Progress.Encounter.Knowledge) {

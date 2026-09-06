@@ -20,14 +20,21 @@ struct Atom: Identifiable, Codable, Hashable {
     var seed: Seed
 
     /// Revealed one at a time, so the learner can self-repair before being told.
+    ///
+    /// Only `locate` arrives with the review. The rest is fetched while the
+    /// learner is still looking at `locate` and trying to fix it themselves —
+    /// the pedagogy pays for the latency.
     struct Stages: Codable, Hashable {
         /// Where, not what. "Something is out of place in the second half."
         var locate: String
         /// What, without the answer. "已经 is in a slot only a particle can hold."
-        var name: String
-        var fix: String
-        var note: String
+        var name: String = ""
+        var fix: String = ""
+        var note: String = ""
     }
+
+    /// Whether the second call has landed.
+    var isDeep: Bool { !stages.name.isEmpty }
 
     /// Everything `Tutor.expand` needs.
     struct Seed: Codable, Hashable {

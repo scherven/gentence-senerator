@@ -50,8 +50,13 @@ struct StagedAtomRow: View {
     let onOpen: () -> Void
 
     private var headline: String {
-        stage == 0 ? atom.stages.locate : atom.stages.name
+        if stage == 0 { return atom.stages.locate }
+        return atom.isDeep ? atom.stages.name : "Working it out…"
     }
+
+    /// The second call may not have landed yet. Tapping ahead of it waits
+    /// rather than showing an empty row.
+    private var waiting: Bool { stage > 0 && !atom.isDeep }
 
     private var affordance: String {
         switch stage {
@@ -109,7 +114,9 @@ struct StagedAtomRow: View {
     @ViewBuilder
     private func body(for stage: Int) -> some View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-            if stage == 1 {
+            if waiting {
+                ProgressView().tint(Theme.C.accent)
+            } else if stage == 1 {
                 Text("Fix it yourself first.")
                     .font(Theme.F.note)
                     .foregroundStyle(Theme.C.ink2)
@@ -159,6 +166,6 @@ struct StagedAtomRow: View {
     }
 
     private func advance() {
-        if stage >= 2 { onOpen() } else { stage += 1 }
+        if stage >= 2 && atom.isDeep { onOpen() } else if stage < 2 { stage += 1 }
     }
 }
