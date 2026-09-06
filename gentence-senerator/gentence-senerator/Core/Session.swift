@@ -152,7 +152,11 @@ struct Session: Identifiable, Codable, Hashable {
     var goal: Int
     var endless: Bool
 
-    var completedCount: Int { turns.filter { $0.review != nil }.count }
+    /// Turns the learner actually finished. Counting reviewed turns instead
+    /// would never advance in produce mode, where the review is deliberately
+    /// held until the end of the exchange — so the session never ended and the
+    /// review never fired.
+    var completedCount: Int { turns.filter { !$0.attempt.confirmed.isEmpty }.count }
     var isComplete: Bool { !endless && completedCount >= goal }
 
     var averageScore: Int {

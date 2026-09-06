@@ -193,9 +193,11 @@ final class Store {
         guard !turn.attempt.confirmed.isEmpty else { return }
         current = turn
 
-        // Produce holds corrections until the exchange is done.
-        if !settings.mode.reviewsEachAttempt,
-           (session?.completedCount ?? 0) < settings.turnsBeforeReview - 1 {
+        // Produce holds corrections until the exchange is done. "Done" means
+        // this many turns since the last review, not since the session began —
+        // otherwise every turn after the first review would trigger one.
+        let unreviewed = session?.turns.reversed().prefix { $0.review == nil }.count ?? 0
+        if !settings.mode.reviewsEachAttempt, unreviewed < settings.turnsBeforeReview - 1 {
             session?.turns.append(turn)
             await nextPrompt()
             return
@@ -215,7 +217,10 @@ final class Store {
             current = turn
         }
 
-        let history = settings.mode.reviewsEachAttempt ? [] : (session?.turns ?? [])
+        // Only the turns this review covers.
+        let history = settings.mode.reviewsEachAttempt
+            ? []
+            : Array((session?.turns ?? []).suffix(unreviewed))
         do {
             let (opening, usage) = try await tutor.assessOpening(
                 turn: turn, history: history, level: settings.level
