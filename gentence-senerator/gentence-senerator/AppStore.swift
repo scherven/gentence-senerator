@@ -44,6 +44,26 @@ final class AppStore: ObservableObject {
     @Published var producePendingAudioURL: URL?
     @Published var producePendingUserEdit: String? = nil
 
+    // MARK: - Expression Lesson State (tap-through from a Produce critique row)
+    // Ephemeral like lastEvaluation — a lesson is a detour from the turn in front of you, not
+    // something to restore on relaunch. The cache is only there so re-tapping the same row in
+    // the same session is instant instead of another round trip.
+    @Published var activeExpressionLesson: ExpressionLesson?
+    @Published var isLoadingExpressionLesson: Bool = false
+    @Published var expressionLessonError: String?
+    @Published var drillResults: [UUID: ExpressionDrillResult] = [:]
+    @Published var gradingDrillIDs: Set<UUID> = []
+    private var expressionLessonCache: [String: ExpressionLesson] = [:]
+
+    // MARK: - API Cost State
+
+    @Published var costLedger = CostLedger()
+    /// Cleared when the user dismisses the over-budget banner; comes back on the next launch
+    /// or the next call that pushes the day further past the cap.
+    @Published var costWarningDismissed: Bool = false
+
+    var isOverDailyCostCap: Bool { costLedger.todayCost >= dailyCostWarningThreshold }
+
     public var retryOriginalSentence: Sentence?
     /// In-flight Azure pronunciation assessment task, started during stopAndReview()
     /// so it can complete while the user reviews the transcript.
@@ -51,7 +71,7 @@ final class AppStore: ObservableObject {
 
     // MARK: - Services
 
-    let openAI = OpenAIService()          // generic fallback (Spanish, Italian, etc.)
+    let openAI = LanguageService()          // generic fallback (Spanish, Italian, etc.)
     private let mandarinService = MandarinService()
     private let germanService   = GermanService()
     private let frenchService   = FrenchService()
@@ -59,8 +79,8 @@ final class AppStore: ObservableObject {
     private let azureService = AzureSpeechService()
 
     /// Returns the language-specialised service for the active target language,
-    /// falling back to the generic OpenAIService for languages without a dedicated service.
-    var languageService: OpenAIService {
+    /// falling back to the generic LanguageService for languages without a dedicated service.
+    var languageService: LanguageService {
         switch settings.targetLanguage {
         case "Mandarin": return mandarinService
         case "German":   return germanService
@@ -77,11 +97,43 @@ final class AppStore: ObservableObject {
     private let sentencesKey = "sentences_v1"
     private let sentenceCacheKey = "sentenceCache_v1"
     private let produceSessionsKey = "produceSessions_v1"
+    private let costLedgerKey = "costLedger_v1"
 
     // MARK: - Init
 
     init() {
         load()
+        // Every service reports through the same meter, so the running total covers all four
+        // languages plus whichever screen made the call.
+        for service in [openAI, mandarinService, germanService, frenchService] as [LanguageService] {
+            service.onUsage = { [weak self] usage in
+                Task { @MainActor in self?.recordUsage(usage) }
+            }
+        }
+    }
+
+    // MARK: - API Cost
+
+    private func recordUsage(_ usage: TokenUsage) {
+        let wasOver = isOverDailyCostCap
+        costLedger.record(usage)
+        // Re-raise the banner when a new call pushes the day over the line, even if the user
+        // dismissed it earlier in the day.
+        if !wasOver && isOverDailyCostCap { costWarningDismissed = false }
+        saveCostLedger()
+    }
+
+    /// Zeroes the per-sitting side of the ledger. The daily total keeps accumulating.
+    func startCostSession() {
+        costLedger.rollDayIfNeeded()
+        costLedger.startNewSession()
+        saveCostLedger()
+    }
+
+    private func saveCostLedger() {
+        if let data = try? JSONEncoder().encode(costLedger) {
+            UserDefaults.standard.set(data, forKey: costLedgerKey)
+        }
     }
 
     // MARK: - Per-Language Profile Accessor
@@ -298,7 +350,7 @@ final class AppStore: ObservableObject {
                     }
                 }
                 remaining = n - newSentences.count
-            } catch let error as OpenAIError {
+            } catch let error as LanguageServiceError {
                 if case .networkError = error {
                     // Offline: fill remaining slots from cache
                     let needed = n - newSentences.count
@@ -589,12 +641,11 @@ final class AppStore: ObservableObject {
         isLoadingFollowUp = true
 
         do {
-            var messages: [[String: String]] = [["role": "system", "content": systemPrompt]]
-            messages += followUpMessages.map { ["role": $0.role, "content": $0.content] }
+            let messages = followUpMessages.map { ["role": $0.role, "content": $0.content] }
             let reply = try await languageService.performRequest(
+                system: systemPrompt,
                 messages: messages,
-                temperature: 0.5,
-                maxTokens: 512
+                maxTokens: 8192
             )
             followUpMessages.append((role: "assistant", content: reply))
         } catch {
@@ -743,7 +794,7 @@ final class AppStore: ObservableObject {
                     sentence = Sentence(englishText: text, targetLanguage: language, difficultyLevel: difficulty)
                 }
                 newSentences.append(sentence)
-            } catch let error as OpenAIError {
+            } catch let error as LanguageServiceError {
                 if case .networkError = error {
                     let cached = popCachedSentences(count: count - newSentences.count, language: language, difficulty: difficulty)
                     newSentences.append(contentsOf: cached)
@@ -822,6 +873,7 @@ final class AppStore: ObservableObject {
     /// No-op if the mode is already active, so it's safe to call on every tab appear.
     func activateMode(_ mode: PracticeMode) {
         guard mode != settings.practiceMode else { return }
+        startCostSession()
         // Clean up any in-progress activity from the previous mode.
         speech.stopSpeaking()
         if speech.isRecording { speech.cancelRecording() }
@@ -842,6 +894,7 @@ final class AppStore: ObservableObject {
     /// Activates Produce mode. Not routed through activateMode(_:) since Produce isn't a
     /// PracticeMode case — it doesn't participate in that enum's Translate/Listen machinery.
     func activateProduceMode() {
+        startCostSession()
         speech.stopSpeaking()
         if speech.isRecording { speech.cancelRecording() }
         producePhase = .idle
@@ -910,7 +963,7 @@ final class AppStore: ObservableObject {
             saveProduceSession(session)
 
             producePhase = .readyToRecord
-        } catch let error as OpenAIError {
+        } catch let error as LanguageServiceError {
             producePhase = .error("Failed to start conversation: \(error.localizedDescription)")
         } catch {
             producePhase = .error("Failed to start conversation: \(error.localizedDescription)")
@@ -967,6 +1020,43 @@ final class AppStore: ObservableObject {
 
     func submitProduceResponse() async {
         guard producePhase == .reviewingTranscript else { return }
+        await runProduceCritique(
+            transcript: producePendingTranscript,
+            question: produceCurrentQuestion,
+            questionTargetText: produceCurrentQuestionTargetText,
+            audioFilename: producePendingAudioURL?.lastPathComponent,
+            intendedMeaning: "",
+            replacingLastTurn: false)
+    }
+
+    /// Re-runs the critique after the learner rejects the "I think you meant..." readback and
+    /// says what they actually meant. The turn is rebuilt in place rather than appended: the
+    /// learner said one thing once, and a correction shouldn't inflate their XP, sentence count,
+    /// or grammar-weakness history a second time.
+    func reanalyzeProduceTurn(intendedMeaning: String) async {
+        let intent = intendedMeaning.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard producePhase == .showingCritique, !intent.isEmpty,
+              let turn = produceLastTurn else { return }
+
+        await runProduceCritique(
+            transcript: turn.transcript,
+            question: turn.question,
+            questionTargetText: turn.questionTargetText,
+            audioFilename: turn.audioFilename,
+            intendedMeaning: intent,
+            replacingLastTurn: true)
+    }
+
+    /// The one path from a transcript to a critiqued turn. `replacingLastTurn` distinguishes a
+    /// fresh submission from a re-analysis: only a fresh one advances progress and awards XP.
+    private func runProduceCritique(
+        transcript: String,
+        question: String,
+        questionTargetText: String?,
+        audioFilename: String?,
+        intendedMeaning: String,
+        replacingLastTurn: Bool
+    ) async {
         producePhase = .critiquing
 
         guard var session = produceSession else {
@@ -974,59 +1064,70 @@ final class AppStore: ObservableObject {
             return
         }
 
-        let transcript = producePendingTranscript
-        let question = produceCurrentQuestion
         let language = settings.targetLanguage
         let difficulty = currentLangProfile.currentDifficultyLevel
-        let history = session.turns.map { (question: $0.question, transcript: $0.transcript) }
+        // A re-analysis replaces the last turn, so that turn is not its own conversation history.
+        let priorTurns = replacingLastTurn ? session.turns.dropLast() : session.turns[...]
+        let history = priorTurns.map { (question: $0.question, transcript: $0.transcript) }
         let mandarin = languageService as? MandarinService
+        let spoken = transcript.isEmpty ? "[no speech detected]" : transcript
 
         do {
             let result: ProduceCritiqueResult
             if let mandarin {
                 result = try await mandarin.critiqueProduceResponseWithPoint(
                     targetLanguage: language, difficulty: difficulty, priorQuestion: question,
-                    transcript: transcript.isEmpty ? "[no speech detected]" : transcript,
-                    conversationSoFar: history, context: grammarPointContext)
+                    transcript: spoken, conversationSoFar: Array(history),
+                    context: grammarPointContext, intendedMeaning: intendedMeaning)
             } else {
                 result = try await languageService.critiqueProduceResponse(
                     targetLanguage: language, difficulty: difficulty, priorQuestion: question,
-                    transcript: transcript.isEmpty ? "[no speech detected]" : transcript,
-                    conversationSoFar: history)
+                    transcript: spoken, conversationSoFar: Array(history),
+                    intendedMeaning: intendedMeaning)
             }
 
             let turn = ProduceTurn(
                 question: question,
-                questionTargetText: produceCurrentQuestionTargetText,
+                questionTargetText: questionTargetText,
                 transcript: transcript,
+                understoodMeaning: result.understoodMeaning,
+                statedIntent: intendedMeaning,
                 overallReaction: result.overallReaction,
                 critiques: result.critiques,
-                audioFilename: producePendingAudioURL?.lastPathComponent,
+                audioFilename: audioFilename,
                 targetGrammarPointID: result.grammarPointID
             )
 
-            session.turns.append(turn)
+            if replacingLastTurn && !session.turns.isEmpty {
+                session.turns[session.turns.count - 1] = turn
+            } else {
+                session.turns.append(turn)
+            }
             produceLastTurn = turn
 
-            // Feed the same shared progress signals Translation/Listening feed per attempt.
-            currentLangProfile.totalSentencesCompleted += 1
-            updateDifficulty(with: turn.averageScore)
-            if let pointID = result.grammarPointID {
-                recordGrammarPointUsage([pointID])
-                updateGrammarPointWeakness(
-                    pointID: pointID,
-                    categoryScorePairs: turn.critiques.map { (category: $0.grammarIssueCategory, score: $0.score) })
+            if !replacingLastTurn {
+                // Feed the same shared progress signals Translation/Listening feed per attempt.
+                currentLangProfile.totalSentencesCompleted += 1
+                updateDifficulty(with: turn.averageScore)
+                if let pointID = result.grammarPointID {
+                    recordGrammarPointUsage([pointID])
+                    updateGrammarPointWeakness(
+                        pointID: pointID,
+                        categoryScorePairs: turn.critiques.map { (category: $0.grammarIssueCategory, score: $0.score) })
+                }
+
+                let xp = calculateProduceXP(turn: turn)
+                awardXP(xp)
+                produceXPJustEarned = xp
+                session.totalXPEarned += xp
             }
 
-            let xp = calculateProduceXP(turn: turn)
-            awardXP(xp)
-            produceXPJustEarned = xp
-            session.totalXPEarned += xp
             produceSession = session
             saveProduceSession(session)
 
-            let newBadges = checkAndAwardBadges()
-            produceNewlyUnlockedBadges = newBadges
+            if !replacingLastTurn {
+                produceNewlyUnlockedBadges = checkAndAwardBadges()
+            }
 
             save()
 
@@ -1072,6 +1173,76 @@ final class AppStore: ObservableObject {
 
     /// Ends the session early. Already-submitted turns keep their XP/progress — only the
     /// in-flight (not-yet-submitted) turn, if any, is discarded.
+    // MARK: - Expression Lesson
+
+    /// Opens the drill-down for one critique row. Presentation is driven by
+    /// `activeExpressionLesson`/`isLoadingExpressionLesson`, so the sheet can show a spinner
+    /// while the lesson is fetched rather than blocking the tap.
+    func openExpressionLesson(for choice: ProduceWordChoice, inSentence sentence: String) async {
+        expressionLessonError = nil
+        drillResults = [:]
+        gradingDrillIDs = []
+
+        let language = settings.targetLanguage
+        let cacheKey = "\(language)|\(choice.expression)|\(choice.better)"
+        if let cached = expressionLessonCache[cacheKey] {
+            activeExpressionLesson = cached
+            return
+        }
+
+        activeExpressionLesson = nil
+        isLoadingExpressionLesson = true
+        defer { isLoadingExpressionLesson = false }
+
+        do {
+            let lesson = try await languageService.explainExpression(
+                targetLanguage: language,
+                difficulty: currentLangProfile.currentDifficultyLevel,
+                expression: choice.expression,
+                better: choice.better,
+                verdict: choice.verdict,
+                learnerSentence: sentence)
+            expressionLessonCache[cacheKey] = lesson
+            activeExpressionLesson = lesson
+        } catch {
+            expressionLessonError = "Couldn't load an explanation: \(error.localizedDescription)"
+        }
+    }
+
+    func closeExpressionLesson() {
+        speech.stopSpeaking()
+        activeExpressionLesson = nil
+        isLoadingExpressionLesson = false
+        expressionLessonError = nil
+        drillResults = [:]
+        gradingDrillIDs = []
+    }
+
+    func submitDrillAnswer(_ drill: ExpressionDrill, answer: String) async {
+        guard let lesson = activeExpressionLesson else { return }
+        let trimmed = answer.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !gradingDrillIDs.contains(drill.id) else { return }
+
+        gradingDrillIDs.insert(drill.id)
+        defer { gradingDrillIDs.remove(drill.id) }
+
+        do {
+            let result = try await languageService.checkExpressionDrill(
+                targetLanguage: settings.targetLanguage,
+                expression: lesson.expression,
+                englishPrompt: drill.englishPrompt,
+                referenceAnswer: drill.referenceAnswer,
+                learnerAnswer: trimmed)
+            drillResults[drill.id] = result
+            if result.isCorrect { awardXP(5) }
+        } catch {
+            drillResults[drill.id] = ExpressionDrillResult(
+                isCorrect: false,
+                feedback: "Couldn't check that right now — tap Check to try again.",
+                correctedAnswer: "")
+        }
+    }
+
     func endProduceSessionEarly() {
         speech.stopSpeaking()
         if speech.isRecording { speech.cancelRecording() }
@@ -1478,6 +1649,11 @@ final class AppStore: ObservableObject {
 
     private func load() {
         let decoder = JSONDecoder()
+        if let data = UserDefaults.standard.data(forKey: costLedgerKey),
+           var saved = try? decoder.decode(CostLedger.self, from: data) {
+            saved.rollDayIfNeeded()
+            costLedger = saved
+        }
         if let data = UserDefaults.standard.data(forKey: profileKey),
            let saved = try? decoder.decode(UserProfile.self, from: data) {
             profile = saved

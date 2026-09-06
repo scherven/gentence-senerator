@@ -24,7 +24,7 @@ struct MandarinGeneratedListeningSentence {
     let grammarPointID: String
 }
 
-final class MandarinService: OpenAIService {
+final class MandarinService: LanguageService {
 
     private static let topics = [
         "food", "travel", "work", "family", "weather", "shopping",
@@ -43,7 +43,7 @@ final class MandarinService: OpenAIService {
         guard let point = MandarinGrammarBank.selectPoints(
             count: 1, difficulty: difficulty, context: context, avoiding: recentPointIDs
         ).first else {
-            throw OpenAIError.emptyResponse
+            throw LanguageServiceError.emptyResponse
         }
 
         let vocabDesc = mandarinVocabBandDescription(difficulty)
@@ -68,21 +68,20 @@ final class MandarinService: OpenAIService {
 
         for attempt in 1...2 {
             let text = try await performRequest(
-                messages: [
-                    ["role": "system", "content": systemPrompt],
-                    ["role": "user", "content": "Generate one English sentence for Mandarin translation practice."]
-                ],
-                temperature: 0.9
+                system: systemPrompt,
+                messages: [["role": "user", "content": "Generate one English sentence for Mandarin translation practice."]],
+                maxTokens: 8192,
+                effort: .medium
             )
             let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
-            guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
+            guard !trimmed.isEmpty else { throw LanguageServiceError.emptyResponse }
             if !containsCJK(trimmed) {
                 return MandarinGeneratedSentence(text: trimmed, grammarPointID: point.id)
             }
             print("[MandarinService] generateSentenceWithPoint attempt \(attempt) returned CJK text, retrying: \(trimmed)")
         }
-        throw OpenAIError.emptyResponse
+        throw LanguageServiceError.emptyResponse
     }
 
     func generateSentenceBatchWithPoints(
@@ -92,7 +91,7 @@ final class MandarinService: OpenAIService {
         context: GrammarPointSampleContext = GrammarPointSampleContext()
     ) async throws -> [MandarinGeneratedSentence] {
         let points = MandarinGrammarBank.selectPoints(count: count, difficulty: difficulty, context: context)
-        guard !points.isEmpty else { throw OpenAIError.emptyResponse }
+        guard !points.isEmpty else { throw LanguageServiceError.emptyResponse }
 
         let vocabDesc = mandarinVocabBandDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
@@ -116,13 +115,10 @@ final class MandarinService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(points.count) English sentences for Mandarin translation practice."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object",
-            maxTokens: 700
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate \(points.count) English sentences for Mandarin translation practice."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         let texts = try parseSentenceBatch(raw, expected: points.count)
@@ -130,7 +126,7 @@ final class MandarinService: OpenAIService {
         if pairs.count < texts.count {
             print("[MandarinService] generateSentenceBatchWithPoints filtered \(texts.count - pairs.count) CJK sentences out of \(texts.count)")
         }
-        guard !pairs.isEmpty else { throw OpenAIError.emptyResponse }
+        guard !pairs.isEmpty else { throw LanguageServiceError.emptyResponse }
         return pairs.map { MandarinGeneratedSentence(text: $0.0, grammarPointID: $0.1.id) }
     }
 
@@ -143,7 +139,7 @@ final class MandarinService: OpenAIService {
         guard let point = MandarinGrammarBank.selectPoints(
             count: 1, difficulty: difficulty, context: context, avoiding: recentPointIDs
         ).first else {
-            throw OpenAIError.emptyResponse
+            throw LanguageServiceError.emptyResponse
         }
 
         let vocabDesc = mandarinVocabBandDescription(difficulty)
@@ -172,12 +168,10 @@ final class MandarinService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate one Mandarin listening sentence."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object"
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate one Mandarin listening sentence."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         guard let data = raw.data(using: .utf8),
@@ -185,7 +179,7 @@ final class MandarinService: OpenAIService {
               let targetText = json["targetText"] as? String,
               let englishMeaning = json["englishMeaning"] as? String,
               !targetText.isEmpty, !englishMeaning.isEmpty else {
-            throw OpenAIError.decodingFailed("Could not parse Mandarin listening sentence response")
+            throw LanguageServiceError.decodingFailed("Could not parse Mandarin listening sentence response")
         }
 
         return MandarinGeneratedListeningSentence(
@@ -201,7 +195,7 @@ final class MandarinService: OpenAIService {
         context: GrammarPointSampleContext = GrammarPointSampleContext()
     ) async throws -> [MandarinGeneratedListeningSentence] {
         let points = MandarinGrammarBank.selectPoints(count: count, difficulty: difficulty, context: context)
-        guard !points.isEmpty else { throw OpenAIError.emptyResponse }
+        guard !points.isEmpty else { throw LanguageServiceError.emptyResponse }
 
         let vocabDesc = mandarinVocabBandDescription(difficulty)
         let exclusionHint = excludingTexts.isEmpty ? "" :
@@ -230,13 +224,10 @@ final class MandarinService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(points.count) Mandarin listening sentences."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object",
-            maxTokens: 900
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate \(points.count) Mandarin listening sentences."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         let pairs = try parseListeningSentenceBatch(raw)
@@ -257,7 +248,7 @@ final class MandarinService: OpenAIService {
         }
     }
 
-    // MARK: - OpenAIService interface overrides (thin wrappers, kept for polymorphic callers)
+    // MARK: - LanguageService interface overrides (thin wrappers, kept for polymorphic callers)
 
     override func generateSentence(
         difficulty: Int,
@@ -322,8 +313,7 @@ final class MandarinService: OpenAIService {
             systemPrompt = """
             You are a Mandarin Chinese language tutor evaluating a student's listening comprehension attempt.
 
-            The student heard this Mandarin sentence (played via TTS): "\(targetText)"
-            Their response was recognized as: "\(transcript)"
+            The user message gives the Mandarin sentence the student heard and what their response was recognized as.
 
             Evaluate how accurately the student reproduced the sentence:
             1. Key words and overall meaning captured
@@ -334,7 +324,7 @@ final class MandarinService: OpenAIService {
               e.g. ["妈 mā (tone 1)", "买 mǎi (tone 3)"].
             - Include pinyin pronunciation hints for any phonologically tricky sounds in "phonemeHints".
             - If the transcript is empty or clearly not Mandarin, score 0 and say so.
-            - This is attempt \(attemptNumber) of 3.
+            - The user message says which of the 3 attempts this is.
             - Set "correctTranslation" to the original Mandarin sentence that was played.
 
             For "feedback":
@@ -358,7 +348,7 @@ final class MandarinService: OpenAIService {
               "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": ["<character> <pinyin> (tone <N>)", ...],
               "phonemeHints": ["<difficult sound>", ...],
-              "correctTranslation": "\(targetText)",
+              "correctTranslation": "<the exact sentence that was played>",
               "alternativeTranslations": ["<alt phrasing>", ...],
               "wordExplanations": [{"word": "<词>", "explanation": "<why in English>"}, ...],
               "grammarIssues": ["<category_key>", ...]
@@ -368,8 +358,7 @@ final class MandarinService: OpenAIService {
             systemPrompt = """
             You are a Mandarin Chinese language tutor evaluating a student's spoken translation.
 
-            The student was shown this English sentence: "\(englishSentence)"
-            Their Mandarin speech was recognized as: "\(transcript)"
+            The user message gives the English sentence the student was shown and what their Mandarin speech was recognized as.
 
             Evaluate on:
             1. Translation accuracy — does the Mandarin convey the correct meaning?
@@ -383,7 +372,7 @@ final class MandarinService: OpenAIService {
             - Include pinyin hints for phonologically tricky sounds in "phonemeHints"
               (e.g. "x vs sh", "zh vs z", "ü vs u").
             - If the transcript is empty or clearly not Mandarin, score 0 and say so.
-            - This is attempt \(attemptNumber) of 3.
+            - The user message says which of the 3 attempts this is.
 
             For "feedback":
             - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Great job!").
@@ -414,14 +403,33 @@ final class MandarinService: OpenAIService {
             """
         }
 
+        // Everything that changes per attempt lives here rather than in the system prompt, so
+        // the prompt prefix stays byte-identical across a session and the cache can hold.
+        let attemptFacts: String
+        if let targetText = listeningTargetText {
+            attemptFacts = """
+            Sentence played: "\(targetText)"
+            Recognized as: "\(transcript)"
+            Attempt \(attemptNumber) of 3.
+
+            Evaluate this attempt.
+            """
+        } else {
+            attemptFacts = """
+            English sentence shown: "\(englishSentence)"
+            Recognized as: "\(transcript)"
+            Attempt \(attemptNumber) of 3.
+
+            Evaluate this attempt.
+            """
+        }
+
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Please evaluate the student's attempt."]
-            ],
-            temperature: 0.3,
-            responseFormat: "json_object",
-            maxTokens: 1500
+            system: systemPrompt,
+            messages: [["role": "user", "content": attemptFacts]],
+            maxTokens: 8192,
+            effort: .high,
+            cacheSystemPrompt: true
         )
 
         return try parseEvaluationResult(raw)
@@ -431,7 +439,7 @@ final class MandarinService: OpenAIService {
     // Not an override of critiqueProduceResponse — a plain additional method, called via an
     // `as? MandarinService` downcast in AppStore, matching the existing downcast pattern used
     // for generateSentenceBatchWithPoints etc. rather than threading extra params through the
-    // shared OpenAIService interface.
+    // shared LanguageService interface.
 
     func critiqueProduceResponseWithPoint(
         targetLanguage: String,
@@ -439,7 +447,8 @@ final class MandarinService: OpenAIService {
         priorQuestion: String,
         transcript: String,
         conversationSoFar: [(question: String, transcript: String)] = [],
-        context: GrammarPointSampleContext = GrammarPointSampleContext()
+        context: GrammarPointSampleContext = GrammarPointSampleContext(),
+        intendedMeaning: String = ""
     ) async throws -> ProduceCritiqueResult {
         let point = MandarinGrammarBank.selectPoints(count: 1, difficulty: difficulty, context: context).first
 
@@ -447,52 +456,52 @@ final class MandarinService: OpenAIService {
         let historyBlock = conversationSoFar.isEmpty ? "" : "\n\nConversation so far:\n" +
             conversationSoFar.map { "Q: \($0.question)\nA: \($0.transcript)" }.joined(separator: "\n")
         let grammarHint = point.map {
-            "\n\nIf it fits naturally, phrase your follow-up question so a good answer would naturally use this grammar pattern: \($0.name) — \($0.instruction) (Do NOT force it if it would make the question feel unnatural.)"
+            "\n\nSteer the follow-up question toward this grammar pattern if it fits naturally: \($0.name) — \($0.instruction)"
         } ?? ""
 
-        let systemPrompt = """
-        You are a warm, encouraging Mandarin Chinese conversation partner and tutor. \(vocabDesc)
+        let base = Self.produceCritiqueSystemPrompt(
+            languageName: "Mandarin Chinese",
+            levelDescription: vocabDesc,
+            categoryList: "particle_usage, measure_words, word_order, aspect_markers, ba_sentence, " +
+                          "resultative_complement, potential_complement, topic_comment, negation, " +
+                          "comparison, question_formation, verb_complement")
 
-        You just asked: "\(priorQuestion)"
-        The student responded in Mandarin: "\(transcript)"
-        \(historyBlock)
+        // Mandarin-specific sharpening of step 2: the expression-level pass is only useful if it
+        // names the actual Mandarin machinery (aspect markers, 前/后 direction, 的 omission,
+        // measure words) rather than describing the error in generic grammar-textbook terms.
+        let systemPrompt = base + """
 
-        Do three things:
-        1. Split the student's response into individual sentences and critique EACH one for grammar/vocabulary/naturalness. \
-        For a sentence with no issues, set "issue" and "correction" to "" and "grammarIssueCategory" to "". \
-        For a sentence with an issue, choose ONE "grammarIssueCategory" from ONLY: particle_usage, measure_words, \
-        word_order, aspect_markers, ba_sentence, resultative_complement, potential_complement, topic_comment, \
-        negation, comparison, question_formation, verb_complement.
-        2. Give ONE brief, warm, natural reaction to the CONTENT of what they said (1 sentence, conversational, NOT a grade).
-        3. Ask ONE natural follow-up question in English that continues the conversation.\(grammarHint)
 
-        Notes:
-        - If the transcript is empty or clearly not Mandarin, return one critique entry noting no speech was \
-        detected, score 0, and still provide an encouraging reaction and follow-up question.
-        - Keep individual critique "issue" explanations concise — 1 sentence max.
-
-        Return ONLY valid JSON in exactly this format:
-        {
-          "overallReaction": "<1 sentence, conversational>",
-          "critiques": [
-            {"text": "<sentence segment as spoken>", "score": <0-100>, "issue": "<what's wrong, or empty>", "correction": "<corrected version, or empty>", "grammarIssueCategory": "<category_key, or empty>"},
-            ...
-          ],
-          "followUpQuestion": "<English follow-up question>",
-          "followUpQuestionTargetText": "<same question in Mandarin, or null>"
-        }
+        Mandarin specifics for the expression-by-expression pass — these are exactly the kinds of \
+        choice that deserve their own entry:
+        - Aspect markers: 了 (completed event / change of state), 过 (experience, no fixed time), \
+        着 (ongoing state), and the bare verb. A specific past time expression usually calls for 了, \
+        not 过 — say so explicitly when the student picks the wrong one.
+        - Time and direction words: 前 (before / ago) vs 后 (after / later), and where the time phrase \
+        sits relative to the subject. If the student wrote something that is not a real word, say what \
+        each character means on its own and why the combination cannot mean what they wanted.
+        - Possessives and modifiers: when 的 is required, when it is optional, and when dropping it is \
+        the natural choice.
+        - Measure words, and 和 / 跟 / 一起 for accompaniment.
+        - Word choice between near-synonyms where the collocation matters (e.g. 朋友 vs 同学 for someone \
+        from school).
+        Write Mandarin in simplified characters. Do not add pinyin inside any field.
         """
 
+        let userMessage = Self.produceCritiqueUserMessage(
+            languageName: "Mandarin", priorQuestion: priorQuestion, transcript: transcript,
+            historyBlock: historyBlock, grammarHint: grammarHint, intendedMeaning: intendedMeaning)
+
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Critique my response and ask a follow-up."]
-            ],
-            temperature: 0.4,
-            responseFormat: "json_object",
-            maxTokens: 1200
+            system: systemPrompt,
+            messages: [["role": "user", "content": userMessage]],
+            jsonSchema: Self.produceCritiqueSchema(languageName: "Mandarin Chinese"),
+            maxTokens: 8192,
+            effort: .high,
+            cacheSystemPrompt: true
         )
-        return try parseProduceCritiqueResult(raw, grammarPointID: point?.id)
+        return try parseProduceCritiqueResult(raw, grammarPointID: point?.id,
+                                              targetLanguage: targetLanguage)
     }
 
     // MARK: - CJK Validation
@@ -500,12 +509,7 @@ final class MandarinService: OpenAIService {
     /// Returns true if `text` contains any CJK Unified Ideograph (U+4E00–U+9FFF),
     /// CJK Extension A/B, or CJK Compatibility Ideographs.
     private func containsCJK(_ text: String) -> Bool {
-        text.unicodeScalars.contains { scalar in
-            (0x4E00...0x9FFF).contains(scalar.value) ||   // CJK Unified Ideographs
-            (0x3400...0x4DBF).contains(scalar.value) ||   // CJK Extension A
-            (0x20000...0x2A6DF).contains(scalar.value) || // CJK Extension B
-            (0xF900...0xFAFF).contains(scalar.value)      // CJK Compatibility Ideographs
-        }
+        LanguageService.containsNonLatinScript(text)
     }
 
     // MARK: - Mandarin vocab-band description (vocabulary/length only — grammar comes from MandarinGrammarBank)

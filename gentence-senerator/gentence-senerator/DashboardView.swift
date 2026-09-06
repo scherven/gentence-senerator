@@ -31,6 +31,7 @@ struct DashboardView: View {
                         recentBadgesSection
                     }
                     retryLink
+                    apiCostSection
                     startButton
                 }
                 .padding()
@@ -164,6 +165,75 @@ struct DashboardView: View {
             StatCard(title: "Avg Score", value: store.currentLangProfile.recentScores.isEmpty ? "—" : "\(Int(store.averageScore))%", color: .blue, icon: "chart.line.uptrend.xyaxis")
             StatCard(title: "Sentences", value: "\(store.currentLangProfile.totalSentencesCompleted)", color: .purple, icon: "text.bubble.fill")
         }
+    }
+
+    // MARK: - API Cost
+
+    /// What the model work has cost. Sits low on the dashboard because it is reference, not a
+    /// goal — but it is visible without digging, since the spend is otherwise invisible until
+    /// the bill arrives.
+    private var apiCostSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("API usage", systemImage: "bolt.fill")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Spacer()
+                if store.isOverDailyCostCap {
+                    Text("Over limit")
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.orange.opacity(0.15))
+                        .cornerRadius(20)
+                }
+            }
+
+            HStack(spacing: 0) {
+                costColumn(label: "This session",
+                           value: formattedCost(store.costLedger.sessionCost),
+                           detail: "\(store.costLedger.sessionCallCount) call\(store.costLedger.sessionCallCount == 1 ? "" : "s")",
+                           color: .primary)
+                Divider().frame(height: 34)
+                    .padding(.trailing, 14)
+                costColumn(label: "Today",
+                           value: formattedCost(store.costLedger.todayCost),
+                           detail: "limit \(formattedCost(dailyCostWarningThreshold))",
+                           color: store.isOverDailyCostCap ? .orange : .primary)
+            }
+
+            // Cached prompt prefixes are the main thing keeping this number down, and they fail
+            // silently when a prompt stops repeating — so the hit rate is worth surfacing.
+            if store.costLedger.cacheHitRate > 0 {
+                Text("\(Int(store.costLedger.cacheHitRate * 100))% of today's input served from cache")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+    }
+
+    private func costColumn(label: String, value: String, detail: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+            Text(value)
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundColor(color)
+                .monospacedDigit()
+            Text(detail)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Recent Badges

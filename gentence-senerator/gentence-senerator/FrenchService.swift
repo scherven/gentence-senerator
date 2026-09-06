@@ -4,7 +4,7 @@ import Foundation
 // Specialised prompts for French practice.
 // Each difficulty level targets a distinct grammar structure in the French learning progression.
 
-final class FrenchService: OpenAIService {
+final class FrenchService: LanguageService {
 
     // MARK: - Generate English sentence
 
@@ -37,15 +37,14 @@ final class FrenchService: OpenAIService {
         """
 
         let text = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate one English sentence for French translation practice at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate one English sentence for French translation practice at difficulty \(difficulty)/10."]],
+            maxTokens: 8192,
+            effort: .medium
         )
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
             .trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
-        guard !trimmed.isEmpty else { throw OpenAIError.emptyResponse }
+        guard !trimmed.isEmpty else { throw LanguageServiceError.emptyResponse }
         return trimmed
     }
 
@@ -88,13 +87,10 @@ final class FrenchService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(count) English sentences for French practice at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object",
-            maxTokens: 600
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate \(count) English sentences for French practice at difficulty \(difficulty)/10."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         return try parseSentenceBatch(raw, expected: count)
@@ -141,13 +137,10 @@ final class FrenchService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate \(count) French listening sentences at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object",
-            maxTokens: 800
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate \(count) French listening sentences at difficulty \(difficulty)/10."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         return try parseListeningSentenceBatch(raw)
@@ -180,12 +173,10 @@ final class FrenchService: OpenAIService {
         """
 
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Generate one French listening sentence at difficulty \(difficulty)/10."]
-            ],
-            temperature: 0.9,
-            responseFormat: "json_object"
+            system: systemPrompt,
+            messages: [["role": "user", "content": "Generate one French listening sentence at difficulty \(difficulty)/10."]],
+            maxTokens: 8192,
+            effort: .medium
         )
 
         guard let data = raw.data(using: .utf8),
@@ -193,7 +184,7 @@ final class FrenchService: OpenAIService {
               let targetText = json["targetText"] as? String,
               let englishMeaning = json["englishMeaning"] as? String,
               !targetText.isEmpty, !englishMeaning.isEmpty else {
-            throw OpenAIError.decodingFailed("Could not parse French listening sentence response")
+            throw LanguageServiceError.decodingFailed("Could not parse French listening sentence response")
         }
 
         return (targetText.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -215,8 +206,7 @@ final class FrenchService: OpenAIService {
             systemPrompt = """
             You are a French language tutor evaluating a student's listening comprehension attempt.
 
-            The student heard this French sentence (played via TTS): "\(targetText)"
-            Their response was recognized as: "\(transcript)"
+            The user message gives the French sentence the student heard and what their response was recognized as.
 
             Evaluate how accurately the student reproduced the sentence:
             1. Key words and overall meaning captured
@@ -228,7 +218,7 @@ final class FrenchService: OpenAIService {
               (e.g. "nasal vowels (an/en/in/on/un)", "silent letters", "liaison", "u vs ou", "r-sound").
             - "toneReminders" should be [] — French has no lexical tones.
             - If the transcript is empty or clearly not French, score 0 and say so.
-            - This is attempt \(attemptNumber) of 3.
+            - The user message says which of the 3 attempts this is.
             - Set "correctTranslation" to the original French sentence that was played.
 
             For "feedback":
@@ -252,7 +242,7 @@ final class FrenchService: OpenAIService {
               "feedback": "<grammar-focused feedback per rules above>",
               "toneReminders": [],
               "phonemeHints": ["<difficult sound>", ...],
-              "correctTranslation": "\(targetText)",
+              "correctTranslation": "<the exact sentence that was played>",
               "alternativeTranslations": ["<alt phrasing>", ...],
               "wordExplanations": [{"word": "<word>", "explanation": "<why>"}, ...],
               "grammarIssues": ["<category_key>", ...]
@@ -262,8 +252,7 @@ final class FrenchService: OpenAIService {
             systemPrompt = """
             You are a French language tutor evaluating a student's spoken translation.
 
-            The student was shown this English sentence: "\(englishSentence)"
-            Their French speech was recognized as: "\(transcript)"
+            The user message gives the English sentence the student was shown and what their French speech was recognized as.
 
             Evaluate on:
             1. Translation accuracy — does the French convey the correct meaning?
@@ -277,7 +266,7 @@ final class FrenchService: OpenAIService {
               (e.g. "nasal vowels", "silent final consonants", "liaison rules", "u vs ou", "guttural r").
             - "toneReminders" should be [] — French has no lexical tones.
             - If the transcript is empty or clearly not French, score 0 and say so.
-            - This is attempt \(attemptNumber) of 3.
+            - The user message says which of the 3 attempts this is.
 
             For "feedback":
             - If score ≥ 85 or no grammar issues: write one short encouraging sentence only (e.g. "Très bien!").
@@ -308,14 +297,33 @@ final class FrenchService: OpenAIService {
             """
         }
 
+        // Everything that changes per attempt lives here rather than in the system prompt, so
+        // the prompt prefix stays byte-identical across a session and the cache can hold.
+        let attemptFacts: String
+        if let targetText = listeningTargetText {
+            attemptFacts = """
+            Sentence played: "\(targetText)"
+            Recognized as: "\(transcript)"
+            Attempt \(attemptNumber) of 3.
+
+            Evaluate this attempt.
+            """
+        } else {
+            attemptFacts = """
+            English sentence shown: "\(englishSentence)"
+            Recognized as: "\(transcript)"
+            Attempt \(attemptNumber) of 3.
+
+            Evaluate this attempt.
+            """
+        }
+
         let raw = try await performRequest(
-            messages: [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": "Please evaluate the student's attempt."]
-            ],
-            temperature: 0.3,
-            responseFormat: "json_object",
-            maxTokens: 1500
+            system: systemPrompt,
+            messages: [["role": "user", "content": attemptFacts]],
+            maxTokens: 8192,
+            effort: .high,
+            cacheSystemPrompt: true
         )
 
         return try parseEvaluationResult(raw)

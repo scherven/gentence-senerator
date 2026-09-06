@@ -204,21 +204,59 @@ enum ProducePhase: Equatable {
     case error(String)
 }
 
+/// How a single expression the learner reached for actually landed. This is the unit that
+/// answers "was 过 the right aspect marker here?" — one entry per deliberate choice worth
+/// commenting on, including the ones that were right.
+struct ProduceWordChoice: Codable, Identifiable {
+    var id: UUID
+    var expression: String    // the exact substring the learner used, e.g. "后前", "去过"
+    var verdict: String       // "correct" | "awkward" | "incorrect"
+    var explanation: String   // what that expression actually means / why it does or doesn't fit
+    var better: String        // the expression to use instead, empty when the verdict is "correct"
+
+    init(id: UUID = UUID(), expression: String, verdict: String,
+         explanation: String = "", better: String = "") {
+        self.id = id
+        self.expression = expression
+        self.verdict = verdict
+        self.explanation = explanation
+        self.better = better
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id          = try  c.decode(UUID.self,   forKey: .id)
+        expression  = try  c.decode(String.self, forKey: .expression)
+        verdict     = (try? c.decodeIfPresent(String.self, forKey: .verdict)) ?? "correct"
+        explanation = (try? c.decodeIfPresent(String.self, forKey: .explanation)) ?? ""
+        better      = (try? c.decodeIfPresent(String.self, forKey: .better)) ?? ""
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, expression, verdict, explanation, better
+    }
+}
+
 struct ProduceSentenceCritique: Codable, Identifiable {
     var id: UUID
     var text: String                  // segment of the user's speech being critiqued
     var score: Int                     // 0-100
     var issue: String                  // free-text explanation, empty if no issue
-    var correction: String             // corrected/more natural version, empty if no issue
+    var correction: String             // minimal fix of what the learner wrote, empty if no issue
+    var naturalVersion: String         // how a native would actually say it, empty if already natural
+    var choices: [ProduceWordChoice]   // expression-by-expression verdicts on this sentence
     var grammarIssueCategory: String   // closed-vocabulary key (same taxonomy evaluateAttempt uses), "" if none
 
     init(id: UUID = UUID(), text: String, score: Int, issue: String = "",
-         correction: String = "", grammarIssueCategory: String = "") {
+         correction: String = "", naturalVersion: String = "",
+         choices: [ProduceWordChoice] = [], grammarIssueCategory: String = "") {
         self.id = id
         self.text = text
         self.score = score
         self.issue = issue
         self.correction = correction
+        self.naturalVersion = naturalVersion
+        self.choices = choices
         self.grammarIssueCategory = grammarIssueCategory
     }
 
@@ -229,11 +267,13 @@ struct ProduceSentenceCritique: Codable, Identifiable {
         score                = try  c.decode(Int.self,    forKey: .score)
         issue                = (try? c.decodeIfPresent(String.self, forKey: .issue)) ?? ""
         correction           = (try? c.decodeIfPresent(String.self, forKey: .correction)) ?? ""
+        naturalVersion       = (try? c.decodeIfPresent(String.self, forKey: .naturalVersion)) ?? ""
+        choices              = (try? c.decodeIfPresent([ProduceWordChoice].self, forKey: .choices)) ?? []
         grammarIssueCategory = (try? c.decodeIfPresent(String.self, forKey: .grammarIssueCategory)) ?? ""
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, text, score, issue, correction, grammarIssueCategory
+        case id, text, score, issue, correction, naturalVersion, choices, grammarIssueCategory
     }
 }
 
@@ -242,6 +282,8 @@ struct ProduceTurn: Codable, Identifiable {
     var question: String                // English prompt shown to the user
     var questionTargetText: String?     // optional target-language phrasing, for an optional TTS button
     var transcript: String              // user's full raw response
+    var understoodMeaning: String       // English readback of what the response actually says
+    var statedIntent: String            // what the learner said they meant, when they corrected the readback
     var overallReaction: String         // brief natural reaction to content, not a grade
     var critiques: [ProduceSentenceCritique]
     var createdAt: Date
@@ -254,12 +296,15 @@ struct ProduceTurn: Codable, Identifiable {
     }
 
     init(id: UUID = UUID(), question: String, questionTargetText: String? = nil,
-         transcript: String, overallReaction: String, critiques: [ProduceSentenceCritique],
+         transcript: String, understoodMeaning: String = "", statedIntent: String = "",
+         overallReaction: String, critiques: [ProduceSentenceCritique],
          createdAt: Date = Date(), audioFilename: String? = nil, targetGrammarPointID: String? = nil) {
         self.id = id
         self.question = question
         self.questionTargetText = questionTargetText
         self.transcript = transcript
+        self.understoodMeaning = understoodMeaning
+        self.statedIntent = statedIntent
         self.overallReaction = overallReaction
         self.critiques = critiques
         self.createdAt = createdAt
@@ -273,6 +318,8 @@ struct ProduceTurn: Codable, Identifiable {
         question              = try  c.decode(String.self, forKey: .question)
         questionTargetText    = (try? c.decodeIfPresent(String.self, forKey: .questionTargetText)) ?? nil
         transcript            = try  c.decode(String.self, forKey: .transcript)
+        understoodMeaning     = (try? c.decodeIfPresent(String.self, forKey: .understoodMeaning)) ?? ""
+        statedIntent          = (try? c.decodeIfPresent(String.self, forKey: .statedIntent)) ?? ""
         overallReaction       = (try? c.decodeIfPresent(String.self, forKey: .overallReaction)) ?? ""
         critiques             = (try? c.decodeIfPresent([ProduceSentenceCritique].self, forKey: .critiques)) ?? []
         createdAt             = try  c.decode(Date.self,   forKey: .createdAt)
@@ -281,8 +328,8 @@ struct ProduceTurn: Codable, Identifiable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, question, questionTargetText, transcript, overallReaction,
-             critiques, createdAt, audioFilename, targetGrammarPointID
+        case id, question, questionTargetText, transcript, understoodMeaning, statedIntent,
+             overallReaction, critiques, createdAt, audioFilename, targetGrammarPointID
     }
 }
 
@@ -325,6 +372,7 @@ struct ProduceSession: Codable, Identifiable {
 // MARK: - Produce Critique Result (ephemeral, not persisted — one LLM call's worth of output)
 
 struct ProduceCritiqueResult {
+    let understoodMeaning: String
     let overallReaction: String
     let critiques: [ProduceSentenceCritique]
     let followUpQuestion: String
@@ -564,6 +612,132 @@ struct WordExplanation: Identifiable {
     let id = UUID()
     let word: String
     let explanation: String
+}
+
+// MARK: - API Cost Tracking
+
+/// What one API call consumed. Cached input is billed at different rates from fresh input,
+/// so the four buckets stay separate all the way to the dollar figure.
+struct TokenUsage {
+    let inputTokens: Int
+    let outputTokens: Int
+    let cacheWriteTokens: Int
+    let cacheReadTokens: Int
+}
+
+/// Running API spend. `todayTotals` is what the daily cap watches; `sessionTotals` resets
+/// whenever a new practice session starts, so the home screen can show what this sitting cost.
+struct CostLedger: Codable {
+    var day: String = todayISOString()
+    var dayInputTokens: Int = 0
+    var dayOutputTokens: Int = 0
+    var dayCacheWriteTokens: Int = 0
+    var dayCacheReadTokens: Int = 0
+    var dayCallCount: Int = 0
+
+    var sessionInputTokens: Int = 0
+    var sessionOutputTokens: Int = 0
+    var sessionCacheWriteTokens: Int = 0
+    var sessionCacheReadTokens: Int = 0
+    var sessionCallCount: Int = 0
+
+    /// True once the day rolls over, so the caller knows to zero the daily side before adding.
+    var isStale: Bool { day != todayISOString() }
+
+    mutating func rollDayIfNeeded() {
+        guard isStale else { return }
+        day = todayISOString()
+        dayInputTokens = 0
+        dayOutputTokens = 0
+        dayCacheWriteTokens = 0
+        dayCacheReadTokens = 0
+        dayCallCount = 0
+    }
+
+    mutating func startNewSession() {
+        sessionInputTokens = 0
+        sessionOutputTokens = 0
+        sessionCacheWriteTokens = 0
+        sessionCacheReadTokens = 0
+        sessionCallCount = 0
+    }
+
+    mutating func record(_ usage: TokenUsage) {
+        rollDayIfNeeded()
+        dayInputTokens += usage.inputTokens
+        dayOutputTokens += usage.outputTokens
+        dayCacheWriteTokens += usage.cacheWriteTokens
+        dayCacheReadTokens += usage.cacheReadTokens
+        dayCallCount += 1
+
+        sessionInputTokens += usage.inputTokens
+        sessionOutputTokens += usage.outputTokens
+        sessionCacheWriteTokens += usage.cacheWriteTokens
+        sessionCacheReadTokens += usage.cacheReadTokens
+        sessionCallCount += 1
+    }
+
+    private func dollars(input: Int, output: Int, cacheWrite: Int, cacheRead: Int) -> Double {
+        Double(input)      / 1_000_000 * LanguageService.inputPricePerMTok
+      + Double(output)     / 1_000_000 * LanguageService.outputPricePerMTok
+      + Double(cacheWrite) / 1_000_000 * LanguageService.cacheWritePricePerMTok
+      + Double(cacheRead)  / 1_000_000 * LanguageService.cacheReadPricePerMTok
+    }
+
+    var todayCost: Double {
+        isStale ? 0 : dollars(input: dayInputTokens, output: dayOutputTokens,
+                              cacheWrite: dayCacheWriteTokens, cacheRead: dayCacheReadTokens)
+    }
+
+    var sessionCost: Double {
+        dollars(input: sessionInputTokens, output: sessionOutputTokens,
+                cacheWrite: sessionCacheWriteTokens, cacheRead: sessionCacheReadTokens)
+    }
+
+    /// Share of input tokens that came from cache — the number that says whether the cached
+    /// prompt prefixes are actually holding.
+    var cacheHitRate: Double {
+        let total = dayInputTokens + dayCacheWriteTokens + dayCacheReadTokens
+        guard total > 0 else { return 0 }
+        return Double(dayCacheReadTokens) / Double(total)
+    }
+}
+
+/// Spend past this in one day and the app says so on every screen.
+let dailyCostWarningThreshold: Double = 5.00
+
+func formattedCost(_ dollars: Double) -> String {
+    if dollars > 0 && dollars < 0.01 { return "<$0.01" }
+    return String(format: "$%.2f", dollars)
+}
+
+// MARK: - Expression Lesson (ephemeral drill-down from a Produce critique)
+
+/// One "write this yourself" exercise attached to an ExpressionLesson. The reference answer
+/// comes down with the lesson so the UI can reveal it after grading without a second call.
+struct ExpressionDrill: Identifiable {
+    let id = UUID()
+    let englishPrompt: String    // what to express, in English
+    let hint: String             // short nudge, e.g. "you'll need a time phrase"
+    let referenceAnswer: String  // a model answer in the target language
+}
+
+/// What a learner gets when they tap one expression in a Produce critique: the short
+/// version of the rule, then immediate practice. Deliberately capped — the critique row is
+/// a headline, this is a paragraph and three drills, not an essay.
+struct ExpressionLesson {
+    let expression: String   // the expression as the learner used it
+    let better: String       // the replacement, empty when their choice was already right
+    let headline: String     // one line: what this pattern does
+    let explanation: String  // 2-3 sentences of why
+    let contrast: String     // the near-miss it is confused with, empty if none
+    let drills: [ExpressionDrill]
+}
+
+struct ExpressionDrillResult {
+    let isCorrect: Bool
+    let feedback: String        // one or two sentences
+    let correctedAnswer: String // empty when the learner's answer stands on its own
 }
 
 // MARK: - Evaluation Result (ephemeral, not persisted)

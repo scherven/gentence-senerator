@@ -90,6 +90,46 @@ private struct ProduceLoadingView: View {
     }
 }
 
+// MARK: - Question Text (one rendering of the prompt, used by every Produce phase)
+
+/// The question the learner is answering, shown the same way in every phase: the target
+/// language leads — it is the language they are about to answer in — with the English
+/// underneath as a gloss. Rendering both, always, is what keeps the mode from appearing to
+/// switch languages between the opening question and the follow-ups.
+private struct ProduceQuestionText: View {
+    let english: String
+    let targetText: String?
+    var alignment: HorizontalAlignment = .leading
+    var primaryFont: Font = .title3
+
+    private var textAlignment: TextAlignment { alignment == .center ? .center : .leading }
+    private var frameAlignment: Alignment { alignment == .center ? .center : .leading }
+
+    private var hasTarget: Bool {
+        !(targetText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        VStack(alignment: alignment, spacing: 6) {
+            if hasTarget, let targetText {
+                line(targetText, font: primaryFont, weight: .medium, color: .primary)
+                line(english, font: .subheadline, weight: .regular, color: .secondary)
+            } else {
+                line(english, font: primaryFont, weight: .medium, color: .primary)
+            }
+        }
+    }
+
+    private func line(_ text: String, font: Font, weight: Font.Weight, color: Color) -> some View {
+        Text(text)
+            .font(font)
+            .fontWeight(weight)
+            .foregroundColor(color)
+            .multilineTextAlignment(textAlignment)
+            .frame(maxWidth: .infinity, alignment: frameAlignment)
+    }
+}
+
 // MARK: - Conversation Thread (past turns as chat bubbles)
 
 private struct ProduceConversationThreadView: View {
@@ -98,12 +138,24 @@ private struct ProduceConversationThreadView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             ForEach(turns) { turn in
-                aiBubble(turn.question)
+                aiQuestionBubble(turn)
                 userBubble(turn)
                 if !turn.overallReaction.isEmpty {
                     aiBubble(turn.overallReaction)
                 }
             }
+        }
+    }
+
+    private func aiQuestionBubble(_ turn: ProduceTurn) -> some View {
+        HStack {
+            ProduceQuestionText(english: turn.question, targetText: turn.questionTargetText,
+                                primaryFont: .body)
+                .padding(10)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .frame(maxWidth: 280, alignment: .leading)
+            Spacer()
         }
     }
 
@@ -202,11 +254,8 @@ private struct ProduceQuestionView: View {
 
     private var currentQuestionCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(store.produceCurrentQuestion)
-                .font(.title3)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            ProduceQuestionText(english: store.produceCurrentQuestion,
+                                targetText: store.produceCurrentQuestionTargetText)
 
             if let targetText = store.produceCurrentQuestionTargetText, !targetText.isEmpty {
                 HStack(spacing: 8) {
@@ -300,10 +349,9 @@ private struct ProduceRecordingView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text(store.produceCurrentQuestion)
-                .font(.title3)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
+            ProduceQuestionText(english: store.produceCurrentQuestion,
+                                targetText: store.produceCurrentQuestionTargetText,
+                                alignment: .center)
                 .padding()
                 .background(Color.accentColor.opacity(0.08))
                 .cornerRadius(12)
@@ -396,8 +444,9 @@ private struct ProduceTranscriptReviewView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
-                    Text(store.produceCurrentQuestion)
-                        .font(.body)
+                    ProduceQuestionText(english: store.produceCurrentQuestion,
+                                        targetText: store.produceCurrentQuestionTargetText,
+                                        primaryFont: .body)
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.accentColor.opacity(0.08))
@@ -522,6 +571,10 @@ private struct ProduceCritiqueView: View {
                         }
                     }
 
+                    if !turn.understoodMeaning.isEmpty {
+                        ProduceUnderstoodCard(turn: turn)
+                    }
+
                     if store.produceXPJustEarned > 0 {
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
@@ -571,8 +624,9 @@ private struct ProduceCritiqueView: View {
                             .foregroundColor(.secondary)
                             .textCase(.uppercase)
                         HStack {
-                            Text(store.produceCurrentQuestion)
-                                .font(.body)
+                            ProduceQuestionText(english: store.produceCurrentQuestion,
+                                                targetText: store.produceCurrentQuestionTargetText,
+                                                primaryFont: .body)
                                 .padding(12)
                                 .background(Color(.systemGray6))
                                 .cornerRadius(12)
@@ -616,8 +670,10 @@ private struct ProduceCritiqueView: View {
 }
 
 private struct ProduceCritiqueCard: View {
+    @EnvironmentObject var store: AppStore
     let critique: ProduceSentenceCritique
     let language: String
+    @State private var lessonChoice: ProduceWordChoice?
 
     private var scoreColor: Color {
         if critique.score >= 85 { return .green }
@@ -641,28 +697,483 @@ private struct ProduceCritiqueCard: View {
                     .clipShape(Circle())
             }
             if !critique.issue.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(critique.issue)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    if !critique.correction.isEmpty {
-                        HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: "arrow.turn.down.right")
-                                .font(.caption2)
-                                .foregroundColor(.green)
-                            Text(critique.correction)
-                                .font(.subheadline)
-                                .foregroundColor(.green)
+                Text(critique.issue)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 2)
+            }
+
+            if !critique.choices.isEmpty {
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(critique.choices) { choice in
+                        Button {
+                            lessonChoice = choice
+                        } label: {
+                            ProduceChoiceRow(choice: choice)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.top, 2)
+                .padding(.top, 4)
+            }
+
+            if !critique.correction.isEmpty {
+                rewriteRow(label: "Fixed", text: critique.correction,
+                           icon: "arrow.turn.down.right", color: .green)
+            }
+            if !critique.naturalVersion.isEmpty {
+                rewriteRow(label: "More natural", text: critique.naturalVersion,
+                           icon: "sparkles", color: .blue)
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.systemGray6))
         .cornerRadius(10)
+        .sheet(item: $lessonChoice) { choice in
+            ExpressionLessonView(choice: choice, sentence: critique.text, language: language)
+                .environmentObject(store)
+        }
+    }
+
+    private func rewriteRow(label: String, text: String, icon: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(label, systemImage: icon)
+                .font(.caption2)
+                .foregroundColor(color)
+            HStack(alignment: .top, spacing: 6) {
+                Text(text)
+                    .font(.subheadline)
+                    .foregroundColor(color)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                PlaybackButton(text: text, language: language)
+            }
+        }
+        .padding(.top, 4)
+    }
+}
+
+// MARK: - Understood Card (the readback, and the learner's right to reject it)
+
+/// The meaning readback is a guess, and a wrong guess makes every verdict under it wrong too —
+/// grading 去过 against a trip the learner never described teaches them nothing. So the readback
+/// is correctable: say what you meant, and the whole critique is rebuilt against that intent.
+private struct ProduceUnderstoodCard: View {
+    @EnvironmentObject var store: AppStore
+    let turn: ProduceTurn
+
+    @State private var isCorrecting = false
+    @State private var intent: String = ""
+    @FocusState private var isFocused: Bool
+
+    private var canSubmit: Bool {
+        !intent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(turn.statedIntent.isEmpty ? "What I understood" : "Reanalyzed against what you meant",
+                  systemImage: turn.statedIntent.isEmpty ? "text.bubble" : "arrow.triangle.2.circlepath")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+
+            if !turn.statedIntent.isEmpty {
+                Text("“\(turn.statedIntent)”")
+                    .font(.subheadline)
+                    .italic()
+                    .foregroundColor(.secondary)
+            }
+
+            Text(turn.understoodMeaning)
+                .font(.body)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            if isCorrecting {
+                VStack(alignment: .leading, spacing: 8) {
+                    TextField("What were you trying to say?", text: $intent, axis: .vertical)
+                        .textFieldStyle(.roundedBorder)
+                        .lineLimit(1...4)
+                        .focused($isFocused)
+                        .submitLabel(.done)
+
+                    HStack(spacing: 10) {
+                        Button {
+                            isFocused = false
+                            let text = intent
+                            Task { await store.reanalyzeProduceTurn(intendedMeaning: text) }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Text("Reanalyze")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 9)
+                            .background(canSubmit ? Color.accentColor : Color(.systemGray4))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                        }
+                        .disabled(!canSubmit)
+
+                        Button("Cancel") {
+                            isFocused = false
+                            withAnimation { isCorrecting = false }
+                            intent = ""
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    }
+                }
+            } else {
+                Button {
+                    intent = turn.statedIntent
+                    withAnimation { isCorrecting = true }
+                    isFocused = true
+                } label: {
+                    Label(turn.statedIntent.isEmpty ? "That's not what I meant" : "Still not right",
+                          systemImage: "pencil")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(.accentColor)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.accentColor.opacity(0.08))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Choice Row (one expression the learner reached for, and how it landed)
+
+private struct ProduceChoiceRow: View {
+    let choice: ProduceWordChoice
+
+    private var color: Color {
+        switch choice.verdict {
+        case "correct": return .green
+        case "incorrect": return .red
+        default: return .orange
+        }
+    }
+
+    private var icon: String {
+        switch choice.verdict {
+        case "correct": return "checkmark.circle.fill"
+        case "incorrect": return "xmark.circle.fill"
+        default: return "exclamationmark.triangle.fill"
+        }
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(color)
+                .padding(.top, 3)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(choice.expression)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    if !choice.better.isEmpty {
+                        Image(systemName: "arrow.right")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Text(choice.better)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.green)
+                    }
+                }
+                if !choice.explanation.isEmpty {
+                    Text(choice.explanation)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 4)
+            Image(systemName: "chevron.right")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .padding(.top, 4)
+        }
+        .padding(.vertical, 6)
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Expression Lesson (tap-through sheet: the rule, then practice)
+
+/// The depth the critique row deliberately leaves out. Tapping "去过 → 去了" lands here: a
+/// one-line headline, a short why, the neighbor it gets confused with, and three sentences to
+/// write using the pattern — graded one at a time so the learner uses it rather than reads it.
+private struct ExpressionLessonView: View {
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+
+    let choice: ProduceWordChoice
+    let sentence: String
+    let language: String
+
+    var body: some View {
+        NavigationView {
+            Group {
+                if let lesson = store.activeExpressionLesson {
+                    lessonBody(lesson)
+                } else if let error = store.expressionLessonError {
+                    errorState(error)
+                } else {
+                    loadingState
+                }
+            }
+            .navigationTitle(choice.expression)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .task { await store.openExpressionLesson(for: choice, inSentence: sentence) }
+        .onDisappear { store.closeExpressionLesson() }
+    }
+
+    private var loadingState: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.3)
+            Text("Working out how to explain \(choice.expression)...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+
+    private func errorState(_ message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundColor(.orange)
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            Button("Try Again") {
+                Task { await store.openExpressionLesson(for: choice, inSentence: sentence) }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+
+    private func lessonBody(_ lesson: ExpressionLesson) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                swapHeader(lesson)
+
+                if !lesson.headline.isEmpty {
+                    Text(lesson.headline)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                }
+                if !lesson.explanation.isEmpty {
+                    Text(lesson.explanation)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if !lesson.contrast.isEmpty {
+                    Label {
+                        Text(lesson.contrast)
+                            .font(.subheadline)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } icon: {
+                        Image(systemName: "arrow.triangle.branch")
+                            .foregroundColor(.orange)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(10)
+                }
+
+                if !lesson.drills.isEmpty {
+                    Divider()
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Your turn")
+                            .font(.headline)
+                        Text("Write each one in \(language) using this pattern.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    ForEach(Array(lesson.drills.enumerated()), id: \.element.id) { index, drill in
+                        ExpressionDrillRow(drill: drill, index: index + 1, language: language)
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+
+    private func swapHeader(_ lesson: ExpressionLesson) -> some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("You wrote")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Text(lesson.expression)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(choice.verdict == "correct" ? .green : .red)
+            }
+            if !lesson.better.isEmpty {
+                Image(systemName: "arrow.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Use")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 6) {
+                        Text(lesson.better)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.green)
+                        PlaybackButton(text: lesson.better, language: language)
+                    }
+                }
+            }
+            Spacer()
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Drill Row (one write-it-yourself exercise inside a lesson)
+
+private struct ExpressionDrillRow: View {
+    @EnvironmentObject var store: AppStore
+    let drill: ExpressionDrill
+    let index: Int
+    let language: String
+
+    @State private var answer: String = ""
+    @FocusState private var isFocused: Bool
+
+    private var result: ExpressionDrillResult? { store.drillResults[drill.id] }
+    private var isGrading: Bool { store.gradingDrillIDs.contains(drill.id) }
+    private var canSubmit: Bool {
+        !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isGrading
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 8) {
+                Text("\(index)")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 22, height: 22)
+                    .background(Color.accentColor.opacity(0.12))
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(drill.englishPrompt)
+                        .font(.subheadline)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if !drill.hint.isEmpty {
+                        Text(drill.hint)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+
+            HStack(spacing: 8) {
+                TextField("Your answer in \(language)", text: $answer)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isFocused)
+                    .disabled(isGrading)
+                    .submitLabel(.done)
+                    .onSubmit { submit() }
+                Button(action: submit) {
+                    if isGrading {
+                        ProgressView()
+                            .frame(width: 44, height: 30)
+                    } else {
+                        Text(result == nil ? "Check" : "Recheck")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(minWidth: 44)
+                            .padding(.vertical, 7)
+                            .padding(.horizontal, 6)
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(!canSubmit)
+            }
+
+            if let result {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label(result.isCorrect ? "Correct" : "Not quite",
+                          systemImage: result.isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(result.isCorrect ? .green : .red)
+                    if !result.feedback.isEmpty {
+                        Text(result.feedback)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if !result.correctedAnswer.isEmpty {
+                        answerRow(label: "Fixed", text: result.correctedAnswer, color: .green)
+                    }
+                    if !drill.referenceAnswer.isEmpty {
+                        answerRow(label: "One good answer", text: drill.referenceAnswer, color: .secondary)
+                    }
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background((result.isCorrect ? Color.green : Color.red).opacity(0.08))
+                .cornerRadius(10)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+
+    private func answerRow(label: String, text: String, color: Color) -> some View {
+        HStack(alignment: .top, spacing: 6) {
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            Text(text)
+                .font(.caption)
+                .foregroundColor(color)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            PlaybackButton(text: text, language: language)
+        }
+    }
+
+    private func submit() {
+        guard canSubmit else { return }
+        isFocused = false
+        Task { await store.submitDrillAnswer(drill, answer: answer) }
     }
 }
 
