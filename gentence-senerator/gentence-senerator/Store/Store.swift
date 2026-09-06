@@ -288,6 +288,15 @@ final class Store {
         Task { await load(request) }
     }
 
+    /// A way onward from inside a lesson. The context comes from where it was
+    /// tapped, which is why the link itself does not carry one.
+    func open(_ link: AtomLink, context: String) {
+        let request = link.request(in: settings.language, context: context,
+                                   priorVisits: progress.visits(to: link.id))
+        path.append(request)
+        Task { await load(request) }
+    }
+
     /// Opening something that is not itself a finding — an example, half of a
     /// contrast — where there is no atom to record.
     func open(seed: Atom.Seed, kind: AtomKind) {

@@ -7,7 +7,7 @@ import SwiftUI
 struct LessonScreen: View {
     let lesson: Lesson
     let priorVisits: Int
-    let onOpenAtom: (Atom) -> Void
+    let onOpenLink: (AtomLink) -> Void
     let onOpenSeed: (Atom.Seed, AtomKind) -> Void
     let onDrillOutcome: (Bool, Rung.Support) -> Void
     let onAsk: (String) -> Void
@@ -34,7 +34,7 @@ struct LessonScreen: View {
                 if showingPatterns {
                     revisitBanner("Third time. Patterns instead of explanation.")
                     BlockView(block: patternBlock,
-                              onOpenAtom: onOpenAtom,
+                              onOpenLink: onOpenLink,
                               onOpenSeed: onOpenSeed,
                               onDrillOutcome: onDrillOutcome,
                               grade: grade)
@@ -47,14 +47,14 @@ struct LessonScreen: View {
 
                 ForEach(blocks) { block in
                     BlockView(block: block,
-                              onOpenAtom: onOpenAtom,
+                              onOpenLink: onOpenLink,
                               onOpenSeed: onOpenSeed,
                               onDrillOutcome: onDrillOutcome,
                               grade: grade)
                 }
 
                 AskView(items: lesson.ask, answers: answers, isAsking: isAsking,
-                        onOpenAtom: onOpenAtom, onAsk: onAsk)
+                        onOpenLink: onOpenLink, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
         }

@@ -52,6 +52,17 @@ enum Schemas {
         ], required: ["id", "kind", "verdict", "anchor", "weight", "stages", "seed"])
     }
 
+    /// Small on purpose: the full atom nested at three depths made the
+    /// compiled grammar too large for the model to accept.
+    static func atomLink(for language: Language) -> [String: Any] {
+        object([
+            "id": ["type": "string", "description": "Stable: kind-slug/subject."],
+            "kind": enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category."),
+            "headline": ["type": "string", "description": "One line. What opening this would teach."],
+            "subject": ["type": "string", "description": "What a lesson about this would be about."]
+        ], required: ["id", "kind", "headline", "subject"])
+    }
+
     private static func seed() -> [String: Any] {
         ["type": ["object", "null"],
          "additionalProperties": false,
@@ -92,7 +103,7 @@ enum Schemas {
                       "description": "At least two, hardest first. Index 0 is unaided production; each later rung removes something the learner has to build."],
             "correct": string,
             "incorrect": string,
-            "atoms": array(atom(for: language))
+            "atoms": array(atomLink(for: language))
         ], required: ["id", "rungs", "correct", "incorrect", "atoms"])
 
         let block = object([
@@ -103,7 +114,7 @@ enum Schemas {
             "sides": ["type": ["array", "null"], "items": side, "description": "contrast only. Exactly two."],
             "examples": ["type": ["array", "null"], "items": example, "description": "examples only."],
             "drills": ["type": ["array", "null"], "items": drill, "description": "drills only."],
-            "atoms": ["type": ["array", "null"], "items": atom(for: language), "description": "atoms only."]
+            "atoms": ["type": ["array", "null"], "items": atomLink(for: language), "description": "atoms only."]
         ], required: ["id", "kind", "label", "text", "sides", "examples", "drills", "atoms"])
 
         return object([
@@ -122,7 +133,7 @@ enum Schemas {
             "question": ["type": "string",
                          "description": "A question the learner plausibly has after reading this, in their own words."],
             "answer": string,
-            "atoms": array(atom(for: language))
+            "atoms": array(atomLink(for: language))
         ], required: ["id", "question", "answer", "atoms"])
     }
 

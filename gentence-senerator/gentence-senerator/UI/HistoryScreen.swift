@@ -122,6 +122,7 @@ struct PastReview: View {
             turn: turn,
             knowledge: store.knowledge,
             onOpenAtom: { store.open($0) },
+            onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
             onClassify: { store.classify($0, as: $1) },
             onAsk: { question in
                 Task {

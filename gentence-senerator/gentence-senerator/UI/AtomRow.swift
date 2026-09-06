@@ -1,22 +1,23 @@
 import SwiftUI
 
-/// A finding that opens straight away. Used inside lessons, drill results and
-/// answers — anywhere the three-beat reveal would be ceremony.
+/// A way onward that opens straight away. Used inside lessons, drill results
+/// and answers — anywhere the three-beat reveal would be ceremony.
 struct AtomRow: View {
-    let atom: Atom
+    let link: AtomLink
+    var tint: Color = Theme.C.accent
     let onOpen: () -> Void
 
     var body: some View {
         Button(action: onOpen) {
             HStack(alignment: .top, spacing: 10) {
-                Text(atom.kind.label.uppercased())
+                Text(link.kind.label.uppercased())
                     .font(Theme.F.label)
                     .tracking(1)
-                    .foregroundStyle(Theme.colour(for: atom.verdict))
+                    .foregroundStyle(tint)
                     .frame(width: 84, alignment: .leading)
                     .padding(.top, 2)
 
-                Text(atom.stages.name)
+                Text(link.headline)
                     .font(Theme.F.bodyTight)
                     .foregroundStyle(Theme.C.ink)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -28,9 +29,7 @@ struct AtomRow: View {
             .padding(Theme.M.padTight)
             .background(Theme.C.surface)
             .overlay(alignment: .leading) {
-                Rectangle()
-                    .fill(Theme.colour(for: atom.verdict))
-                    .frame(width: Theme.M.edge)
+                Rectangle().fill(tint).frame(width: Theme.M.edge)
             }
             .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }

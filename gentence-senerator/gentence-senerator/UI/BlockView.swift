@@ -4,7 +4,7 @@ import SwiftUI
 /// owns a component the other cannot use.
 struct BlockView: View {
     let block: Block
-    let onOpenAtom: (Atom) -> Void
+    let onOpenLink: (AtomLink) -> Void
     let onOpenSeed: (Atom.Seed, AtomKind) -> Void
     let onDrillOutcome: (Bool, Rung.Support) -> Void
     let grade: (String, Rung) async -> Tutor.DrillVerdict
@@ -44,7 +44,7 @@ struct BlockView: View {
             VStack(spacing: 0) {
                 ForEach(block.drills ?? []) { drill in
                     DrillView(drill: drill,
-                              onOpenAtom: onOpenAtom,
+                              onOpenLink: onOpenLink,
                               onOutcome: onDrillOutcome,
                               grade: grade)
                 }
@@ -52,8 +52,8 @@ struct BlockView: View {
 
         case .atoms:
             VStack(spacing: 0) {
-                ForEach(block.atoms ?? []) { atom in
-                    AtomRow(atom: atom) { onOpenAtom(atom) }
+                ForEach(block.atoms ?? []) { link in
+                    AtomRow(link: link) { onOpenLink(link) }
                 }
             }
         }
@@ -116,7 +116,7 @@ struct AskView: View {
     /// Answers to questions the learner typed here.
     let answers: [AskItem]
     let isAsking: Bool
-    let onOpenAtom: (Atom) -> Void
+    let onOpenLink: (AtomLink) -> Void
     let onAsk: (String) -> Void
 
     @State private var expanded: Set<String> = []
@@ -154,8 +154,8 @@ struct AskView: View {
                                 .font(Theme.F.bodyTight)
                                 .foregroundStyle(Theme.C.ink)
                                 .fixedSize(horizontal: false, vertical: true)
-                            ForEach(item.atoms) { atom in
-                                AtomRow(atom: atom) { onOpenAtom(atom) }
+                            ForEach(item.atoms) { link in
+                                AtomRow(link: link) { onOpenLink(link) }
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -174,8 +174,8 @@ struct AskView: View {
                     Text(item.answer)
                         .font(Theme.F.bodyTight)
                         .fixedSize(horizontal: false, vertical: true)
-                    ForEach(item.atoms) { atom in
-                        AtomRow(atom: atom) { onOpenAtom(atom) }
+                    ForEach(item.atoms) { link in
+                        AtomRow(link: link) { onOpenLink(link) }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

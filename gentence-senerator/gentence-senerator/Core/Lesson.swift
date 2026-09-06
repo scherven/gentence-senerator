@@ -30,7 +30,7 @@ struct Block: Identifiable, Codable, Hashable {
     var sides: [Side]?
     var examples: [Example]?
     var drills: [Drill]?
-    var atoms: [Atom]?
+    var atoms: [AtomLink]?
 }
 
 struct Side: Identifiable, Codable, Hashable {
@@ -51,7 +51,7 @@ struct AskItem: Identifiable, Codable, Hashable {
     let id: String
     var question: String
     var answer: String
-    var atoms: [Atom]
+    var atoms: [AtomLink]
 }
 
 // MARK: - Production
@@ -63,7 +63,7 @@ struct Drill: Identifiable, Codable, Hashable {
     var rungs: [Rung]
     var correct: String
     var incorrect: String
-    var atoms: [Atom]
+    var atoms: [AtomLink]
 }
 
 struct Rung: Identifiable, Codable, Hashable {

@@ -5,6 +5,7 @@ struct ReviewScreen: View {
     let turn: Turn
     let knowledge: [String: Progress.Encounter.Knowledge]
     let onOpenAtom: (Atom) -> Void
+    let onOpenLink: (AtomLink) -> Void
     let onClassify: (Atom, Progress.Encounter.Knowledge) -> Void
     let onAsk: (String) -> Void
     let ask: [AskItem]
@@ -35,7 +36,7 @@ struct ReviewScreen: View {
                 }
 
                 AskView(items: ask, answers: answers, isAsking: isAsking,
-                        onOpenAtom: onOpenAtom, onAsk: onAsk)
+                        onOpenLink: onOpenLink, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
         }
@@ -107,7 +108,7 @@ struct ReviewScreen: View {
                             onOpen: { onOpenAtom(atom) }
                         )
                     } else {
-                        AtomRow(atom: atom) { onOpenAtom(atom) }
+                        AtomRow(link: atom.link, tint: Theme.C.good) { onOpenAtom(atom) }
                     }
                 }
             }

@@ -4,7 +4,7 @@ import SwiftUI
 /// repeating the same task with more explanation attached.
 struct DrillView: View {
     let drill: Drill
-    let onOpenAtom: (Atom) -> Void
+    let onOpenLink: (AtomLink) -> Void
     let onOutcome: (Bool, Rung.Support) -> Void
     /// Exact match first, model second — so an answer a speaker would accept
     /// is not marked wrong for being absent from the list.
@@ -111,8 +111,8 @@ struct DrillView: View {
                 }
             }
 
-            ForEach(drill.atoms) { atom in
-                AtomRow(atom: atom) { onOpenAtom(atom) }
+            ForEach(drill.atoms) { link in
+                AtomRow(link: link) { onOpenLink(link) }
             }
         }
         .padding(.leading, Theme.M.gapTight)

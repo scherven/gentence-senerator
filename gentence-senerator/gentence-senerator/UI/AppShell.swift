@@ -235,6 +235,7 @@ struct ModeScreen: View {
                     turn: turn,
                     knowledge: store.knowledge,
                     onOpenAtom: { store.open($0) },
+                    onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
                     onClassify: { store.classify($0, as: $1) },
                     onAsk: { question in
                         Task {
@@ -279,7 +280,7 @@ struct LessonHost: View {
                 LessonScreen(
                     lesson: lesson,
                     priorVisits: request.priorVisits,
-                    onOpenAtom: { store.open($0) },
+                    onOpenLink: { store.open($0, context: request.seed.context) },
                     onOpenSeed: { store.open(seed: $0, kind: $1) },
                     onDrillOutcome: { store.recordDrill(correct: $0, at: $1) },
                     onAsk: { question in

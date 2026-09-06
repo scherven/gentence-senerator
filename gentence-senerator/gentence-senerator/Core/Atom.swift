@@ -54,6 +54,30 @@ struct Atom: Identifiable, Codable, Hashable {
     var weight: Weight = .also
 
     var cacheKey: String { "\(kind.rawValue)|\(seed.subject)" }
+
+    var link: AtomLink {
+        AtomLink(id: id, kind: kind, headline: stages.name, subject: seed.subject)
+    }
+}
+
+/// A way onward, not a finding. Inside a lesson an atom is only ever rendered
+/// as its kind and one line, so it carries no stages — and keeping the full
+/// Atom out of nested positions is also what keeps the response schema small
+/// enough for the model to compile.
+struct AtomLink: Identifiable, Codable, Hashable {
+    let id: String
+    var kind: AtomKind
+    var headline: String
+    /// What a lesson about this would be about. The context comes from wherever
+    /// the link was tapped.
+    var subject: String
+
+    func request(in language: Language, context: String, priorVisits: Int = 0) -> LessonRequest {
+        LessonRequest(
+            seed: .init(subject: subject, context: context, pointID: nil),
+            kind: kind, language: language, priorVisits: priorVisits
+        )
+    }
 }
 
 /// Learner-facing labels, naming *the decision the learner got wrong* rather
