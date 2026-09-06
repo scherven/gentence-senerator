@@ -1,0 +1,125 @@
+import Foundation
+
+/// Two mechanisms, deliberately separate:
+/// **repetition** works on what went wrong; **reach** works on what never
+/// appears at all and so produces no errors to learn from.
+struct Progress: Codable, Hashable {
+    var encounters: [String: Encounter] = [:]    // by Atom.id
+    var structures: [String: StructureUse] = [:] // by grammar point id
+    var xp: Int = 0
+    var streak: Int = 0
+    var lastPractisedOn: Date?
+
+    // MARK: Repetition
+
+    /// Opening counts as a signal, even when the attempt was correct.
+    mutating func opened(_ atom: Atom, language: Language, on day: Date = .now) {
+        var e = encounters[atom.id] ?? Encounter(
+            atomID: atom.id, kind: atom.kind, subject: atom.seed.subject,
+            language: language, firstSeen: day
+        )
+        e.visits += 1
+        e.lastSeen = day
+        e.schedule(from: day)
+        encounters[atom.id] = e
+    }
+
+    mutating func classify(_ atom: Atom, as verdict: Encounter.Knowledge,
+                           language: Language, on day: Date = .now) {
+        var e = encounters[atom.id] ?? Encounter(
+            atomID: atom.id, kind: atom.kind, subject: atom.seed.subject,
+            language: language, firstSeen: day
+        )
+        e.knowledge = verdict
+        e.lastSeen = day
+        e.schedule(from: day)
+        encounters[atom.id] = e
+    }
+
+    func visits(to atomID: String) -> Int { encounters[atomID]?.visits ?? 0 }
+
+    func due(on day: Date = .now, language: Language) -> [Encounter] {
+        encounters.values
+            .filter { $0.language == language && $0.dueAt.map { $0 <= day } == true }
+            .sorted { ($0.dueAt ?? .distantFuture) < ($1.dueAt ?? .distantFuture) }
+    }
+
+    /// Woven into generated sentences, not served as cards.
+    func seedsForGeneration(language: Language, limit: Int = 3) -> [String] {
+        let subjects = due(on: .now, language: language).map(\.subject)
+        return Array(subjects.prefix(limit))
+    }
+
+    // MARK: Reach
+
+    mutating func attempted(pointID: String, language: Language, succeeded: Bool) {
+        var u = structures[pointID] ?? StructureUse(pointID: pointID, language: language)
+        u.attempts += 1
+        if succeeded { u.successes += 1 }
+        u.lastAttempted = .now
+        structures[pointID] = u
+    }
+
+    /// Produces no errors, so error-driven scheduling never surfaces it.
+    func neverAttempted(from inventory: [String], language: Language) -> [String] {
+        inventory.filter { id in
+            guard let u = structures[id] else { return true }
+            return u.language == language && u.attempts == 0
+        }
+    }
+
+    // MARK: Records
+
+    struct Encounter: Identifiable, Codable, Hashable {
+        var id: String { atomID }
+
+        let atomID: String
+        let kind: AtomKind
+        let subject: String
+        let language: Language
+        let firstSeen: Date
+        var lastSeen: Date = .now
+        var visits: Int = 0
+        var knowledge: Knowledge = .unclassified
+        var stage: Int = 0
+        var dueAt: Date?
+
+        enum Knowledge: String, Codable, Hashable {
+            case unclassified
+            case slip   // knew it, misfired
+            case gap    // didn't know it
+        }
+
+        /// Expanding intervals for gaps; one recall check for slips.
+        mutating func schedule(from day: Date) {
+            let days: Int
+            switch knowledge {
+            case .slip:
+                guard stage == 0 else { dueAt = nil; return }
+                days = 1
+            case .gap, .unclassified:
+                let ladder = [1, 3, 7, 16, 35]
+                days = ladder[min(stage, ladder.count - 1)]
+            }
+            stage += 1
+            dueAt = Calendar.current.date(byAdding: .day, value: days, to: day)
+        }
+
+        var dueLabel: String {
+            guard let dueAt else { return "done" }
+            let days = Calendar.current.dateComponents([.day], from: .now, to: dueAt).day ?? 0
+            if days <= 0 { return "today" }
+            if days == 1 { return "tomorrow" }
+            if days < 14 { return "\(days) days" }
+            return "\(days / 7) weeks"
+        }
+    }
+
+    struct StructureUse: Codable, Hashable {
+        let pointID: String
+        let language: Language
+        var attempts: Int = 0
+        var successes: Int = 0
+        var lastAttempted: Date?
+    }
+}

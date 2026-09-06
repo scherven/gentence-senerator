@@ -1,0 +1,87 @@
+import SwiftUI
+
+/// A lesson. Identical machinery to a review — blocks, then ask.
+///
+/// On a third visit the rule is replaced by patterns: explaining twice already
+/// failed, so a third explanation is not the move.
+struct LessonScreen: View {
+    let lesson: Lesson
+    let priorVisits: Int
+    let onOpenAtom: (Atom) -> Void
+    let onOpenSeed: (Atom.Seed, AtomKind) -> Void
+    let onDrillOutcome: (Bool, Rung.Support) -> Void
+    let onAsk: (String) -> Void
+
+    @State private var showRuleAnyway = false
+
+    private var showingPatterns: Bool {
+        priorVisits >= 2 && !lesson.patterns.isEmpty
+    }
+
+    private var blocks: [Block] {
+        guard showingPatterns, !showRuleAnyway else { return lesson.blocks }
+        return lesson.blocks.filter { $0.kind != .rule }
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.M.gap) {
+                header
+
+                if showingPatterns {
+                    revisitBanner("Third time. Patterns instead of explanation.")
+                    BlockView(block: patternBlock,
+                              onOpenAtom: onOpenAtom,
+                              onOpenSeed: onOpenSeed,
+                              onDrillOutcome: onDrillOutcome)
+                    if !showRuleAnyway {
+                        TinyButton(title: "Show the rule anyway") { showRuleAnyway = true }
+                    }
+                } else if priorVisits == 1 {
+                    revisitBanner("Second time. Straight to the drill.")
+                }
+
+                ForEach(blocks) { block in
+                    BlockView(block: block,
+                              onOpenAtom: onOpenAtom,
+                              onOpenSeed: onOpenSeed,
+                              onDrillOutcome: onDrillOutcome)
+                }
+
+                if !lesson.ask.isEmpty {
+                    AskView(items: lesson.ask, onOpenAtom: onOpenAtom, onAsk: onAsk)
+                }
+            }
+            .padding(Theme.M.gap)
+        }
+        .background(Theme.C.surface)
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Lesson")
+            Text(lesson.title)
+                .font(Theme.F.title)
+                .foregroundStyle(Theme.C.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var patternBlock: Block {
+        Block(id: "\(lesson.id)-patterns", kind: .examples,
+              label: "Just the patterns", examples: lesson.patterns)
+    }
+
+    private func revisitBanner(_ text: String) -> some View {
+        Text(text)
+            .font(Theme.F.bodyTight)
+            .foregroundStyle(Theme.C.ink2)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.M.padTight)
+            .background(Theme.C.surface)
+            .overlay(alignment: .leading) {
+                Rectangle().fill(Theme.C.warn).frame(width: Theme.M.edge)
+            }
+            .overlay(Rectangle().stroke(Theme.C.warn, lineWidth: Theme.M.hair))
+    }
+}
