@@ -62,3 +62,7 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 gentence-senerator/gentence-senerator/key.swift
 gentence-senerator/gentence-senerator/key.swift
+*.mp3
+gentence-senerator/.DS_Store
+gentence-senerator/gentence-senerator/.DS_Store
+*.json

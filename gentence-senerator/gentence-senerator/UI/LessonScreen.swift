@@ -55,7 +55,7 @@ struct LessonScreen: View {
 
                 // Practice arrives in a second call. Without this the lesson
                 // reads as though it simply has none.
-                if lesson.ask.isEmpty {
+                if !lesson.hasPractice {
                     HStack(spacing: Theme.M.gapTight) {
                         ProgressView().tint(Theme.C.accent)
                         Text("Writing practice for this…")
@@ -65,10 +65,10 @@ struct LessonScreen: View {
                     .padding(Theme.M.pad)
                     .background(Theme.C.surface)
                     .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-                } else {
-                    AskView(items: lesson.ask, answers: answers, isAsking: isAsking,
-                            onOpenLink: onOpenLink, onAsk: onAsk)
                 }
+
+                AskView(answers: answers, isAsking: isAsking,
+                        onOpenLink: onOpenLink, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
         }

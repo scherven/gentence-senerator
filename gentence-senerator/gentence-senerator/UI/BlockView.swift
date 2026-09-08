@@ -109,62 +109,21 @@ struct BlockView: View {
     }
 }
 
-/// Suggested questions with answers that are themselves openable, plus a free
-/// field. Appears at the foot of every review and every lesson.
+/// A free field, and whatever the learner has already asked here. Answers are
+/// themselves openable. Appears at the foot of every review and every lesson.
 struct AskView: View {
-    let items: [AskItem]
-    /// Answers to questions the learner typed here.
+    /// Answers to questions the learner typed here. Nothing is written until
+    /// they ask — a guessed question costs more than it teaches.
     let answers: [AskItem]
     let isAsking: Bool
     let onOpenLink: (AtomLink) -> Void
     let onAsk: (String) -> Void
 
-    @State private var expanded: Set<String> = []
     @State private var typed = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Ask about this")
-
-            VStack(spacing: 0) {
-                ForEach(items) { item in
-                    let open = expanded.contains(item.id)
-
-                    Button {
-                        if open { expanded.remove(item.id) } else { expanded.insert(item.id) }
-                    } label: {
-                        HStack(alignment: .firstTextBaseline, spacing: 10) {
-                            Text(item.question)
-                                .font(Theme.F.bodyTight)
-                                .foregroundStyle(Theme.C.ink)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(open ? "−" : "?")
-                                .font(Theme.F.meta)
-                                .foregroundStyle(Theme.C.ink3)
-                        }
-                        .padding(Theme.M.padTight)
-                        .background(open ? Theme.C.sunk : Theme.C.surface)
-                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-                    }
-                    .buttonStyle(.plain)
-
-                    if open {
-                        VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-                            Text(item.answer)
-                                .font(Theme.F.bodyTight)
-                                .foregroundStyle(Theme.C.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                            ForEach(item.atoms) { link in
-                                AtomRow(link: link) { onOpenLink(link) }
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(Theme.M.pad)
-                        .background(Theme.C.sunk)
-                        .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-                    }
-                }
-            }
 
             ForEach(answers) { item in
                 VStack(alignment: .leading, spacing: Theme.M.gapTight) {

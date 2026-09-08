@@ -31,6 +31,9 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
 enum Phase: Hashable {
     case idle
     case preparing
+    /// A dialogue is running. It has its own screen: nothing in it is recorded,
+    /// transcribed or assessed, so none of the other phases apply.
+    case passage
     case ready
     case recording
     case transcribing
@@ -103,18 +106,11 @@ struct Review: Codable, Hashable {
     /// Ranked. Exactly one carries `.start`; all are shown.
     var atoms: [Atom]
 
-    var fixed: String?
-    /// Often not the minimal correction. Second stage.
+    /// What a speaker would actually say. Second stage.
     var natural: String?
-
-    /// Produce only. Correctable before it is graded.
-    var understood: String?
 
     /// Second stage. Empty until it arrives.
     var respeaks: [Respeak] = []
-    /// Questions the learner plausibly has about this attempt. Answers carry
-    /// atoms, so asking is another way down. Second stage.
-    var ask: [AskItem] = []
     /// True once the second call has filled in the rest.
     var isDeep = false
 
@@ -149,15 +145,15 @@ struct Session: Identifiable, Codable, Hashable {
     var mode: Mode
     var startedAt: Date
     var turns: [Turn]
+    /// A cap, not a target. Nothing goes past it.
     var goal: Int
-    var endless: Bool
 
     /// Turns the learner actually finished. Counting reviewed turns instead
     /// would never advance in produce mode, where the review is deliberately
     /// held until the end of the exchange — so the session never ended and the
     /// review never fired.
     var completedCount: Int { turns.filter { !$0.attempt.confirmed.isEmpty }.count }
-    var isComplete: Bool { !endless && completedCount >= goal }
+    var isComplete: Bool { completedCount >= goal }
 
     var averageScore: Int {
         let scores = turns.compactMap { $0.review?.score }

@@ -18,8 +18,6 @@ struct Atom: Identifiable, Codable, Hashable {
     let kind: AtomKind
     let verdict: Verdict
 
-    /// The learner's own words this is about, verbatim.
-    var anchor: String?
 
     var stages: Stages
     var seed: Seed

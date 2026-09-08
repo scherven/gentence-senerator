@@ -10,6 +10,7 @@ struct HistoryScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
+                    if !kept.isEmpty { saved }
                     if !weakest.isEmpty { recurring }
                     sessions
                 }
@@ -30,12 +31,59 @@ struct HistoryScreen: View {
         .tint(Theme.C.accent)
     }
 
-    /// Points opened more than once, most-visited first.
+    /// Kept by hand off a day's summary, newest first. Not scheduling — this
+    /// is the shelf, and nothing on it comes back unless it was also asked for.
+    private var kept: [BankEntry] {
+        store.bank.filter { $0.language == store.settings.language }.reversed()
+    }
+
+    private var saved: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Saved")
+            ForEach(kept) { entry in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        Text(entry.kind.label.uppercased())
+                            .font(Theme.F.label)
+                            .foregroundStyle(Theme.C.accent)
+                            .frame(width: 84, alignment: .leading)
+                        Text(entry.subject)
+                            .font(Theme.F.bodyTight)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        TinyButton(title: "Forget") { store.unkeep(entry.atomID) }
+                    }
+                    if !entry.fix.isEmpty {
+                        Text(entry.fix).font(Theme.F.targetSmall)
+                    }
+                    Text(entry.note).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                    Text(entry.sentence)
+                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink3).lineLimit(1)
+                }
+                .padding(Theme.M.padTight)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.C.surface)
+                .overlay(alignment: .leading) {
+                    Rectangle().fill(Theme.C.accent).frame(width: Theme.M.edge)
+                }
+                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+            }
+        }
+    }
+
+    /// Everything scheduled to return, plus anything opened more than once.
+    /// Marking a finding "New to me" schedules it without opening a lesson, so
+    /// filtering on visits alone hid exactly the thing the learner just asked
+    /// to be reminded of.
     private var weakest: [Progress.Encounter] {
         store.progress.encounters.values
-            .filter { $0.language == store.settings.language && $0.visits > 1 }
-            .sorted { $0.visits > $1.visits }
-            .prefix(6)
+            .filter { $0.language == store.settings.language
+                      && ($0.dueAt != nil || $0.visits > 1) }
+            .sorted { left, right in
+                let a = left.dueAt ?? .distantFuture
+                let b = right.dueAt ?? .distantFuture
+                return a == b ? left.visits > right.visits : a < b
+            }
+            .prefix(8)
             .map { $0 }
     }
 
@@ -52,7 +100,11 @@ struct HistoryScreen: View {
                         Text(encounter.subject)
                             .font(Theme.F.bodyTight)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("×\(encounter.visits)")
+                        // Something picked off a day's summary has no visits
+                        // and no verdict, and "×0" says nothing about it.
+                        Text(encounter.knowledge == .gap ? "NEW"
+                             : encounter.knowledge == .slip ? "SLIP"
+                             : encounter.visits > 0 ? "×\(encounter.visits)" : "PICKED")
                             .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                         Text(encounter.dueLabel)
                             .font(Theme.F.label).foregroundStyle(Theme.C.accent)
@@ -120,6 +172,7 @@ struct PastReview: View {
     var body: some View {
         ReviewScreen(
             turn: turn,
+            exchange: store.exchange(endingAt: turn),
             knowledge: store.knowledge,
             onOpenAtom: { store.open($0) },
             onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
@@ -133,10 +186,10 @@ struct PastReview: View {
                                     context: turn.id.uuidString)
                 }
             },
-            ask: turn.review?.ask ?? [],
             answers: store.asked[turn.id.uuidString] ?? [],
             isAsking: store.asking.contains(turn.id.uuidString),
             deepening: false,
+            streaming: false,
             depthError: nil,
             onRetryDepth: {}
         )

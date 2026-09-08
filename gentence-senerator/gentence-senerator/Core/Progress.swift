@@ -38,6 +38,32 @@ struct Progress: Codable, Hashable {
 
     func visits(to atomID: String) -> Int { encounters[atomID]?.visits ?? 0 }
 
+    /// The learner choosing, off the day's summary, what comes back. Overrides
+    /// the slip rule — one recall check is the default there, not a cap.
+    mutating func bringBack(_ atom: Atom, language: Language, on day: Date = .now) {
+        var e = encounters[atom.id] ?? Encounter(
+            atomID: atom.id, kind: atom.kind, subject: atom.seed.subject,
+            language: language, firstSeen: day
+        )
+        let step = Encounter.ladder[min(e.stage, Encounter.ladder.count - 1)]
+        e.dueAt = Encounter.due(in: step, from: day)
+        e.stage += 1
+        e.lastSeen = day
+        encounters[atom.id] = e
+    }
+
+    /// Taken back off the schedule. The encounter stays — visits and slip-or-gap
+    /// are still true, it just isn't coming back.
+    mutating func leaveOut(_ atomID: String) {
+        encounters[atomID]?.dueAt = nil
+    }
+
+    func returns(_ atomID: String) -> Bool { encounters[atomID]?.dueAt != nil }
+    func dueLabel(_ atomID: String) -> String? {
+        guard let e = encounters[atomID], e.dueAt != nil else { return nil }
+        return e.dueLabel
+    }
+
     func due(on day: Date = .now, language: Language) -> [Encounter] {
         encounters.values
             .filter { $0.language == language && $0.dueAt.map { $0 <= day } == true }
@@ -105,6 +131,17 @@ struct Progress: Codable, Hashable {
             case gap    // didn't know it
         }
 
+        static let ladder = [1, 3, 7, 16, 35]
+
+        /// Day-aligned, both ends. An interval is a number of days, not a
+        /// timestamp: without this a one-day interval reads as "today" the
+        /// moment it is set, because the gap to it is a second under 24 hours.
+        static func due(in days: Int, from day: Date) -> Date? {
+            let calendar = Calendar.current
+            return calendar.date(byAdding: .day, value: days,
+                                 to: calendar.startOfDay(for: day))
+        }
+
         /// Expanding intervals for gaps; one recall check for slips.
         mutating func schedule(from day: Date) {
             let days: Int
@@ -113,16 +150,18 @@ struct Progress: Codable, Hashable {
                 guard stage == 0 else { dueAt = nil; return }
                 days = 1
             case .gap, .unclassified:
-                let ladder = [1, 3, 7, 16, 35]
-                days = ladder[min(stage, ladder.count - 1)]
+                days = Encounter.ladder[min(stage, Encounter.ladder.count - 1)]
             }
             stage += 1
-            dueAt = Calendar.current.date(byAdding: .day, value: days, to: day)
+            dueAt = Encounter.due(in: days, from: day)
         }
 
         var dueLabel: String {
             guard let dueAt else { return "done" }
-            let days = Calendar.current.dateComponents([.day], from: .now, to: dueAt).day ?? 0
+            let calendar = Calendar.current
+            let days = calendar.dateComponents([.day],
+                                               from: calendar.startOfDay(for: .now),
+                                               to: calendar.startOfDay(for: dueAt)).day ?? 0
             if days <= 0 { return "today" }
             if days == 1 { return "tomorrow" }
             if days < 14 { return "\(days) days" }

@@ -20,6 +20,8 @@ final class Voice: NSObject, SpeechIO {
     private var task: SFSpeechRecognitionTask?
     private let synth = AVSpeechSynthesizer()
     private var player: AVAudioPlayer?
+    /// Ends a line early when a dialogue is being played a line at a time.
+    private var stopAt: Task<Void, Never>?
 
     /// The recording, written as 16 kHz mono PCM because that is what
     /// pronunciation assessment accepts.
@@ -158,12 +160,26 @@ final class Voice: NSObject, SpeechIO {
 
     /// Real recordings where a clip exists, synthesis otherwise. The learner is
     /// told which they are hearing; the store is not involved either way.
+    ///
+    /// `startSeconds`/`endSeconds` cut one line out of a dialogue. A clip
+    /// leaves both nil and plays whole.
     func play(_ source: AudioSource) async throws {
         guard source.kind == .recording, let url = source.url else { return }
         let (data, _) = try await URLSession.shared.data(from: url)
         try AVAudioSession.sharedInstance().setCategory(.playback, options: .duckOthers)
         try AVAudioSession.sharedInstance().setActive(true)
-        player = try AVAudioPlayer(data: data)
-        player?.play()
+        let player = try AVAudioPlayer(data: data)
+        self.player = player
+        if let start = source.startSeconds { player.currentTime = start }
+        player.play()
+
+        guard let start = source.startSeconds, let end = source.endSeconds,
+              end > start else { return }
+        stopAt?.cancel()
+        stopAt = Task { [weak player] in
+            try? await Task.sleep(nanoseconds: UInt64((end - start) * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            player?.stop()
+        }
     }
 }

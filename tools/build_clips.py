@@ -16,6 +16,9 @@ checkpointed after every clip, and Ctrl-C leaves a usable manifest behind.
 import argparse, csv, json, os, shutil, signal, sys, wave
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clipselect
+
 STOPPING = False
 
 
@@ -31,6 +34,23 @@ LICENCES = {"common-voice": "CC0", "voxpopuli": "CC0"}
 # CC0 needs no credit. Anything added later that is not CC0 does, and the app
 # reads this field to decide whether to show an acknowledgements screen.
 ATTRIBUTION = {"common-voice": None, "voxpopuli": None}
+
+
+def exact_durations(root: Path):
+    """Common Voice ships measured durations; the size estimate below is only
+    for corpora that do not."""
+    tsv = root / "clip_durations.tsv"
+    if not tsv.exists():
+        return {}
+    out = {}
+    with tsv.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f, delimiter="\t"):
+            values = list(row.values())
+            try:
+                out[values[0]] = float(values[1]) / 1000.0
+            except (ValueError, IndexError):
+                pass
+    return out
 
 
 def duration(path: Path) -> float:
@@ -89,10 +109,12 @@ def main():
     p.add_argument("--corpus", choices=["common-voice", "voxpopuli"], required=True)
     p.add_argument("--root", type=Path, required=True)
     p.add_argument("--language", choices=["mandarin", "german", "french"], required=True)
-    p.add_argument("--level", type=int, default=2)
+    p.add_argument("--level", type=int, default=None,
+                   help="Stamp every clip with this level instead of deriving one. "
+                        "Deriving is almost always what you want.")
     p.add_argument("--count", type=int, default=200)
-    p.add_argument("--min-seconds", type=float, default=3.0)
-    p.add_argument("--max-seconds", type=float, default=15.0)
+    p.add_argument("--min-seconds", type=float, default=1.2)
+    p.add_argument("--max-seconds", type=float, default=8.0)
     p.add_argument("--out", type=Path, default=Path("gentence-senerator/gentence-senerator/Clips"))
     args = p.parse_args()
 
@@ -104,8 +126,27 @@ def main():
     audio_root = args.root / "clips" if args.corpus == "common-voice" else args.root
     rows = rows_common_voice(args.root) if args.corpus == "common-voice" else rows_voxpopuli(args.root)
 
+    measured = exact_durations(args.root)
+    print("reading the corpus…")
+    candidates = []
     for name, text in rows:
-        if STOPPING or len(state["clips"]) >= args.count:
+        seconds = measured.get(name)
+        if seconds is None:
+            source = audio_root / name
+            if not source.exists():
+                continue
+            seconds = duration(source)
+        candidates.append((name, text, seconds))
+    print(f"  {len(candidates)} recordings")
+
+    chosen = clipselect.choose(
+        candidates, args.language, args.count,
+        min_seconds=args.min_seconds, max_seconds=args.max_seconds,
+    )
+    print(f"  chose {len(chosen)}")
+
+    for name, text, seconds, level in chosen:
+        if STOPPING:
             break
         if name in seen:
             continue
@@ -113,9 +154,6 @@ def main():
 
         source = audio_root / name
         if not source.exists():
-            continue
-        seconds = duration(source)
-        if not (args.min_seconds <= seconds <= args.max_seconds):
             continue
 
         clip_id = f"{args.corpus}-{args.language}-{len(state['clips']):05d}"
@@ -129,7 +167,7 @@ def main():
             "english": None,          # filled by --gloss, or left for the app
             "file": target_name,
             "seconds": round(seconds, 2),
-            "level": args.level,
+            "level": args.level if args.level is not None else level,
             "attribution": ATTRIBUTION[args.corpus],
             "licence": LICENCES[args.corpus],
         })

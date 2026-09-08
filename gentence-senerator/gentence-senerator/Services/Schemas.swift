@@ -86,16 +86,11 @@ enum Schemas {
                 "incorrect": string,
                 "links": array(atomLink(for: language))
             ], required: ["rungs", "correct", "incorrect", "links"])),
-            "ask": array(object([
-                "question": ["type": "string", "description": "A question the learner plausibly has, in their own words."],
-                "answer": string,
-                "links": array(atomLink(for: language))
-            ], required: ["question", "answer", "links"])),
             "patterns": ["type": "array",
                          "description": "Shown instead of the rule on a third visit. Pattern only, no explanation.",
                          "items": object(["target": string, "gloss": string],
                                          required: ["target", "gloss"])]
-        ], required: ["drills", "ask", "patterns"])
+        ], required: ["drills", "patterns"])
     }
 
     // MARK: Review — two stages
@@ -108,27 +103,24 @@ enum Schemas {
         object([
             "score": ["type": "integer", "description": "0 to 100."],
             "readOfScore": ["type": "string", "description": "One clause on what it means. Not a breakdown."],
-            "fixed": ["type": ["string", "null"], "description": "The minimal correction."],
             "findings": array(object([
                 "kind": enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category."),
                 "verdict": enumOf(["breaks", "weakens", "kept"],
                                   "breaks stops comprehension; weakens marks a learner; kept is right and worth knowing why."),
                 "weight": enumOf(["start", "also"], "Exactly one is start."),
-                "anchor": ["type": ["string", "null"], "description": "The learner's own words, verbatim."],
                 "locate": ["type": "string",
                            "description": "Where, without saying what. The learner should be able to try repairing it from this alone. Never name the fix here."],
                 "subject": ["type": "string", "description": "What a lesson about this would be about."]
-            ], required: ["kind", "verdict", "weight", "anchor", "locate", "subject"]))
-        ], required: ["score", "readOfScore", "fixed", "findings"])
+            ], required: ["kind", "verdict", "weight", "locate", "subject"]))
+        ], required: ["score", "readOfScore", "findings"])
     }
 
     static func reviewDepth(for language: Language) -> [String: Any] {
         object([
             "natural": ["type": ["string", "null"],
                         "description": "What a speaker would actually say, if different from the minimal fix."],
-            "understood": ["type": ["string", "null"], "description": "Produce only: what you took them to mean."],
-            "findings": array(object([
-                "id": ["type": "string", "description": "Matching an id from the opening."],
+                "findings": array(object([
+                "id": ["type": "string", "description": "The number of the finding being filled in, exactly as given."],
                 "name": ["type": "string", "description": "What is wrong, still without the corrected text."],
                 "fix": ["type": "string", "description": "The corrected text."],
                 "note": ["type": "string", "description": "One or two sentences on why."]
@@ -139,13 +131,8 @@ enum Schemas {
                 "accept": array(string),
                 "correct": string,
                 "incorrect": string
-            ], required: ["instruction", "accept", "correct", "incorrect"])),
-            "ask": array(object([
-                "question": string,
-                "answer": string,
-                "links": array(atomLink(for: language))
-            ], required: ["question", "answer", "links"]))
-        ], required: ["natural", "understood", "findings", "respeaks", "ask"])
+            ], required: ["instruction", "accept", "correct", "incorrect"]))
+        ], required: ["natural", "findings", "respeaks"])
     }
 
     // MARK: Prompt generation
@@ -154,7 +141,7 @@ enum Schemas {
         "english": ["type": "string",
                     "description": "The English side. For translate this is what the learner reads; elsewhere it is the gloss."],
         "target": ["type": ["string", "null"],
-                   "description": "The target-language side: the sentence to be played, or the question to be answered. Null for translate."],
+                   "description": "The target-language side: the sentence to be played, or the question to be answered — for produce, one sentence ending in a single question mark. Null for translate."],
         "pointID": ["type": ["string", "null"],
                     "description": "The grammar point this was built to exercise, if any."]
     ], required: ["english", "target", "pointID"])
@@ -163,7 +150,6 @@ enum Schemas {
 
     static let drillResult: [String: Any] = object([
         "correct": ["type": "boolean"],
-        "note": ["type": "string", "description": "One or two sentences."],
-        "oneGoodAnswer": string
-    ], required: ["correct", "note", "oneGoodAnswer"])
+        "note": ["type": "string", "description": "One or two sentences."]
+    ], required: ["correct", "note"])
 }

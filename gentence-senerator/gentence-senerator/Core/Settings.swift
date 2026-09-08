@@ -5,7 +5,9 @@ struct Settings: Codable, Hashable {
     var mode: Mode = .translate
     /// 1-6 for CEFR, 1-9 for HSK. `LanguagePack.level` renders it.
     var level: Int = 2
-    var dailyGoal: Int = 10
+    /// Per mode, per day, and a hard cap: three translate, three listen,
+    /// three produce is the whole day.
+    var dailyGoal: Int = 3
     var prefersTyping: Bool = false
     var showPhonetics: Bool = true
     /// How long a produce exchange runs before anything is corrected.
@@ -62,10 +64,22 @@ enum Vault {
         UserDefaults.standard.set(data, forKey: key)
     }
 
-    static let settings = "settings.v2"
+    static let settings = "settings.v3"
+    /// Superseded by `settings`. `dailyGoal` used to be a whole sitting, and
+    /// defaulted to 10; it is now a per-mode cap, so a stored value from before
+    /// the change means something else. Read once, to migrate, then cleared.
+    static let oldSettings = "settings.v2"
     static let progress = "progress.v2"
     static let spend = "spend.v2"
     static let sessions = "sessions.v2"
-    /// A session left unfinished, with the turn that was on screen.
+    /// Sessions left unfinished, keyed by language and mode, with the turn
+    /// that was on screen for each.
+    static let holds = "holds.v1"
+    /// Superseded by `holds`. Read once, to migrate, then cleared.
     static let inProgress = "inProgress.v2"
+    /// What the learner kept out of a day's summary.
+    static let bank = "bank.v1"
+    /// The dialogue in progress, per language. Kept off `holds` on purpose:
+    /// holds are retired at the end of the day and a passage is not.
+    static let passages = "passages.v1"
 }

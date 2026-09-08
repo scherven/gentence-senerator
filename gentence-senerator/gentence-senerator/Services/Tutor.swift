@@ -80,14 +80,14 @@ actor Tutor {
         ))
 
         let lesson = Lesson(id: request.cacheKey, title: core.title,
-                            blocks: blocks, ask: [], patterns: [])
+                            blocks: blocks, patterns: [])
         lessons[request.cacheKey] = lesson
         return (lesson, usage)
     }
 
     /// Second stage. Merged into the lesson already on screen.
     func practice(for request: LessonRequest) async throws -> (Lesson, Anthropic.Usage)? {
-        guard var lesson = lessons[request.cacheKey], lesson.ask.isEmpty else { return nil }
+        guard var lesson = lessons[request.cacheKey], !lesson.hasPractice else { return nil }
 
         let pack = LanguagePacks.pack(for: request.language)
         let (practice, usage) = try await api.send(
@@ -109,9 +109,6 @@ actor Tutor {
                       correct: drill.correct, incorrect: drill.incorrect, atoms: drill.links)
             }
         ))
-        lesson.ask = practice.ask.enumerated().map { index, item in
-            AskItem(id: "a\(index)", question: item.question, answer: item.answer, atoms: item.links)
-        }
         lesson.patterns = practice.patterns.enumerated().map { index, pattern in
             Example(id: "p\(index)", target: pattern.target, gloss: pattern.gloss, seed: nil)
         }
@@ -135,29 +132,127 @@ actor Tutor {
     struct Opening: Codable {
         struct Finding: Codable {
             var kind: AtomKind; var verdict: Atom.Verdict
-            var weight: Atom.Weight; var anchor: String?; var locate: String; var subject: String
+            var weight: Atom.Weight; var locate: String; var subject: String
         }
         var score: Int
         var readOfScore: String
-        var fixed: String?
         var findings: [Finding]
     }
 
     struct Depth: Codable {
         struct Filled: Codable { var id: String; var name: String; var fix: String; var note: String }
         struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
-        struct A: Codable { var question: String; var answer: String; var links: [AtomLink] }
         var natural: String?
-        var understood: String?
         var findings: [Filled]
         var respeaks: [Say]
-        var ask: [A]
     }
 
-    /// What the learner sees at once.
+    /// The opening review as it is written. `score` and `readOfScore` land
+    /// about halfway through the call; the findings follow one at a time, so
+    /// the learner reads a real score while the rest is still arriving.
+    ///
+    /// Each element is the review so far. The last one carries the usage.
+    func streamOpening(turn: Turn, history: [Turn] = [], level: Int)
+    -> AsyncThrowingStream<(Review, Anthropic.Usage?), Error> {
+        let pack = LanguagePacks.pack(for: turn.language)
+        let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
+        let pointID = turn.prompt.pointID
+        let events = api.stream(
+            cachedSystem: Self.openingSystem(pack),
+            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
+            schema: Schemas.reviewOpening(for: turn.language),
+            effort: .medium
+        )
+
+        return AsyncThrowingStream { continuation in
+            let work = Task {
+                var buffer = ""
+                var sent = Review(score: 0, readOfScore: "", atoms: [])
+                var published = 0
+                let decoder = JSONDecoder()
+                do {
+                    for try await event in events {
+                        switch event {
+                        case .refused(let why):
+                            throw Anthropic.Failure.refused(why)
+
+                        case .finished(let usage):
+                            // The streamed values are a preview. What lands on
+                            // screen for good is a strict parse of the whole
+                            // document, so a scanning artifact can never be
+                            // what gets kept or written to history.
+                            if let whole = try? decoder.decode(Opening.self,
+                                                               from: Data(buffer.utf8)) {
+                                continuation.yield((Review(
+                                    score: whole.score,
+                                    readOfScore: whole.readOfScore,
+                                    atoms: whole.findings.map {
+                                        Self.atom(from: $0, said: said, pointID: pointID)
+                                    },
+                                    natural: nil
+                                ), usage))
+                            } else {
+                                continuation.yield((sent, usage))
+                            }
+                            continuation.finish()
+                            return
+
+                        case .text(let chunk):
+                            buffer += chunk
+                            var changed = false
+                            if sent.score == 0,
+                               let score = PartialJSON.integer(at: "score", in: buffer) {
+                                sent.score = score
+                                changed = true
+                            }
+                            if sent.readOfScore.isEmpty,
+                               let read = PartialJSON.string(at: "readOfScore", in: buffer) {
+                                sent.readOfScore = read
+                                changed = true
+                            }
+                            let elements = PartialJSON.elements(ofArrayAt: "findings", in: buffer)
+                            if elements.count > published {
+                                for element in elements[published...] {
+                                    guard let finding = try? decoder.decode(
+                                        Opening.Finding.self, from: element) else { continue }
+                                    sent.atoms.append(Self.atom(from: finding, said: said,
+                                                                pointID: pointID))
+                                }
+                                published = elements.count
+                                changed = true
+                            }
+                            // Nothing goes out until the score does, so the
+                            // screen never opens on an empty review.
+                            if changed, sent.score != 0 {
+                                continuation.yield((sent, nil))
+                            }
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in work.cancel() }
+        }
+    }
+
+    private static func atom(from finding: Opening.Finding,
+                             said: String, pointID: String?) -> Atom {
+        Atom(id: Atom.identify(finding.kind, finding.subject),
+             kind: finding.kind, verdict: finding.verdict,
+             stages: .init(locate: finding.locate),
+             seed: .init(subject: finding.subject, context: said, pointID: pointID),
+             weight: finding.weight)
+    }
+
+    /// What the learner sees at once. Kept for the non-streaming path.
     func assessOpening(turn: Turn, history: [Turn] = [], level: Int)
     async throws -> (Review, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: turn.language)
+        // A finding can sit in any answer of a held exchange, so the seed
+        // carries all of them rather than only the last.
+        let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
         let (opening, usage) = try await api.send(
             Opening.self,
             cachedSystem: Self.openingSystem(pack),
@@ -171,38 +266,46 @@ actor Tutor {
             readOfScore: opening.readOfScore,
             atoms: opening.findings.map {
                 Atom(id: Atom.identify($0.kind, $0.subject),
-                     kind: $0.kind, verdict: $0.verdict, anchor: $0.anchor,
+                     kind: $0.kind, verdict: $0.verdict,
                      stages: .init(locate: $0.locate),
-                     seed: .init(subject: $0.subject, context: turn.attempt.confirmed,
+                     seed: .init(subject: $0.subject, context: said,
                                  pointID: turn.prompt.pointID),
                      weight: $0.weight)
             },
-            fixed: opening.fixed, natural: nil, understood: nil
+            natural: nil
         )
         return (review, usage)
     }
 
     /// Fetched while the learner is still looking at where the problem is.
+    /// Kept for the non-streaming path; `streamDepth` is what the app uses.
     func assessDepth(turn: Turn, opening: Review, history: [Turn] = [], level: Int)
     async throws -> (Review, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: turn.language)
-        let listed = opening.atoms
-            .map { "\($0.id): \($0.stages.locate)" }
+        let listed = opening.atoms.enumerated()
+            .map { "\($0.offset): \($0.element.stages.locate)" }
             .joined(separator: "\n")
 
         let (depth, usage) = try await api.send(
             Depth.self,
             cachedSystem: Self.depthSystem(pack),
             user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack)
-                + "\n\nFindings to fill in, by id:\n" + listed,
+                + "\n\nFindings to fill in, by number:\n" + listed,
             schema: Schemas.reviewDepth(for: turn.language),
             effort: .medium
         )
 
+        return (Self.merge(depth, into: opening), usage)
+    }
+
+    private static func merge(_ depth: Depth, into opening: Review) -> Review {
         var merged = opening
-        let byID = Dictionary(uniqueKeysWithValues: depth.findings.map { ($0.id, $0) })
-        merged.atoms = opening.atoms.map { atom in
-            guard let filled = byID[atom.id] else { return atom }
+        let byIndex = Dictionary(
+            depth.findings.compactMap { finding in Int(finding.id).map { ($0, finding) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+        merged.atoms = opening.atoms.enumerated().map { index, atom in
+            guard let filled = byIndex[index] else { return atom }
             var copy = atom
             copy.stages.name = filled.name
             copy.stages.fix = filled.fix
@@ -210,37 +313,154 @@ actor Tutor {
             return copy
         }
         merged.natural = depth.natural
-        merged.understood = depth.understood
         merged.respeaks = depth.respeaks.enumerated().map { index, say in
             Respeak(id: "r\(index)", instruction: say.instruction, accept: say.accept,
                     correct: say.correct, incorrect: say.incorrect)
         }
-        merged.ask = depth.ask.enumerated().map { index, item in
-            AskItem(id: "q\(index)", question: item.question, answer: item.answer, atoms: item.links)
-        }
         merged.isDeep = true
-        return (merged, usage)
+        return merged
+    }
+
+    /// The same call, published one finding at a time. Half the wall-clock is
+    /// thinking before any text exists, and the findings are then written in
+    /// the order they were listed — so the row carrying `.start`, which is the
+    /// one the learner reaches for first, is filled in at roughly half the
+    /// wait, without the others holding it up.
+    ///
+    /// Each element is the review so far. The last one carries the usage.
+    func streamDepth(turn: Turn, opening: Review, history: [Turn] = [], level: Int)
+    -> AsyncThrowingStream<(Review, Anthropic.Usage?), Error> {
+        let pack = LanguagePacks.pack(for: turn.language)
+        let listed = opening.atoms.enumerated()
+            .map { "\($0.offset): \($0.element.stages.locate)" }
+            .joined(separator: "\n")
+        let events = api.stream(
+            cachedSystem: Self.depthSystem(pack),
+            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack)
+                + "\n\nFindings to fill in, by number:\n" + listed,
+            schema: Schemas.reviewDepth(for: turn.language),
+            effort: .medium
+        )
+
+        return AsyncThrowingStream { continuation in
+            let work = Task {
+                var buffer = ""
+                var sent = opening
+                var published = 0
+                let decoder = JSONDecoder()
+                do {
+                    for try await event in events {
+                        switch event {
+                        case .refused(let why):
+                            throw Anthropic.Failure.refused(why)
+
+                        case .finished(let usage):
+                            // As in the opening: what is kept is a strict parse
+                            // of the whole document, so a scanning artifact can
+                            // only ever appear in the preview.
+                            if let whole = try? decoder.decode(Depth.self,
+                                                               from: Data(buffer.utf8)) {
+                                continuation.yield((Self.merge(whole, into: opening), usage))
+                            } else {
+                                sent.isDeep = true
+                                continuation.yield((sent, usage))
+                            }
+                            continuation.finish()
+                            return
+
+                        case .text(let chunk):
+                            buffer += chunk
+                            var changed = false
+                            if sent.natural == nil,
+                               let natural = PartialJSON.string(at: "natural", in: buffer) {
+                                sent.natural = natural
+                                changed = true
+                            }
+                            let elements = PartialJSON.elements(ofArrayAt: "findings", in: buffer)
+                            if elements.count > published {
+                                for element in elements[published...] {
+                                    guard let filled = try? decoder.decode(
+                                            Depth.Filled.self, from: element),
+                                          let index = Int(filled.id),
+                                          sent.atoms.indices.contains(index) else { continue }
+                                    sent.atoms[index].stages.name = filled.name
+                                    sent.atoms[index].stages.fix = filled.fix
+                                    sent.atoms[index].stages.note = filled.note
+                                }
+                                published = elements.count
+                                changed = true
+                            }
+                            // `respeaks` and the natural version are still to
+                            // come, so `isDeep` stays false until `.finished`.
+                            if changed { continuation.yield((sent, nil)) }
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in work.cancel() }
+        }
     }
 
     private static func attemptFacts(turn: Turn, history: [Turn], level: Int, pack: LanguagePack) -> String {
+        // Listen is dictation. Labelling the played sentence "Asked" and the
+        // transcript "The learner said" got it graded as production: a dropped
+        // 吧 came back as a weak sentence rather than as an unstressed
+        // syllable that never arrived.
+        if turn.mode == .listen { return heardFacts(turn: turn, level: level, pack: pack) }
+
         var facts = """
         Mode: \(turn.mode.rawValue)
         Level: \(pack.level(level))
         Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
         """
+        // A held produce exchange is assessed whole. Framing the earlier turns
+        // as background and only the last as the attempt got them read as
+        // context, and their errors went unreported — two thirds of a produce
+        // session came back unmarked.
         if !history.isEmpty {
-            facts += "\n\nThe exchange so far:\n"
-            for past in history {
-                facts += "Q: \(past.prompt.target ?? past.prompt.english ?? "—")\n"
-                facts += "A: \(past.attempt.confirmed)\n"
+            facts += "\n\nThe exchange, all of which you are assessing:\n"
+            for (index, past) in (history + [turn]).enumerated() {
+                let asked = past.prompt.target ?? past.prompt.english ?? "—"
+                let gloss = past.prompt.target == nil ? "" : "  (\(past.prompt.english ?? ""))"
+                facts += "\(index + 1). Asked: \(asked)\(gloss)\n"
+                facts += "   Said:  \(past.attempt.confirmed)\n"
             }
+            return facts
         }
+
         facts += """
 
         Asked (English): \(turn.prompt.english ?? "—")
         Asked (\(pack.language.name)): \(turn.prompt.target ?? "—")
         The learner said: \(turn.attempt.confirmed)
         """
+        return facts
+    }
+
+    /// One listen turn as it actually happened. A real recording carries
+    /// reduction and an accent that synthesis does not, so which one played
+    /// changes what a miss means. `wasTyped` decides whether the characters are
+    /// the learner's at all: spoken back, recognition wrote them, and no
+    /// orthography finding is attributable.
+    private static func heardFacts(turn: Turn, level: Int, pack: LanguagePack) -> String {
+        let played = turn.prompt.audioSource?.kind == .recording
+            ? "a recording of a speaker" : "synthesised speech"
+        var facts = """
+        Mode: listen
+        Level: \(pack.level(level))
+
+        Played (\(pack.language.name), \(played)): \(turn.prompt.target ?? "—")
+        """
+        if let english = turn.prompt.english { facts += "\nMeans: \(english)" }
+        if turn.attempt.wasTyped {
+            facts += "\nWrote: \(turn.attempt.confirmed)"
+        } else {
+            facts += "\nSaid back: \(turn.attempt.confirmed)"
+            facts += "\nRecognition transcribed that, not the learner — how it is written is not theirs."
+        }
         return facts
     }
 
@@ -288,7 +508,7 @@ actor Tutor {
 
     // MARK: Drills and questions
 
-    struct DrillVerdict: Codable { var correct: Bool; var note: String; var oneGoodAnswer: String }
+    struct DrillVerdict: Codable { var correct: Bool; var note: String }
 
     func grade(answer: String, to rung: Rung, in language: Language)
     async throws -> (DrillVerdict, Anthropic.Usage) {
@@ -348,8 +568,9 @@ actor Tutor {
 
         produce — `target` is a question to answer in \(pack.language.name),
         written first and in \(pack.language.name); `english` is its meaning.
-        Ask about the learner's own life, and make it answerable in two or three
-        sentences.
+        Exactly one question about the learner's own life: one sentence, one
+        question mark, under fifteen words. No preamble, no second question, no
+        "and why?". Answerable in two or three sentences.
 
         Sentences are things a person would actually say. No textbook filler, no
         sentences that exist only to contain a grammar point.
@@ -389,10 +610,6 @@ actor Tutor {
 
         `accept` lists every form a speaker would accept, not just the neatest.
 
-        `ask` is two questions the learner plausibly has after reading the rule,
-        in their own words, each answered in a sentence or two and carrying
-        links so the answer opens further.
-
         `patterns` replaces the rule on a third visit: examples only, no
         explanation. If explaining twice did not work, a third will not either.
 
@@ -413,9 +630,41 @@ actor Tutor {
         "Something is in the wrong place in the second half" is right.
         "已经 should come before the verb" is not.
 
-        Rank them: exactly one finding has weight "start", the one that most
-        stops the learner being understood. Return every other finding too.
+        Rank them: exactly one finding has weight "start", the one that costs
+        the learner most: being understood in translate and produce, catching
+        what was actually said in listen. Return every other finding too.
         Never omit a real error because it is minor — silence reads as approval.
+        The opposite failure is worse. Report nothing you cannot point at. A
+        choice you would not have made is not an error, and an attempt with
+        nothing wrong in it is an ordinary outcome — return no problems at all
+        and say what carried it. Being corrected for something they got right is
+        what stops a learner trusting any of it.
+
+        In produce the corrections are held back and the exchange is reviewed
+        as one thing. Every answer in it is being assessed, not only the last:
+        a problem in the first answer counts as much as one in the third, and
+        `locate` must say which answer it is in. The same mistake in two
+        answers is one finding and outranks two separate one-offs — say that it
+        recurred. The score is for the exchange, not for the last sentence.
+
+        In listen the sentence is the speaker's and the learner is writing down
+        what reached them, so nothing in it is a production error. Every finding
+        says which of three things happened, because each takes a different
+        repair.
+        Misheard — the sound never arrived, or arrived as a different one. This
+        is the listening finding.
+        Heard, written wrong — the sound arrived and the spelling of it is
+        wrong. Orthography. Told they misheard something they heard perfectly, a
+        learner stops trusting an ear that works.
+        Not known — it arrived intact and they have no word for it.
+        Which of the three belongs in `locate`, and it is still where and not
+        what: "you caught every syllable, but one character in the first half is
+        not the one that sound writes" gives nothing away, and naming the
+        character does. The score is how much of the sentence arrived. "breaks"
+        is a miss that changed what the sentence meant; a syllable lost with the
+        meaning intact is "weakens". Praise something hard that landed, not the
+        easy syllables. `subject` is what would catch it next time — the sound,
+        or the pair of characters, not the sentence.
 
         Report what they got right as well, with verdict "kept". Praise that
         names a real choice teaches; generic praise does not.
@@ -447,10 +696,11 @@ actor Tutor {
         """
         \(voice(pack))
 
-        You fill in findings that have already been located. For each id you are
-        given, say what is wrong (`name`, still without the corrected text),
-        then the correction (`fix`), then one or two sentences on why (`note`).
-        Return every id you are given and invent no others.
+        You fill in findings that have already been located. For each number
+        you are given, say what is wrong (`name`, still without the corrected
+        text), then the correction (`fix`), then one or two sentences on why
+        (`note`). Return every number you are given, as `id`, copied exactly.
+        Invent no others.
 
         `natural` is what a speaker would actually say when that differs from
         the minimal correction. Null when it does not.
@@ -460,8 +710,12 @@ actor Tutor {
         added detail. Never a plain repeat: the point is transfer, not recall of
         the correction. Two or three, each with the forms you would accept.
 
-        `ask` is two questions the learner plausibly has about this attempt, in
-        their own words, each answered in a sentence or two.
+        In listen the learner was writing down someone else's sentence. `name`
+        says which of the three it was — misheard, heard and written wrong, or
+        not known — and `note` says what makes that sound easy to lose, or, when
+        they heard it, that the ear was right and only the writing was not.
+        `natural` is null there: the played sentence is already what a speaker
+        said. Build the respeaks from the played sentence.
 
         Every `links` entry is a way onward: `subject` is what a lesson about it
         would be about — a real teachable point, never a restatement of the

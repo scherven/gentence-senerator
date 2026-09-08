@@ -49,23 +49,14 @@ actor Anthropic {
         self.session = session
     }
 
-    /// One call. `schema` constrains the reply to valid JSON; `cachedSystem` is
-    /// the byte-identical prefix that must not vary per request, so per-attempt
-    /// facts belong in `user` instead.
-    func send(cachedSystem: String,
-              user: String,
-              schema: [String: Any]? = nil,
-              effort: Effort = .medium,
-              maxTokens: Int = 8000) async throws -> Reply {
-
-        guard !key.isEmpty else { throw Failure.noKey }
-
+    nonisolated private func request(cachedSystem: String, user: String, schema: [String: Any]?,
+                        effort: Effort, maxTokens: Int, streaming: Bool) throws -> URLRequest {
         var outputConfig: [String: Any] = ["effort": effort.rawValue]
         if let schema {
             outputConfig["format"] = ["type": "json_schema", "schema": schema]
         }
 
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "model": model,
             "max_tokens": maxTokens,
             "system": [[
@@ -78,6 +69,7 @@ actor Anthropic {
             // Routes around a safety refusal instead of failing the turn.
             "fallbacks": "default"
         ]
+        if streaming { body["stream"] = true }
 
         var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/messages")!)
         request.httpMethod = "POST"
@@ -87,7 +79,103 @@ actor Anthropic {
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         request.timeoutInterval = 120
+        return request
+    }
 
+    /// A reply as it is written, for the one call the learner waits on. Half
+    /// its wall-clock is thinking, before any text exists; the rest arrives at
+    /// a steady rate, so showing it as it lands halves the visible wait.
+    enum Event {
+        case text(String)
+        case finished(Usage)
+        case refused(String)
+    }
+
+    nonisolated func stream(cachedSystem: String,
+                user: String,
+                schema: [String: Any],
+                effort: Effort = .medium,
+                maxTokens: Int = 8000) -> AsyncThrowingStream<Event, Error> {
+        AsyncThrowingStream { continuation in
+            let work = Task {
+                do {
+                    guard !key.isEmpty else { throw Failure.noKey }
+                    var request = try self.request(cachedSystem: cachedSystem, user: user,
+                                                   schema: schema, effort: effort,
+                                                   maxTokens: maxTokens, streaming: true)
+                    request.timeoutInterval = 180
+
+                    let (bytes, response) = try await self.session.bytes(for: request)
+                    guard let http = response as? HTTPURLResponse else {
+                        throw Failure.malformed("no HTTP response")
+                    }
+                    guard (200..<300).contains(http.statusCode) else {
+                        var body = ""
+                        for try await line in bytes.lines {
+                            body += line
+                            if body.count > 400 { break }
+                        }
+                        throw Failure.http(http.statusCode, String(body.prefix(400)))
+                    }
+
+                    var usage = Usage(inputTokens: 0, outputTokens: 0,
+                                      cacheReadTokens: 0, cacheWriteTokens: 0)
+                    for try await line in bytes.lines {
+                        guard line.hasPrefix("data:") else { continue }
+                        let payload = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
+                        guard let data = payload.data(using: .utf8),
+                              let object = try? JSONSerialization.jsonObject(with: data)
+                                as? [String: Any] else { continue }
+
+                        switch object["type"] as? String {
+                        case "content_block_delta":
+                            if let delta = object["delta"] as? [String: Any],
+                               let text = delta["text"] as? String, !text.isEmpty {
+                                continuation.yield(.text(text))
+                            }
+                        case "message_start":
+                            if let message = object["message"] as? [String: Any] {
+                                usage = Self.usage(from: message["usage"] as? [String: Any] ?? [:])
+                            }
+                        case "message_delta":
+                            if let delta = object["delta"] as? [String: Any],
+                               delta["stop_reason"] as? String == "refusal" {
+                                let why = (object["stop_details"] as? [String: Any])?["explanation"]
+                                    as? String ?? "no explanation given"
+                                continuation.yield(.refused(why))
+                            }
+                            // Output tokens are only final here.
+                            if let u = object["usage"] as? [String: Any] {
+                                let final = Self.usage(from: u)
+                                usage.outputTokens = final.outputTokens
+                            }
+                        default:
+                            break
+                        }
+                    }
+                    continuation.yield(.finished(usage))
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in work.cancel() }
+        }
+    }
+
+    /// One call. `schema` constrains the reply to valid JSON; `cachedSystem` is
+    /// the byte-identical prefix that must not vary per request, so per-attempt
+    /// facts belong in `user` instead.
+    func send(cachedSystem: String,
+              user: String,
+              schema: [String: Any]? = nil,
+              effort: Effort = .medium,
+              maxTokens: Int = 8000) async throws -> Reply {
+
+        guard !key.isEmpty else { throw Failure.noKey }
+
+        let request = try self.request(cachedSystem: cachedSystem, user: user, schema: schema,
+                                       effort: effort, maxTokens: maxTokens, streaming: false)
         let (data, response) = try await session.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
@@ -138,8 +226,31 @@ actor Anthropic {
         }
         do {
             return (try JSONDecoder().decode(T.self, from: data), reply.usage)
+        } catch let error as DecodingError {
+            throw Failure.malformed("\(Self.explain(error)) — \(reply.text.prefix(400))")
         } catch {
-            throw Failure.malformed("\(error.localizedDescription) — \(reply.text.prefix(200))")
+            throw Failure.malformed("\(error.localizedDescription) — \(reply.text.prefix(400))")
+        }
+    }
+
+    /// `localizedDescription` on a DecodingError says only that something was
+    /// wrong. The coding path says which field, which is the whole question.
+    private static func explain(_ error: DecodingError) -> String {
+        func where_(_ context: DecodingError.Context) -> String {
+            let path = context.codingPath.map(\.stringValue).joined(separator: ".")
+            return path.isEmpty ? "the root" : path
+        }
+        switch error {
+        case .keyNotFound(let key, let context):
+            return "no `\(key.stringValue)` in \(where_(context))"
+        case .typeMismatch(let type, let context):
+            return "`\(where_(context))` was not \(type)"
+        case .valueNotFound(let type, let context):
+            return "`\(where_(context))` was null, wanted \(type)"
+        case .dataCorrupted(let context):
+            return "broken JSON at \(where_(context)): \(context.debugDescription)"
+        @unknown default:
+            return error.localizedDescription
         }
     }
 

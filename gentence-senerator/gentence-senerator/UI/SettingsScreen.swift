@@ -71,8 +71,13 @@ struct SettingsScreen: View {
             ModuleLabel(text: "Session")
             VStack(spacing: 0) {
                 row {
-                    Stepper(value: $store.settings.dailyGoal, in: 3...40) {
-                        Text("\(store.settings.dailyGoal) a day").font(Theme.F.body)
+                    Stepper(value: $store.settings.dailyGoal, in: 1...10) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(store.settings.dailyGoal) of each mode a day")
+                                .font(Theme.F.body)
+                            Text("A cap, not a target. The day ends when all three are spent.")
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        }
                     }
                 }
                 row {

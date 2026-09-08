@@ -73,12 +73,26 @@ enum LanguagePacks {
         routing: """
         A wrong tone is a different word, so report it as tone, not
         pronunciation, and name the character actually said.
-        A dropped subject is missing-piece, never word-order — Mandarin drops
-        subjects far less than English does, and that is its own finding.
+        Mandarin drops subjects freely once the topic is set: a clause after a
+        comma, and a sentence continuing the same topic, do not need one.
+        Report a dropped subject only when you genuinely cannot tell who is
+        meant, and then it is missing-piece, never word-order.
+        个 is what speech reaches for when the specific classifier does not
+        come to mind. Spoken, treat it as kept; written, it is at most
+        "weakens" — never "breaks".
+        Taking dictation, a syllable written as a character with a different
+        tone is tone: the tone did not land. Written as a character with the
+        same sound and the same tone it is word-choice — they heard it and wrote
+        it wrong, and it is neither tone nor pronunciation. A sentence-final
+        particle that never arrived is particle, never missing-piece.
         """,
         assessmentNotes: """
         The two jobs of 了 — completion after the verb, change of state at the
         end — are the single most common confusion an English speaker has.
+        What goes missing in dictation is whatever carries no stress:
+        sentence-final 了 吧 呢 啊 吗, and 了 after a vowel worst of all. What comes
+        back as a different sound is zh/z, ch/c, sh/s, and n against ng in a
+        final.
         """,
         generationNotes: """
         Write the English prompt so a natural Mandarin rendering needs the

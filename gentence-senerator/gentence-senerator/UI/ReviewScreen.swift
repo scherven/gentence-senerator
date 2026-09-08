@@ -3,15 +3,19 @@ import SwiftUI
 /// What the learner sees after an attempt, in every mode.
 struct ReviewScreen: View {
     let turn: Turn
+    /// Every turn this review covers, in order, ending with `turn`. One in
+    /// translate and listen; a whole held exchange in produce.
+    let exchange: [Turn]
     let knowledge: [String: Progress.Encounter.Knowledge]
     let onOpenAtom: (Atom) -> Void
     let onOpenLink: (AtomLink) -> Void
     let onClassify: (Atom, Progress.Encounter.Knowledge) -> Void
     let onAsk: (String) -> Void
-    let ask: [AskItem]
     let answers: [AskItem]
     let isAsking: Bool
     let deepening: Bool
+    /// The opening is still being written; more findings are on the way.
+    let streaming: Bool
     let depthError: String?
     let onRetryDepth: () -> Void
 
@@ -30,6 +34,15 @@ struct ReviewScreen: View {
 
                 if let review {
                     findings(review)
+                    if streaming {
+                        HStack(spacing: Theme.M.gapTight) {
+                            ProgressView().tint(Theme.C.accent)
+                            Text("Still reading…")
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(Theme.M.padTight)
+                    }
                     if !review.isDeep { rest }
                     if let natural = review.natural {
                         sentence(natural, label: "What a speaker would say", edge: Theme.C.accent)
@@ -39,7 +52,7 @@ struct ReviewScreen: View {
                     }
                 }
 
-                AskView(items: ask, answers: answers, isAsking: isAsking,
+                AskView(answers: answers, isAsking: isAsking,
                         onOpenLink: onOpenLink, onAsk: onAsk)
             }
             .padding(Theme.M.gap)
@@ -52,26 +65,45 @@ struct ReviewScreen: View {
 
     private var specimen: some View {
         VStack(spacing: 0) {
-            // The target-language side carries the English as a gloss beneath
-            // it rather than as a second row, which read as two questions.
-            if let target = turn.prompt.target {
-                specimenRow(turn.mode == .listen ? "Played" : "Asked") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(target).font(Theme.F.target).foregroundStyle(Theme.C.ink)
-                        if let english = turn.prompt.english {
-                            Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            if exchange.count > 1 {
+                // A finding can point at any answer here, so all of them are on
+                // screen and numbered to match.
+                ForEach(Array(exchange.enumerated()), id: \.element.id) { index, past in
+                    specimenRow("\(index + 1)") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(past.prompt.target ?? past.prompt.english ?? "")
+                                .font(Theme.F.note)
+                                .foregroundStyle(Theme.C.ink2)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(past.attempt.confirmed)
+                                .font(Theme.F.target)
+                                .foregroundStyle(Theme.C.ink)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
-            } else if let english = turn.prompt.english {
-                specimenRow("Asked") {
-                    Text(english).font(Theme.F.body).foregroundStyle(Theme.C.ink)
+            } else {
+                // The target-language side carries the English as a gloss beneath
+                // it rather than as a second row, which read as two questions.
+                if let target = turn.prompt.target {
+                    specimenRow(turn.mode == .listen ? "Played" : "Asked") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(target).font(Theme.F.target).foregroundStyle(Theme.C.ink)
+                            if let english = turn.prompt.english {
+                                Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                            }
+                        }
+                    }
+                } else if let english = turn.prompt.english {
+                    specimenRow("Asked") {
+                        Text(english).font(Theme.F.body).foregroundStyle(Theme.C.ink)
+                    }
                 }
-            }
-            specimenRow("You said") {
-                Text(turn.attempt.confirmed)
-                    .font(Theme.F.target)
-                    .foregroundStyle(review.map { $0.problems.isEmpty ? Theme.C.ink : Theme.C.bad } ?? Theme.C.ink)
+                specimenRow("You said") {
+                    Text(turn.attempt.confirmed)
+                        .font(Theme.F.target)
+                        .foregroundStyle(review.map { $0.problems.isEmpty ? Theme.C.ink : Theme.C.bad } ?? Theme.C.ink)
+                }
             }
             if let review {
                 specimenRow("Score") {
@@ -162,7 +194,6 @@ struct ReviewScreen: View {
                         onOpenAtom(Atom(
                             id: "pronunciation/\(unit.name ?? unit.gloss ?? "\(unit.index)")",
                             kind: .pronunciation, verdict: .weakens,
-                            anchor: unit.gloss,
                             stages: .init(
                                 locate: "This sound came out at \(unit.score).",
                                 name: unit.name.map { "The sound \($0)." }

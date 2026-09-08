@@ -31,9 +31,11 @@ struct ModeScreen: View {
         Group {
             switch store.phase {
             case .idle:
-                start
+                if store.dayComplete { DayScreen(store: store) } else { start }
             case .preparing:
                 Busy(text: "Writing something for you…")
+            case .passage:
+                PassageScreen(store: store)
             case .ready, .recording:
                 attempt
             case .confirming:
@@ -65,7 +67,11 @@ struct ModeScreen: View {
                 }
             } else {
                 ToolbarItem(placement: .topBarLeading) {
-                    TinyButton(title: "End") { store.endSession() }
+                    if store.phase == .passage {
+                        TinyButton(title: "Leave") { store.leavePassage() }
+                    } else {
+                        TinyButton(title: "End") { store.endSession() }
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Text(progressLabel)
@@ -86,10 +92,12 @@ struct ModeScreen: View {
     }
 
     private var progressLabel: String {
+        if store.phase == .passage {
+            let tally = store.tally(.listen)
+            return "\(tally.done)/\(tally.goal)"
+        }
         guard let session = store.session else { return "" }
-        return session.endless
-            ? "\(session.completedCount)"
-            : "\(session.completedCount)/\(session.goal)"
+        return "\(session.completedCount)/\(session.goal)"
     }
 
     // MARK: Phases
@@ -98,74 +106,92 @@ struct ModeScreen: View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
             ForEach(Mode.allCases) { mode in
+                let tally = store.tally(mode)
+                let spent = store.isDone(mode)
                 Button { Task { await store.begin(mode) } } label: {
                     VStack(alignment: .leading, spacing: 3) {
                         HStack(alignment: .firstTextBaseline) {
                             Text(mode.name).font(Theme.F.title)
+                                .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.ink)
                             Spacer()
-                            if let held = store.resumable(mode) {
-                                Text("\(held.completedCount)/\(held.goal) SO FAR")
-                                    .font(Theme.F.label).foregroundStyle(Theme.C.accent)
+                            if tally.done > 0 {
+                                Text("\(tally.done)/\(tally.goal)")
+                                    .font(Theme.F.label)
+                                    .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.accent)
                             }
                         }
-                        Text(store.resumable(mode) == nil ? mode.blurb : "Carry on where you left off.")
+                        Text(blurb(mode, spent: spent, started: tally.done > 0))
                             .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(Theme.M.pad)
-                    .background(Theme.C.surface)
+                    .background(spent ? Theme.C.raised : Theme.C.surface)
                     .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 }
                 .buttonStyle(.plain)
+                .disabled(spent)
             }
             Spacer()
         }
         .padding(Theme.M.gap)
     }
 
-    private var attempt: some View {
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            if let stretch = store.stretch, store.settings.mode == .produce {
-                Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("TRY TO USE").font(Theme.F.label).tracking(1.1)
-                            .foregroundStyle(Theme.C.accent)
-                        Text(stretch.name).font(Theme.F.body)
-                        Text(stretch.instruction).font(Theme.F.note)
-                            .foregroundStyle(Theme.C.ink2)
-                    }
-                }
-            }
-
-            prompt
-
-            if store.phase == .recording {
-                VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-                    ModuleLabel(text: "Listening")
-                    Panel { Text(store.draft.isEmpty ? "…" : store.draft).font(Theme.F.target) }
-                    MainButton(title: "Done") { store.stopRecording() }
-                }
-            } else if store.settings.prefersTyping {
-                VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-                    TextField("Type it…", text: $typing, axis: .vertical)
-                        .font(Theme.F.target)
-                        .textFieldStyle(.plain)
-                        .targetLanguageInput()
-                        .lineLimit(2...5)
-                        .padding(Theme.M.pad)
-                        .background(Theme.C.sunk)
-                        .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-                    MainButton(title: "Review", enabled: !typing.isEmpty) {
-                        store.typed(typing); typing = ""
-                    }
-                }
-            } else {
-                MainButton(title: "Speak") { store.startRecording() }
-                TinyButton(title: "Type instead") { store.settings.prefersTyping = true }
-            }
-            Spacer()
+    private func blurb(_ mode: Mode, spent: Bool, started: Bool) -> String {
+        if spent { return "Spent. Back tomorrow." }
+        if mode == .listen, let held = store.heldPassage {
+            return held.run.stage == .gist
+                ? "A dialogue: \(held.passage.title). Heard once, then questions."
+                : "Carry on with \(held.passage.title)."
         }
-        .padding(Theme.M.gap)
+        if started { return "Carry on where you left off." }
+        return mode.blurb
+    }
+
+    private var attempt: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.M.gap) {
+                if let stretch = store.stretch, store.settings.mode == .produce {
+                    Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("TRY TO USE").font(Theme.F.label).tracking(1.1)
+                                .foregroundStyle(Theme.C.accent)
+                            Text(stretch.name).font(Theme.F.body)
+                            Text(stretch.instruction).font(Theme.F.note)
+                                .foregroundStyle(Theme.C.ink2)
+                        }
+                    }
+                }
+
+                prompt
+
+                if store.phase == .recording {
+                    VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                        ModuleLabel(text: "Listening")
+                        Panel { Text(store.draft.isEmpty ? "…" : store.draft).font(Theme.F.target) }
+                        MainButton(title: "Done") { store.stopRecording() }
+                    }
+                } else if store.settings.prefersTyping {
+                    VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                        TextField("Type it…", text: $typing, axis: .vertical)
+                            .font(Theme.F.target)
+                            .textFieldStyle(.plain)
+                            .targetLanguageInput()
+                            .lineLimit(2...5)
+                            .padding(Theme.M.pad)
+                            .background(Theme.C.sunk)
+                            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+                        MainButton(title: "Review", enabled: !typing.isEmpty) {
+                            store.typed(typing); typing = ""
+                        }
+                    }
+                } else {
+                    MainButton(title: "Speak") { store.startRecording() }
+                    TinyButton(title: "Type instead") { store.settings.prefersTyping = true }
+                }
+            }
+            .padding(Theme.M.gap)
+        }
+        .scrollDismissesKeyboard(.interactively)
         .onChange(of: store.current?.id) { showGloss = false }
     }
 
@@ -186,6 +212,7 @@ struct ModeScreen: View {
                                             .font(Theme.F.body)
                                     } else {
                                         Text(target).font(Theme.F.target)
+                                            .fixedSize(horizontal: false, vertical: true)
                                     }
                                     Spacer()
                                     TinyButton(title: "Hear") { store.say(target) }
@@ -250,6 +277,7 @@ struct ModeScreen: View {
             VStack(spacing: 0) {
                 ReviewScreen(
                     turn: turn,
+                    exchange: store.exchange(endingAt: turn),
                     knowledge: store.knowledge,
                     onOpenAtom: { store.open($0) },
                     onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
@@ -263,10 +291,10 @@ struct ModeScreen: View {
                                             context: turn.id.uuidString)
                         }
                     },
-                    ask: turn.review?.ask ?? [],
                     answers: store.asked[turn.id.uuidString] ?? [],
                     isAsking: store.asking.contains(turn.id.uuidString),
                     deepening: store.deepening,
+                    streaming: store.streamingReview,
                     depthError: store.reviewDepthError,
                     onRetryDepth: { Task { await store.retryDepth() } }
                 )
@@ -277,12 +305,14 @@ struct ModeScreen: View {
 
     private var done: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Done for today")
+            ModuleLabel(text: "\(store.settings.mode.name) done")
             if let session = store.session {
                 Text("\(session.completedCount) attempts · average \(session.averageScore)")
                     .font(Theme.F.body)
             }
-            MainButton(title: "Keep going") { Task { await store.keepGoing() } }
+            MainButton(title: store.dayComplete ? "See the day" : "Back") {
+                store.endSession()
+            }
             Spacer()
         }
         .padding(Theme.M.gap)

@@ -6,13 +6,14 @@ struct Lesson: Identifiable, Codable, Hashable {
     let id: String
     var title: String
     var blocks: [Block]
-    /// Questions the learner plausibly has here. Answers yield atoms.
-    var ask: [AskItem]
     /// Replaces the rule on a third visit. Explaining twice didn't work.
     var patterns: [Example]
 
+    /// Practice arrives in a second call and is what adds the drills block.
+    var hasPractice: Bool { blocks.contains { $0.kind == .drills } }
+
     static func empty(id: String) -> Lesson {
-        Lesson(id: id, title: "", blocks: [], ask: [], patterns: [])
+        Lesson(id: id, title: "", blocks: [], patterns: [])
     }
 }
 
