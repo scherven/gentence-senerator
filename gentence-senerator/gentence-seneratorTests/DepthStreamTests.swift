@@ -80,4 +80,63 @@ struct DepthStreamTests {
         #expect(depth.respeaks[0].accept.count == 2)
         #expect(depth.natural == "我已经吃过了。")
     }
+
+    // MARK: The tags
+
+    /// The same reply with the grammar points it used on the end. Written last
+    /// so it is behind the findings the learner is waiting on.
+    static let tagged = """
+    {"natural":"我已经吃过了。",
+     "findings":[
+      {"id":"0","name":"已经 is in a slot only a particle can hold.",
+       "fix":"我已经吃了","note":"已经 goes before the verb, not after it."}],
+     "respeaks":[
+      {"instruction":"Say it again about yesterday.",
+       "accept":["我昨天吃了"],"correct":"That is the one.","incorrect":"Not yet."}],
+     "used":["le-completion","adverb-placement"]}
+    """
+
+    /// A second array in the document is the thing that would break a scanner
+    /// walking it in order. This one is addressed by key, so at every prefix
+    /// the findings still come out whole and never more than there are — and a
+    /// half-written id has no route out, because nothing reads `used` off the
+    /// buffer at all. It comes only from a strict parse of the whole document.
+    @Test func aHalfArrivedTagArrayTearsNothing() throws {
+        let bytes = Array(Self.tagged.utf8)
+        let decoder = JSONDecoder()
+        let real: Set<String> = ["le-completion", "adverb-placement"]
+        var sawWhole = false
+
+        for end in 1...bytes.count {
+            let sofar = String(decoding: bytes[0..<end], as: UTF8.self)
+            let elements = PartialJSON.elements(ofArrayAt: "findings", in: sofar)
+            #expect(elements.count <= 1)
+            for element in elements {
+                _ = try decoder.decode(Tutor.Depth.Filled.self, from: element)
+            }
+            if let whole = try? decoder.decode(Tutor.Depth.self, from: Data(sofar.utf8)) {
+                #expect(whole.used.allSatisfy { real.contains($0) })
+                sawWhole = true
+            }
+        }
+        #expect(sawWhole)
+        let done = try decoder.decode(Tutor.Depth.self, from: Data(Self.tagged.utf8))
+        #expect(Set(done.used) == real)
+    }
+
+    /// The scanner reads arrays of objects. Pointed at an array of strings it
+    /// finds none, which is the other half of why no partial id can escape.
+    @Test func theScannerFindsNoObjectsAmongTheTags() {
+        #expect(PartialJSON.elements(ofArrayAt: "used", in: Self.tagged).isEmpty)
+    }
+
+    /// A reply with no tags at all is still a whole review. Throwing away the
+    /// fixes and the notes over one absent array is the worse failure, and the
+    /// deep call gets no second chance.
+    @Test func aReplyWithoutTagsIsStillWhole() throws {
+        let depth = try JSONDecoder().decode(Tutor.Depth.self,
+                                             from: Data(Self.document.utf8))
+        #expect(depth.used.isEmpty)
+        #expect(depth.findings.count == 2)
+    }
 }

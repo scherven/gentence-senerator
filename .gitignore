@@ -66,3 +66,8 @@ gentence-senerator/gentence-senerator/key.swift
 gentence-senerator/.DS_Store
 gentence-senerator/gentence-senerator/.DS_Store
 *.json
+
+# *.json above was added alongside *.mp3 to keep the Clips/ corpus and tools/
+# scratch data out of status. It also caught real source, so exempt it:
+!gentence-senerator/gentence-senerator/Curriculum/*.json
+!gentence-senerator/gentence-senerator/Assets.xcassets/**/*.json

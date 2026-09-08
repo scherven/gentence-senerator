@@ -33,6 +33,9 @@ struct LanguagePack {
     let generationNotes: String
     let points: [GrammarPoint]
 
+    /// HSK runs to 9, CEFR to 6.
+    var levels: Int { language == .mandarin ? 9 : 6 }
+
     func level(_ n: Int) -> String {
         switch language {
         case .mandarin:
@@ -44,6 +47,10 @@ struct LanguagePack {
             return bands[min(max(n - 1, 0), bands.count - 1)]
         }
     }
+
+    /// The vocabulary of ids the model may tag an attempt with. Anything else
+    /// it returns was invented.
+    var pointIDs: Set<String> { Set(points.map(\.id)) }
 
     /// Points the learner could reach for at this level, in this mode.
     func reachable(at level: Int, use: GrammarPoint.Use) -> [GrammarPoint] {
@@ -157,7 +164,10 @@ enum LanguagePacks {
         kinds: universal + [
             .verbSecond, .bracket, .verbFinal,
             .caseChoice, .caseForm, .adjectiveEnding, .gender,
-            .negation, .preposition, .tenseAspect, .mood, .particle
+            .negation, .preposition, .tenseAspect, .mood, .particle,
+            // haben vs sein in the Perfekt. Without it `perfekt-aux` names a kind
+            // the assessor can never return, so the point can never be linked.
+            .auxiliary
         ],
         routing: """
         Diagnose gender before case-form: with the wrong gender the ending is

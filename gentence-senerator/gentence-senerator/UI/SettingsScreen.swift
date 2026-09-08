@@ -54,12 +54,27 @@ struct SettingsScreen: View {
     private var level: some View {
         VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Level · \(store.pack.level(store.settings.level))")
-            Stepper(value: $store.settings.level, in: 1...(store.settings.language == .mandarin ? 9 : 6)) {
+            Stepper(value: Binding(get: { store.settings.level },
+                                   set: { store.setLevel($0) }),
+                    in: 1...store.pack.levels) {
                 Text(store.pack.level(store.settings.level)).font(Theme.F.body)
             }
             .padding(Theme.M.pad)
             .background(Theme.C.surface)
             .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+
+            // Offered, never taken. The level is the one thing the app would be
+            // changing behind the learner's back, so it asks.
+            if let offer = store.levelOffer {
+                Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+                    VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                        Text(offer.reason).font(Theme.F.note)
+                        TinyButton(title: "Move to \(store.pack.level(offer.level))") {
+                            store.setLevel(offer.level)
+                        }
+                    }
+                }
+            }
 
             Text("Sentences are built to sit at this level. Below B1 or HSK 4, being understood counts for more than being exactly right.")
                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)

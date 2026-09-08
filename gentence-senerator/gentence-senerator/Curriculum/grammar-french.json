@@ -1,0 +1,1792 @@
+[
+  {
+    "id": "verb-agreement-heard",
+    "name": "Audible verb endings",
+    "level": 1,
+    "kind": "agreement-heard",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plural subject where the verb form actually changes sound.",
+    "examples": [
+      "ils finissent",
+      "elles viennent"
+    ]
+  },
+  {
+    "id": "gender",
+    "name": "Noun gender",
+    "level": 1,
+    "kind": "gender",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun taking an adjective, so the gender is visible.",
+    "examples": [
+      "une grande maison",
+      "un vieux livre"
+    ]
+  },
+  {
+    "id": "pas-de",
+    "name": "pas de after negation",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Negating a sentence with an indefinite object.",
+    "examples": [
+      "Je n'ai pas de pain",
+      "Il ne mange pas de viande"
+    ]
+  },
+  {
+    "id": "partitive",
+    "name": "Partitive articles",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Some quantity of an uncountable thing.",
+    "examples": [
+      "Je bois du café",
+      "Je mange de la soupe"
+    ]
+  },
+  {
+    "id": "definite-generic",
+    "name": "The article on a generic noun",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Liking or hating something in general, where English uses no article.",
+    "examples": [
+      "J'aime le café",
+      "Les chats sont indépendants"
+    ]
+  },
+  {
+    "id": "contractions",
+    "name": "au, du, aux, des",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going to or coming from a place whose name takes le or les.",
+    "examples": [
+      "Je vais au marché",
+      "Je reviens du bureau"
+    ]
+  },
+  {
+    "id": "il-y-a",
+    "name": "il y a",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Saying something is there.",
+    "examples": [
+      "Il y a une pharmacie en face",
+      "Il n'y a personne"
+    ]
+  },
+  {
+    "id": "c-est-il-est",
+    "name": "c'est against il est",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Identifying somebody against describing what they do.",
+    "examples": [
+      "C'est un médecin",
+      "Il est médecin"
+    ]
+  },
+  {
+    "id": "possessive-adjectives",
+    "name": "Possessives agree with the thing owned",
+    "level": 1,
+    "kind": "gender",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Somebody else's possession, where English marks the owner's sex instead.",
+    "examples": [
+      "sa voiture",
+      "son frère",
+      "ses parents"
+    ]
+  },
+  {
+    "id": "adjective-position",
+    "name": "Where the adjective goes",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A description whose adjective English puts in front.",
+    "examples": [
+      "une voiture rouge",
+      "un film intéressant",
+      "une grande maison"
+    ]
+  },
+  {
+    "id": "futur-proche",
+    "name": "aller plus infinitive",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something about to happen, or planned for today.",
+    "examples": [
+      "Je vais partir",
+      "On va manger dehors"
+    ]
+  },
+  {
+    "id": "question-intonation",
+    "name": "Questions by intonation alone",
+    "level": 1,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A casual yes-no question between friends.",
+    "examples": [
+      "Tu viens ?",
+      "Il est déjà là ?"
+    ]
+  },
+  {
+    "id": "est-ce-que",
+    "name": "est-ce que",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A neutral question, spoken or written, without inverting.",
+    "examples": [
+      "Est-ce que tu as fini ?",
+      "Est-ce qu'il pleut ?"
+    ]
+  },
+  {
+    "id": "on-for-nous",
+    "name": "on for nous",
+    "level": 1,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "What you and the people with you are doing.",
+    "examples": [
+      "On y va",
+      "On a mangé au restaurant"
+    ]
+  },
+  {
+    "id": "ne-pas",
+    "name": "ne…pas around the verb",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plain denial, with the negation wrapped round the conjugated verb.",
+    "examples": [
+      "Je ne comprends pas",
+      "Elle n'est pas venue"
+    ]
+  },
+  {
+    "id": "place-prepositions",
+    "name": "à, en, au before place names",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being in or going to a city or country.",
+    "examples": [
+      "Je vais à Paris",
+      "Il habite en Espagne",
+      "Elle travaille au Japon"
+    ]
+  },
+  {
+    "id": "imperative",
+    "name": "The imperative",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling somebody to do something, and telling them not to.",
+    "examples": [
+      "Viens ici",
+      "Ne bouge pas",
+      "Prenons un taxi"
+    ]
+  },
+  {
+    "id": "pronominal-verbs",
+    "name": "Reflexive verbs",
+    "level": 1,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A daily routine, where English needs no pronoun at all.",
+    "examples": [
+      "Je me lève à sept heures",
+      "Il se repose"
+    ]
+  },
+  {
+    "id": "quantity-de",
+    "name": "de after a quantity word",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How much of something there is.",
+    "examples": [
+      "beaucoup de monde",
+      "un peu de sucre",
+      "trop de bruit"
+    ]
+  },
+  {
+    "id": "politeness-formulas",
+    "name": "Fixed politeness",
+    "level": 1,
+    "kind": "register",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Asking a stranger for something in a shop or on the street.",
+    "examples": [
+      "Un café, s'il vous plaît",
+      "Excusez-moi, madame"
+    ]
+  },
+  {
+    "id": "je-voudrais",
+    "name": "je voudrais, j'aimerais",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Ordering or requesting, in the fixed polite forms only.",
+    "examples": [
+      "Je voudrais un billet",
+      "J'aimerais réserver une table"
+    ]
+  },
+  {
+    "id": "tu-vous",
+    "name": "tu against vous",
+    "level": 1,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Addressing somebody the learner has just met, or somebody older.",
+    "examples": [
+      "Vous avez l'heure ?",
+      "Tu veux venir ?"
+    ]
+  },
+  {
+    "id": "avoir-expressions",
+    "name": "States with avoir",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being hungry, cold, afraid, right, or a certain age.",
+    "examples": [
+      "J'ai faim",
+      "J'ai vingt ans",
+      "Tu as raison"
+    ]
+  },
+  {
+    "id": "passe-compose-aux",
+    "name": "être or avoir in the passé composé",
+    "level": 2,
+    "kind": "auxiliary",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A movement or reflexive verb in the past.",
+    "examples": [
+      "Je suis allé au marché",
+      "Je me suis levé tôt"
+    ]
+  },
+  {
+    "id": "object-pronouns",
+    "name": "Object pronouns before the verb",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Replacing a stated object — English speakers repeat the noun instead.",
+    "examples": [
+      "Je le vois",
+      "Je lui parle"
+    ]
+  },
+  {
+    "id": "preposition-government",
+    "name": "Verbs with à or de",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "penser à against penser de, commencer à, essayer de.",
+    "examples": [
+      "Je pense à toi",
+      "J'essaie de comprendre"
+    ]
+  },
+  {
+    "id": "liaison",
+    "name": "Liaison",
+    "level": 2,
+    "kind": "liaison",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Obligatory liaison across a determiner or pronoun boundary.",
+    "examples": [
+      "les amis",
+      "nous avons",
+      "un petit enfant"
+    ]
+  },
+  {
+    "id": "written-agreement",
+    "name": "Silent written agreement",
+    "level": 2,
+    "kind": "agreement-written",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Plural -s and participle agreement that cannot be heard.",
+    "examples": [
+      "les livres intéressants",
+      "les lettres que j'ai écrites"
+    ]
+  },
+  {
+    "id": "imparfait-description",
+    "name": "The imparfait",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How things used to be, or what was going on at the time.",
+    "examples": [
+      "Quand j'étais petit, j'habitais à Lyon",
+      "Il faisait froid"
+    ]
+  },
+  {
+    "id": "futur-simple",
+    "name": "The futur simple",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plan or a prediction further off than tonight.",
+    "examples": [
+      "Je partirai en août",
+      "Elle aura vingt ans"
+    ]
+  },
+  {
+    "id": "passe-recent",
+    "name": "venir de",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something finished moments ago.",
+    "examples": [
+      "Je viens de manger",
+      "Il vient de sortir"
+    ]
+  },
+  {
+    "id": "etre-en-train-de",
+    "name": "être en train de",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Insisting an action is under way right now.",
+    "examples": [
+      "Je suis en train de travailler"
+    ]
+  },
+  {
+    "id": "depuis-present",
+    "name": "depuis with the present",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long something has been going on and still is.",
+    "examples": [
+      "J'habite ici depuis trois ans",
+      "Il dort depuis midi"
+    ]
+  },
+  {
+    "id": "time-markers",
+    "name": "il y a, pendant, dans, depuis",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long ago, for how long, and in how long.",
+    "examples": [
+      "Il y a deux ans",
+      "pendant une heure",
+      "dans dix minutes"
+    ]
+  },
+  {
+    "id": "comparative",
+    "name": "plus, moins, aussi … que",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Setting two things side by side.",
+    "examples": [
+      "Il est plus grand que moi",
+      "C'est moins cher qu'avant"
+    ]
+  },
+  {
+    "id": "superlative",
+    "name": "The superlative",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The best or the worst of a group, with the adjective in its own slot.",
+    "examples": [
+      "le film le plus long de l'année",
+      "la meilleure solution"
+    ]
+  },
+  {
+    "id": "meilleur-mieux",
+    "name": "meilleur against mieux",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying something is better, where English has one word for both.",
+    "examples": [
+      "C'est meilleur",
+      "Il chante mieux"
+    ]
+  },
+  {
+    "id": "imperative-pronouns",
+    "name": "Pronouns with the imperative",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling somebody to do it, then telling them not to.",
+    "examples": [
+      "Fais-le",
+      "Ne le fais pas",
+      "Assieds-toi"
+    ]
+  },
+  {
+    "id": "question-words-final",
+    "name": "Question words at the end",
+    "level": 2,
+    "kind": "word-order",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A casual question with où, quand, comment or combien left in place.",
+    "examples": [
+      "Tu vas où ?",
+      "Ça coûte combien ?"
+    ]
+  },
+  {
+    "id": "adverb-ment",
+    "name": "Adverbs in -ment",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How something was done, with the adverb in its French slot in a compound tense.",
+    "examples": [
+      "Il parle lentement",
+      "J'ai complètement oublié"
+    ]
+  },
+  {
+    "id": "si-present-futur",
+    "name": "si with the present",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A real condition and what will follow from it.",
+    "examples": [
+      "Si tu viens, on ira au cinéma",
+      "S'il pleut, je reste"
+    ]
+  },
+  {
+    "id": "il-faut-infinitive",
+    "name": "il faut plus infinitive",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A general obligation with nobody in particular responsible.",
+    "examples": [
+      "Il faut réserver à l'avance",
+      "Il ne faut pas s'inquiéter"
+    ]
+  },
+  {
+    "id": "relative-qui-que",
+    "name": "qui, que, où",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Joining two statements about the same person or thing.",
+    "examples": [
+      "l'homme qui parle",
+      "le livre que j'ai lu",
+      "la ville où je vis"
+    ]
+  },
+  {
+    "id": "stressed-pronouns",
+    "name": "moi, toi, lui, eux",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Emphasising who, or naming somebody after a preposition.",
+    "examples": [
+      "Moi, je préfère le train",
+      "avec lui",
+      "chez eux"
+    ]
+  },
+  {
+    "id": "negation-infinitive",
+    "name": "Negating an infinitive",
+    "level": 2,
+    "kind": "negation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Telling somebody not to do something, with both negation words together in front.",
+    "examples": [
+      "Il m'a dit de ne pas venir",
+      "Prière de ne pas fumer"
+    ]
+  },
+  {
+    "id": "reciprocal-pronominal",
+    "name": "se for each other",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two people doing something to one another.",
+    "examples": [
+      "Ils se sont rencontrés à Paris",
+      "On se voit demain"
+    ]
+  },
+  {
+    "id": "possessive-de",
+    "name": "Possession with de",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whose something is.",
+    "examples": [
+      "la voiture de mon frère",
+      "le livre de Marie"
+    ]
+  },
+  {
+    "id": "jouer-a-de",
+    "name": "jouer à against jouer de",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Playing a sport, and playing an instrument.",
+    "examples": [
+      "Je joue au foot",
+      "Elle joue du piano"
+    ]
+  },
+  {
+    "id": "savoir-connaitre",
+    "name": "savoir against connaître",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Knowing a fact or a skill against knowing a person or a place.",
+    "examples": [
+      "Je sais nager",
+      "Je connais Paris",
+      "Tu sais où il est ?"
+    ]
+  },
+  {
+    "id": "faire-activities",
+    "name": "faire du, de la",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A sport, an instrument or a chore taken up as an activity.",
+    "examples": [
+      "Je fais du vélo",
+      "Elle fait la cuisine"
+    ]
+  },
+  {
+    "id": "avoir-besoin-envie",
+    "name": "avoir besoin de, avoir envie de",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Needing something, or feeling like doing something.",
+    "examples": [
+      "J'ai besoin de repos",
+      "J'ai envie de sortir"
+    ]
+  },
+  {
+    "id": "negation-frames",
+    "name": "ne…que, plus, jamais, personne",
+    "level": 3,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Negation other than pas.",
+    "examples": [
+      "Je n'ai que dix euros",
+      "Il ne vient jamais"
+    ]
+  },
+  {
+    "id": "y-en",
+    "name": "y and en",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Replacing a place or a quantity. No English equivalent, so never reached for.",
+    "examples": [
+      "J'y vais",
+      "J'en ai trois"
+    ]
+  },
+  {
+    "id": "pc-imparfait",
+    "name": "Passé composé against imparfait",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A narrative with both a background and an event.",
+    "examples": [
+      "Je regardais la télé quand il est arrivé"
+    ]
+  },
+  {
+    "id": "subjunctive",
+    "name": "The subjunctive",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "After il faut que and vouloir que — learners restructure to dodge it.",
+    "examples": [
+      "Il faut que tu viennes",
+      "Je veux que tu saches"
+    ]
+  },
+  {
+    "id": "plus-que-parfait",
+    "name": "The plus-que-parfait",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something already over before another past event.",
+    "examples": [
+      "Il était déjà parti quand je suis arrivé"
+    ]
+  },
+  {
+    "id": "conditionnel-hypothetical",
+    "name": "si with the imparfait",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An unreal present condition and what would follow.",
+    "examples": [
+      "Si j'avais le temps, je viendrais",
+      "Si j'étais toi, je refuserais"
+    ]
+  },
+  {
+    "id": "conditionnel-attenuation",
+    "name": "The conditional to soften",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Advice or a suggestion pitched short of an order.",
+    "examples": [
+      "Tu devrais te reposer",
+      "Il vaudrait mieux partir tôt"
+    ]
+  },
+  {
+    "id": "futur-after-quand",
+    "name": "The future after quand",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something to do once another future thing happens, where English keeps the present.",
+    "examples": [
+      "Quand j'arriverai, je t'appellerai",
+      "Dès qu'il sera prêt, on partira"
+    ]
+  },
+  {
+    "id": "gerondif",
+    "name": "The gérondif",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things at once, or how something was done.",
+    "examples": [
+      "Il chante en travaillant",
+      "En arrivant, j'ai tout compris"
+    ]
+  },
+  {
+    "id": "passive",
+    "name": "The passive",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action whose agent does not matter.",
+    "examples": [
+      "La maison a été construite en 1920"
+    ]
+  },
+  {
+    "id": "on-for-passive",
+    "name": "on instead of a passive",
+    "level": 3,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Where English says something is done, with nobody named.",
+    "examples": [
+      "On m'a dit que c'était fermé",
+      "Ici, on parle anglais"
+    ]
+  },
+  {
+    "id": "que-obligatory",
+    "name": "que cannot be dropped",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting what somebody said or thinks, where English can leave out 'that'.",
+    "examples": [
+      "Je pense qu'il a raison",
+      "Il dit qu'il viendra"
+    ]
+  },
+  {
+    "id": "indirect-questions",
+    "name": "si, ce que, ce qui in reported questions",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting a question instead of asking it.",
+    "examples": [
+      "Je me demande s'il viendra",
+      "Dis-moi ce que tu veux"
+    ]
+  },
+  {
+    "id": "relative-ou-time",
+    "name": "où for a moment in time",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The day, the year or the moment something happened.",
+    "examples": [
+      "le jour où je l'ai rencontrée",
+      "l'année où tout a changé"
+    ]
+  },
+  {
+    "id": "celui-celle",
+    "name": "celui, celle, ceux",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The one belonging to somebody, or the one that does something.",
+    "examples": [
+      "celui de mon frère",
+      "celles qui restent"
+    ]
+  },
+  {
+    "id": "indefinite-pronouns",
+    "name": "quelqu'un, chacun, certains, plusieurs",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Unnamed people or things, in numbers left vague.",
+    "examples": [
+      "Certains pensent le contraire",
+      "Chacun fait ce qu'il veut"
+    ]
+  },
+  {
+    "id": "tout-forms",
+    "name": "tout, tous, toute, toutes",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "All of something, everyone, or something done entirely.",
+    "examples": [
+      "tous les jours",
+      "toute la journée",
+      "Elle est tout étonnée"
+    ]
+  },
+  {
+    "id": "connectives-cause",
+    "name": "parce que, car, puisque, comme",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A reason the listener already knows, against one they do not.",
+    "examples": [
+      "Puisque tu insistes, j'accepte",
+      "Comme il pleuvait, on est restés"
+    ]
+  },
+  {
+    "id": "du-coup",
+    "name": "du coup",
+    "level": 3,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A consequence, in conversation.",
+    "examples": [
+      "Du coup, j'ai raté le train",
+      "Il était fermé, du coup on est rentrés"
+    ]
+  },
+  {
+    "id": "mise-en-relief-cest",
+    "name": "c'est … qui, c'est … que",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Insisting it was this one and not another.",
+    "examples": [
+      "C'est moi qui ai payé",
+      "C'est demain qu'il arrive"
+    ]
+  },
+  {
+    "id": "avant-de-infinitive",
+    "name": "avant de plus infinitive",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing before another, the same person doing both.",
+    "examples": [
+      "Avant de partir, ferme la fenêtre"
+    ]
+  },
+  {
+    "id": "pour-que-subjunctive",
+    "name": "pour que",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something so that somebody else can do something.",
+    "examples": [
+      "Je te le dis pour que tu sois prêt"
+    ]
+  },
+  {
+    "id": "subjunctive-emotion",
+    "name": "The subjunctive after feeling",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being glad, sorry or afraid about what somebody else does.",
+    "examples": [
+      "Je suis content que tu sois là",
+      "J'ai peur qu'il parte"
+    ]
+  },
+  {
+    "id": "il-est-de-infinitive",
+    "name": "il est difficile de",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Judging an action in general, with the action pushed after the adjective.",
+    "examples": [
+      "Il est difficile de choisir",
+      "C'est important de dormir"
+    ]
+  },
+  {
+    "id": "manquer-plaire",
+    "name": "manquer and plaire flip the subject",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Missing somebody, or liking something, where French swaps who does what.",
+    "examples": [
+      "Tu me manques",
+      "Ce film m'a beaucoup plu"
+    ]
+  },
+  {
+    "id": "clitic-clusters",
+    "name": "Two pronouns together",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "me le, le lui — avoided even by learners comfortable with one.",
+    "examples": [
+      "Je le lui ai donné"
+    ]
+  },
+  {
+    "id": "dont",
+    "name": "The relative dont",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A relative clause whose verb takes de.",
+    "examples": [
+      "le livre dont je parle"
+    ]
+  },
+  {
+    "id": "subjunctive-doubt",
+    "name": "The subjunctive after doubt",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doubting or denying that something is the case.",
+    "examples": [
+      "Je doute qu'il vienne",
+      "Je ne pense pas qu'il ait raison"
+    ]
+  },
+  {
+    "id": "subjunctive-concession",
+    "name": "bien que, quoique",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Conceding a point that cuts against what you are about to say.",
+    "examples": [
+      "Bien qu'il soit tard, je continue",
+      "Quoiqu'elle ait tort, je la comprends"
+    ]
+  },
+  {
+    "id": "subjunctive-conjunctions",
+    "name": "avant que, jusqu'à ce que, sans que",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A conjunction leaving the second clause unrealised: before, until, without, provided that.",
+    "examples": [
+      "Attends jusqu'à ce qu'il revienne",
+      "sans qu'il s'en aperçoive"
+    ]
+  },
+  {
+    "id": "relative-composed",
+    "name": "lequel, auquel, duquel",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A relative clause whose verb needs a preposition other than de.",
+    "examples": [
+      "la raison pour laquelle je suis venu",
+      "l'entreprise dans laquelle je travaille"
+    ]
+  },
+  {
+    "id": "ce-qui-ce-que-clefting",
+    "name": "Ce qui …, c'est …",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Naming what bothers or pleases you, then saying what it is.",
+    "examples": [
+      "Ce qui m'énerve, c'est le bruit",
+      "Ce que je veux, c'est du calme"
+    ]
+  },
+  {
+    "id": "futur-anterieur",
+    "name": "The futur antérieur",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something already finished by a point still to come.",
+    "examples": [
+      "J'aurai fini avant midi",
+      "Quand tu arriveras, il sera parti"
+    ]
+  },
+  {
+    "id": "conditionnel-passe-regret",
+    "name": "The conditionnel passé",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Regretting how something turned out, or what was not done.",
+    "examples": [
+      "Si j'avais su, je ne serais pas venu",
+      "Tu aurais dû me le dire"
+    ]
+  },
+  {
+    "id": "discours-indirect-passe",
+    "name": "Reported speech in the past",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting what somebody said, from a past vantage point.",
+    "examples": [
+      "Il a dit qu'il viendrait",
+      "Elle m'a demandé si j'avais fini"
+    ]
+  },
+  {
+    "id": "infinitif-passe",
+    "name": "après avoir, après être",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing after another is finished, the same person doing both.",
+    "examples": [
+      "Après avoir mangé, il est sorti",
+      "Après être rentrée, elle a appelé"
+    ]
+  },
+  {
+    "id": "participe-present",
+    "name": "The participe présent",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written clause giving the reason or the circumstance, replacing a because-clause.",
+    "examples": [
+      "Ne sachant pas quoi faire, il a attendu",
+      "Les personnes souhaitant participer"
+    ]
+  },
+  {
+    "id": "infinitive-questions",
+    "name": "Questions with a bare infinitive",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Wondering aloud what to do, with nobody as subject.",
+    "examples": [
+      "Que faire ?",
+      "Pourquoi ne pas essayer ?"
+    ]
+  },
+  {
+    "id": "inversion-questions",
+    "name": "Inversion in questions",
+    "level": 4,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal written question, or an interview.",
+    "examples": [
+      "Avez-vous des questions ?",
+      "Pourquoi a-t-il refusé ?"
+    ]
+  },
+  {
+    "id": "ne-retention",
+    "name": "Keeping ne in writing",
+    "level": 4,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Negation in formal writing, where dropping ne would be wrong.",
+    "examples": [
+      "Il ne s'agit pas d'une erreur",
+      "Nous ne pouvons accepter cette offre"
+    ]
+  },
+  {
+    "id": "nous-formal",
+    "name": "nous in formal register",
+    "level": 4,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written report or a formal address, where on would be too casual.",
+    "examples": [
+      "Nous avons constaté une amélioration",
+      "Nous vous prions de nous excuser"
+    ]
+  },
+  {
+    "id": "avoir-beau",
+    "name": "avoir beau",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "However much somebody tries, nothing changes.",
+    "examples": [
+      "Il a beau insister, je refuse",
+      "J'ai beau chercher, je ne trouve rien"
+    ]
+  },
+  {
+    "id": "il-sagit-de",
+    "name": "il s'agit de",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "What a text or a situation is about, with no personal subject.",
+    "examples": [
+      "Il s'agit d'un malentendu",
+      "Il ne s'agit pas de ça"
+    ]
+  },
+  {
+    "id": "faire-causative",
+    "name": "faire faire, se faire",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Having somebody else do something for you, or having something done to you.",
+    "examples": [
+      "Je fais réparer ma voiture",
+      "Il s'est fait voler son vélo"
+    ]
+  },
+  {
+    "id": "connectives-opposition",
+    "name": "cependant, toutefois, en revanche",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Setting one fact against another inside an argument.",
+    "examples": [
+      "C'est cher ; en revanche, la qualité est là",
+      "Toutefois, rien n'est décidé"
+    ]
+  },
+  {
+    "id": "plus-plus",
+    "name": "plus … plus …",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The more one thing happens, the more another does.",
+    "examples": [
+      "Plus j'y pense, moins je comprends",
+      "Plus on attend, pire c'est"
+    ]
+  },
+  {
+    "id": "adjectives-prepositions",
+    "name": "Adjectives followed by à or de",
+    "level": 4,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An adjective with an action hanging off it.",
+    "examples": [
+      "Je suis content de te voir",
+      "C'est difficile à croire",
+      "prêt à partir"
+    ]
+  },
+  {
+    "id": "en-vs-de-lui",
+    "name": "en against de lui",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Replacing a de-phrase, where it matters whether it stands for a person.",
+    "examples": [
+      "J'en ai besoin",
+      "J'ai besoin de lui"
+    ]
+  },
+  {
+    "id": "passe-simple",
+    "name": "The passé simple",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Written narrative only — correctly absent from speech.",
+    "examples": [
+      "Il entra dans la pièce"
+    ]
+  },
+  {
+    "id": "subjonctif-passe",
+    "name": "The past subjunctive",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Judging or regretting something already done.",
+    "examples": [
+      "Je regrette qu'il soit parti si tôt",
+      "Bien qu'il ait tout tenté"
+    ]
+  },
+  {
+    "id": "subjunctive-superlative",
+    "name": "The subjunctive after a superlative",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The only one, the first one, or the best one that does something.",
+    "examples": [
+      "C'est le seul film qui m'ait plu",
+      "la meilleure chose qui puisse arriver"
+    ]
+  },
+  {
+    "id": "subjunctive-relative-purpose",
+    "name": "The subjunctive in a relative clause",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Looking for something that may not exist.",
+    "examples": [
+      "Je cherche quelqu'un qui sache le russe",
+      "Il n'y a rien qui vaille la peine"
+    ]
+  },
+  {
+    "id": "ne-expletif",
+    "name": "The expletive ne",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Formal writing after fearing, unless, or before, where the ne denies nothing.",
+    "examples": [
+      "Je crains qu'il ne soit trop tard",
+      "à moins qu'il ne change d'avis"
+    ]
+  },
+  {
+    "id": "inversion-after-adverb",
+    "name": "Inversion after a fronted adverb",
+    "level": 5,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Opening on perhaps, thus, or hardly, in formal prose.",
+    "examples": [
+      "Peut-être a-t-il raison",
+      "À peine était-il sorti que le téléphone a sonné"
+    ]
+  },
+  {
+    "id": "connectives-argument",
+    "name": "or, ainsi, néanmoins, dès lors",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Turning an argument on a fact the reader has not weighed.",
+    "examples": [
+      "Or, rien ne prouve le contraire",
+      "Néanmoins, la question reste ouverte"
+    ]
+  },
+  {
+    "id": "quitte-a",
+    "name": "quitte à",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Accepting a cost in order to go ahead anyway.",
+    "examples": [
+      "Je le dirai, quitte à le vexer",
+      "quitte à tout recommencer"
+    ]
+  },
+  {
+    "id": "sans-pour-autant",
+    "name": "sans pour autant",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Granting one thing while refusing the next.",
+    "examples": [
+      "Il a accepté, sans pour autant approuver"
+    ]
+  },
+  {
+    "id": "nominalisation",
+    "name": "Nominalisation",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A headline or a report where the action becomes a noun.",
+    "examples": [
+      "La hausse des prix inquiète",
+      "L'annulation du vol a été confirmée"
+    ]
+  },
+  {
+    "id": "passive-impersonnel",
+    "name": "The impersonal passive",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "An official announcement with nobody named as author.",
+    "examples": [
+      "Il a été décidé de reporter la réunion",
+      "Il est prévu que les travaux durent un an"
+    ]
+  },
+  {
+    "id": "conditionnel-journalistique",
+    "name": "The conditional for unverified claims",
+    "level": 5,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Reporting something the press has not confirmed.",
+    "examples": [
+      "Le suspect aurait quitté le pays",
+      "Le bilan s'élèverait à trois blessés"
+    ]
+  },
+  {
+    "id": "hypothese-au-cas-ou",
+    "name": "au cas où, à supposer que",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A precaution against something that may well not happen.",
+    "examples": [
+      "Au cas où il pleuvrait, prends un parapluie",
+      "à supposer que ce soit vrai"
+    ]
+  },
+  {
+    "id": "concession-quel-que",
+    "name": "quel que soit, quoi que, où que",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whatever, wherever, however much — none of it changes the outcome.",
+    "examples": [
+      "Quoi qu'il arrive, je resterai",
+      "Quel que soit le prix"
+    ]
+  },
+  {
+    "id": "participe-passe-compose",
+    "name": "ayant, étant plus participle",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written clause saying what had already been done.",
+    "examples": [
+      "Ayant terminé son travail, il est sorti",
+      "Étant arrivés en retard, ils ont attendu"
+    ]
+  },
+  {
+    "id": "dont-vs-duquel",
+    "name": "duquel where dont is impossible",
+    "level": 5,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A relative whose de sits inside a prepositional phrase.",
+    "examples": [
+      "le village près duquel nous vivons",
+      "la loi au nom de laquelle il agit"
+    ]
+  },
+  {
+    "id": "anaphore-nominale",
+    "name": "Referring back with a noun",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Resuming what you just argued without repeating the words.",
+    "examples": [
+      "Une telle décision surprendrait",
+      "Ce constat appelle une réponse"
+    ]
+  },
+  {
+    "id": "verbe-support",
+    "name": "faire l'objet de, procéder à",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A formal report where the verb carries none of the meaning.",
+    "examples": [
+      "Le dossier fera l'objet d'un examen",
+      "Il a procédé à une vérification"
+    ]
+  },
+  {
+    "id": "pronominal-participle-agreement",
+    "name": "Participle agreement with reflexives",
+    "level": 5,
+    "kind": "agreement-written",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A reflexive verb in the past that also has its own direct object.",
+    "examples": [
+      "Elle s'est lavé les mains",
+      "Ils se sont écrit",
+      "Elle s'est coupée"
+    ]
+  },
+  {
+    "id": "mise-en-relief-soutenue",
+    "name": "Si …, c'est que …",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Framing what an argument really turns on.",
+    "examples": [
+      "Si je le dis, c'est que c'est vrai",
+      "Ce dont il s'agit, c'est de la méthode"
+    ]
+  },
+  {
+    "id": "ne-faire-que",
+    "name": "ne faire que",
+    "level": 5,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Somebody who does nothing but the one thing.",
+    "examples": [
+      "Il ne fait que se plaindre",
+      "Je n'ai fait que suivre les consignes"
+    ]
+  },
+  {
+    "id": "register-soutenu-lexical",
+    "name": "Formal verb choice",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A report where the everyday verb would read as too plain.",
+    "examples": [
+      "La mesure s'est avérée inefficace",
+      "Il convient de rappeler que"
+    ]
+  },
+  {
+    "id": "subjonctif-imparfait",
+    "name": "The imperfect subjunctive",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A literary past narrative pulling the subordinate verb back with it.",
+    "examples": [
+      "Il fallait qu'il vînt",
+      "Bien qu'elle fût déjà partie"
+    ]
+  },
+  {
+    "id": "passe-anterieur",
+    "name": "The passé antérieur",
+    "level": 6,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A literary narrative where one action closes just before the next opens.",
+    "examples": [
+      "Dès qu'il eut fini, il sortit",
+      "Quand elle fut partie, le silence retomba"
+    ]
+  },
+  {
+    "id": "pronoun-soi",
+    "name": "soi",
+    "level": 6,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A general statement about anyone, pointing back at that anyone.",
+    "examples": [
+      "Chacun pour soi",
+      "On garde cela pour soi"
+    ]
+  },
+  {
+    "id": "adjectif-verbal",
+    "name": "Verbal adjective against participle",
+    "level": 6,
+    "kind": "agreement-written",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written -ant form used to describe rather than to act.",
+    "examples": [
+      "une soirée fatigante",
+      "des enfants négligents",
+      "des eaux stagnantes"
+    ]
+  },
+  {
+    "id": "noms-composes-pluriel",
+    "name": "Compound nouns in the plural",
+    "level": 6,
+    "kind": "agreement-written",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Several of a compound noun, written out.",
+    "examples": [
+      "des arcs-en-ciel",
+      "des timbres-poste",
+      "mes beaux-frères"
+    ]
+  },
+  {
+    "id": "accords-particuliers",
+    "name": "Agreements that go against the pattern",
+    "level": 6,
+    "kind": "agreement-written",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written quantity, a half, or a document attached.",
+    "examples": [
+      "une demi-heure",
+      "ci-joint les documents",
+      "quatre-vingts euros"
+    ]
+  },
+  {
+    "id": "litote",
+    "name": "Understatement",
+    "level": 6,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Praising or condemning by denying the opposite.",
+    "examples": [
+      "Ce n'est pas rien",
+      "Il n'est plus tout jeune",
+      "Je ne dis pas non"
+    ]
+  },
+  {
+    "id": "connecteurs-elabores",
+    "name": "il n'en demeure pas moins que",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Conceding a point in formal argument and overriding it in the same breath.",
+    "examples": [
+      "Il n'en demeure pas moins que le problème persiste",
+      "au demeurant"
+    ]
+  },
+  {
+    "id": "reprise-subordonnant",
+    "name": "que resuming a conjunction",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A second subordinate clause hanging off the same conjunction.",
+    "examples": [
+      "Bien qu'il soit tard et que je sois fatigué, je reste",
+      "Si tu viens et que tu as le temps"
+    ]
+  },
+  {
+    "id": "relatives-soutenues",
+    "name": "Inverted subject in a relative clause",
+    "level": 6,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A long written relative whose subject follows its verb.",
+    "examples": [
+      "les mesures qu'a prises le gouvernement",
+      "le jour où mourut son père"
+    ]
+  },
+  {
+    "id": "subjonctif-indicatif-sens",
+    "name": "de sorte que with either mood",
+    "level": 6,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A conjunction meaning a result with the indicative and an aim with the subjunctive.",
+    "examples": [
+      "de sorte qu'il a compris",
+      "de sorte qu'il comprenne"
+    ]
+  },
+  {
+    "id": "emphase-inversion-attribut",
+    "name": "Fronting the adjective",
+    "level": 6,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "An essay opening on the judgement rather than the subject.",
+    "examples": [
+      "Rares sont ceux qui y parviennent",
+      "Nombreux sont les exemples"
+    ]
+  },
+  {
+    "id": "verbes-impersonnels-soutenus",
+    "name": "il importe que, il en va de même",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal statement of what matters, with no personal subject.",
+    "examples": [
+      "Il importe que chacun soit informé",
+      "Il en va de même pour les autres"
+    ]
+  },
+  {
+    "id": "non-sans",
+    "name": "non sans",
+    "level": 6,
+    "kind": "negation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Admitting something came off, but not easily.",
+    "examples": [
+      "Il a réussi, non sans peine",
+      "non sans raison"
+    ]
+  },
+  {
+    "id": "pour-peu-que",
+    "name": "pour peu que, si tant est que",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A remote written condition, granted only for argument's sake.",
+    "examples": [
+      "Pour peu qu'il pleuve, tout est annulé",
+      "si tant est que ce soit vrai"
+    ]
+  },
+  {
+    "id": "oral-soutenu-hedging",
+    "name": "cela étant, en l'occurrence",
+    "level": 6,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Qualifying your own point mid-conversation, in articulate speech.",
+    "examples": [
+      "Cela étant, je comprends votre position",
+      "En l'occurrence, ce n'est pas le cas"
+    ]
+  }
+]

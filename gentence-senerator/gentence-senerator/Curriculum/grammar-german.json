@@ -1,0 +1,1781 @@
+[
+  {
+    "id": "v2-fronting",
+    "name": "Verb second after a fronted element",
+    "level": 1,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Start with a time or place phrase, so the subject follows the verb.",
+    "examples": [
+      "Morgen gehe ich ins Kino",
+      "In Berlin wohnt meine Schwester"
+    ]
+  },
+  {
+    "id": "bracket",
+    "name": "The verb bracket",
+    "level": 1,
+    "kind": "bracket",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A participle, an infinitive after a modal, or a separable prefix at the end.",
+    "examples": [
+      "Ich habe ein Buch gelesen",
+      "Ich stehe um sieben auf",
+      "Ich will meine Tante besuchen"
+    ]
+  },
+  {
+    "id": "gender",
+    "name": "Noun gender",
+    "level": 1,
+    "kind": "gender",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun whose gender an English speaker cannot guess.",
+    "examples": [
+      "das Mädchen",
+      "der Löffel",
+      "die Gabel"
+    ]
+  },
+  {
+    "id": "nicht-placement",
+    "name": "Where nicht goes",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Negating a whole clause versus one element; nicht against kein.",
+    "examples": [
+      "Ich kenne ihn nicht",
+      "Ich habe kein Geld"
+    ]
+  },
+  {
+    "id": "konjunktiv-ii-polite",
+    "name": "Polite Konjunktiv II phrases",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Fixed phrases only.",
+    "examples": [
+      "Ich hätte gern einen Kaffee",
+      "Könnten Sie mir helfen?"
+    ]
+  },
+  {
+    "id": "w-question",
+    "name": "W-questions",
+    "level": 1,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Asking who, where, when or how.",
+    "examples": [
+      "Wo wohnst du?",
+      "Wann fängt der Film an?"
+    ]
+  },
+  {
+    "id": "yes-no-question",
+    "name": "Yes-no questions",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question answerable with ja or nein, so the verb opens it.",
+    "examples": [
+      "Kommst du mit?",
+      "Hast du morgen Zeit?"
+    ]
+  },
+  {
+    "id": "doch-answer",
+    "name": "doch to contradict",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Disagreeing with a negative statement or question.",
+    "examples": [
+      "Doch, ich habe Zeit",
+      "Doch, das stimmt"
+    ]
+  },
+  {
+    "id": "imperative",
+    "name": "The imperative",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling someone to do something, du, ihr or Sie.",
+    "examples": [
+      "Komm rein!",
+      "Nehmen Sie bitte Platz",
+      "Macht die Tür zu"
+    ]
+  },
+  {
+    "id": "accusative-object",
+    "name": "The accusative object",
+    "level": 1,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A direct object, where the masculine article changes.",
+    "examples": [
+      "Ich brauche einen Stift",
+      "Sie sucht den Schlüssel"
+    ]
+  },
+  {
+    "id": "possessive-articles",
+    "name": "Possessive articles",
+    "level": 1,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whose thing it is, with the ending the case demands.",
+    "examples": [
+      "Ich mag ihren Garten",
+      "Das ist mein Bruder"
+    ]
+  },
+  {
+    "id": "present-vowel-change",
+    "name": "Stem-vowel change in the present",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "du or er with fahren, sprechen, nehmen, sehen.",
+    "examples": [
+      "Fährst du nach Berlin?",
+      "Er spricht kein Englisch"
+    ]
+  },
+  {
+    "id": "modal-verbs",
+    "name": "Modal verbs",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Permission, obligation, ability or a wish — four modals doing four jobs.",
+    "examples": [
+      "Ich muss arbeiten",
+      "Darf ich rauchen?",
+      "Sie kann gut kochen"
+    ]
+  },
+  {
+    "id": "perfekt-participle",
+    "name": "Perfekt participles",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying what happened, including the verbs that take no ge-.",
+    "examples": [
+      "Ich habe telefoniert",
+      "Wir haben ferngesehen",
+      "Sie hat es verstanden"
+    ]
+  },
+  {
+    "id": "praeteritum-sein-haben",
+    "name": "war and hatte",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The past of sein and haben, where the Perfekt sounds wrong.",
+    "examples": [
+      "Ich war krank",
+      "Wir hatten keine Zeit"
+    ]
+  },
+  {
+    "id": "dative-prepositions",
+    "name": "Prepositions that always take dative",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "mit, nach, bei, seit, von, zu, aus.",
+    "examples": [
+      "Ich fahre mit dem Bus",
+      "Sie kommt aus der Schweiz",
+      "Ich gehe zum Arzt"
+    ]
+  },
+  {
+    "id": "temporal-prepositions",
+    "name": "am, um, im for time",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A weekday, a clock time, a month or a season.",
+    "examples": [
+      "am Montag",
+      "um acht Uhr",
+      "im Sommer"
+    ]
+  },
+  {
+    "id": "es-gibt",
+    "name": "es gibt",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Saying something exists.",
+    "examples": [
+      "Es gibt hier keinen Supermarkt",
+      "Gibt es noch Karten?"
+    ]
+  },
+  {
+    "id": "nach-hause",
+    "name": "nach Hause and zu Hause",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Going home against being at home.",
+    "examples": [
+      "Ich gehe nach Hause",
+      "Ich bleibe heute zu Hause"
+    ]
+  },
+  {
+    "id": "ordinal-dates",
+    "name": "Dates and ordinals",
+    "level": 1,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A date, a birthday, a floor.",
+    "examples": [
+      "am dritten Mai",
+      "Heute ist der erste Januar"
+    ]
+  },
+  {
+    "id": "comparison",
+    "name": "Comparatives with als and wie",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Comparing two things, equal or unequal.",
+    "examples": [
+      "Er ist größer als ich",
+      "So schnell wie möglich"
+    ]
+  },
+  {
+    "id": "denn-coordinating",
+    "name": "denn, aber, und, oder leave the verb alone",
+    "level": 1,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A second main clause giving the reason.",
+    "examples": [
+      "Ich bleibe hier, denn ich bin müde",
+      "Ich komme, aber ich habe wenig Zeit"
+    ]
+  },
+  {
+    "id": "plural-forms",
+    "name": "Noun plurals",
+    "level": 1,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "More than one of something, where the plural is not -s.",
+    "examples": [
+      "drei Bücher",
+      "zwei Zeitungen",
+      "vier Stühle"
+    ]
+  },
+  {
+    "id": "verb-final",
+    "name": "Verb last in subordinate clauses",
+    "level": 2,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "weil, dass, wenn, ob.",
+    "examples": [
+      "Ich bleibe zu Hause, weil es regnet"
+    ]
+  },
+  {
+    "id": "two-way-prep",
+    "name": "Two-way prepositions",
+    "level": 2,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Motion takes accusative, position takes dative.",
+    "examples": [
+      "Ich gehe in die Stadt",
+      "Ich bin in der Stadt"
+    ]
+  },
+  {
+    "id": "verb-government",
+    "name": "Case governed by the verb",
+    "level": 2,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "helfen, danken, gehören with dative.",
+    "examples": [
+      "Ich helfe meinem Bruder"
+    ]
+  },
+  {
+    "id": "perfekt-aux",
+    "name": "haben or sein in the Perfekt",
+    "level": 2,
+    "kind": "auxiliary",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A movement or change-of-state verb in the past.",
+    "examples": [
+      "Ich bin nach Hause gegangen",
+      "Ich habe gegessen"
+    ]
+  },
+  {
+    "id": "adjective-endings",
+    "name": "Adjective endings",
+    "level": 2,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An adjective before a noun, after der, after ein, and after nothing.",
+    "examples": [
+      "ein guter Freund",
+      "der gute Freund",
+      "guter Wein"
+    ]
+  },
+  {
+    "id": "dative-experiencer",
+    "name": "The person in the dative",
+    "level": 2,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being cold, feeling unwell, liking something — the person is not the subject.",
+    "examples": [
+      "Mir ist kalt",
+      "Das gefällt mir",
+      "Wie geht es dir?"
+    ]
+  },
+  {
+    "id": "pronoun-case",
+    "name": "Pronouns in accusative and dative",
+    "level": 2,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Replacing a noun already named, in the case the verb wants.",
+    "examples": [
+      "Ich rufe ihn an",
+      "Ich helfe ihr"
+    ]
+  },
+  {
+    "id": "object-order",
+    "name": "Two objects in order",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Giving someone something, then the same again with pronouns.",
+    "examples": [
+      "Ich schenke meiner Mutter Blumen",
+      "Ich schenke sie ihr"
+    ]
+  },
+  {
+    "id": "deshalb-v2",
+    "name": "deshalb keeps the verb second",
+    "level": 2,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A consequence in a main clause of its own.",
+    "examples": [
+      "Es hat geregnet, deshalb sind wir zu Hause geblieben"
+    ]
+  },
+  {
+    "id": "indirect-question",
+    "name": "Indirect questions",
+    "level": 2,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question wrapped in a polite frame.",
+    "examples": [
+      "Können Sie mir sagen, wo der Bahnhof ist?",
+      "Ich weiß nicht, ob er kommt"
+    ]
+  },
+  {
+    "id": "als-wenn-wann",
+    "name": "als, wenn and wann",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One past occasion, a repeated or future one, and a real question.",
+    "examples": [
+      "Als ich klein war, wohnten wir in Kiel",
+      "Wenn ich Zeit habe, komme ich",
+      "Ich weiß nicht, wann er kommt"
+    ]
+  },
+  {
+    "id": "reflexive-verbs",
+    "name": "Reflexive verbs",
+    "level": 2,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "sich freuen, sich beeilen, sich anziehen — English uses no pronoun.",
+    "examples": [
+      "Beeil dich!",
+      "Ich freue mich sehr"
+    ]
+  },
+  {
+    "id": "verb-preposition",
+    "name": "Verbs with a fixed preposition",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "warten auf, denken an, sich freuen über.",
+    "examples": [
+      "Ich warte auf den Bus",
+      "Denk an mich"
+    ]
+  },
+  {
+    "id": "relative-clause",
+    "name": "Relative clauses",
+    "level": 2,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Describing a person or thing by what it does.",
+    "examples": [
+      "Der Mann, der nebenan wohnt",
+      "Das Buch, das ich gerade lese"
+    ]
+  },
+  {
+    "id": "modal-praeteritum",
+    "name": "konnte, wollte, musste",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A past ability, wish or obligation, where the Perfekt sounds wrong.",
+    "examples": [
+      "Ich konnte nicht kommen",
+      "Wir mussten lange warten"
+    ]
+  },
+  {
+    "id": "dieser-welcher",
+    "name": "dieser, welcher and der as pointers",
+    "level": 2,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Picking one out of several.",
+    "examples": [
+      "Welche Jacke meinst du?",
+      "Diesen Film kenne ich schon"
+    ]
+  },
+  {
+    "id": "seit-present",
+    "name": "Present tense with seit",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long something has been going on — English reaches for a perfect.",
+    "examples": [
+      "Ich wohne seit drei Jahren hier",
+      "Wir warten seit einer Stunde"
+    ]
+  },
+  {
+    "id": "wissen-kennen",
+    "name": "wissen against kennen",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Knowing a fact against knowing a person or place.",
+    "examples": [
+      "Ich kenne ihn, aber ich weiß nicht, wo er wohnt"
+    ]
+  },
+  {
+    "id": "time-before-place",
+    "name": "Time before place",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A when and a where in the same clause.",
+    "examples": [
+      "Ich fahre morgen nach Hamburg"
+    ]
+  },
+  {
+    "id": "nicht-duerfen",
+    "name": "nicht dürfen against nicht müssen",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A prohibition, against something merely not required.",
+    "examples": [
+      "Hier darfst du nicht parken",
+      "Du musst nicht mitkommen"
+    ]
+  },
+  {
+    "id": "du-ihr-sie",
+    "name": "du, ihr and Sie",
+    "level": 2,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A stranger, a friend, and a group of friends.",
+    "examples": [
+      "Können Sie mir helfen?",
+      "Kommt ihr mit?"
+    ]
+  },
+  {
+    "id": "passive",
+    "name": "The passive",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action whose agent does not matter — heavily under-produced.",
+    "examples": [
+      "Das Haus wird gebaut"
+    ]
+  },
+  {
+    "id": "man",
+    "name": "man for the generic subject",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Where English says 'you' or 'people' in general.",
+    "examples": [
+      "Hier darf man nicht rauchen"
+    ]
+  },
+  {
+    "id": "genitive",
+    "name": "The genitive",
+    "level": 3,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Possession, where a learner would reach for von + Dativ.",
+    "examples": [
+      "das Auto meines Bruders"
+    ]
+  },
+  {
+    "id": "konjunktiv-ii",
+    "name": "Konjunktiv II",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A hypothetical, beyond the fixed polite phrases.",
+    "examples": [
+      "Wenn ich Zeit hätte, würde ich mitkommen"
+    ]
+  },
+  {
+    "id": "infinitive-zu",
+    "name": "Infinitive with zu",
+    "level": 3,
+    "kind": "bracket",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "After anfangen, versuchen, vergessen, Lust haben.",
+    "examples": [
+      "Ich habe vergessen, dich anzurufen",
+      "Es fängt an zu regnen"
+    ]
+  },
+  {
+    "id": "um-zu-damit",
+    "name": "um … zu against damit",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A purpose, with the same subject or a different one.",
+    "examples": [
+      "Ich lerne Deutsch, um in Wien zu studieren",
+      "Ich rufe an, damit du Bescheid weißt"
+    ]
+  },
+  {
+    "id": "ohne-zu-statt-zu",
+    "name": "ohne … zu and statt … zu",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing the one thing and not the other.",
+    "examples": [
+      "Er ging, ohne sich zu verabschieden",
+      "Statt zu helfen, sah er zu"
+    ]
+  },
+  {
+    "id": "plusquamperfekt",
+    "name": "Plusquamperfekt after nachdem",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One past event finished before another began.",
+    "examples": [
+      "Nachdem wir gegessen hatten, gingen wir spazieren"
+    ]
+  },
+  {
+    "id": "temporal-clauses",
+    "name": "bevor, während, seitdem, bis",
+    "level": 3,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Placing two events against each other in time.",
+    "examples": [
+      "Bevor ich gehe, räume ich auf",
+      "Seitdem er hier wohnt, ist es lauter"
+    ]
+  },
+  {
+    "id": "futur-i",
+    "name": "Futur I",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A prediction or a promise, where the present would fall flat.",
+    "examples": [
+      "Es wird morgen regnen",
+      "Ich werde dir helfen, versprochen"
+    ]
+  },
+  {
+    "id": "praeteritum-narrative",
+    "name": "Präteritum in narrative",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Telling a story in writing, where speech would use the Perfekt.",
+    "examples": [
+      "Er stand auf und ging zum Fenster"
+    ]
+  },
+  {
+    "id": "n-declension",
+    "name": "Weak masculine nouns",
+    "level": 3,
+    "kind": "case-form",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Kollege, Nachbar, Herr, Student anywhere but the nominative.",
+    "examples": [
+      "Ich habe den Kollegen gefragt",
+      "Er hilft dem Studenten"
+    ]
+  },
+  {
+    "id": "adjective-as-noun",
+    "name": "Adjectives used as nouns",
+    "level": 3,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "ein Deutscher, etwas Neues, nichts Besonderes.",
+    "examples": [
+      "Ich habe etwas Neues gehört",
+      "Sie ist eine Bekannte von mir"
+    ]
+  },
+  {
+    "id": "relative-pronoun-case",
+    "name": "Case of the relative pronoun",
+    "level": 3,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The pronoun takes the case its own clause needs, not the noun's.",
+    "examples": [
+      "Der Mann, den ich gestern traf",
+      "Die Frau, der ich geholfen habe"
+    ]
+  },
+  {
+    "id": "relative-preposition",
+    "name": "Relative clauses with a preposition",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The preposition stands before the pronoun, never at the end.",
+    "examples": [
+      "Der Kollege, mit dem ich arbeite",
+      "Das Thema, über das wir sprachen"
+    ]
+  },
+  {
+    "id": "obwohl",
+    "name": "obwohl",
+    "level": 3,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A concession the main clause does not expect.",
+    "examples": [
+      "Obwohl es regnete, sind wir gegangen"
+    ]
+  },
+  {
+    "id": "trotzdem",
+    "name": "trotzdem and dennoch",
+    "level": 3,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The obstacle already stated, then what happened anyway.",
+    "examples": [
+      "Es hat geregnet. Trotzdem sind wir gegangen"
+    ]
+  },
+  {
+    "id": "da-compounds",
+    "name": "darauf, damit, dafür",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A preposition pointing forward to a clause, or back at a thing.",
+    "examples": [
+      "Ich freue mich darauf, dich zu sehen",
+      "Damit bin ich einverstanden"
+    ]
+  },
+  {
+    "id": "two-part-connectors",
+    "name": "Two-part connectors",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "entweder … oder, weder … noch, nicht nur … sondern auch.",
+    "examples": [
+      "Er hat weder angerufen noch geschrieben",
+      "Entweder wir gehen jetzt oder gar nicht"
+    ]
+  },
+  {
+    "id": "je-desto",
+    "name": "je … desto",
+    "level": 3,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things rising together.",
+    "examples": [
+      "Je mehr ich übe, desto besser wird es"
+    ]
+  },
+  {
+    "id": "particle-denn-eigentlich",
+    "name": "denn and eigentlich in questions",
+    "level": 3,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A question that should sound curious rather than blunt.",
+    "examples": [
+      "Wo warst du denn?",
+      "Was machst du eigentlich beruflich?"
+    ]
+  },
+  {
+    "id": "nicht-brauchen-zu",
+    "name": "brauchen … zu",
+    "level": 3,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that is not necessary.",
+    "examples": [
+      "Du brauchst nicht zu kommen",
+      "Das brauchst du mir nicht zu sagen"
+    ]
+  },
+  {
+    "id": "superlative",
+    "name": "Superlatives before a noun and after am",
+    "level": 3,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The best, the biggest, the fastest of all of them.",
+    "examples": [
+      "der beste Film des Jahres",
+      "Er läuft am schnellsten"
+    ]
+  },
+  {
+    "id": "partizip-attribut",
+    "name": "Participles as adjectives",
+    "level": 3,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The sleeping child, the closed door.",
+    "examples": [
+      "das schlafende Kind",
+      "die geschlossene Tür"
+    ]
+  },
+  {
+    "id": "wegen-trotz",
+    "name": "wegen and trotz with the genitive",
+    "level": 3,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A reason or an obstacle as a phrase rather than a clause.",
+    "examples": [
+      "wegen des schlechten Wetters",
+      "trotz aller Probleme"
+    ]
+  },
+  {
+    "id": "passive-tenses",
+    "name": "Passive in other tenses and with modals",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that was done, or that still has to be done.",
+    "examples": [
+      "Das Haus wurde 1920 gebaut",
+      "Das muss heute noch gemacht werden"
+    ]
+  },
+  {
+    "id": "lassen-causative",
+    "name": "lassen for having something done",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Not doing it yourself.",
+    "examples": [
+      "Ich lasse mein Auto reparieren",
+      "Sie lässt sich die Haare schneiden"
+    ]
+  },
+  {
+    "id": "indem-sodass",
+    "name": "indem and sodass",
+    "level": 3,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The means, and the result.",
+    "examples": [
+      "Man spart Energie, indem man weniger heizt",
+      "Der Zug hatte Verspätung, sodass wir den Anschluss verpassten"
+    ]
+  },
+  {
+    "id": "modal-particles",
+    "name": "Modal particles",
+    "level": 4,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "doch, mal, ja, eben — what makes speech sound German.",
+    "examples": [
+      "Komm doch mal vorbei",
+      "Das ist ja toll"
+    ]
+  },
+  {
+    "id": "two-part-connectors-b2",
+    "name": "Two-part connectors in argument",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "sowohl … als auch, einerseits … andererseits, zwar … aber.",
+    "examples": [
+      "Zwar ist es teuer, aber es lohnt sich",
+      "Einerseits reizt mich die Stelle, andererseits ist der Weg weit"
+    ]
+  },
+  {
+    "id": "mittelfeld-order",
+    "name": "Order inside the middle field",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Several adverbials at once: when, why, how, where.",
+    "examples": [
+      "Sie ist gestern wegen des Streiks mit dem Rad ins Büro gefahren"
+    ]
+  },
+  {
+    "id": "zustandspassiv",
+    "name": "The sein-passive",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The state something is left in, not the act that put it there.",
+    "examples": [
+      "Der Laden ist seit gestern geschlossen",
+      "Die Unterlagen sind schon geordnet"
+    ]
+  },
+  {
+    "id": "passive-agent",
+    "name": "von or durch in a passive",
+    "level": 4,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Naming who did it, against what brought it about.",
+    "examples": [
+      "Das Training wird von einer Therapeutin geleitet",
+      "Der Stau wurde durch einen Unfall verursacht"
+    ]
+  },
+  {
+    "id": "causal-prepositions",
+    "name": "aufgrund, infolge, dank instead of a clause",
+    "level": 4,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A reason packed into a noun phrase.",
+    "examples": [
+      "Aufgrund des schlechten Wetters fiel das Spiel aus",
+      "Dank ihrer Hilfe wurden wir rechtzeitig fertig"
+    ]
+  },
+  {
+    "id": "nominalisierung",
+    "name": "Nominal style",
+    "level": 4,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A clause turned into a noun phrase.",
+    "examples": [
+      "nach Abschluss der Arbeiten",
+      "bei Nichtbeachtung der Vorschriften"
+    ]
+  },
+  {
+    "id": "konjunktiv-i",
+    "name": "Konjunktiv I for reported speech",
+    "level": 4,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Passing on what someone said without vouching for it.",
+    "examples": [
+      "Der Minister sagte, er habe davon nichts gewusst"
+    ]
+  },
+  {
+    "id": "modal-hearsay",
+    "name": "sollen and wollen for hearsay",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "What people say about someone, and what someone claims about themselves.",
+    "examples": [
+      "Er soll sehr reich sein",
+      "Sie will nichts davon gewusst haben"
+    ]
+  },
+  {
+    "id": "funktionsverbgefuege",
+    "name": "Funktionsverbgefüge",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "in Betracht ziehen, zur Verfügung stellen, Rücksicht nehmen.",
+    "examples": [
+      "Wir ziehen das in Betracht",
+      "Er stellte uns den Raum zur Verfügung"
+    ]
+  },
+  {
+    "id": "futur-ii",
+    "name": "Futur II for an assumption",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Guessing at something that is already over.",
+    "examples": [
+      "Er wird den Zug verpasst haben"
+    ]
+  },
+  {
+    "id": "passive-alternatives",
+    "name": "Alternatives to the passive",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "sich lassen, sein + zu, an adjective in -bar.",
+    "examples": [
+      "Das lässt sich machen",
+      "Das Formular ist bis Freitag abzugeben"
+    ]
+  },
+  {
+    "id": "subjectless-passive",
+    "name": "Passive with no subject",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An activity with nobody named at all.",
+    "examples": [
+      "Hier wird nicht geraucht",
+      "Gestern wurde bis spät gefeiert"
+    ]
+  },
+  {
+    "id": "konjunktiv-ii-past",
+    "name": "Konjunktiv II in the past",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A regret or a reproach about something already over.",
+    "examples": [
+      "Ich hätte früher fragen sollen",
+      "Wenn du angerufen hättest, wäre ich gekommen"
+    ]
+  },
+  {
+    "id": "als-ob",
+    "name": "als ob and als",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that only looks that way.",
+    "examples": [
+      "Er tut so, als ob er nichts wüsste"
+    ]
+  },
+  {
+    "id": "conditional-range",
+    "name": "falls, sofern, es sei denn",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition finer than a plain wenn.",
+    "examples": [
+      "Sofern nichts dazwischenkommt, sehen wir uns Freitag",
+      "Ich komme, es sei denn, es schneit"
+    ]
+  },
+  {
+    "id": "generalising-relative",
+    "name": "wer …, der … and was …, das …",
+    "level": 4,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A statement about anyone at all who does something.",
+    "examples": [
+      "Wer zuerst kommt, mahlt zuerst",
+      "Was mich stört, ist der Lärm"
+    ]
+  },
+  {
+    "id": "noun-preposition",
+    "name": "Nouns with a fixed preposition",
+    "level": 4,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "die Frage nach, der Grund für, das Interesse an.",
+    "examples": [
+      "die Frage nach der Finanzierung",
+      "kein Interesse an dem Angebot"
+    ]
+  },
+  {
+    "id": "adjective-preposition",
+    "name": "Adjectives with a fixed preposition",
+    "level": 4,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "stolz auf, abhängig von, zuständig für.",
+    "examples": [
+      "Er ist stolz auf seine Tochter",
+      "Dafür bin ich nicht zuständig"
+    ]
+  },
+  {
+    "id": "relative-genitive",
+    "name": "dessen and deren",
+    "level": 4,
+    "kind": "case-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whose — a relative clause about something belonging to the noun.",
+    "examples": [
+      "der Autor, dessen Buch ich lese",
+      "die Firma, deren Sitz in Köln ist"
+    ]
+  },
+  {
+    "id": "double-infinitive",
+    "name": "Double infinitive",
+    "level": 4,
+    "kind": "bracket",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The Perfekt of a modal, or of sehen, hören, lassen.",
+    "examples": [
+      "Ich habe nicht kommen können",
+      "Ich habe ihn kommen sehen"
+    ]
+  },
+  {
+    "id": "anaphora",
+    "name": "Pointing back without repeating the noun",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things named, and only one of them meant next.",
+    "examples": [
+      "Beide Angebote sind gut, dieses ist allerdings günstiger"
+    ]
+  },
+  {
+    "id": "es-frames",
+    "name": "es geht um, es handelt sich um, es kommt darauf an",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying what the matter actually is.",
+    "examples": [
+      "Es geht darum, Zeit zu sparen",
+      "Es kommt darauf an, wie viel es kostet"
+    ]
+  },
+  {
+    "id": "uneingeleitete-konditional",
+    "name": "A condition without wenn",
+    "level": 4,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A conditional opening with the verb itself.",
+    "examples": [
+      "Hätte ich mehr Zeit, käme ich mit"
+    ]
+  },
+  {
+    "id": "consecutive-adverbs",
+    "name": "folglich, infolgedessen, somit",
+    "level": 4,
+    "kind": "verb-second",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A consequence stated formally.",
+    "examples": [
+      "Die Kosten stiegen, folglich wurde das Projekt gestoppt"
+    ]
+  },
+  {
+    "id": "temporal-nominal",
+    "name": "innerhalb, während, im Laufe with the genitive",
+    "level": 4,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A stretch of time as a noun phrase.",
+    "examples": [
+      "innerhalb einer Woche",
+      "während der Verhandlungen"
+    ]
+  },
+  {
+    "id": "modal-inference",
+    "name": "Modal verbs for degrees of certainty",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How sure you are: dürfte, müsste, könnte, kann nicht.",
+    "examples": [
+      "Das dürfte teuer werden",
+      "Er müsste längst da sein"
+    ]
+  },
+  {
+    "id": "erweitertes-partizip",
+    "name": "Extended participial attribute",
+    "level": 5,
+    "kind": "adjective-ending",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A whole clause packed in front of the noun.",
+    "examples": [
+      "die im letzten Jahr beschlossenen Maßnahmen",
+      "der von allen Seiten kritisierte Vorschlag"
+    ]
+  },
+  {
+    "id": "gerundiv",
+    "name": "zu + participle as an attribute",
+    "level": 5,
+    "kind": "adjective-ending",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Something still to be done, named as a property of the thing.",
+    "examples": [
+      "die zu lösende Aufgabe",
+      "die zu erwartenden Kosten"
+    ]
+  },
+  {
+    "id": "partizipialsatz",
+    "name": "Participial clause",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A subordinate clause reduced to a bare participle.",
+    "examples": [
+      "Vom Regen überrascht, suchten sie Schutz",
+      "In Eile geschrieben, steckt der Brief voller Fehler"
+    ]
+  },
+  {
+    "id": "genitive-prepositions",
+    "name": "Genitive prepositions of written German",
+    "level": 5,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "anhand, angesichts, hinsichtlich, mittels, seitens.",
+    "examples": [
+      "angesichts der Lage",
+      "anhand der vorliegenden Daten"
+    ]
+  },
+  {
+    "id": "irreale-folgesaetze",
+    "name": "Unreal consequences",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "zu … um … zu, and zu … als dass.",
+    "examples": [
+      "Er ist zu jung, um das zu verstehen",
+      "Es ist zu spät, als dass wir noch etwas ändern könnten"
+    ]
+  },
+  {
+    "id": "adjective-endings-stacked",
+    "name": "Endings after another adjective or a bare quantifier",
+    "level": 5,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two adjectives in a row, or one after viel, etwas, mehrere.",
+    "examples": [
+      "mit starkem schwarzem Kaffee",
+      "viel frisches Obst"
+    ]
+  },
+  {
+    "id": "es-correlate",
+    "name": "es as a placeholder",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "es standing in for a clause that comes later.",
+    "examples": [
+      "Es freut mich, dass du kommst",
+      "Ich halte es für sinnvoll, dass wir noch warten"
+    ]
+  },
+  {
+    "id": "reported-questions",
+    "name": "Reported questions and requests",
+    "level": 5,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Passing on what someone asked, or told you to do.",
+    "examples": [
+      "Er fragte, ob ich Zeit hätte",
+      "Sie bat mich, ich möge warten"
+    ]
+  },
+  {
+    "id": "attribution-prepositions",
+    "name": "laut, zufolge and nach for attribution",
+    "level": 5,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Sourcing a claim to a report or a person.",
+    "examples": [
+      "laut einer aktuellen Studie",
+      "dem Bericht zufolge"
+    ]
+  },
+  {
+    "id": "precision-adverbs",
+    "name": "vielmehr, zumal, hingegen, immerhin",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Fine-tuning how one statement stands to the last.",
+    "examples": [
+      "Das Problem ist nicht neu, zumal es schon oft diskutiert wurde",
+      "Es war nicht schlecht, immerhin haben wir etwas gelernt"
+    ]
+  },
+  {
+    "id": "ausklammerung",
+    "name": "Pushing material past the bracket",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A heavy phrase moved out behind the final verb.",
+    "examples": [
+      "Ich habe lange gewartet auf eine Antwort, die nie kam"
+    ]
+  },
+  {
+    "id": "adversative-clauses",
+    "name": "während and wohingegen for contrast",
+    "level": 5,
+    "kind": "verb-final",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Two things set against each other, with no time meant.",
+    "examples": [
+      "Die Kosten sanken, während die Nachfrage stieg"
+    ]
+  },
+  {
+    "id": "concessive-so-auch",
+    "name": "so … auch and wenngleich",
+    "level": 5,
+    "kind": "verb-final",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A concession made emphatic.",
+    "examples": [
+      "So müde er auch war, er arbeitete weiter"
+    ]
+  },
+  {
+    "id": "partizipien-als-nomen",
+    "name": "Participles used as nouns",
+    "level": 5,
+    "kind": "adjective-ending",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "die Betroffenen, die Verantwortlichen, das Entscheidende.",
+    "examples": [
+      "Die Betroffenen wurden gestern informiert",
+      "Das Entscheidende kommt erst noch"
+    ]
+  },
+  {
+    "id": "verb-final-double-infinitive",
+    "name": "Auxiliary before a double infinitive",
+    "level": 5,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A subordinate clause holding a modal in the Perfekt.",
+    "examples": [
+      "…, weil ich es nicht hätte wissen können"
+    ]
+  },
+  {
+    "id": "prefix-separable-or-not",
+    "name": "Prefixes that separate and prefixes that do not",
+    "level": 5,
+    "kind": "bracket",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "durch-, über-, um-, unter- meaning two different verbs.",
+    "examples": [
+      "Er hat das Problem umgangen",
+      "Das Gerücht ist im Büro umgegangen"
+    ]
+  },
+  {
+    "id": "als-haette",
+    "name": "als with the verb straight after it",
+    "level": 5,
+    "kind": "verb-second",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A comparison to something untrue, without ob.",
+    "examples": [
+      "Er tat, als hätte er nichts gehört"
+    ]
+  },
+  {
+    "id": "litotes",
+    "name": "Understatement by negation",
+    "level": 5,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "nicht gerade, nicht unbedingt, alles andere als.",
+    "examples": [
+      "Das war nicht gerade billig",
+      "Er ist alles andere als begeistert"
+    ]
+  },
+  {
+    "id": "particle-bloss-ruhig",
+    "name": "bloß, ruhig, nur and schon as particles",
+    "level": 5,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A warning, a reassurance, an impatient push.",
+    "examples": [
+      "Mach das bloß nicht",
+      "Komm ruhig rein",
+      "Das wird schon klappen"
+    ]
+  },
+  {
+    "id": "spoken-ellipsis",
+    "name": "Leaving out what is obvious",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A quick spoken answer with no subject or no verb.",
+    "examples": [
+      "Kommt drauf an",
+      "Mach ich",
+      "Kein Problem"
+    ]
+  },
+  {
+    "id": "funktionsverbgefuege-c1",
+    "name": "Funktionsverbgefüge in formal register",
+    "level": 5,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Anwendung finden, unter Beweis stellen, in Anspruch nehmen.",
+    "examples": [
+      "Die Regelung findet hier keine Anwendung",
+      "Sie hat ihr Können unter Beweis gestellt"
+    ]
+  },
+  {
+    "id": "hedging-konjunktiv",
+    "name": "Hedging with Konjunktiv II",
+    "level": 5,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Softening a claim you do not want to make flatly.",
+    "examples": [
+      "Man könnte meinen, das sei Absicht",
+      "Ich würde sagen, das ist übertrieben"
+    ]
+  },
+  {
+    "id": "apposition",
+    "name": "Apposition",
+    "level": 6,
+    "kind": "case-form",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A noun phrase renaming another, carrying its case.",
+    "examples": [
+      "mit Herrn Meier, dem Leiter der Abteilung",
+      "Als Studentin der Physik kennt sie das Problem"
+    ]
+  },
+  {
+    "id": "amtssprache",
+    "name": "Officialese",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A form, a regulation, a letter from an authority.",
+    "examples": [
+      "Bei Nichtbeachtung der Frist erlischt der Anspruch",
+      "Der Antrag ist bis zum 30. April einzureichen"
+    ]
+  },
+  {
+    "id": "rare-genitive-prepositions",
+    "name": "The rarer genitive prepositions",
+    "level": 6,
+    "kind": "preposition",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "ungeachtet, mangels, zugunsten, kraft, seitens.",
+    "examples": [
+      "ungeachtet aller Einwände",
+      "mangels Beweisen eingestellt"
+    ]
+  },
+  {
+    "id": "konjunktiv-i-formulaic",
+    "name": "Konjunktiv I outside reported speech",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Instructions, wishes and formal hedges.",
+    "examples": [
+      "Man nehme zwei Eier",
+      "Es sei darauf hingewiesen, dass die Frist läuft"
+    ]
+  },
+  {
+    "id": "genitive-objects",
+    "name": "Verbs and adjectives taking the genitive",
+    "level": 6,
+    "kind": "case-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "bedürfen, gedenken, sich bewusst sein, verdächtig sein.",
+    "examples": [
+      "Das bedarf keiner Erklärung",
+      "Er war sich der Folgen durchaus bewusst"
+    ]
+  },
+  {
+    "id": "particle-stacking",
+    "name": "Modal particles in combination",
+    "level": 6,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "doch mal, ja wohl, eben doch, halt einfach.",
+    "examples": [
+      "Sag doch mal was",
+      "Das ist ja wohl nicht dein Ernst",
+      "Dann machen wir das halt einfach so"
+    ]
+  },
+  {
+    "id": "geschweige-denn",
+    "name": "geschweige denn, zumal, insofern",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Sharpening an argument instead of adding to it.",
+    "examples": [
+      "Er kann kaum lesen, geschweige denn schreiben"
+    ]
+  },
+  {
+    "id": "left-dislocation",
+    "name": "Naming the topic, then resuming it",
+    "level": 6,
+    "kind": "word-order",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "The thing under discussion put out front and picked up by a pronoun.",
+    "examples": [
+      "Den Peter, den kenne ich schon ewig",
+      "Das Auto, das kannst du vergessen"
+    ]
+  },
+  {
+    "id": "pronominal-adverbs-c2",
+    "name": "dessen ungeachtet, demzufolge, dahingehend",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Referring back to a whole previous statement in one word.",
+    "examples": [
+      "Dessen ungeachtet wurde das Projekt fortgesetzt",
+      "Der Vertrag wurde dahingehend geändert, dass die Frist entfällt"
+    ]
+  },
+  {
+    "id": "idiomatic-verb-noun",
+    "name": "Fixed idioms built on a noun",
+    "level": 6,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "ins Gewicht fallen, auf der Hand liegen, den Ton angeben.",
+    "examples": [
+      "Die Kosten fallen kaum ins Gewicht",
+      "Das liegt doch auf der Hand"
+    ]
+  },
+  {
+    "id": "weniger-als-vielmehr",
+    "name": "weniger … als vielmehr",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Correcting the emphasis rather than denying the claim.",
+    "examples": [
+      "Es ist weniger eine Frage des Geldes als vielmehr eine des Willens"
+    ]
+  },
+  {
+    "id": "concessive-relative",
+    "name": "wer auch immer, was auch immer, wie dem auch sei",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Conceding every possible case at once.",
+    "examples": [
+      "Wer auch immer das gesagt hat, es stimmt nicht",
+      "Wie dem auch sei, wir fangen an"
+    ]
+  },
+  {
+    "id": "emphatic-vorfeld",
+    "name": "What goes in the first slot",
+    "level": 6,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An object, a participle or a whole clause put first for weight.",
+    "examples": [
+      "Gefallen hat mir vor allem das Ende",
+      "Dass er absagt, hätte ich nicht gedacht"
+    ]
+  },
+  {
+    "id": "genitive-chains",
+    "name": "Chains of genitive attributes",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Academic prose stacking one noun on the next.",
+    "examples": [
+      "die Auswertung der Ergebnisse der ersten Phase"
+    ]
+  },
+  {
+    "id": "strong-konjunktiv-ii",
+    "name": "The plain Konjunktiv II of strong verbs",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "käme, ginge, träfe, stünde, where würde would be flatter.",
+    "examples": [
+      "Käme er früher, ließe sich noch etwas machen",
+      "Es stünde uns gut an, das zuzugeben"
+    ]
+  },
+  {
+    "id": "reduced-clauses",
+    "name": "Clauses cut down to a phrase",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "wenn möglich, wie vereinbart, soweit nicht anders angegeben.",
+    "examples": [
+      "Wenn möglich, bitte bis Freitag antworten",
+      "Wie vereinbart, sende ich Ihnen die Unterlagen"
+    ]
+  },
+  {
+    "id": "substantivierter-infinitiv",
+    "name": "Infinitives used as nouns",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "das Erreichen, beim näheren Hinsehen, zum Verwechseln ähnlich.",
+    "examples": [
+      "nach Erreichen des Rentenalters",
+      "Beim näheren Hinsehen stimmt das nicht"
+    ]
+  }
+]

@@ -73,6 +73,8 @@ final class Store {
     private let pronunciation: Pronunciation
     private let clips = ClipLibrary()
     private var usedClips: Set<String> = []
+    /// The other half of reach. Words are counted here rather than asked for.
+    private let lexicon = Lexicon()
 
     // MARK: Dialogues
 
@@ -198,13 +200,61 @@ final class Store {
         hold()
         dropPending()
         settings.language = language
-        // HSK runs to 9, CEFR to 6.
-        settings.level = min(settings.level, language == .mandarin ? 9 : 6)
+        settings.level = min(settings.level, pack.levels)
         session = nil
         current = nil
         phase = .idle
         path = []
         knowledge = [:]
+    }
+
+    // MARK: Level
+
+    /// Every deliberate move comes through here — the stepper and the offer
+    /// both — and the date is why: what was scored at a level the learner has
+    /// left is not evidence about the one they are on.
+    func setLevel(_ n: Int) {
+        var next = settings
+        next.level = min(max(n, 1), pack.levels)
+        next.levelChangedAt = .now
+        settings = next
+    }
+
+    /// What the evidence says about the level. Nil is stay — most of the time,
+    /// and the screen shows nothing rather than a verdict nobody asked for.
+    ///
+    /// On `Store` rather than `Progress`: the evidence is scores across
+    /// sessions and points out of the pack, and `Progress` holds neither.
+    var levelOffer: LevelOffer? {
+        LevelOffer.read(level: settings.level, in: pack,
+                        turns: recentTurns(LevelEvidence.window),
+                        holding: holdingShare)
+    }
+
+    /// How much of this level the learner has got working. This level only —
+    /// `reachable` is everything up to it, and asking for three quarters of a
+    /// whole curriculum is asking for a promotion that never comes.
+    private var holdingShare: Double {
+        let use: GrammarPoint.Use = settings.prefersTyping ? .written : .spoken
+        let points = pack.reachable(at: settings.level, use: use)
+            .filter { $0.level == settings.level }
+        guard !points.isEmpty else { return 0 }
+        return Double(points.filter { progress.state(of: $0.id) == .holding }.count)
+            / Double(points.count)
+    }
+
+    /// Reviewed turns in this language since the level last moved, oldest
+    /// first. Every session they could be in: archived, held, and the live one.
+    private func recentTurns(_ n: Int) -> [Turn] {
+        var seen: Set<UUID> = []
+        let since = settings.levelChangedAt ?? .distantPast
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let turns = sessions
+            .filter { $0.language == settings.language }
+            .flatMap(\.turns)
+            .filter { $0.review != nil && $0.createdAt >= since && seen.insert($0.id).inserted }
+            .sorted { $0.createdAt < $1.createdAt }
+        return Array(turns.suffix(n))
     }
 
     // MARK: Session
@@ -250,7 +300,22 @@ final class Store {
         guard mode == .produce else { return nil }
         let use: GrammarPoint.Use = settings.prefersTyping ? .written : .spoken
         let candidates = pack.reachable(at: settings.level, use: use)
-        return progress.neverReached(among: candidates).randomElement()
+        return weightedToTheTop(of: progress.neverReached(among: candidates))
+    }
+
+    /// One draw, weighted 1/(1 + levels down), so a point at the learner's own
+    /// level is five times likelier than one four levels below it. Uniform, a
+    /// full curriculum makes the stretch a beginner's lucky dip.
+    private func weightedToTheTop(of points: [GrammarPoint]) -> GrammarPoint? {
+        let weights = points.map { 1.0 / Double(1 + settings.level - $0.level) }
+        let total = weights.reduce(0, +)
+        guard total > 0 else { return nil }
+        var roll = Double.random(in: 0..<total)
+        for (point, weight) in zip(points, weights) {
+            roll -= weight
+            if roll < 0 { return point }
+        }
+        return points.last
     }
 
     func nextPrompt() async {
@@ -299,21 +364,25 @@ final class Store {
         var used = (session?.turns ?? []).compactMap { $0.prompt.english }
         if let live = current?.prompt.english { used.append(live) }
 
+        let revisit = progress.seedsForGeneration(language: settings.language)
         let (made, usage) = try await tutor.nextPrompt(
             mode: settings.mode,
             language: settings.language,
             level: settings.level,
-            revisit: progress.seedsForGeneration(language: settings.language),
+            revisit: revisit,
             stretch: stretch,
             avoid: used
         )
         note(usage)
 
+        // What was asked for, not what came back: the point and the subjects are
+        // both chosen here, so the reply has nothing to add about either.
         return Turn(
             id: UUID(), mode: settings.mode, language: settings.language,
             createdAt: .now,
             prompt: .init(english: made.english, target: made.target,
-                          audioSource: nil, pointID: made.pointID),
+                          audioSource: nil, pointID: stretch?.id,
+                          revisited: revisit),
             attempt: .init(heard: "", confirmed: "", wasTyped: false,
                            audioFilename: nil, pronunciation: nil),
             review: nil
@@ -447,7 +516,7 @@ final class Store {
             turn.review = opening
             current = turn
             session?.turns.append(turn)
-            recordReach(for: turn, review: opening)
+            record(for: turn, review: opening)
             streamingReview = false
             hold()
 
@@ -491,6 +560,10 @@ final class Store {
             )
             for try await (partial, usage) in updates {
                 if let usage { note(usage) }
+                // Before the guard below: what the sentence used is true
+                // whether or not the learner is still looking at the review of
+                // it. Only the last element is deep, so this fires once.
+                if partial.isDeep { reached(partial, in: turn) }
                 guard var live = current, live.id == turn.id else { return }
                 live.review = partial
                 current = live
@@ -515,13 +588,56 @@ final class Store {
         await deepen(turn: turn, opening: opening, history: history)
     }
 
-    /// A point counts as attempted whether or not it worked — that is what
-    /// separates reach from repetition.
-    private func recordReach(for turn: Turn, review: Review) {
-        guard let pointID = turn.prompt.pointID else { return }
-        let clean = review.problems.isEmpty
-        progress.attempted(pointID: pointID, language: turn.language, succeeded: clean)
-        if pointID == stretch?.id { stretch = nil }
+    /// Structures the deep review says the sentence actually used, asked for or
+    /// not. One tag is not proof — the model over-tags — so each is filed as an
+    /// attempt and `neverReached` decides how many make a habit. The point the
+    /// prompt asked for is skipped: `record` already counted it, and counting
+    /// it twice would retire it off a single turn.
+    private func reached(_ review: Review, in turn: Turn) {
+        for pointID in review.usedPoints where pointID != turn.prompt.pointID {
+            progress.attempted(pointID: pointID, language: turn.language,
+                               succeeded: review.problems.isEmpty)
+        }
+        if !review.usedPoints.isEmpty { save() }
+    }
+
+    /// Everything a landed review is evidence of. Nothing here waits for a tap:
+    /// a finding the learner reads and moves past is still something they got
+    /// wrong.
+    private func record(for turn: Turn, review: Review) {
+        // Reach. A point counts as attempted whether or not it worked — that is
+        // what separates reach from repetition.
+        if let pointID = turn.prompt.pointID {
+            progress.attempted(pointID: pointID, language: turn.language,
+                               succeeded: review.problems.isEmpty)
+            if pointID == stretch?.id { stretch = nil }
+        }
+
+        // Reach, again, and the half that needs no call. Only where the words
+        // are the learner's own: in listen they are writing down someone
+        // else's sentence, and a word transcribed is not a word produced.
+        if turn.mode != .listen {
+            progress.produced(lexicon.words(in: turn.attempt.confirmed,
+                                            language: turn.language),
+                              language: turn.language)
+        }
+
+        // Repetition. A due subject was woven into the sentence; whether it came
+        // back clean is the retrieval check the schedule was waiting on.
+        for subject in turn.prompt.revisited {
+            let wrong = review.problems.contains {
+                $0.seed.subject.lowercased() == subject.lowercased()
+            }
+            if wrong {
+                progress.missed(subject: subject, language: turn.language)
+            } else {
+                progress.retrieved(subject: subject, language: turn.language)
+            }
+        }
+
+        for atom in review.problems {
+            progress.saw(atom, language: turn.language)
+        }
         save()
     }
 
@@ -736,7 +852,9 @@ final class Store {
                            audioFilename: nil, pronunciation: nil),
             review: nil
         )
-        turn.review = read(of: passage, run: live)
+        let review = read(of: passage, run: live)
+        turn.review = review
+        record(for: turn, review: review)
 
         var finished = Session(id: sessionID(for: .listen), language: settings.language,
                                mode: .listen, startedAt: .now, turns: [turn], goal: 1)
@@ -1091,4 +1209,63 @@ final class Store {
     }
 
     var spentToday: Double { spend.today().dollars }
+}
+
+// MARK: - Moving the level
+
+/// Where the level would go, and why, in words the learner can check against
+/// what they remember. Never acted on without them.
+struct LevelOffer: Hashable {
+    let level: Int
+    let reason: String
+
+    /// The decision, kept apart from the gathering: the thresholds are the part
+    /// worth pinning down, and they need no sessions to check. `turns` is the
+    /// recent window, oldest first; `holding` is the share of the level's
+    /// points the learner has got working.
+    static func read(level: Int, in pack: LanguagePack,
+                     turns: [Turn], holding: Double) -> LevelOffer? {
+        guard turns.count >= LevelEvidence.window else { return nil }
+        let scores = turns.compactMap { $0.review?.score }
+        guard !scores.isEmpty else { return nil }
+        let average = scores.reduce(0, +) / scores.count
+        let broke = turns.contains {
+            $0.review?.atoms.contains { $0.verdict == .breaks } == true
+        }
+        let here = pack.level(level)
+
+        if level < pack.levels, average >= LevelEvidence.promoteScore,
+           !broke, holding >= LevelEvidence.promoteHolding {
+            return LevelOffer(
+                level: level + 1,
+                reason: "Nothing broke in \(turns.count) sentences at \(here), "
+                    + "and you've used most of what it has. Move up?"
+            )
+        }
+
+        if level > 1, average <= LevelEvidence.demoteScore {
+            return LevelOffer(
+                level: level - 1,
+                reason: "Your last \(turns.count) sentences at \(here) averaged "
+                    + "\(average). Try \(pack.level(level - 1)) for a while?"
+            )
+        }
+
+        return nil
+    }
+}
+
+/// What it takes to move. Every number the level turns on is here.
+enum LevelEvidence {
+    /// Nine attempts is a full day, so twenty is a bit over two — long enough
+    /// that one good afternoon cannot move the level, short enough that a
+    /// fortnight of them does.
+    static let window = 20
+    /// 85 is where findings stop being about grammar and start being about
+    /// phrasing; below 60 the sentences are not landing at all.
+    static let promoteScore = 85
+    static let demoteScore = 60
+    /// Three in four. A level always keeps a point or two the learner will not
+    /// meet by chance, and waiting on those waits forever.
+    static let promoteHolding = 0.75
 }

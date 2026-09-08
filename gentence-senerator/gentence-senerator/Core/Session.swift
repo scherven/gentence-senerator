@@ -71,6 +71,9 @@ struct Turn: Identifiable, Codable, Hashable {
         var target: String?
         var audioSource: AudioSource?
         var pointID: String?
+        /// Due subjects woven into this prompt. What the review is checked
+        /// against to decide whether they were retrieved.
+        var revisited: [String] = []
     }
 
     struct Attempt: Codable, Hashable {
@@ -82,6 +85,21 @@ struct Turn: Identifiable, Codable, Hashable {
         var wasTyped: Bool
         var audioFilename: String?
         var pronunciation: PronunciationResult?
+    }
+}
+
+/// A default value is not a fallback: the synthesised decoder still demands
+/// the key, so sessions stored before `revisited` existed would fail to load
+/// and take the whole archive with them. In an extension, so the memberwise
+/// initialiser survives.
+extension Turn.Prompt {
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        english = try container.decodeIfPresent(String.self, forKey: .english)
+        target = try container.decodeIfPresent(String.self, forKey: .target)
+        audioSource = try container.decodeIfPresent(AudioSource.self, forKey: .audioSource)
+        pointID = try container.decodeIfPresent(String.self, forKey: .pointID)
+        revisited = try container.decodeIfPresent([String].self, forKey: .revisited) ?? []
     }
 }
 
@@ -111,11 +129,31 @@ struct Review: Codable, Hashable {
 
     /// Second stage. Empty until it arrives.
     var respeaks: [Respeak] = []
+    /// Grammar points the attempt used, whoever asked for them. Second stage,
+    /// and evidence rather than a verdict: the model over-tags, so the
+    /// threshold for "they produce this" is applied where it is read.
+    var usedPoints: [String] = []
     /// True once the second call has filled in the rest.
     var isDeep = false
 
     var problems: [Atom] { atoms.filter { $0.verdict.isProblem } }
     var kept: [Atom] { atoms.filter { !$0.verdict.isProblem } }
+}
+
+/// The same hazard as `Turn.Prompt`, and a live one: `respeaks` and `isDeep`
+/// have never had a fallback either, so this is what stops an archive written
+/// before any of the three from taking every session with it.
+extension Review {
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        score = try container.decode(Int.self, forKey: .score)
+        readOfScore = try container.decode(String.self, forKey: .readOfScore)
+        atoms = try container.decode([Atom].self, forKey: .atoms)
+        natural = try container.decodeIfPresent(String.self, forKey: .natural)
+        respeaks = try container.decodeIfPresent([Respeak].self, forKey: .respeaks) ?? []
+        usedPoints = try container.decodeIfPresent([String].self, forKey: .usedPoints) ?? []
+        isDeep = try container.decodeIfPresent(Bool.self, forKey: .isDeep) ?? false
+    }
 }
 
 struct PronunciationResult: Codable, Hashable {

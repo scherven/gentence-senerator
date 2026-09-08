@@ -145,6 +145,9 @@ actor Tutor {
         var natural: String?
         var findings: [Filled]
         var respeaks: [Say]
+        /// Grammar points the attempt used. Tagged here and not on the opening
+        /// call, which the learner is waiting on.
+        var used: [String] = []
     }
 
     /// The opening review as it is written. `score` and `readOfScore` land
@@ -295,10 +298,13 @@ actor Tutor {
             effort: .medium
         )
 
-        return (Self.merge(depth, into: opening), usage)
+        return (Self.merge(depth, into: opening, known: pack.pointIDs), usage)
     }
 
-    private static func merge(_ depth: Depth, into opening: Review) -> Review {
+    /// `known` throws away ids the model invented. Anything that gets past here
+    /// is written into `Progress` under that id and stays there.
+    private static func merge(_ depth: Depth, into opening: Review,
+                              known: Set<String>) -> Review {
         var merged = opening
         let byIndex = Dictionary(
             depth.findings.compactMap { finding in Int(finding.id).map { ($0, finding) } },
@@ -317,6 +323,7 @@ actor Tutor {
             Respeak(id: "r\(index)", instruction: say.instruction, accept: say.accept,
                     correct: say.correct, incorrect: say.incorrect)
         }
+        merged.usedPoints = Array(Set(depth.used).intersection(known)).sorted()
         merged.isDeep = true
         return merged
     }
@@ -360,7 +367,8 @@ actor Tutor {
                             // only ever appear in the preview.
                             if let whole = try? decoder.decode(Depth.self,
                                                                from: Data(buffer.utf8)) {
-                                continuation.yield((Self.merge(whole, into: opening), usage))
+                                continuation.yield((Self.merge(whole, into: opening,
+                                                               known: pack.pointIDs), usage))
                             } else {
                                 sent.isDeep = true
                                 continuation.yield((sent, usage))
@@ -466,7 +474,9 @@ actor Tutor {
 
     // MARK: Generation
 
-    struct Generated: Codable { var english: String; var target: String?; var pointID: String? }
+    /// No `pointID`: the caller already knows which point it asked for, and the
+    /// model has no vocabulary of ids to return one from.
+    struct Generated: Codable { var english: String; var target: String? }
 
     /// `revisit` are points due for retrieval — woven into an ordinary sentence
     /// rather than served as a card. `stretch` is a point the learner has never
@@ -721,6 +731,16 @@ actor Tutor {
         would be about — a real teachable point, never a restatement of the
         sentence — and `headline` is one line on what opening it would teach.
         Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+
+        `used` is the other half of the job, and it is not about the errors.
+        List the points below that the learner's own words actually used,
+        whether they used them well or badly and whether or not anyone asked
+        for them. A point you cannot put a finger on in their sentence is not
+        used, and an empty list is an ordinary answer. Ids only, copied exactly;
+        invent none.
+
+        The points, by id:
+        \(pack.points.map { "\($0.id) — \($0.name)" }.joined(separator: "\n"))
         """
     }
 
@@ -742,5 +762,18 @@ actor Tutor {
         teaches.
         Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
         """
+    }
+}
+
+/// `used` was added after the rest of the deep review existed, and the reply is
+/// still whole without it — the synthesised decoder would throw all of it away
+/// over one absent array, and the deep call has no second chance.
+extension Tutor.Depth {
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        natural = try container.decodeIfPresent(String.self, forKey: .natural)
+        findings = try container.decode([Filled].self, forKey: .findings)
+        respeaks = try container.decode([Say].self, forKey: .respeaks)
+        used = try container.decodeIfPresent([String].self, forKey: .used) ?? []
     }
 }

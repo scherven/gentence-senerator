@@ -100,11 +100,14 @@ struct HistoryScreen: View {
                         Text(encounter.subject)
                             .font(Theme.F.bodyTight)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        // Something picked off a day's summary has no visits
-                        // and no verdict, and "×0" says nothing about it.
+                        // Something picked off a day's summary has no visits,
+                        // no sightings and no verdict, and "×0" says nothing
+                        // about it.
                         Text(encounter.knowledge == .gap ? "NEW"
                              : encounter.knowledge == .slip ? "SLIP"
-                             : encounter.visits > 0 ? "×\(encounter.visits)" : "PICKED")
+                             : encounter.visits > 0 ? "×\(encounter.visits)"
+                             : encounter.sightings > 0 ? "SEEN ×\(encounter.sightings)"
+                             : "PICKED")
                             .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                         Text(encounter.dueLabel)
                             .font(Theme.F.label).foregroundStyle(Theme.C.accent)

@@ -5,6 +5,9 @@ struct Settings: Codable, Hashable {
     var mode: Mode = .translate
     /// 1-6 for CEFR, 1-9 for HSK. `LanguagePack.level` renders it.
     var level: Int = 2
+    /// When it last moved. Scores from a level the learner has left say nothing
+    /// about the one they are on, so `Store.levelOffer` counts from here.
+    var levelChangedAt: Date?
     /// Per mode, per day, and a hard cap: three translate, three listen,
     /// three produce is the whole day.
     var dailyGoal: Int = 3

@@ -131,8 +131,12 @@ enum Schemas {
                 "accept": array(string),
                 "correct": string,
                 "incorrect": string
-            ], required: ["instruction", "accept", "correct", "incorrect"]))
-        ], required: ["natural", "findings", "respeaks"])
+            ], required: ["instruction", "accept", "correct", "incorrect"])),
+            // Last, so it is written after the findings the learner is waiting
+            // on. Nothing on screen reads it — it is evidence for reach.
+            "used": ["type": "array", "items": string,
+                     "description": "Ids of the grammar points the learner's own sentence used, correctly or not. Only ids from the list given. Empty is a normal answer."]
+        ], required: ["natural", "findings", "respeaks", "used"])
     }
 
     // MARK: Prompt generation
@@ -141,10 +145,8 @@ enum Schemas {
         "english": ["type": "string",
                     "description": "The English side. For translate this is what the learner reads; elsewhere it is the gloss."],
         "target": ["type": ["string", "null"],
-                   "description": "The target-language side: the sentence to be played, or the question to be answered — for produce, one sentence ending in a single question mark. Null for translate."],
-        "pointID": ["type": ["string", "null"],
-                    "description": "The grammar point this was built to exercise, if any."]
-    ], required: ["english", "target", "pointID"])
+                   "description": "The target-language side: the sentence to be played, or the question to be answered — for produce, one sentence ending in a single question mark. Null for translate."]
+    ], required: ["english", "target"])
 
     // MARK: Drill grading
 

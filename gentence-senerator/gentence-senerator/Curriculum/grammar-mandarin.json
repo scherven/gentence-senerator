@@ -1,0 +1,3468 @@
+[
+  {
+    "id": "le-completion",
+    "name": "了 for a completed action",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A finished action, followed by something else.",
+    "examples": [
+      "我吃了饭就走了"
+    ]
+  },
+  {
+    "id": "le-change",
+    "name": "了 for a change of state",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that was not true and now is.",
+    "examples": [
+      "下雨了",
+      "我懂了"
+    ]
+  },
+  {
+    "id": "adverb-placement",
+    "name": "Adverbs before the verb",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "已经, 常常, 也, 都 between subject and verb.",
+    "examples": [
+      "我已经吃饭了",
+      "我们常常打篮球"
+    ]
+  },
+  {
+    "id": "measure-words",
+    "name": "Number + measure word + noun",
+    "level": 1,
+    "kind": "measure-word",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Counting anything.",
+    "examples": [
+      "三本书",
+      "两个人"
+    ]
+  },
+  {
+    "id": "ma-question",
+    "name": "吗 for yes-no questions",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A statement turned into a question.",
+    "examples": [
+      "你有空吗？"
+    ]
+  },
+  {
+    "id": "shi-identity",
+    "name": "是 between two nouns",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing identified as another — the only slot 是 belongs in.",
+    "examples": [
+      "他是医生",
+      "这是我的手机"
+    ]
+  },
+  {
+    "id": "adjective-predicate",
+    "name": "Adjectives take no 是",
+    "level": 1,
+    "kind": "extra-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Describing something; 很 holds the slot English fills with 'is'.",
+    "examples": [
+      "今天很热",
+      "她很累"
+    ]
+  },
+  {
+    "id": "you-possession",
+    "name": "有 for having, 没有 to deny it",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Owning something or not — 不 cannot touch 有.",
+    "examples": [
+      "我有两个姐姐",
+      "他没有钱"
+    ]
+  },
+  {
+    "id": "bu-mei",
+    "name": "不 against 没",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Denying a habit or an intention, against denying that something happened.",
+    "examples": [
+      "我不喝酒",
+      "我昨天没去"
+    ]
+  },
+  {
+    "id": "existential-you",
+    "name": "Place + 有 + thing",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying what is somewhere; the place goes first.",
+    "examples": [
+      "桌子上有一本书",
+      "房间里有三个人"
+    ]
+  },
+  {
+    "id": "localizer-suffix",
+    "name": "上, 里, 下 after the noun",
+    "level": 1,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A place made out of an object — English needs nothing extra, Mandarin does.",
+    "examples": [
+      "书在桌子上",
+      "他在教室里"
+    ]
+  },
+  {
+    "id": "zai-location",
+    "name": "在 + place before the verb",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Where an action happens, said before the action.",
+    "examples": [
+      "我在家吃饭",
+      "他在图书馆看书"
+    ]
+  },
+  {
+    "id": "time-before-verb",
+    "name": "Time before the verb",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "When something happens, said before the verb and never after.",
+    "examples": [
+      "我明天去北京",
+      "他七点起床"
+    ]
+  },
+  {
+    "id": "big-to-small",
+    "name": "Largest unit first",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A date, a time or an address with more than one unit in it.",
+    "examples": [
+      "二〇二四年三月五号",
+      "下午三点半"
+    ]
+  },
+  {
+    "id": "a-not-a",
+    "name": "Verb 不 verb questions",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A yes-no question asked without 吗.",
+    "examples": [
+      "你去不去？",
+      "他是不是老师？"
+    ]
+  },
+  {
+    "id": "haishi-choice",
+    "name": "还是 for offering a choice",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question offering two options — not the 'or' of a statement.",
+    "examples": [
+      "你喝茶还是咖啡？",
+      "我们今天去还是明天去？"
+    ]
+  },
+  {
+    "id": "question-word-in-situ",
+    "name": "Question words stay put",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Asking who, what or where; the question word sits where the answer would.",
+    "examples": [
+      "你去哪儿？",
+      "他是谁？"
+    ]
+  },
+  {
+    "id": "er-liang",
+    "name": "二 against 两",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two as a count, against two as a label.",
+    "examples": [
+      "两本书",
+      "二号楼"
+    ]
+  },
+  {
+    "id": "ne-and-you",
+    "name": "呢 to turn the question back",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Answering, then asking the same thing back.",
+    "examples": [
+      "我很好，你呢？",
+      "我不去，他呢？"
+    ]
+  },
+  {
+    "id": "ba-suggestion",
+    "name": "吧 for a suggestion",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Proposing something, or softening an order into an offer.",
+    "examples": [
+      "我们走吧",
+      "你先休息吧"
+    ]
+  },
+  {
+    "id": "serial-verb-purpose",
+    "name": "Two verbs, nothing between them",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going somewhere in order to do something.",
+    "examples": [
+      "我去商店买东西",
+      "他来我家吃饭"
+    ]
+  },
+  {
+    "id": "hui-neng",
+    "name": "会 against 能",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A skill that was learned, against a possibility open right now.",
+    "examples": [
+      "我会游泳",
+      "我明天不能来"
+    ]
+  },
+  {
+    "id": "de-possessive",
+    "name": "的 for whose, and where it drops",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Possession — dropped before family and close relations, kept everywhere else.",
+    "examples": [
+      "我的书",
+      "我妈妈",
+      "他的朋友"
+    ]
+  },
+  {
+    "id": "zai-progressive",
+    "name": "在 and 正在 for an action underway",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something happening at this moment.",
+    "examples": [
+      "他正在睡觉",
+      "我在吃饭呢"
+    ]
+  },
+  {
+    "id": "yi-tone-sandhi",
+    "name": "一 changes tone",
+    "level": 1,
+    "kind": "tone",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "一 in front of a measure word or another syllable.",
+    "examples": [
+      "一本书",
+      "一个人",
+      "一定"
+    ]
+  },
+  {
+    "id": "bu-tone-sandhi",
+    "name": "不 changes tone",
+    "level": 1,
+    "kind": "tone",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "不 in front of a fourth-tone syllable.",
+    "examples": [
+      "不对",
+      "不去",
+      "不要"
+    ]
+  },
+  {
+    "id": "guo-experience",
+    "name": "过 for experience",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Having done something at least once.",
+    "examples": [
+      "我去过北京"
+    ]
+  },
+  {
+    "id": "subject-in-clause",
+    "name": "Clauses keep their subject",
+    "level": 2,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "因为 / 所以 clauses where English would drop the subject.",
+    "examples": [
+      "因为那里很安静"
+    ]
+  },
+  {
+    "id": "suiran-danshi",
+    "name": "虽然…但是 concession pair",
+    "level": 2,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Both halves marked; English marks only one.",
+    "examples": [
+      "虽然很贵，但是我买了"
+    ]
+  },
+  {
+    "id": "de-complement",
+    "name": "得 for how an action goes",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Evaluating an action rather than a thing.",
+    "examples": [
+      "他说得很快",
+      "你唱得很好"
+    ]
+  },
+  {
+    "id": "resultative",
+    "name": "Resultative complements",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "吃完, 听懂, 走出去 — the result fused to the verb.",
+    "examples": [
+      "我吃完了",
+      "你听懂了吗？"
+    ]
+  },
+  {
+    "id": "shi-de",
+    "name": "是…的 for circumstances",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Emphasising when, where or how a known past event happened.",
+    "examples": [
+      "我是坐飞机来的"
+    ]
+  },
+  {
+    "id": "bi-comparison",
+    "name": "比 for comparing two things",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing measured against another.",
+    "examples": [
+      "他比我高",
+      "今天比昨天冷"
+    ]
+  },
+  {
+    "id": "bi-degree-gap",
+    "name": "The size of the gap, after the adjective",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A comparison with how much stated.",
+    "examples": [
+      "他比我大两岁",
+      "这个比那个贵一点儿"
+    ]
+  },
+  {
+    "id": "meiyou-comparison",
+    "name": "没有 for falling short",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Denying a comparison — 不比 does not mean this.",
+    "examples": [
+      "我没有他高",
+      "今天没有昨天那么热"
+    ]
+  },
+  {
+    "id": "verb-reduplication",
+    "name": "Doubled verbs for a quick try",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something briefly, or softening a request into a favour.",
+    "examples": [
+      "你看看",
+      "我们休息休息",
+      "让我想一想"
+    ]
+  },
+  {
+    "id": "adj-reduplication",
+    "name": "Doubled adjectives",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A description made vivid rather than measured.",
+    "examples": [
+      "干干净净",
+      "高高兴兴地走了"
+    ]
+  },
+  {
+    "id": "de-three-ways",
+    "name": "的, 地, 得",
+    "level": 2,
+    "kind": "particle",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "One sound, three slots: before a noun, before a verb, after one.",
+    "examples": [
+      "他的书",
+      "慢慢地走",
+      "跑得很快"
+    ]
+  },
+  {
+    "id": "manner-before-verb",
+    "name": "How, before the verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The manner of an action, said before the action.",
+    "examples": [
+      "他大声地说",
+      "她认真地听"
+    ]
+  },
+  {
+    "id": "zhe-durative",
+    "name": "着 for a state that holds",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something left in a condition rather than done.",
+    "examples": [
+      "门开着",
+      "他站着看书"
+    ]
+  },
+  {
+    "id": "existential-zhe",
+    "name": "Place + verb 着 + thing",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Describing what is in a place by how it sits there.",
+    "examples": [
+      "墙上挂着一张画",
+      "桌子上放着两本书"
+    ]
+  },
+  {
+    "id": "directional-complement",
+    "name": "来 and 去 on the verb",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Movement described from where the speaker stands.",
+    "examples": [
+      "他跑出去了",
+      "把书拿过来",
+      "我上来了"
+    ]
+  },
+  {
+    "id": "kuaiyao-le",
+    "name": "快要…了 for what is about to happen",
+    "level": 2,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something imminent; the 了 at the end is not optional.",
+    "examples": [
+      "火车快要开了",
+      "他就要毕业了"
+    ]
+  },
+  {
+    "id": "yi-jiu",
+    "name": "一…就… for the moment after",
+    "level": 2,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing following another with no gap, or following it every time.",
+    "examples": [
+      "他一到家就给我打电话",
+      "我一累就想睡觉"
+    ]
+  },
+  {
+    "id": "gei-recipient",
+    "name": "给 + person before the verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something for someone, where English puts them last.",
+    "examples": [
+      "我给你打电话",
+      "她给我们做饭"
+    ]
+  },
+  {
+    "id": "gen-together",
+    "name": "跟 + person before the verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something with someone; the companion precedes the verb.",
+    "examples": [
+      "我跟朋友去看电影",
+      "他跟我一起学中文"
+    ]
+  },
+  {
+    "id": "cong-dao",
+    "name": "从…到… for a span",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A stretch of time or distance with both ends named.",
+    "examples": [
+      "从星期一到星期五",
+      "从北京到上海"
+    ]
+  },
+  {
+    "id": "bie-imperative",
+    "name": "别 for telling someone to stop",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A negative command, not a statement about the future.",
+    "examples": [
+      "别动",
+      "别忘了带钥匙"
+    ]
+  },
+  {
+    "id": "pivot-request",
+    "name": "请, 让, 叫 + person + verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Getting someone else to act; the person is object and subject at once.",
+    "examples": [
+      "请他进来",
+      "老师让我们写作文"
+    ]
+  },
+  {
+    "id": "duration-after-verb",
+    "name": "How long, after the verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long something lasted; with an object the verb repeats.",
+    "examples": [
+      "我学了两年中文",
+      "他等了半个小时"
+    ]
+  },
+  {
+    "id": "frequency-after-verb",
+    "name": "How many times, after the verb",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Counting occurrences of an action.",
+    "examples": [
+      "我看过两次",
+      "他去了三趟"
+    ]
+  },
+  {
+    "id": "topic-fronting",
+    "name": "The object first, as topic",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something already under discussion, commented on rather than introduced.",
+    "examples": [
+      "那本书我看完了",
+      "这个菜我不喜欢"
+    ]
+  },
+  {
+    "id": "object-pronoun-drop",
+    "name": "No pronoun for a thing already named",
+    "level": 2,
+    "kind": "extra-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "English needs 'it'; the slot stays empty here.",
+    "examples": [
+      "这本书我已经看完了",
+      "他昨天就还给我了"
+    ]
+  },
+  {
+    "id": "haishi-ba",
+    "name": "还是…吧 for the better option",
+    "level": 2,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Settling on a course after weighing it.",
+    "examples": [
+      "还是坐地铁吧",
+      "我们还是明天去吧"
+    ]
+  },
+  {
+    "id": "dou-le-already",
+    "name": "都…了 for how far it has got",
+    "level": 2,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Pointing out that something has reached a surprising point.",
+    "examples": [
+      "都十点了",
+      "孩子都上大学了"
+    ]
+  },
+  {
+    "id": "third-tone-sandhi",
+    "name": "Two third tones in a row",
+    "level": 2,
+    "kind": "tone",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "The first of two third tones rises instead.",
+    "examples": [
+      "你好",
+      "很好",
+      "水果"
+    ]
+  },
+  {
+    "id": "ba-construction",
+    "name": "把 to front the object",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something concrete done to a definite object, with a result.",
+    "examples": [
+      "我把书放在桌子上",
+      "她把门关了"
+    ]
+  },
+  {
+    "id": "bei-passive",
+    "name": "被 for something done to you",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something unwelcome that happened to the subject.",
+    "examples": [
+      "我的自行车被偷了",
+      "他被老师批评了"
+    ]
+  },
+  {
+    "id": "ruguo-jiu",
+    "name": "如果…就…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition and its consequence, both marked.",
+    "examples": [
+      "如果明天下雨，我们就不去了"
+    ]
+  },
+  {
+    "id": "dehua",
+    "name": "…的话 for a supposed case",
+    "level": 3,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition tagged onto the end of the clause instead of the front.",
+    "examples": [
+      "有时间的话，我就去",
+      "你不喜欢的话，可以换一个"
+    ]
+  },
+  {
+    "id": "budan-erqie",
+    "name": "不但…而且…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things true of one subject, the second going further than the first.",
+    "examples": [
+      "他不但会说中文，而且说得很好"
+    ]
+  },
+  {
+    "id": "zhiyao-jiu",
+    "name": "只要…就…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The one condition that is enough.",
+    "examples": [
+      "只要努力，就会有进步"
+    ]
+  },
+  {
+    "id": "zhiyou-cai",
+    "name": "只有…才…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The only condition under which it can happen at all.",
+    "examples": [
+      "只有多练习，才能学好"
+    ]
+  },
+  {
+    "id": "yue-yue",
+    "name": "越…越…",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing rising as another rises.",
+    "examples": [
+      "越看越喜欢",
+      "雨越下越大"
+    ]
+  },
+  {
+    "id": "yuelaiyue",
+    "name": "越来越 for a growing trend",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something increasing over time with nothing to measure it against.",
+    "examples": [
+      "天气越来越热",
+      "他的中文越来越好"
+    ]
+  },
+  {
+    "id": "chule-yiwai",
+    "name": "除了…以外，还 or 都",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing set aside — whether the rest joins it or is excluded turns on 还 against 都.",
+    "examples": [
+      "除了他以外，我们都去了",
+      "除了英语以外，她还会法语"
+    ]
+  },
+  {
+    "id": "potential-complement",
+    "name": "得 or 不 inside the verb",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whether the action can reach its result — not permission, not skill.",
+    "examples": [
+      "我听不懂",
+      "这个字看得清楚吗？",
+      "买不起"
+    ]
+  },
+  {
+    "id": "degree-complement-jile",
+    "name": "极了 and 得很 after the adjective",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An intensity 很 cannot carry.",
+    "examples": [
+      "好极了",
+      "累得很"
+    ]
+  },
+  {
+    "id": "dei-necessity",
+    "name": "得, 应该, 必须",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An obligation, graded from advisable to unavoidable.",
+    "examples": [
+      "你得早点儿走",
+      "我们应该帮助他"
+    ]
+  },
+  {
+    "id": "buyong-bubi",
+    "name": "不用 and 不必 for no need",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Releasing someone from an obligation, not forbidding them.",
+    "examples": [
+      "你不用来",
+      "不必客气"
+    ]
+  },
+  {
+    "id": "separable-verbs",
+    "name": "Verbs that split",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "见面, 帮忙, 结婚 — the object is already inside, so everything else goes between.",
+    "examples": [
+      "我跟他见过两次面",
+      "他帮了我一个忙"
+    ]
+  },
+  {
+    "id": "wh-universal",
+    "name": "Question word swept up by 都",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Nobody, nothing, nowhere.",
+    "examples": [
+      "谁都不知道",
+      "我什么都不想吃"
+    ]
+  },
+  {
+    "id": "wh-indefinite",
+    "name": "Question words for something unnamed",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Some thing or person left vague, inside a statement rather than a question.",
+    "examples": [
+      "我想吃点儿什么",
+      "他好像有什么心事"
+    ]
+  },
+  {
+    "id": "verb-copying",
+    "name": "The verb said twice",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Judging an action that has an object; the verb repeats before 得.",
+    "examples": [
+      "他说汉语说得很好",
+      "我打球打得不好"
+    ]
+  },
+  {
+    "id": "yibian-yibian",
+    "name": "一边…一边…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two actions running at once.",
+    "examples": [
+      "他一边走一边打电话"
+    ]
+  },
+  {
+    "id": "you-you",
+    "name": "又…又…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two qualities holding at the same time.",
+    "examples": [
+      "这个菜又便宜又好吃"
+    ]
+  },
+  {
+    "id": "xian-ranhou",
+    "name": "先…然后 or 再…",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Steps in an order that matters.",
+    "examples": [
+      "先洗手，然后吃饭",
+      "你先说，我再说"
+    ]
+  },
+  {
+    "id": "cai-jiu",
+    "name": "才 against 就",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Later or harder than expected, against sooner or easier.",
+    "examples": [
+      "他十点才来",
+      "他八点就来了"
+    ]
+  },
+  {
+    "id": "you-zai",
+    "name": "又 against 再",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Repeated already, against still to be repeated.",
+    "examples": [
+      "他又迟到了",
+      "请再说一遍"
+    ]
+  },
+  {
+    "id": "duiyu-laishuo",
+    "name": "对…来说",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whose vantage point a judgement holds from.",
+    "examples": [
+      "对我来说，这不难",
+      "对学生来说，时间很紧"
+    ]
+  },
+  {
+    "id": "weile-purpose",
+    "name": "为了 for the point of doing it",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The purpose stated first, the action after.",
+    "examples": [
+      "为了考试，他每天复习到很晚"
+    ]
+  },
+  {
+    "id": "resultative-dao-zhu",
+    "name": "到, 住, 上, 走 as results",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The action succeeded, stuck, closed, or took something away.",
+    "examples": [
+      "我找到了",
+      "记住这个词",
+      "把门关上"
+    ]
+  },
+  {
+    "id": "directional-extended",
+    "name": "起来, 下去, 出来 with nobody moving",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something starting, being kept up, or coming to mind.",
+    "examples": [
+      "我想起来了",
+      "你说下去",
+      "天气热起来了"
+    ]
+  },
+  {
+    "id": "yiyang-comparison",
+    "name": "跟…一样",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things equal, or equally something.",
+    "examples": [
+      "我跟他一样高",
+      "这个跟那个一样"
+    ]
+  },
+  {
+    "id": "bushi-ma",
+    "name": "不是…吗 for a reminder",
+    "level": 3,
+    "kind": "comprehension",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question whose point is that the answer is already obvious.",
+    "examples": [
+      "你不是已经吃过了吗？"
+    ]
+  },
+  {
+    "id": "time-clause-order",
+    "name": "以前 and 以后 after the clause",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One event placed against another; the marker comes last, not first.",
+    "examples": [
+      "你走以前给我打电话",
+      "下课以后我们去吃饭"
+    ]
+  },
+  {
+    "id": "erhua",
+    "name": "儿 on the end",
+    "level": 3,
+    "kind": "pronunciation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "一点儿, 玩儿, 哪儿 — the bare noun sounds bookish said aloud.",
+    "examples": [
+      "一点儿",
+      "在哪儿",
+      "我们出去玩儿吧"
+    ]
+  },
+  {
+    "id": "buguan-dou",
+    "name": "不管 or 无论…都…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Every case leading to the same outcome.",
+    "examples": [
+      "不管天气怎么样，我都去",
+      "无论多难，他都不放弃"
+    ]
+  },
+  {
+    "id": "jiran-jiu",
+    "name": "既然…就…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Acting on something both sides already accept.",
+    "examples": [
+      "既然你不舒服，就早点儿休息吧"
+    ]
+  },
+  {
+    "id": "jishi-ye",
+    "name": "即使…也…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A concession made to something hypothetical.",
+    "examples": [
+      "即使失败了，也值得试一试"
+    ]
+  },
+  {
+    "id": "jiushi-ye",
+    "name": "就是…也… in speech",
+    "level": 4,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "即使 as it is actually said out loud.",
+    "examples": [
+      "就是下雨我也去"
+    ]
+  },
+  {
+    "id": "jinguan-danshi",
+    "name": "尽管…但是…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A fact conceded and then set aside; heavier than 虽然.",
+    "examples": [
+      "尽管条件很差，但是他们坚持下来了"
+    ]
+  },
+  {
+    "id": "bushi-ershi",
+    "name": "不是…而是…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Correcting a wrong assumption and supplying the right one.",
+    "examples": [
+      "这不是钱的问题，而是态度问题"
+    ]
+  },
+  {
+    "id": "bushi-jiushi",
+    "name": "不是…就是…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Only two possibilities, and it is always one of them.",
+    "examples": [
+      "他不是在看书，就是在打球"
+    ]
+  },
+  {
+    "id": "ji-you",
+    "name": "既…又 or 也…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two qualities held together as one judgement.",
+    "examples": [
+      "这个方法既省时间，又省钱"
+    ]
+  },
+  {
+    "id": "yifangmian",
+    "name": "一方面…另一方面…",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two sides of one situation, weighed.",
+    "examples": [
+      "一方面工资高，另一方面压力也大"
+    ]
+  },
+  {
+    "id": "lian-dou",
+    "name": "连…都…",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The least likely case, offered to settle the rest.",
+    "examples": [
+      "他连自己的名字都不会写",
+      "连孩子都知道"
+    ]
+  },
+  {
+    "id": "que-contrast",
+    "name": "却 before the verb",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A contrast carried by an adverb instead of a conjunction at the front.",
+    "examples": [
+      "我请了他，他却没来",
+      "东西不贵，质量却很好"
+    ]
+  },
+  {
+    "id": "nandao-ma",
+    "name": "难道…吗",
+    "level": 4,
+    "kind": "comprehension",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Disbelief put as a question that expects no answer.",
+    "examples": [
+      "难道你不知道吗？"
+    ]
+  },
+  {
+    "id": "ba-thorough",
+    "name": "把 for a thorough going-over",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something to an object once through, or for a set stretch.",
+    "examples": [
+      "把这本书看一遍",
+      "把房间打扫了半个小时"
+    ]
+  },
+  {
+    "id": "bei-jiao-rang",
+    "name": "叫 and 让 as spoken passives",
+    "level": 4,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "被 as speech prefers it, with the doer named.",
+    "examples": [
+      "我的伞叫人拿走了",
+      "杯子让弟弟打破了"
+    ]
+  },
+  {
+    "id": "shi-causative",
+    "name": "使 for what a situation does to you",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A circumstance producing a reaction in someone.",
+    "examples": [
+      "这个消息使大家很高兴",
+      "失败使他更努力"
+    ]
+  },
+  {
+    "id": "buru-comparison",
+    "name": "不如 for falling short",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Ranking one option below another.",
+    "examples": [
+      "今天不如昨天暖和",
+      "坐车不如走路快"
+    ]
+  },
+  {
+    "id": "double-negative",
+    "name": "不得不, 不能不, 没有不",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An assertion strengthened by denying its opposite twice.",
+    "examples": [
+      "我不得不同意",
+      "没有人不喜欢他"
+    ]
+  },
+  {
+    "id": "chadianr",
+    "name": "差点儿 for the near miss",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something bad that almost happened and did not.",
+    "examples": [
+      "我差点儿迟到",
+      "他差点儿没赶上飞机"
+    ]
+  },
+  {
+    "id": "keneng-buliao",
+    "name": "得了 and 不了 on the verb",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whether the amount or the distance can be managed at all.",
+    "examples": [
+      "我吃不了这么多",
+      "今天走不了"
+    ]
+  },
+  {
+    "id": "degree-si-le",
+    "name": "死了, 坏了, 得厉害",
+    "level": 4,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "An intensity stated as damage.",
+    "examples": [
+      "我饿死了",
+      "累坏了",
+      "疼得厉害"
+    ]
+  },
+  {
+    "id": "duiyu-guanyu",
+    "name": "对于 and 关于 at the front",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Naming the matter first, then saying something about it.",
+    "examples": [
+      "对于这个问题，我有不同的看法",
+      "关于明天的会议，我想说几句"
+    ]
+  },
+  {
+    "id": "suizhe",
+    "name": "随着 for what shifts alongside",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing changing as another develops.",
+    "examples": [
+      "随着经济的发展，人们的生活越来越好"
+    ]
+  },
+  {
+    "id": "youyu-yinci",
+    "name": "由于…因此… in writing",
+    "level": 4,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "因为…所以 as a report would put it.",
+    "examples": [
+      "由于天气原因，航班取消了",
+      "由于成本上升，因此价格也作了调整"
+    ]
+  },
+  {
+    "id": "fouze",
+    "name": "否则 for what happens otherwise",
+    "level": 4,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A condition and the consequence of missing it.",
+    "examples": [
+      "你得早点儿出发，否则会迟到"
+    ]
+  },
+  {
+    "id": "sizige-parallel",
+    "name": "一A一B, 有A有B, 无A无B",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A four-character pair standing where a whole description would.",
+    "examples": [
+      "有说有笑",
+      "一举一动",
+      "无声无息"
+    ]
+  },
+  {
+    "id": "laibuji",
+    "name": "来得及 and 来不及",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whether there is still time for it.",
+    "examples": [
+      "现在走还来得及",
+      "来不及解释了"
+    ]
+  },
+  {
+    "id": "shuobuding",
+    "name": "说不定",
+    "level": 4,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A guess offered as a real possibility.",
+    "examples": [
+      "说不定他已经到了"
+    ]
+  },
+  {
+    "id": "zaiyebu",
+    "name": "再也不…了",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Never again, said as a resolution.",
+    "examples": [
+      "我再也不相信他了"
+    ]
+  },
+  {
+    "id": "zenme-ye-bu",
+    "name": "怎么也 or 都 + 不",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Failing no matter what is tried.",
+    "examples": [
+      "我怎么也想不起来他的名字"
+    ]
+  },
+  {
+    "id": "hao-purpose",
+    "name": "好 for so that",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing one thing to make a second thing possible.",
+    "examples": [
+      "你把地址写下来，我好去找你"
+    ]
+  },
+  {
+    "id": "zai-fangmian",
+    "name": "在…方面",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Narrowing a judgement to one aspect of something.",
+    "examples": [
+      "他在语言方面很有天赋"
+    ]
+  },
+  {
+    "id": "stacked-modifiers",
+    "name": "Several modifiers, one noun",
+    "level": 4,
+    "kind": "extra-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Which of them take 的 and which do not.",
+    "examples": [
+      "我新买的那本中文书",
+      "一位很有经验的中国老师"
+    ]
+  },
+  {
+    "id": "neutral-tone-words",
+    "name": "The second syllable losing its tone",
+    "level": 4,
+    "kind": "tone",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "东西, 大意, 地道 — a different word when the tone stays on.",
+    "examples": [
+      "你带东西了吗？",
+      "这家的菜很地道"
+    ]
+  },
+  {
+    "id": "yidan-jiu",
+    "name": "一旦…就…",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Once it happens, what follows is settled.",
+    "examples": [
+      "一旦决定了，就不要后悔"
+    ]
+  },
+  {
+    "id": "wanyi",
+    "name": "万一 for the unlikely case",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Planning against something improbable and unwelcome.",
+    "examples": [
+      "万一他不来，我们怎么办？"
+    ]
+  },
+  {
+    "id": "jiaru",
+    "name": "假如 for a supposition",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "如果 in a more formal frame.",
+    "examples": [
+      "假如没有这次机会，结果会完全不同"
+    ]
+  },
+  {
+    "id": "napa-ye",
+    "name": "哪怕…也…",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A concession made to the most extreme case.",
+    "examples": [
+      "哪怕只有一点儿希望，也要试试"
+    ]
+  },
+  {
+    "id": "budan-fan-er",
+    "name": "不但不…反而…",
+    "level": 5,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The expected thing failed to happen and the opposite did.",
+    "examples": [
+      "他不但不感谢我，反而怪我多管闲事"
+    ]
+  },
+  {
+    "id": "fan-er",
+    "name": "反而 for the opposite result",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An outcome running against what the situation set up.",
+    "examples": [
+      "药吃多了反而不好"
+    ]
+  },
+  {
+    "id": "zai-ye",
+    "name": "再…也…",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "However much of it, still no difference.",
+    "examples": [
+      "再忙也要吃饭",
+      "再便宜我也不买"
+    ]
+  },
+  {
+    "id": "meiyou-jiu-meiyou",
+    "name": "没有…就没有…",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing wholly dependent on another.",
+    "examples": [
+      "没有大家的帮助，就没有今天的成绩"
+    ]
+  },
+  {
+    "id": "yaoburan",
+    "name": "要不然 for the alternative",
+    "level": 5,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "否则 as it is said rather than written.",
+    "examples": [
+      "快点儿走吧，要不然就赶不上了"
+    ]
+  },
+  {
+    "id": "conger",
+    "name": "从而 for what it thereby brings about",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A result the first action made possible.",
+    "examples": [
+      "公司改进了流程，从而降低了成本"
+    ]
+  },
+  {
+    "id": "kejian",
+    "name": "可见 for what it shows",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A conclusion drawn off what was just stated.",
+    "examples": [
+      "他连夜赶来，可见这件事有多重要"
+    ]
+  },
+  {
+    "id": "zongzhi",
+    "name": "总之 to wrap up",
+    "level": 5,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Closing several points with one.",
+    "examples": [
+      "总之，这件事还需要再考虑"
+    ]
+  },
+  {
+    "id": "zicong-yilai",
+    "name": "自从…以来",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A stretch running from a starting point up to now.",
+    "examples": [
+      "自从来到这里以来，他变了很多"
+    ]
+  },
+  {
+    "id": "directional-state",
+    "name": "起来, 下来, 下去 as aspect",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A state setting in, settling, or being kept up.",
+    "examples": [
+      "天黑下来了",
+      "坚持下去",
+      "他们熟悉起来了"
+    ]
+  },
+  {
+    "id": "state-complement-clause",
+    "name": "得 with a whole clause behind it",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A reaction described by its consequences instead of an adjective.",
+    "examples": [
+      "他笑得眼泪都出来了",
+      "累得话都说不出来"
+    ]
+  },
+  {
+    "id": "ba-treat-as",
+    "name": "把…当作 or 看成",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Treating one thing as though it were another.",
+    "examples": [
+      "我一直把他当作朋友",
+      "别把这件事看得太严重"
+    ]
+  },
+  {
+    "id": "bei-gei",
+    "name": "被…给…",
+    "level": 5,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A passive with the extra 给 speech puts in anyway.",
+    "examples": [
+      "杯子被他给打破了"
+    ]
+  },
+  {
+    "id": "juran",
+    "name": "居然 for what should not have happened",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Surprise that it turned out that way at all.",
+    "examples": [
+      "他居然一句话也没说就走了"
+    ]
+  },
+  {
+    "id": "genben",
+    "name": "根本 for not in the slightest",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A denial pushed back to the premise.",
+    "examples": [
+      "我根本不知道这件事"
+    ]
+  },
+  {
+    "id": "jianzhi",
+    "name": "简直 for beyond describing",
+    "level": 5,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "An exaggeration offered as the only fair description.",
+    "examples": [
+      "这简直太不可思议了"
+    ]
+  },
+  {
+    "id": "fanzheng",
+    "name": "反正 for it makes no difference",
+    "level": 5,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Setting the reasons aside because the outcome is fixed.",
+    "examples": [
+      "反正我也没事，就陪你去吧"
+    ]
+  },
+  {
+    "id": "guoran",
+    "name": "果然 for as expected",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something predicted and then confirmed.",
+    "examples": [
+      "果然跟他说的一样"
+    ]
+  },
+  {
+    "id": "sihu-fangfu",
+    "name": "似乎 and 仿佛",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "好像 in writing.",
+    "examples": [
+      "他似乎并不在意",
+      "仿佛一切都没有发生过"
+    ]
+  },
+  {
+    "id": "ping-ju",
+    "name": "凭 and 据 for what it rests on",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The grounds or the source behind a claim or an action.",
+    "examples": [
+      "凭什么？",
+      "据我所知，他已经离职了"
+    ]
+  },
+  {
+    "id": "ti-behalf",
+    "name": "替 for in someone's place",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something instead of the person whose job it was.",
+    "examples": [
+      "我替他去开会",
+      "替我谢谢他"
+    ]
+  },
+  {
+    "id": "a-lai-a-qu",
+    "name": "A来A去",
+    "level": 5,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something over and over, usually to no end.",
+    "examples": [
+      "想来想去还是决定不去",
+      "走来走去"
+    ]
+  },
+  {
+    "id": "a-zhe-a-zhe",
+    "name": "A着A着",
+    "level": 5,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Something breaking in partway through an action.",
+    "examples": [
+      "说着说着就哭了",
+      "走着走着就迷路了"
+    ]
+  },
+  {
+    "id": "mei-a-mei-b",
+    "name": "没A没B",
+    "level": 5,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A four-character complaint about something with no limits.",
+    "examples": [
+      "没完没了",
+      "没大没小"
+    ]
+  },
+  {
+    "id": "adverbial-order",
+    "name": "Stacked adverbials in order",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Time, then scope, then manner, then place — all in front of the verb.",
+    "examples": [
+      "他昨天在公司很认真地看了那份报告"
+    ]
+  },
+  {
+    "id": "you-zhe",
+    "name": "有着 for abstract possession",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "有 where the thing held is a quality or a history.",
+    "examples": [
+      "这座城市有着悠久的历史"
+    ]
+  },
+  {
+    "id": "de-buliaode",
+    "name": "得不得了",
+    "level": 5,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "An intensity past the point of stating.",
+    "examples": [
+      "他高兴得不得了"
+    ]
+  },
+  {
+    "id": "vivid-classifiers",
+    "name": "Classifiers that carry a picture",
+    "level": 5,
+    "kind": "measure-word",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "朵, 颗, 支, 匹 — where 个 would lose the shape of the thing.",
+    "examples": [
+      "一朵花",
+      "一颗星星",
+      "一支笔"
+    ]
+  },
+  {
+    "id": "yaome-yaome",
+    "name": "要么…要么…",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Two options, one of which has to be taken.",
+    "examples": [
+      "要么现在就走，要么明天再说"
+    ]
+  },
+  {
+    "id": "chufei-cai",
+    "name": "除非…才…",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The single exception that makes it possible.",
+    "examples": [
+      "除非你亲自去，他才会答应"
+    ]
+  },
+  {
+    "id": "chufei-fouze",
+    "name": "除非…否则…",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One condition, and the consequence of failing it.",
+    "examples": [
+      "除非提前预约，否则进不去"
+    ]
+  },
+  {
+    "id": "fanshi-dou",
+    "name": "凡是…都…",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A rule applied to every member of a class, no exceptions.",
+    "examples": [
+      "凡是报名的人都可以参加"
+    ]
+  },
+  {
+    "id": "jiusuan-ye",
+    "name": "就算…也…",
+    "level": 6,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "即使 as speech grants a point.",
+    "examples": [
+      "就算你说得对，也不该这么做"
+    ]
+  },
+  {
+    "id": "yibian-purpose",
+    "name": "以便 for so as to",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "为了 pointed forward, in a notice or a report.",
+    "examples": [
+      "请提前提交材料，以便及时审核"
+    ]
+  },
+  {
+    "id": "suo-nominalizer",
+    "name": "所 in front of the verb",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "What is done, turned into a noun.",
+    "examples": [
+      "我所知道的就这些",
+      "众所周知"
+    ]
+  },
+  {
+    "id": "wei-suo-passive",
+    "name": "为…所…",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "被 in its written form.",
+    "examples": [
+      "这一观点为大家所接受"
+    ]
+  },
+  {
+    "id": "yu-preposition",
+    "name": "于 fused to the verb",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "位于, 属于, 在于, 来源于.",
+    "examples": [
+      "问题在于时间不够",
+      "这座桥建于一九六八年"
+    ]
+  },
+  {
+    "id": "zhiyu",
+    "name": "至于 to turn to the next matter",
+    "level": 6,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Moving on once the first thing is settled.",
+    "examples": [
+      "至于费用问题，我们下次再谈"
+    ]
+  },
+  {
+    "id": "buliao",
+    "name": "不料 for what nobody expected",
+    "level": 6,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A turn that overturns the plan just described.",
+    "examples": [
+      "本想早点儿出发，不料路上堵车"
+    ]
+  },
+  {
+    "id": "suffix-hua",
+    "name": "—化 for turning into",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A process named as a noun where English needs a clause.",
+    "examples": [
+      "现代化",
+      "全球化",
+      "这个问题被简单化了"
+    ]
+  },
+  {
+    "id": "suffix-xing",
+    "name": "—性 for the quality of being",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "An adjective turned into the property it names.",
+    "examples": [
+      "可能性",
+      "重要性",
+      "这个方案的可行性"
+    ]
+  },
+  {
+    "id": "prefix-wu-fei",
+    "name": "无—, 非—, 超—, 反—",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A negation or an intensification carried by a bound prefix.",
+    "examples": [
+      "无条件",
+      "非正式",
+      "超出预期"
+    ]
+  },
+  {
+    "id": "mingming",
+    "name": "明明 for the plain fact being ignored",
+    "level": 6,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something obviously true, set against what followed anyway.",
+    "examples": [
+      "他明明知道，却什么也没说"
+    ]
+  },
+  {
+    "id": "weibi",
+    "name": "未必 for not necessarily",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doubting a conclusion without denying it.",
+    "examples": [
+      "贵的未必就好"
+    ]
+  },
+  {
+    "id": "daoshi",
+    "name": "倒 for the other way round",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A mild contradiction of what was assumed.",
+    "examples": [
+      "这个办法倒是可以试试",
+      "他倒不介意"
+    ]
+  },
+  {
+    "id": "gancui",
+    "name": "干脆 for cutting it short",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Abandoning the half measure for the blunt option.",
+    "examples": [
+      "干脆别去了"
+    ]
+  },
+  {
+    "id": "zongsuan",
+    "name": "总算 for at long last",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "终于 with the trouble it cost still in view.",
+    "examples": [
+      "等了三个小时，总算轮到我们了"
+    ]
+  },
+  {
+    "id": "ba-inanimate",
+    "name": "把 with a situation as subject",
+    "level": 6,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A circumstance, not a person, doing something to something.",
+    "examples": [
+      "一场大雨把比赛推迟了",
+      "这件事把他吓坏了"
+    ]
+  },
+  {
+    "id": "tou-le",
+    "name": "透了 for utterly",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A bad state carried to its limit.",
+    "examples": [
+      "我对他失望透了"
+    ]
+  },
+  {
+    "id": "a-zhe-a-na",
+    "name": "A这A那",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Fussing over one thing then another, disapprovingly.",
+    "examples": [
+      "别挑这挑那的",
+      "他一天到晚说这说那"
+    ]
+  },
+  {
+    "id": "zuo-a-you-b",
+    "name": "左A右B",
+    "level": 6,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something from every angle, over and over.",
+    "examples": [
+      "左思右想",
+      "左一句右一句"
+    ]
+  },
+  {
+    "id": "x-gui-x",
+    "name": "X归X，Y归Y",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Conceding one thing while keeping it apart from another.",
+    "examples": [
+      "说归说，做归做",
+      "朋友归朋友，生意归生意"
+    ]
+  },
+  {
+    "id": "dao-weizhi",
+    "name": "到…为止",
+    "level": 6,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A count or a state running up to a stated cut-off.",
+    "examples": [
+      "到目前为止，一切顺利"
+    ]
+  },
+  {
+    "id": "haobu-rongyi",
+    "name": "好不容易",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Something got only after real trouble.",
+    "examples": [
+      "我好不容易才买到票"
+    ]
+  },
+  {
+    "id": "ma-la-particles",
+    "name": "嘛, 啦, 呗",
+    "level": 6,
+    "kind": "particle",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Ending a sentence to mark it obvious, settled, or resigned.",
+    "examples": [
+      "这不是很简单嘛",
+      "我早就说过啦"
+    ]
+  },
+  {
+    "id": "renjia",
+    "name": "人家 for the other party",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Someone else, or the speaker referring to themselves with a complaint.",
+    "examples": [
+      "人家都准备好了",
+      "人家不想去嘛"
+    ]
+  },
+  {
+    "id": "yijiu",
+    "name": "仍旧 and 依旧",
+    "level": 6,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "还是 in writing.",
+    "examples": [
+      "情况依旧没有好转"
+    ]
+  },
+  {
+    "id": "yizai-zaisan",
+    "name": "一再 and 再三",
+    "level": 6,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Something done again and again, insistently.",
+    "examples": [
+      "他一再强调这一点",
+      "再三考虑之后"
+    ]
+  },
+  {
+    "id": "tedi-teyi",
+    "name": "特意 and 特地",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going out of one's way for a single purpose.",
+    "examples": [
+      "他特意来看你"
+    ]
+  },
+  {
+    "id": "picture-classifiers",
+    "name": "串, 滴, 扇, 枝",
+    "level": 6,
+    "kind": "measure-word",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Classifiers chosen for the picture they carry.",
+    "examples": [
+      "一串葡萄",
+      "一滴水",
+      "一扇窗户"
+    ]
+  },
+  {
+    "id": "ningke-yebu",
+    "name": "宁可…也不…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Taking the worse option to avoid a worse one still.",
+    "examples": [
+      "宁可自己吃亏，也不愿麻烦别人"
+    ]
+  },
+  {
+    "id": "yuqi-buru",
+    "name": "与其…不如…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Rejecting one course in favour of another.",
+    "examples": [
+      "与其在这儿等，不如先回去"
+    ]
+  },
+  {
+    "id": "zhisuoyi",
+    "name": "之所以…是因为…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "The result stated first, the reason held back.",
+    "examples": [
+      "他之所以成功，是因为从不轻易放弃"
+    ]
+  },
+  {
+    "id": "bieshuo-dou",
+    "name": "别说…，都或也…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Ruling out the larger case because the smaller one already fails.",
+    "examples": [
+      "别说一千块，一百块我都拿不出来"
+    ]
+  },
+  {
+    "id": "bushuo-hai",
+    "name": "…不说，还…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "One complaint, then a worse one on top of it.",
+    "examples": [
+      "东西贵不说，质量还差"
+    ]
+  },
+  {
+    "id": "shangqie-hekuang",
+    "name": "尚且…，何况…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "True in the easier case, so certainly true in the harder one.",
+    "examples": [
+      "专家尚且没有把握，何况我们"
+    ]
+  },
+  {
+    "id": "lian-gengbuyong",
+    "name": "连…都…，更不用说…了",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The minimum failing, so everything above it is out of the question.",
+    "examples": [
+      "他连汉字都认不全，更不用说读小说了"
+    ]
+  },
+  {
+    "id": "yilai-erlai",
+    "name": "一来…，二来…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Reasons counted off in order.",
+    "examples": [
+      "一来时间不够，二来经费也有限"
+    ]
+  },
+  {
+    "id": "yize-erze",
+    "name": "一则…，二则…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "一来二来 in writing.",
+    "examples": [
+      "一则可以省钱，二则可以省时间"
+    ]
+  },
+  {
+    "id": "zongran-ye",
+    "name": "纵然…，也…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "即使 at its most formal.",
+    "examples": [
+      "纵然困难重重，也不能就此放弃"
+    ]
+  },
+  {
+    "id": "xingkui-buran",
+    "name": "幸亏…，不然…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A near miss avoided by one lucky circumstance.",
+    "examples": [
+      "幸亏你提醒我，不然就忘了"
+    ]
+  },
+  {
+    "id": "gu-causal",
+    "name": "故 for therefore",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "所以 in formal prose.",
+    "examples": [
+      "因证据不足，故不予受理"
+    ]
+  },
+  {
+    "id": "yizhiyu",
+    "name": "以至于 for the point it reached",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A cause carried far enough to produce a stated extreme.",
+    "examples": [
+      "他太投入了，以至于忘了时间"
+    ]
+  },
+  {
+    "id": "jianyu",
+    "name": "鉴于 for in view of",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A circumstance offered as the grounds for a decision.",
+    "examples": [
+      "鉴于目前的情况，会议推迟举行"
+    ]
+  },
+  {
+    "id": "benzhe-jiyu",
+    "name": "本着 and 基于",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Acting on a stated principle, or reasoning from a stated basis.",
+    "examples": [
+      "本着公平的原则处理",
+      "基于以上分析，我们建议暂缓"
+    ]
+  },
+  {
+    "id": "kuangqie",
+    "name": "况且 for and besides",
+    "level": 7,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An extra reason added once the argument is already made.",
+    "examples": [
+      "路太远了，况且我也没时间"
+    ]
+  },
+  {
+    "id": "miande",
+    "name": "免得 and 以防",
+    "level": 7,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something to head off a specific trouble.",
+    "examples": [
+      "提前打个电话，免得白跑一趟"
+    ]
+  },
+  {
+    "id": "written-conditionals",
+    "name": "若, 倘若, 假使",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "如果 in a document.",
+    "examples": [
+      "若有疑问，请与我们联系",
+      "倘若属实，后果不堪设想"
+    ]
+  },
+  {
+    "id": "feide-cai",
+    "name": "非得…才…",
+    "level": 7,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Insisting that nothing short of this will do.",
+    "examples": [
+      "非得亲眼看见才肯相信"
+    ]
+  },
+  {
+    "id": "ren-ye",
+    "name": "任…也…",
+    "level": 7,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "无论 compressed into a single clause.",
+    "examples": [
+      "任你怎么说，他也不改主意"
+    ]
+  },
+  {
+    "id": "weile-qijian",
+    "name": "为…起见",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A precaution named as the reason for a measure.",
+    "examples": [
+      "为安全起见，请系好安全带"
+    ]
+  },
+  {
+    "id": "yi-purpose",
+    "name": "以 for in order to",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "为了 moved to the second half, in official prose.",
+    "examples": [
+      "加强管理，以提高效率"
+    ]
+  },
+  {
+    "id": "youyu-shengguo",
+    "name": "优于, 胜过, 高于",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "比 replaced by a verb in a written comparison.",
+    "examples": [
+      "新方案明显优于旧方案",
+      "实际支出高于预算"
+    ]
+  },
+  {
+    "id": "bale-eryi",
+    "name": "无非…罢了, 不过…而已",
+    "level": 7,
+    "kind": "particle",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Playing something down to nothing more than what is stated.",
+    "examples": [
+      "这无非是个借口罢了",
+      "不过是巧合而已"
+    ]
+  },
+  {
+    "id": "zonger-yanzhi",
+    "name": "总而言之, 简言之, 综上所述",
+    "level": 7,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Closing an argument in writing.",
+    "examples": [
+      "综上所述，这一做法并不可取"
+    ]
+  },
+  {
+    "id": "huanjuhuashuo",
+    "name": "换句话说, 反过来说",
+    "level": 7,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Restating the same point from the other side.",
+    "examples": [
+      "换句话说，问题出在流程上"
+    ]
+  },
+  {
+    "id": "suishuo-dan",
+    "name": "虽说…，但…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "虽然 as speech concedes a point.",
+    "examples": [
+      "虽说年纪不小了，但身体还很硬朗"
+    ]
+  },
+  {
+    "id": "biekan",
+    "name": "别看…，…",
+    "level": 7,
+    "kind": "missing-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Warning against a judgement made on appearances.",
+    "examples": [
+      "别看他年轻，经验很丰富"
+    ]
+  },
+  {
+    "id": "x-daoshi-x",
+    "name": "X倒是X了，…",
+    "level": 7,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Granting that it happened, then the complaint.",
+    "examples": [
+      "东西买倒是买了，就是不太合适"
+    ]
+  },
+  {
+    "id": "chengyu-effort",
+    "name": "成语 for effort and persistence",
+    "level": 7,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "全力以赴, 坚持不懈, 半途而废 — where a clause would go flabby.",
+    "examples": [
+      "他全力以赴地准备这次比赛",
+      "做事最忌半途而废"
+    ]
+  },
+  {
+    "id": "chengyu-scale",
+    "name": "成语 for quantity and crowds",
+    "level": 7,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "人山人海, 络绎不绝, 屈指可数.",
+    "examples": [
+      "广场上人山人海",
+      "来参观的人络绎不绝"
+    ]
+  },
+  {
+    "id": "chengyu-time",
+    "name": "成语 for time and speed",
+    "level": 7,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "争分夺秒, 日新月异, 转眼之间.",
+    "examples": [
+      "科技发展日新月异",
+      "大家争分夺秒地赶工"
+    ]
+  },
+  {
+    "id": "wulun-yufou",
+    "name": "无论…与否，都…",
+    "level": 8,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Both answers to a yes-or-no question leading to the same thing.",
+    "examples": [
+      "无论成功与否，都要认真总结"
+    ]
+  },
+  {
+    "id": "fan-zhe-jun",
+    "name": "凡…者，均…",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "凡是…都 as regulations put it.",
+    "examples": [
+      "凡逾期未缴者，均按违约处理"
+    ]
+  },
+  {
+    "id": "zhici-zhiji",
+    "name": "值此…之际",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": true,
+    "instruction": "A ceremonial opening for an occasion.",
+    "examples": [
+      "值此新春佳节之际，谨致以诚挚的问候"
+    ]
+  },
+  {
+    "id": "xiang-zhiyi",
+    "name": "向…致以…",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": true,
+    "instruction": "Formal conveying of thanks, greetings, or condolences.",
+    "examples": [
+      "向全体员工致以衷心的感谢"
+    ]
+  },
+  {
+    "id": "yin-er",
+    "name": "因…而…",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Cause and effect compressed into one clause.",
+    "examples": [
+      "他因表现优异而获得晋升"
+    ]
+  },
+  {
+    "id": "zai-zhiyu",
+    "name": "在…之余",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "What gets done alongside or after the main business.",
+    "examples": [
+      "在工作之余，他还坚持写作"
+    ]
+  },
+  {
+    "id": "moguoyu",
+    "name": "莫过于",
+    "level": 8,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Naming the extreme case of a category.",
+    "examples": [
+      "最令人感动的莫过于此"
+    ]
+  },
+  {
+    "id": "buyayu",
+    "name": "不亚于, 仅次于",
+    "level": 8,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Ranking something level with a known benchmark, or just under it.",
+    "examples": [
+      "其影响不亚于一场革命",
+      "产量仅次于去年"
+    ]
+  },
+  {
+    "id": "shi-erding",
+    "name": "视…而定",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "An outcome left to hang on a stated factor.",
+    "examples": [
+      "具体时间视天气而定"
+    ]
+  },
+  {
+    "id": "suowei-jiushi",
+    "name": "所谓…，就是…",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Defining a term the moment it is introduced.",
+    "examples": [
+      "所谓共享经济，就是把闲置资源重新配置"
+    ]
+  },
+  {
+    "id": "yousuo",
+    "name": "有所 + two-syllable verb",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A change acknowledged without measuring it.",
+    "examples": [
+      "情况有所好转",
+      "双方在这一问题上有所保留"
+    ]
+  },
+  {
+    "id": "yuyi-jiayi",
+    "name": "予以 and 加以",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "The verb turned into an object and handed to a light verb.",
+    "examples": [
+      "对相关人员予以表彰",
+      "这些问题必须加以解决"
+    ]
+  },
+  {
+    "id": "bingfei",
+    "name": "并非 for it is not the case",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "不是 in formal denial.",
+    "examples": [
+      "这并非个别现象"
+    ]
+  },
+  {
+    "id": "kewei",
+    "name": "可谓 for it may be called",
+    "level": 8,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A summing-up judgement in written prose.",
+    "examples": [
+      "此举可谓一举两得"
+    ]
+  },
+  {
+    "id": "mianbuliao",
+    "name": "免不了 and 难免",
+    "level": 8,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something unwelcome that could not have been avoided.",
+    "examples": [
+      "刚开始难免会出错",
+      "这样的争论免不了"
+    ]
+  },
+  {
+    "id": "banbude",
+    "name": "巴不得 and 恨不得",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Wanting something so badly the wish turns absurd.",
+    "examples": [
+      "我巴不得马上放假",
+      "他恨不得一天写完"
+    ]
+  },
+  {
+    "id": "fanbuzhao",
+    "name": "犯不着 and 犯得着",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Judging something not worth the trouble it costs.",
+    "examples": [
+      "犯不着为这点儿小事生气"
+    ]
+  },
+  {
+    "id": "dongbudong",
+    "name": "动不动就…",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A habit of doing something at the slightest provocation.",
+    "examples": [
+      "他动不动就发脾气"
+    ]
+  },
+  {
+    "id": "ai-a-bu-a",
+    "name": "爱A不A",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Washing one's hands of someone else's choice.",
+    "examples": [
+      "爱来不来",
+      "爱信不信"
+    ]
+  },
+  {
+    "id": "de-yaoming",
+    "name": "得要命 and 得要死",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "An intensity stated as a threat to life.",
+    "examples": [
+      "热得要命",
+      "紧张得要死"
+    ]
+  },
+  {
+    "id": "kanzai-mianzi",
+    "name": "看在…的面子上",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Conceding something for a third party's sake.",
+    "examples": [
+      "看在老朋友的面子上，就算了吧"
+    ]
+  },
+  {
+    "id": "mei-shenme-hao",
+    "name": "没什么好…的",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Dismissing a topic as not worth the action.",
+    "examples": [
+      "这没什么好说的"
+    ]
+  },
+  {
+    "id": "yeba-yehao",
+    "name": "X也好，Y也罢",
+    "level": 8,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two cases named and then made irrelevant.",
+    "examples": [
+      "成功也好，失败也罢，都是收获"
+    ]
+  },
+  {
+    "id": "yuqishuo-buru",
+    "name": "与其说…不如说…",
+    "level": 8,
+    "kind": "missing-piece",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Rejecting one characterisation for a truer one.",
+    "examples": [
+      "与其说是运气，不如说是准备充分"
+    ]
+  },
+  {
+    "id": "hebi-heku",
+    "name": "何必, 何苦, 何不",
+    "level": 8,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Advice or reproach put as a question that expects no answer.",
+    "examples": [
+      "何必这么着急？",
+      "何不试试别的办法？"
+    ]
+  },
+  {
+    "id": "shared-subject-ellipsis",
+    "name": "One subject across several clauses",
+    "level": 8,
+    "kind": "extra-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A chain of clauses about the same person; repeating them reads as translation.",
+    "examples": [
+      "他推开门，走进屋子，坐了下来"
+    ]
+  },
+  {
+    "id": "topic-chain",
+    "name": "A topic held across clauses",
+    "level": 8,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing set up first, then several comments on it without naming it again.",
+    "examples": [
+      "这本书我买了三年，一直放在书架上，到现在也没看完"
+    ]
+  },
+  {
+    "id": "chengyu-speech",
+    "name": "成语 for how someone speaks",
+    "level": 8,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "滔滔不绝, 直言不讳, 支支吾吾.",
+    "examples": [
+      "他一说起来就滔滔不绝",
+      "被问到时支支吾吾"
+    ]
+  },
+  {
+    "id": "chengyu-difficulty",
+    "name": "成语 for trouble and urgency",
+    "level": 8,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "迫在眉睫, 束手无策, 举步维艰.",
+    "examples": [
+      "改革已迫在眉睫",
+      "面对这种局面，大家束手无策"
+    ]
+  },
+  {
+    "id": "chengyu-contrast",
+    "name": "成语 for likeness and difference",
+    "level": 8,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "截然不同, 大同小异, 相辅相成.",
+    "examples": [
+      "两者截然不同",
+      "几个方案大同小异"
+    ]
+  },
+  {
+    "id": "sizige-negation",
+    "name": "不A不B, 非A非B, 无A不B",
+    "level": 8,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A four-character frame built out of two negations.",
+    "examples": [
+      "不卑不亢",
+      "无孔不入",
+      "非亲非故"
+    ]
+  },
+  {
+    "id": "spoken-hedges",
+    "name": "老实说, 说真的, 话说回来",
+    "level": 8,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Marking a turn in what you are saying before you make it.",
+    "examples": [
+      "老实说，我也没什么把握",
+      "话说回来，他也不容易"
+    ]
+  },
+  {
+    "id": "nai-copula",
+    "name": "乃 for formal identification",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "是 in classical-flavoured written judgement.",
+    "examples": [
+      "此乃当务之急",
+      "失败乃成功之母"
+    ]
+  },
+  {
+    "id": "qi-rhetorical",
+    "name": "岂 for surely not",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "难道 in literary rhetoric.",
+    "examples": [
+      "岂能因噎废食？",
+      "岂不是自相矛盾"
+    ]
+  },
+  {
+    "id": "wucong-wuke",
+    "name": "无从, 无可, 无须, 不容",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A formal denial that there is any way, any room, or any need.",
+    "examples": [
+      "无从下手",
+      "无可厚非",
+      "这一点不容忽视"
+    ]
+  },
+  {
+    "id": "yi-wei",
+    "name": "以…为…",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Naming what something takes as its basis, its example, or its focus.",
+    "examples": [
+      "以人为本",
+      "以此为例",
+      "以质量为核心"
+    ]
+  },
+  {
+    "id": "er-connective",
+    "name": "而 joining clauses",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A link that is neither 和 nor 但是, carrying contrast or consequence by position alone.",
+    "examples": [
+      "少而精",
+      "取而代之",
+      "不战而胜"
+    ]
+  },
+  {
+    "id": "ju-suozhi",
+    "name": "据…所知, 据悉",
+    "level": 9,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Attributing a claim to a source without naming one.",
+    "examples": [
+      "据悉，该项目已经启动",
+      "据我所知，情况并非如此"
+    ]
+  },
+  {
+    "id": "zongguan",
+    "name": "纵观…，不难发现…",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Surveying a field, then drawing the conclusion off it.",
+    "examples": [
+      "纵观全局，不难发现问题的根源"
+    ]
+  },
+  {
+    "id": "jiezhi",
+    "name": "截至, 迄今为止, 时至今日",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A count or a state fixed at a formal cut-off.",
+    "examples": [
+      "截至目前，已有三千人报名",
+      "时至今日，这一问题仍未解决"
+    ]
+  },
+  {
+    "id": "ling-shi-causative",
+    "name": "令 and 使 without a person as subject",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A development producing a reaction, stated impersonally.",
+    "examples": [
+      "这一发现令人深思",
+      "使之成为行业标准"
+    ]
+  },
+  {
+    "id": "zai-tongshi",
+    "name": "在…的同时，也…",
+    "level": 9,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things held true of one development at once.",
+    "examples": [
+      "在提高效率的同时，也降低了成本"
+    ]
+  },
+  {
+    "id": "bujin-gengshi",
+    "name": "不仅…更是…",
+    "level": 9,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "递进 escalated in argument.",
+    "examples": [
+      "这不仅是技术问题，更是管理问题"
+    ]
+  },
+  {
+    "id": "zhi-classical",
+    "name": "之 inside a written noun phrase",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "的 in a fixed literary shape, or 之 standing in for the object.",
+    "examples": [
+      "前所未有之变局",
+      "三分之一",
+      "取而代之"
+    ]
+  },
+  {
+    "id": "parallel-four-char",
+    "name": "Matched four-character clauses",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Two or three four-character units in step, carrying one point.",
+    "examples": [
+      "条理清晰，论证严密",
+      "内容详实，结构合理"
+    ]
+  },
+  {
+    "id": "yu-comparison-classical",
+    "name": "于 after the adjective",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A comparison made without 比.",
+    "examples": [
+      "生于忧患，死于安乐",
+      "重于泰山"
+    ]
+  },
+  {
+    "id": "qie-naizhi",
+    "name": "且, 乃至, 加之",
+    "level": 9,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Written conjunctions stacking clauses in a report.",
+    "examples": [
+      "价格合理且质量可靠",
+      "影响遍及全国乃至海外"
+    ]
+  },
+  {
+    "id": "guanjian-zaiyu",
+    "name": "关键在于, 问题在于",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Locating the crux of the matter.",
+    "examples": [
+      "关键在于执行",
+      "问题在于时间太紧"
+    ]
+  },
+  {
+    "id": "wulun-ruhe",
+    "name": "无论如何",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Insisting on something regardless of everything just raised.",
+    "examples": [
+      "无论如何也要试一试"
+    ]
+  },
+  {
+    "id": "tui-yibu-shuo",
+    "name": "退一步说",
+    "level": 9,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Giving ground on purpose, to make the argument harder to refuse.",
+    "examples": [
+      "退一步说，就算他不同意，我们也可以先做"
+    ]
+  },
+  {
+    "id": "guigen-daodi",
+    "name": "归根到底",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reducing an argument to its root.",
+    "examples": [
+      "归根到底还是钱的问题"
+    ]
+  },
+  {
+    "id": "spoken-discourse-markers",
+    "name": "你还别说, 这不, 说到哪儿去了",
+    "level": 9,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Steering a conversation with a phrase that carries no content.",
+    "examples": [
+      "你还别说，这个办法真管用",
+      "这不，他自己来了"
+    ]
+  },
+  {
+    "id": "yi-particle",
+    "name": "也罢, 矣",
+    "level": 9,
+    "kind": "particle",
+    "use": "written",
+    "formulaic": true,
+    "instruction": "Literary sentence-final particles of resignation or finality.",
+    "examples": [
+      "也罢，随他去吧"
+    ]
+  },
+  {
+    "id": "chengyu-scenery",
+    "name": "成语 for scene and atmosphere",
+    "level": 9,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "鸟语花香, 万籁俱寂, 美不胜收.",
+    "examples": [
+      "山间鸟语花香",
+      "夜深了，四周万籁俱寂"
+    ]
+  },
+  {
+    "id": "chengyu-reasoning",
+    "name": "成语 for weighing and reasoning",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "权衡利弊, 循序渐进, 因势利导.",
+    "examples": [
+      "权衡利弊之后，他选择了留下",
+      "学习要循序渐进"
+    ]
+  },
+  {
+    "id": "chengyu-criticism",
+    "name": "成语 for criticising a course of action",
+    "level": 9,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "一意孤行, 舍本逐末, 因噎废食.",
+    "examples": [
+      "他一意孤行，最终失败",
+      "这样做无异于舍本逐末"
+    ]
+  },
+  {
+    "id": "chengyu-character",
+    "name": "成语 for what a person is like",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "德高望重, 平易近人, 深藏不露.",
+    "examples": [
+      "这位老教授德高望重",
+      "他为人平易近人"
+    ]
+  },
+  {
+    "id": "chengyu-outcome",
+    "name": "成语 for how it turned out",
+    "level": 9,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "水到渠成, 事与愿违, 功亏一篑.",
+    "examples": [
+      "准备充分，成功水到渠成",
+      "结果事与愿违"
+    ]
+  }
+]
