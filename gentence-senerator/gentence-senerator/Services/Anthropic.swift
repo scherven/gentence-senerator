@@ -49,6 +49,12 @@ actor Anthropic {
         self.session = session
     }
 
+    /// `thinking` is deliberately never set. On Opus 5 — unlike 4.8 and 4.7 —
+    /// omitting it runs adaptive thinking, which is what we want: every reply
+    /// here is schema-constrained JSON, and `thinking: {type: "disabled"}` on
+    /// this model can leak `<thinking>` tags into the text, which would land
+    /// verbatim in a rule or a question, and would break the partial-JSON
+    /// scanners in `Tutor`. `effort` is the lever instead.
     nonisolated private func request(cachedSystem: String, user: String, schema: [String: Any]?,
                         effort: Effort, maxTokens: Int, streaming: Bool) throws -> URLRequest {
         var outputConfig: [String: Any] = ["effort": effort.rawValue]
@@ -91,6 +97,30 @@ actor Anthropic {
         case refused(String)
     }
 
+    /// Opens the connection and hands back the bytes to read.
+    nonisolated private func open(cachedSystem: String, user: String, schema: [String: Any],
+                                  effort: Effort, maxTokens: Int)
+    async throws -> URLSession.AsyncBytes {
+        var request = try self.request(cachedSystem: cachedSystem, user: user,
+                                       schema: schema, effort: effort,
+                                       maxTokens: maxTokens, streaming: true)
+        request.timeoutInterval = 180
+
+        let (bytes, response) = try await self.session.bytes(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw Failure.malformed("no HTTP response")
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            var body = ""
+            for try await line in bytes.lines {
+                body += line
+                if body.count > 400 { break }
+            }
+            throw Failure.http(http.statusCode, String(body.prefix(400)))
+        }
+        return bytes
+    }
+
     nonisolated func stream(cachedSystem: String,
                 user: String,
                 schema: [String: Any],
@@ -100,23 +130,9 @@ actor Anthropic {
             let work = Task {
                 do {
                     guard !key.isEmpty else { throw Failure.noKey }
-                    var request = try self.request(cachedSystem: cachedSystem, user: user,
-                                                   schema: schema, effort: effort,
-                                                   maxTokens: maxTokens, streaming: true)
-                    request.timeoutInterval = 180
-
-                    let (bytes, response) = try await self.session.bytes(for: request)
-                    guard let http = response as? HTTPURLResponse else {
-                        throw Failure.malformed("no HTTP response")
-                    }
-                    guard (200..<300).contains(http.statusCode) else {
-                        var body = ""
-                        for try await line in bytes.lines {
-                            body += line
-                            if body.count > 400 { break }
-                        }
-                        throw Failure.http(http.statusCode, String(body.prefix(400)))
-                    }
+                    let bytes = try await self.open(
+                        cachedSystem: cachedSystem, user: user, schema: schema,
+                        effort: effort, maxTokens: maxTokens)
 
                     var usage = Usage(inputTokens: 0, outputTokens: 0,
                                       cacheReadTokens: 0, cacheWriteTokens: 0)
@@ -175,7 +191,8 @@ actor Anthropic {
         guard !key.isEmpty else { throw Failure.noKey }
 
         let request = try self.request(cachedSystem: cachedSystem, user: user, schema: schema,
-                                       effort: effort, maxTokens: maxTokens, streaming: false)
+                                       effort: effort, maxTokens: maxTokens,
+                                       streaming: false)
         let (data, response) = try await session.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {

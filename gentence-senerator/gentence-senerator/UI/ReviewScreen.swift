@@ -19,7 +19,9 @@ struct ReviewScreen: View {
     let depthError: String?
     let onRetryDepth: () -> Void
 
-    @State private var stages: [String: Int] = [:]
+    /// Findings the learner has opened. Per screen, not persisted: reopening a
+    /// review is asking to read it again.
+    @State private var opened: Set<String> = []
 
     private var review: Review? { turn.review }
 
@@ -148,7 +150,7 @@ struct ReviewScreen: View {
                         ForEach(review.problems) { atom in
                             StagedAtomRow(
                                 atom: atom,
-                                stage: binding(for: atom),
+                                open: binding(for: atom),
                                 knowledge: knowledge[atom.id] ?? .unclassified,
                                 onClassify: { onClassify(atom, $0) },
                                 onOpen: { onOpenAtom(atom) }
@@ -281,10 +283,10 @@ struct ReviewScreen: View {
         }
     }
 
-    private func binding(for atom: Atom) -> Binding<Int> {
+    private func binding(for atom: Atom) -> Binding<Bool> {
         Binding(
-            get: { stages[atom.id] ?? 0 },
-            set: { stages[atom.id] = $0 }
+            get: { opened.contains(atom.id) },
+            set: { if $0 { opened.insert(atom.id) } else { opened.remove(atom.id) } }
         )
     }
 }

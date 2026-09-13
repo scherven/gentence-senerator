@@ -49,6 +49,55 @@ struct Lexicon {
         guard let bank = banks[language] else { return [] }
         return bank.bands.compactMap { $0.value <= level ? $0.key : nil }
     }
+
+    /// One band exactly. `upTo` is what they should have; this is the band
+    /// above it, which they are not expected to have at all.
+    func band(at level: Int, language: Language) -> [String] {
+        guard let bank = banks[language] else { return [] }
+        return bank.bands.compactMap { $0.value == level ? $0.key : nil }
+    }
+}
+
+/// Vocabulary worked into a generated sentence, and never anything more.
+///
+/// Two sources answering different questions. `have` is a word already inside
+/// the learner's band that they have never once said — widening production,
+/// and the only half that needs their history. `new` is a word one band up,
+/// sampled blind: nothing is known about it and nothing is expected of it.
+///
+/// Seasoning, not a task. The learner is not told the words are there, is never
+/// asked about them, and nothing is written down beyond the production count
+/// every attempt already gets.
+///
+/// Codable because the draw is held for the whole day — see `DayDraw`.
+struct WordSeeds: Codable, Hashable {
+    var have: [String] = []
+    var new: [String] = []
+
+    var isEmpty: Bool { have.isEmpty && new.isEmpty }
+
+    /// Two of each. One is not enough of a chance to meet a word and four turn
+    /// a sentence into a list. The draw is random; what is eligible is not.
+    static func read(band: [String], above: [String],
+                     progress: Progress, language: Language,
+                     each: Int = 2) -> WordSeeds {
+        WordSeeds(
+            have: Array(progress.neverProduced(among: band, language: language)
+                .shuffled().prefix(each)),
+            new: Array(above.shuffled().prefix(each))
+        )
+    }
+}
+
+extension WordSeeds {
+    /// `Vault.load` decodes behind `try?`, and a synthesised `init(from:)`
+    /// throws on a missing key rather than taking the default — discarding the
+    /// whole stored draw. In an extension, to keep the memberwise init.
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        have = try container.decodeIfPresent([String].self, forKey: .have) ?? []
+        new = try container.decodeIfPresent([String].self, forKey: .new) ?? []
+    }
 }
 
 // MARK: - Finding a word in a sentence

@@ -103,37 +103,39 @@ struct ModeScreen: View {
     // MARK: Phases
 
     private var start: some View {
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
-            ForEach(Mode.allCases) { mode in
-                let tally = store.tally(mode)
-                let spent = store.isDone(mode)
-                Button { Task { await store.begin(mode) } } label: {
-                    VStack(alignment: .leading, spacing: 3) {
-                        HStack(alignment: .firstTextBaseline) {
-                            Text(mode.name).font(Theme.F.title)
-                                .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.ink)
-                            Spacer()
-                            if tally.done > 0 {
-                                Text("\(tally.done)/\(tally.goal)")
-                                    .font(Theme.F.label)
-                                    .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.accent)
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.M.gap) {
+                ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
+                ForEach(Mode.allCases) { mode in
+                    let tally = store.tally(mode)
+                    let spent = store.isDone(mode)
+                    Button { Task { await store.begin(mode) } } label: {
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(mode.name).font(Theme.F.title)
+                                    .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.ink)
+                                Spacer()
+                                if tally.done > 0 {
+                                    Text("\(tally.done)/\(tally.goal)")
+                                        .font(Theme.F.label)
+                                        .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.accent)
+                                }
                             }
+                            Text(blurb(mode, spent: spent, started: tally.done > 0))
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                         }
-                        Text(blurb(mode, spent: spent, started: tally.done > 0))
-                            .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(Theme.M.pad)
+                        .background(spent ? Theme.C.raised : Theme.C.surface)
+                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(Theme.M.pad)
-                    .background(spent ? Theme.C.raised : Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                    .buttonStyle(.plain)
+                    .disabled(spent)
                 }
-                .buttonStyle(.plain)
-                .disabled(spent)
+                PlanView(plan: store.plan)
             }
-            Spacer()
+            .padding(Theme.M.gap)
         }
-        .padding(Theme.M.gap)
     }
 
     private func blurb(_ mode: Mode, spent: Bool, started: Bool) -> String {

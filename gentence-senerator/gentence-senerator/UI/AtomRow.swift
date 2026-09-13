@@ -37,38 +37,36 @@ struct AtomRow: View {
     }
 }
 
-/// A finding revealed in three beats: where, then what, then the fix.
+/// A finding revealed in two beats: where, then what it is and the fix.
 ///
-/// The learner gets a chance to self-repair at each step, and after the fix is
-/// shown they say whether they knew it — which decides whether this is
-/// scheduled at all.
+/// Closed, the row says only where the trouble is, which is the learner's
+/// chance to repair it themselves. Opening it is them saying they want the
+/// answer, so the answer arrives — there is nothing left to confirm. After it
+/// they say whether they knew it, which decides whether this is scheduled.
+///
+/// The staging of the *text* still matters and is unchanged: `locate` comes
+/// with the review, the rest is fetched while the learner is reading it.
 struct StagedAtomRow: View {
     let atom: Atom
-    @Binding var stage: Int
+    @Binding var open: Bool
     let knowledge: Progress.Encounter.Knowledge
     let onClassify: (Progress.Encounter.Knowledge) -> Void
     let onOpen: () -> Void
 
     private var headline: String {
-        if stage == 0 { return atom.stages.locate }
+        if !open { return atom.stages.locate }
         return atom.isDeep ? atom.stages.name : "Working it out…"
     }
 
     /// The second call may not have landed yet. Tapping ahead of it waits
     /// rather than showing an empty row.
-    private var waiting: Bool { stage > 0 && !atom.isDeep }
+    private var waiting: Bool { open && !atom.isDeep }
 
-    private var affordance: String {
-        switch stage {
-        case 0:  return "NAME IT +"
-        case 1:  return "FIX +"
-        default: return "LESSON →"
-        }
-    }
+    private var affordance: String { open ? "LESSON →" : "FIX +" }
 
     var body: some View {
         VStack(spacing: 0) {
-            if atom.weight == .start && stage == 0 {
+            if atom.weight == .start && !open {
                 Text("START HERE")
                     .font(Theme.F.label)
                     .tracking(1.2)
@@ -107,23 +105,15 @@ struct StagedAtomRow: View {
             }
             .buttonStyle(.plain)
 
-            if stage >= 1 { body(for: stage) }
+            if open { opened }
         }
     }
 
     @ViewBuilder
-    private func body(for stage: Int) -> some View {
+    private var opened: some View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
             if waiting {
                 ProgressView().tint(Theme.C.accent)
-            } else if stage == 1 {
-                Text("Fix it yourself first.")
-                    .font(Theme.F.note)
-                    .foregroundStyle(Theme.C.ink2)
-                HStack(spacing: 0) {
-                    TinyButton(title: "I've got it") { self.stage = 2 }
-                    TinyButton(title: "Show the fix") { self.stage = 2 }
-                }
             } else {
                 Text(atom.stages.fix)
                     .font(Theme.F.targetSmall)
@@ -166,6 +156,6 @@ struct StagedAtomRow: View {
     }
 
     private func advance() {
-        if stage >= 2 && atom.isDeep { onOpen() } else if stage < 2 { stage += 1 }
+        if !open { open = true } else if atom.isDeep { onOpen() }
     }
 }

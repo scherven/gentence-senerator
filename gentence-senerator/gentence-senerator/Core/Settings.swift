@@ -26,12 +26,13 @@ struct Spend: Codable, Hashable {
     struct Day: Codable, Hashable {
         var input = 0, output = 0, cacheRead = 0, cacheWrite = 0
 
-        /// Opus 5: $5/MTok in, $25/MTok out, cache reads at a tenth of input.
+        /// Opus 5: $5/MTok in, $25/MTok out. Cache reads are a tenth of input,
+        /// writes a quarter more, so both fall out of the input price.
         var dollars: Double {
-            Double(input) / 1_000_000 * 5
-            + Double(output) / 1_000_000 * 25
-            + Double(cacheRead) / 1_000_000 * 0.5
-            + Double(cacheWrite) / 1_000_000 * 6.25
+            (Double(input) * 5
+             + Double(output) * 25
+             + Double(cacheRead) * 0.5
+             + Double(cacheWrite) * 6.25) / 1_000_000
         }
     }
 
@@ -51,6 +52,21 @@ struct Spend: Codable, Hashable {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
         return f.string(from: date)
+    }
+}
+
+/// A default value is not a fallback: the synthesised decoder demands every
+/// key, so adding a counter here would make every day's stored total fail to
+/// decode and `Vault.load` would swallow it behind `try?`. Tolerant of all
+/// four, so the next field added costs nothing. In an extension, so the
+/// memberwise initialiser survives.
+extension Spend.Day {
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        input = try c.decodeIfPresent(Int.self, forKey: .input) ?? 0
+        output = try c.decodeIfPresent(Int.self, forKey: .output) ?? 0
+        cacheRead = try c.decodeIfPresent(Int.self, forKey: .cacheRead) ?? 0
+        cacheWrite = try c.decodeIfPresent(Int.self, forKey: .cacheWrite) ?? 0
     }
 }
 

@@ -94,7 +94,12 @@ actor Tutor {
             Practice.self,
             cachedSystem: Self.practiceSystem(pack),
             user: Self.lessonFacts(request, pack) + "\nThe rule as written: \(lesson.blocks.first?.text ?? "")",
-            schema: Schemas.lessonPractice(for: request.language)
+            schema: Schemas.lessonPractice(for: request.language),
+            // The largest structured reply in the app, and the rungs have to
+            // ladder down testing the same point. Nobody waits on it — it is
+            // fetched while the rule is being read — so this is the one call
+            // where raising effort would cost only money.
+            effort: .medium
         )
 
         lesson.blocks.append(Block(
@@ -480,12 +485,15 @@ actor Tutor {
 
     /// `revisit` are points due for retrieval — woven into an ordinary sentence
     /// rather than served as a card. `stretch` is a point the learner has never
-    /// reached for, when we are deliberately pushing range.
+    /// reached for, when we are deliberately pushing range. `words` is the same
+    /// idea one axis over, and the weakest of the three: seasoning the sentence
+    /// is allowed to ignore.
     func nextPrompt(mode: Mode,
                     language: Language,
                     level: Int,
                     revisit: [String],
                     stretch: GrammarPoint?,
+                    words: WordSeeds = WordSeeds(),
                     avoid: [String]) async throws -> (Generated, Anthropic.Usage) {
 
         let pack = LanguagePacks.pack(for: language)
@@ -496,23 +504,69 @@ actor Tutor {
         if !revisit.isEmpty {
             facts += "\nWork these in without drawing attention to them: \(revisit.joined(separator: ", "))"
         }
+        // Two produce questions in a row came back about which floor a place is
+        // on: told to build the sentence around 二 against 两, the model went
+        // looking for a setting that would host the structure rather than for
+        // something worth asking. The system prompt already forbids exactly
+        // that, but it is the cached prefix and this is the later, more
+        // specific instruction, so this one won. In produce it is now an
+        // opportunity rather than a task. Whether to reach at all is the
+        // caller's call — a nil stretch here means this turn does not — so the
+        // decision and the `pointID` that records it cannot drift apart.
         if let stretch {
+            if mode != .produce {
+                // In translate and listen the sentence exists to be rendered or
+                // heard, so building it around a structure is the job.
+                facts += """
+
+                Write this so a natural rendering needs \(stretch.name).
+                \(stretch.instruction)
+                """
+            } else {
+                facts += """
+
+                If the answer happens to want \(stretch.name) — \
+                \(stretch.instruction) — so much the better. Do not go looking \
+                for a topic that would need it. Ask what you would have asked \
+                anyway.
+                """
+            }
+        }
+        // Never a task, so never an instruction the sentence has to obey: a
+        // prompt built around a word is a vocabulary card with extra steps.
+        if !words.have.isEmpty {
             facts += """
 
-            Build this so the learner has to reach for \(stretch.name).
-            \(stretch.instruction)
+            Words to work in where they fit, never as what the sentence is \
+            about: \(words.have.joined(separator: ", "))
+            In translate the English has to call for them; do not name them.
             """
         }
+        if !words.new.isEmpty {
+            facts += "\nOne of these may slip in unremarked, or not at all: \(words.new.joined(separator: ", "))"
+        }
+        // Repeating the sentence was never the failure worth guarding: two
+        // different questions about which floor a restaurant is on are not two
+        // questions. The setting has to move, not just the wording.
         if !avoid.isEmpty {
-            facts += "\nAlready used today, do not repeat: \(avoid.suffix(20).joined(separator: " | "))"
+            facts += """
+
+            Already asked today. Do not repeat one, and do not ask a different \
+            question about the same setting either — go somewhere else in their \
+            life: \(avoid.suffix(20).joined(separator: " | "))
+            """
         }
 
+        // One sentence under fifteen words, against a two-field schema. The
+        // learner waits on this at the top of every turn with nothing on
+        // screen, so it is the call where effort costs the most and buys the
+        // least.
         return try await api.send(
             Generated.self,
             cachedSystem: Self.generateSystem(pack),
             user: facts,
             schema: Schemas.prompt,
-            effort: .medium
+            effort: .low
         )
     }
 
@@ -546,7 +600,11 @@ actor Tutor {
             The learner wrote: \(seed.context)
             Their question: \(question)
             """,
-            schema: Schemas.freeAnswer(for: language)
+            schema: Schemas.freeAnswer(for: language),
+            // The only call where the learner writes the question, so the input
+            // is not constrained the way the others are, and a wrong
+            // explanation is one they will take on trust.
+            effort: .medium
         )
     }
 
@@ -581,10 +639,21 @@ actor Tutor {
         Exactly one question about the learner's own life: one sentence, one
         question mark, under fifteen words. No preamble, no second question, no
         "and why?". Answerable in two or three sentences.
+        Decide what is worth asking before you think about grammar at all. Pick
+        a corner of their life — work, family, food, money, sleep, travel, a
+        habit, someone they have not called — and ask what you would actually
+        ask a person about it. A structure you are pointed at is at most
+        something the answer may happen to need; it is never the reason for the
+        question, and a question that exists to host one is the wrong question.
+        Land somewhere new each time: two questions about the same place, or
+        the same afternoon, are one question asked twice however different the
+        words.
 
         Sentences are things a person would actually say. No textbook filler, no
         sentences that exist only to contain a grammar point.
         \(pack.generationNotes)
+        Latency-sensitive — the learner is waiting on a blank screen. Begin the
+        reply immediately.
         """
     }
 

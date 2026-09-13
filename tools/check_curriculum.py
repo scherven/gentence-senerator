@@ -14,6 +14,36 @@ FIELDS = {'id', 'name', 'level', 'kind', 'use', 'formulaic', 'instruction', 'exa
 
 errors, notes = [], []
 
+BASELINE = pathlib.Path(__file__).resolve().parent / 'curriculum-ids.txt'
+
+
+def load_baseline():
+    """{language: {id}} of every point ever shipped. Text, one `lang:id` per
+    line, so a dropped id is visible in a diff rather than buried in JSON."""
+    if not BASELINE.exists():
+        return {}
+    out = {}
+    for line in BASELINE.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        lang, _, pid = line.partition(':')
+        out.setdefault(lang, set()).add(pid)
+    return out
+
+
+def write_baseline(found):
+    BASELINE.write_text(
+        '# Every grammar-point id ever shipped. An id is a learner\'s scheduling\n'
+        '# key: drop one and their history for that point is gone. Never delete a\n'
+        '# line by hand — check_curriculum.py fails if a listed id disappears.\n'
+        + ''.join(f'{lang}:{pid}\n'
+                  for lang in sorted(found)
+                  for pid in sorted(found[lang])))
+
+
+baseline = load_baseline()
+
 
 def packs():
     """{language: (allowed kind raw values, level ceiling, swift-literal points)}"""
@@ -82,11 +112,20 @@ def check(lang, allowed, ceiling, swift_points):
         if not levels.get(n):
             errors.append(f'{lang}: no points at level {n}')
 
-    # Points must carry forward: an id that changes loses its scheduling history.
-    dropped = {pid for pid, _ in swift_points} - seen
+    # Points must carry forward: an id that changes loses every learner's
+    # scheduling history for it, silently. LanguagePacks.swift no longer holds
+    # literals to compare against, so the baseline file is the only record.
+    dropped = baseline.get(lang, set()) - seen
     if dropped:
-        errors.append(f'{lang}: ids in LanguagePacks.swift missing from the '
-                      f'curriculum — scheduling history would be lost: {sorted(dropped)}')
+        errors.append(f'{lang}: {len(dropped)} id(s) in {BASELINE.name} are gone from '
+                      f'the curriculum — every learner\'s schedule for them would be '
+                      f'lost: {sorted(dropped)[:8]}'
+                      + (' …' if len(dropped) > 8 else '')
+                      + f'\n      If deliberate, rerun with --update-baseline.')
+    added = seen - baseline.get(lang, set())
+    if added and baseline:
+        notes.append(f'{lang}: {len(added)} new id(s) since the baseline '
+                     f'(fine — rerun with --update-baseline to record them)')
 
     unused = sorted(allowed - {p['kind'] for p in points})
     if unused:
@@ -98,8 +137,14 @@ def check(lang, allowed, ceiling, swift_points):
     return seen
 
 
+found = {}
 for lang, (allowed, ceiling, swift_points) in sorted(packs().items()):
-    check(lang, allowed, ceiling, swift_points)
+    found[lang] = check(lang, allowed, ceiling, swift_points)
+
+if '--update-baseline' in sys.argv:
+    write_baseline(found)
+    print(f'  baseline written: {sum(len(v) for v in found.values())} ids')
+    sys.exit(0)
 
 for n in notes:
     print(f'  {n}')

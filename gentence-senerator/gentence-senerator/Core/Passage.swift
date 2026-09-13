@@ -39,7 +39,8 @@ struct Passage: Codable, Hashable, Identifiable {
     struct Gap: Codable, Hashable {
         let answer: String
         let options: [String]
-        /// Shown after they answer.
+        /// Why one sounds like the other. Carried into the finding's note
+        /// rather than shown on the spot.
         let why: String
 
         var answerIndex: Int { options.firstIndex(of: answer) ?? 0 }
@@ -84,6 +85,85 @@ struct Passage: Codable, Hashable, Identifiable {
         guard let url else { return nil }
         return AudioSource(kind: .recording, url: url, attribution: nil, licence: "CC0",
                            startSeconds: nil, endSeconds: seconds)
+    }
+}
+
+// MARK: - What is shown
+
+extension Passage {
+
+    /// One question's options in the order they are put on screen.
+    ///
+    /// The bundled dialogues list the right option first every time, so shown
+    /// as written the answer is always A. The order is drawn here rather than
+    /// fixed in the data, and seeded off the passage and the question: a view
+    /// body re-evaluates whenever it likes, and buttons that reordered under a
+    /// learner's finger would be worse than the bug.
+    ///
+    /// Answers stay stored as indices into the passage *as written* — a saved
+    /// run has to keep its meaning whatever this order turns out to be — so the
+    /// two translations below are the only place display order exists.
+    struct Choices: Hashable {
+        /// Shown order.
+        let options: [String]
+        /// Per shown option, its index in the passage as written.
+        let order: [Int]
+        /// The shown option that is right.
+        let answer: Int
+        /// Per shown option, the line it is true of. Permuted with `options`,
+        /// or empty — a gap has none.
+        private let lines: [Int]
+
+        init(options: [String], lines: [Int], answer: Int, seed: String) {
+            var order = Array(options.indices)
+            // Fisher-Yates off a seeded generator rather than `shuffled(using:)`:
+            // the order has to survive a relaunch too, and the stdlib promises
+            // nothing about its draw sequence across versions.
+            var state = Choices.hash(seed)
+            for i in stride(from: order.count - 1, through: 1, by: -1) {
+                state = Choices.next(state)
+                order.swapAt(i, Int(state % UInt64(i + 1)))
+            }
+            self.order = order
+            self.options = order.map { options[$0] }
+            // Parallel or absent. A short `optionLines` is malformed data, and
+            // misaligning it silently would point the feedback at a wrong line.
+            self.lines = lines.count == options.count ? order.map { lines[$0] } : []
+            self.answer = order.firstIndex(of: answer) ?? 0
+        }
+
+        /// Where a written index is showing.
+        func slot(of written: Int) -> Int { order.firstIndex(of: written) ?? 0 }
+
+        /// The line a shown option is true of.
+        func line(of slot: Int) -> Int? { lines.indices.contains(slot) ? lines[slot] : nil }
+
+        /// FNV-1a. `String.hashValue` is seeded per process, so it would deal
+        /// the options a new order on every launch.
+        private static func hash(_ text: String) -> UInt64 {
+            var h: UInt64 = 0xCBF2_9CE4_8422_2325
+            for byte in text.utf8 { h = (h ^ UInt64(byte)) &* 0x100_0000_01B3 }
+            return h
+        }
+
+        /// SplitMix64.
+        private static func next(_ state: UInt64) -> UInt64 {
+            var z = state &+ 0x9E37_79B9_7F4A_7C15
+            z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+            z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+            return z ^ (z >> 31)
+        }
+    }
+
+    func choices(for question: Question) -> Choices {
+        Choices(options: question.options, lines: question.optionLines,
+                answer: question.answer, seed: "\(id)|\(question.line)|\(question.id)")
+    }
+
+    /// A gap has no id of its own; the line it sits in is its handle.
+    func choices(for line: Line, gap: Gap) -> Choices {
+        Choices(options: gap.options, lines: [], answer: gap.answerIndex,
+                seed: "\(id)|\(line.n)|gap")
     }
 }
 

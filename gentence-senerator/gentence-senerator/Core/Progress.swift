@@ -153,8 +153,9 @@ struct Progress: Codable, Hashable {
     }
 
     /// Woven into generated sentences, not served as cards.
-    func seedsForGeneration(language: Language, limit: Int = 3) -> [String] {
-        let subjects = due(on: .now, language: language).map(\.subject)
+    func seedsForGeneration(language: Language, on day: Date = .now,
+                            limit: Int = 3) -> [String] {
+        let subjects = due(on: day, language: language).map(\.subject)
         return Array(subjects.prefix(limit))
     }
 
@@ -187,6 +188,10 @@ struct Progress: Codable, Hashable {
                       proof: Int = Progress.reached) -> [GrammarPoint] {
         candidates.filter { (structures[$0.id]?.attempts ?? 0) < proof }
     }
+
+    /// How often a point has come back clean. `state(of:)` says whether it has
+    /// ever worked; this says whether it keeps working.
+    func successes(of pointID: String) -> Int { structures[pointID]?.successes ?? 0 }
 
     func state(of pointID: String) -> Reach {
         guard let u = structures[pointID], u.attempts > 0 else { return .neverAttempted }

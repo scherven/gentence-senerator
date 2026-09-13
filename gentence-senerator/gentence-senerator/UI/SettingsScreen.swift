@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsScreen: View {
     @Bindable var store: Store
     @Environment(\.dismiss) private var dismiss
+    /// Read straight from defaults rather than off `Settings`: `Anthropic` is
+    /// built at launch from the key alone and has no route to the store.
 
     var body: some View {
         NavigationStack {

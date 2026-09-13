@@ -51,6 +51,76 @@ struct PassageTests {
         #expect(shuffled.answerIndex == 1)
     }
 
+    // MARK: The order they are shown in
+
+    /// Every question and every gap in the bundle is written answer-first, so
+    /// shown as written the answer is always A. The fixture is cut from it and
+    /// carries the same shape.
+    @Test func theDataPutsTheAnswerFirstEveryTime() throws {
+        let passage = try PassageTests.passage()
+        #expect(passage.quiz.allSatisfy { $0.answer == 0 })
+        #expect(passage.lines.compactMap(\.gap).allSatisfy { $0.answerIndex == 0 })
+    }
+
+    /// A view body re-evaluates whenever it likes. Drawn per render, the
+    /// buttons would reorder under the learner's finger.
+    @Test func aQuestionShufflesTheSameWayEveryTimeItIsDrawn() throws {
+        let passage = try PassageTests.passage()
+        let question = passage.quiz[0]
+        let once = passage.choices(for: question)
+        #expect((0..<20).allSatisfy { _ in passage.choices(for: question) == once })
+
+        let line = passage.line(2)!
+        let gap = passage.choices(for: line, gap: line.gap!)
+        #expect((0..<20).allSatisfy { _ in passage.choices(for: line, gap: line.gap!) == gap })
+    }
+
+    /// Seeded off the passage, the line and the question id, so two questions
+    /// in one passage are shuffled independently and the answer lands
+    /// everywhere rather than staying at the front.
+    @Test func theAnswerIsNotAlwaysTheFirstButton() throws {
+        let passage = try PassageTests.passage()
+        let slots = (1...40).map {
+            Passage.Choices(options: ["a", "b", "c", "d"], lines: [], answer: 0,
+                            seed: "\(passage.id)|\($0)|q").answer
+        }
+        #expect(Set(slots).count == 4)
+        #expect(slots.filter { $0 == 0 }.count < 20)
+    }
+
+    /// `optionLines` is parallel to `options` — per option, the line it is true
+    /// of. Permuted out of step, the feedback after a wrong answer points at
+    /// somebody else's line.
+    @Test func theLinesRideWithTheOptions() throws {
+        let passage = try PassageTests.passage()
+        let question = passage.quiz[0]
+        let choices = passage.choices(for: question)
+
+        #expect(Set(choices.options) == Set(question.options))
+        for (slot, option) in choices.options.enumerated() {
+            let written = question.options.firstIndex(of: option)!
+            #expect(choices.order[slot] == written)
+            #expect(choices.line(of: slot) == question.optionLines[written])
+        }
+        #expect(choices.options[choices.answer] == question.options[question.answer])
+        // A gap carries no lines, and asking for one is not an out-of-bounds.
+        let line = passage.line(2)!
+        #expect(passage.choices(for: line, gap: line.gap!).line(of: 0) == nil)
+    }
+
+    /// What is saved is an index into the passage as written, so a run that was
+    /// answered yesterday keeps its meaning whatever order the buttons came up
+    /// in today.
+    @Test func shownIndicesTranslateBothWays() throws {
+        let passage = try PassageTests.passage()
+        let question = passage.quiz[0]
+        let choices = passage.choices(for: question)
+        for written in question.options.indices {
+            #expect(choices.order[choices.slot(of: written)] == written)
+        }
+        #expect(choices.order[choices.answer] == question.answer)
+    }
+
     @Test func oneReplayThenNoMore() {
         var run = PassageTests.run()
         #expect(!run.canReplay)          // nothing played yet

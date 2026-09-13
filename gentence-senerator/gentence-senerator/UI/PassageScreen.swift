@@ -90,20 +90,23 @@ struct PassageScreen: View {
     @ViewBuilder
     private func quiz(_ passage: Passage, _ run: PassageRun) -> some View {
         let question = passage.quiz[min(run.quizAt, passage.quiz.count - 1)]
+        let choices = passage.choices(for: question)
         let picked = run.answers[question.id]
 
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             asked(question, index: run.quizAt, of: passage.quiz.count)
-            options(question.options, picked: picked, answer: question.answer) {
-                store.answerQuiz($0)
+            options(choices.options, picked: picked.map(choices.slot(of:)),
+                    answer: choices.answer) {
+                store.answerQuiz(choices.order[$0])
             }
 
             if let picked {
+                let shown = choices.slot(of: picked)
                 // Every wrong option is true of some other line, so a wrong
                 // pick says where the fact was misfiled rather than only that
                 // it was.
-                if picked != question.answer,
-                   let from = question.optionLines[safe: picked],
+                if shown != choices.answer,
+                   let from = choices.line(of: shown),
                    let line = passage.line(from) {
                     Panel {
                         VStack(alignment: .leading, spacing: 4) {
@@ -127,6 +130,7 @@ struct PassageScreen: View {
     private func repairing(_ passage: Passage, _ run: PassageRun) -> some View {
         let n = run.repair[min(run.repairAt, run.repair.count - 1)]
         if let line = passage.line(n), let gap = line.gap {
+            let choices = passage.choices(for: line, gap: gap)
             let picked = run.gaps[n]
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -144,11 +148,11 @@ struct PassageScreen: View {
                     TinyButton(title: "Hear this line") { store.hearLine(n) }
                     Spacer()
                 }
-                options(gap.options, picked: picked, answer: gap.answerIndex) {
-                    store.answerGap($0)
+                options(choices.options, picked: picked.map(choices.slot(of:)),
+                        answer: choices.answer) {
+                    store.answerGap(choices.order[$0])
                 }
                 if picked != nil {
-                    Panel { Text(gap.why).font(Theme.F.note).foregroundStyle(Theme.C.ink2) }
                     MainButton(title: run.repairAt + 1 < run.repair.count
                                ? "Next line" : "Try those questions again") {
                         store.advanceRepair()
@@ -186,11 +190,14 @@ struct PassageScreen: View {
     private func reask(_ passage: Passage, _ run: PassageRun) -> some View {
         let id = run.reask[min(run.reaskAt, run.reask.count - 1)]
         if let question = passage.quiz.first(where: { $0.id == id }) {
+            // The same seed as the quiz, so the options are where they were.
+            let choices = passage.choices(for: question)
             let picked = run.reanswers[id]
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 asked(question, index: run.reaskAt, of: run.reask.count, label: "Again")
-                options(question.options, picked: picked, answer: question.answer) {
-                    store.answerReask($0)
+                options(choices.options, picked: picked.map(choices.slot(of:)),
+                        answer: choices.answer) {
+                    store.answerReask(choices.order[$0])
                 }
                 if picked != nil {
                     MainButton(title: run.reaskAt + 1 < run.reask.count ? "Next" : "Finish") {
@@ -281,6 +288,9 @@ struct PassageScreen: View {
     /// The whole answering surface. Once picked, the right one is marked
     /// whatever was chosen — being shown only that you were wrong teaches
     /// nothing.
+    ///
+    /// Every index here is a shown index. `Passage.Choices` translates, so
+    /// nothing that gets saved is in this order.
     private func options(_ options: [String], picked: Int?, answer: Int,
                          choose: @escaping (Int) -> Void) -> some View {
         VStack(spacing: -Theme.M.hair) {
@@ -316,11 +326,5 @@ struct PassageScreen: View {
         if index == answer { return Theme.C.good }
         if index == picked { return Theme.C.bad }
         return nil
-    }
-}
-
-private extension Array {
-    subscript(safe index: Int) -> Element? {
-        indices.contains(index) ? self[index] : nil
     }
 }

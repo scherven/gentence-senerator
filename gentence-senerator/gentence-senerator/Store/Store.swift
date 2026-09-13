@@ -50,6 +50,18 @@ final class Store {
     /// A structure the learner has never reached for, offered this session.
     private(set) var stretch: GrammarPoint?
 
+    /// Today before it starts, and what the sentences will be written from.
+    /// Rebuilt whenever the learner is back at the start, so what it says about
+    /// the record keeps up with the day.
+    private(set) var plan = DayPlan.empty
+
+    /// The random half of it, drawn once a day and persisted. Rebuilding the
+    /// plan reads this rather than drawing again: a stretch that changed every
+    /// time the learner came back to the start screen was never the one the
+    /// day's sentences had been written from. One slot per language, like
+    /// `holds`, so switching away and back is not a new day either.
+    private var draws: [String: DayDraw] = [:]
+
     /// Sessions the learner stepped out of. Picking the same mode resumes it
     /// rather than starting over. One slot per language and mode: ending a
     /// produce session and then a translate session holds both.
@@ -114,12 +126,14 @@ final class Store {
         bank = Vault.load([BankEntry].self, Vault.bank) ?? []
         holds = Vault.load([String: Unfinished].self, Vault.holds) ?? [:]
         passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
+        draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
         if let old = Vault.load(Unfinished.self, Vault.inProgress) {
             holds[Store.holdKey(old.session.language, old.session.mode)] = old
             UserDefaults.standard.removeObject(forKey: Vault.inProgress)
             Vault.save(holds, Vault.holds)
         }
         retireStaleHolds()
+        refreshPlan()
     }
 
     /// A session belongs to the day it was started on — the day is capped, so
@@ -206,6 +220,7 @@ final class Store {
         phase = .idle
         path = []
         knowledge = [:]
+        refreshPlan()
     }
 
     // MARK: Level
@@ -218,6 +233,7 @@ final class Store {
         next.level = min(max(n, 1), pack.levels)
         next.levelChangedAt = .now
         settings = next
+        refreshPlan()
     }
 
     /// What the evidence says about the level. Nil is stay — most of the time,
@@ -285,7 +301,7 @@ final class Store {
         // single clips when the library has nothing at this level.
         if mode == .listen, startPassage() { return }
 
-        stretch = settings.offerStretch ? pickStretch(for: mode) : nil
+        stretch = (settings.offerStretch && mode == .produce) ? plan.stretch : nil
 
         session = Session(
             id: sessionID(for: mode), language: settings.language, mode: mode,
@@ -294,13 +310,42 @@ final class Store {
         await nextPrompt()
     }
 
-    /// A point at the learner's level, in this mode, that they have never once
-    /// attempted. Absence is the signal — it produces no errors to schedule on.
-    private func pickStretch(for mode: Mode) -> GrammarPoint? {
-        guard mode == .produce else { return nil }
+    /// A point at the learner's level that they have never once attempted.
+    /// Absence is the signal — it produces no errors to schedule on. Produce
+    /// only, but the plan names it before a mode has been picked, so the mode
+    /// check sits at the use rather than here.
+    private func pickStretch() -> GrammarPoint? {
         let use: GrammarPoint.Use = settings.prefersTyping ? .written : .spoken
         let candidates = pack.reachable(at: settings.level, use: use)
         return weightedToTheTop(of: progress.neverReached(among: candidates))
+    }
+
+    /// The plan, rebuilt off today's draw. Everything random about a day
+    /// happens inside `DayDraw.forToday`, and only when the day, the language
+    /// or the level has moved; `DayPlan.read` derives the rest, which is why
+    /// finishing a session still refreshes the record without dealing a new
+    /// day.
+    private func refreshPlan() {
+        let language = settings.language
+        let level = settings.level
+        let drawn = DayDraw.forToday(draws[language.rawValue], day: Spend.key(.now),
+                                     language: language, level: level) {
+            (pickStretch()?.id,
+             WordSeeds.read(band: lexicon.band(upTo: level, language: language),
+                            above: lexicon.band(at: level + 1, language: language),
+                            progress: progress, language: language))
+        }
+        if drawn != draws[language.rawValue] {
+            draws[language.rawValue] = drawn
+            Vault.save(draws, Vault.plan)
+        }
+        plan = DayPlan.read(
+            pack: pack, level: level,
+            use: settings.prefersTyping ? .written : .spoken,
+            progress: progress,
+            stretch: drawn.stretchID.flatMap { id in pack.points.first { $0.id == id } },
+            words: drawn.words
+        )
     }
 
     /// One draw, weighted 1/(1 + levels down), so a point at the learner's own
@@ -365,12 +410,18 @@ final class Store {
         if let live = current?.prompt.english { used.append(live) }
 
         let revisit = progress.seedsForGeneration(language: settings.language)
+        // Produce reaches once a session — `used` is empty only on the opening
+        // question. A reach is one question; three is drilling. Resolved here
+        // rather than inside the prompt, so the point recorded below is always
+        // the point the learner was actually invited to use.
+        let offered = (settings.mode != .produce || used.isEmpty) ? stretch : nil
         let (made, usage) = try await tutor.nextPrompt(
             mode: settings.mode,
             language: settings.language,
             level: settings.level,
             revisit: revisit,
-            stretch: stretch,
+            stretch: offered,
+            words: plan.words,
             avoid: used
         )
         note(usage)
@@ -381,7 +432,7 @@ final class Store {
             id: UUID(), mode: settings.mode, language: settings.language,
             createdAt: .now,
             prompt: .init(english: made.english, target: made.target,
-                          audioSource: nil, pointID: stretch?.id,
+                          audioSource: nil, pointID: offered?.id,
                           revisited: revisit),
             attempt: .init(heard: "", confirmed: "", wasTyped: false,
                            audioFilename: nil, pronunciation: nil),
@@ -678,6 +729,7 @@ final class Store {
         phase = .idle
         path = []
         knowledge = [:]
+        refreshPlan()
     }
 
 

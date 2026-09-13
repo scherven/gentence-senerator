@@ -48,6 +48,18 @@ enum Theme {
         }
     }
 
+    /// The record's four steps: one hue at four strengths, because the states
+    /// are ordinal and four colours would read as four unrelated things. Never
+    /// `warn` — that already means `weakens` everywhere else.
+    static func colour(for standing: DayPlan.Standing) -> Color {
+        switch standing {
+        case .never:   return C.raised
+        case .tried:   return C.good.opacity(0.30)
+        case .holding: return C.good.opacity(0.65)
+        case .solid:   return C.good
+        }
+    }
+
     // MARK: Type
 
     /// Monospace for anything that is a label, a count or a measurement;
