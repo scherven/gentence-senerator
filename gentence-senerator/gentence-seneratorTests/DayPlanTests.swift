@@ -245,4 +245,51 @@ struct DayPlanTests {
              verdict: .breaks, stages: .init(locate: "Second half."),
              seed: .init(subject: subject, context: "", pointID: nil))
     }
+
+    // MARK: Seasoning
+    //
+    // Translate used to be handed the whole day's seed set every turn, so a
+    // sitting circled the same two words for ten sentences. These pin the fix:
+    // one word a turn at most, none dominating, and a spread of settings.
+
+    @Test func atMostOneSeedAndNoWordThemesTheDay() {
+        let words = WordSeeds(have: ["a", "b"], new: ["c", "d"])
+        var counts: [String: Int] = [:]
+        var empty = 0
+        for turn in 0..<12 {
+            if let s = DayPlan.seed(from: words, turn: turn) {
+                #expect(["a", "b", "c", "d"].contains(s))   // only ever from the pool
+                counts[s, default: 0] += 1
+            } else {
+                empty += 1
+            }
+        }
+        #expect(empty == 4)                    // roughly every third turn seasons nothing
+        #expect(counts.count == 4)             // every word gets its turns
+        #expect(counts.values.max() == 2)      // and none themes the day
+    }
+
+    @Test func anEmptyPoolSeasonsNothing() {
+        for turn in 0..<6 {
+            #expect(DayPlan.seed(from: WordSeeds(), turn: turn) == nil)
+        }
+    }
+
+    @Test func theDomainOrderHoldsForADayAndMovesToTheNext() {
+        let count = DayPlan.lifeDomains.count
+        func lap(_ day: String, _ lang: Language) -> [String] {
+            (0..<count).map { DayPlan.domain(day: day, language: lang, turn: $0) }
+        }
+        let monday = lap("2026-09-14", .french)
+        #expect(lap("2026-09-14", .french) == monday)       // steady across a relaunch
+        #expect(Set(monday).count == count)                 // one full lap, no corner twice
+        #expect(lap("2026-09-15", .french) != monday)       // a new day reshuffles
+        #expect(lap("2026-09-14", .german) != monday)       // as does another language
+    }
+
+    @Test func theDomainIndexSurvivesALongSitting() {
+        // Wraps rather than traps once the turn count passes the list length.
+        #expect(DayPlan.lifeDomains.contains(
+            DayPlan.domain(day: "2026-09-14", language: .mandarin, turn: 99)))
+    }
 }

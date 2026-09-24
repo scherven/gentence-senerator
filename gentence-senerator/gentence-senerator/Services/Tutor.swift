@@ -485,15 +485,20 @@ actor Tutor {
 
     /// `revisit` are points due for retrieval — woven into an ordinary sentence
     /// rather than served as a card. `stretch` is a point the learner has never
-    /// reached for, when we are deliberately pushing range. `words` is the same
-    /// idea one axis over, and the weakest of the three: seasoning the sentence
-    /// is allowed to ignore.
+    /// reached for, when we are deliberately pushing range. `seed` is one word
+    /// to season the sentence with — at most one a turn, dropped when it does
+    /// not fit, and never what the sentence is about: the weakest of the three
+    /// and the one the model may ignore. `domain` is the corner of a life to
+    /// set a translate sentence in, rotated so a day does not land in the same
+    /// place every turn; produce sets its own from the system prompt, so it
+    /// arrives nil.
     func nextPrompt(mode: Mode,
                     language: Language,
                     level: Int,
                     revisit: [String],
                     stretch: GrammarPoint?,
-                    words: WordSeeds = WordSeeds(),
+                    seed: String? = nil,
+                    domain: String? = nil,
                     avoid: [String]) async throws -> (Generated, Anthropic.Usage) {
 
         let pack = LanguagePacks.pack(for: language)
@@ -532,18 +537,35 @@ actor Tutor {
                 """
             }
         }
-        // Never a task, so never an instruction the sentence has to obey: a
-        // prompt built around a word is a vocabulary card with extra steps.
-        if !words.have.isEmpty {
+        // The corner of a life to land in. Translate had no objective of its
+        // own — no stretch, and for a new learner nothing to revisit — so a
+        // day of it circled whatever the seed words happened to be. This is
+        // what produce gets from its system prompt, handed to translate a turn
+        // at a time.
+        if let domain {
             facts += """
 
-            Words to work in where they fit, never as what the sentence is \
-            about: \(words.have.joined(separator: ", "))
-            In translate the English has to call for them; do not name them.
+            Set this in one ordinary corner of a life — this time: \(domain). A \
+            different corner each turn; two sentences about the same setting are \
+            one sentence.
             """
         }
-        if !words.new.isEmpty {
-            facts += "\nOne of these may slip in unremarked, or not at all: \(words.new.joined(separator: ", "))"
+        // Never a task, so never an instruction the sentence has to obey: a
+        // prompt built around a word is a vocabulary card with extra steps. One
+        // word, offered where it fits and dropped where it does not — the whole
+        // day's seeds forced into every sentence was what made translate one
+        // note held for ten turns.
+        if let seed {
+            if mode == .produce {
+                facts += "\nOne word may slip into the question unremarked, if it fits, or not at all: \(seed)"
+            } else {
+                facts += """
+
+                A word to work in only where it fits, and to leave out entirely \
+                where it does not — never what the sentence is about: \(seed)
+                In translate the English has to call for it; do not name it.
+                """
+            }
         }
         // Repeating the sentence was never the failure worth guarding: two
         // different questions about which floor a restaurant is on are not two

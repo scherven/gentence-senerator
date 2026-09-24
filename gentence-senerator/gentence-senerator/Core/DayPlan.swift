@@ -132,6 +132,65 @@ struct DayPlan: Hashable {
     }
 }
 
+// MARK: - Seasoning the day's sentences
+
+extension DayPlan {
+
+    /// Ordinary corners of a life to set a translate sentence in. Never shown
+    /// to the learner — they exist only to keep a day's sentences from all
+    /// landing in the same place, the job produce does from its own system
+    /// prompt. Deliberately broad and everyday; nothing here narrows to a topic.
+    static let lifeDomains: [String] = [
+        "work", "family", "food and cooking", "money", "sleep", "travel",
+        "a daily habit", "the weekend", "health or the body", "studying",
+        "the neighbourhood or commute", "the home", "a friend", "childhood or the past"
+    ]
+
+    /// The corner to set turn `turn` in. The order is fixed for a day and a
+    /// language and reshuffles for the next — so it holds across a relaunch like
+    /// the rest of the draw, without being stored, and two languages practised
+    /// the same day do not march through it in step.
+    static func domain(day: String, language: Language, turn: Int) -> String {
+        let order = shuffled(lifeDomains, seed: seedHash(day, language.rawValue))
+        return order[((turn % order.count) + order.count) % order.count]
+    }
+
+    /// One seasoning word for turn `turn`, or none. At most one a turn, and
+    /// roughly every third turn none, so no single word can theme the day the
+    /// way the whole seed set once did. The pool is the day's fixed draw, so the
+    /// same turn index always yields the same word.
+    static func seed(from words: WordSeeds, turn: Int) -> String? {
+        let pool = words.have + words.new
+        guard !pool.isEmpty, turn % 3 != 2 else { return nil }
+        return pool[((turn % pool.count) + pool.count) % pool.count]
+    }
+
+    /// A deterministic order, so no state has to be stored to keep a day steady.
+    /// A seeded xorshift rather than `shuffled()`, whose generator cannot be
+    /// pinned, and FNV-1a for the seed. Neither needs to be good randomness —
+    /// only stable for a key and different across keys.
+    private static func shuffled(_ items: [String], seed: UInt64) -> [String] {
+        var a = items
+        var state = seed == 0 ? 0x9E3779B97F4A7C15 : seed
+        func next() -> UInt64 {
+            state ^= state << 13; state ^= state >> 7; state ^= state << 17
+            return state
+        }
+        var i = a.count - 1
+        while i > 0 { a.swapAt(i, Int(next() % UInt64(i + 1))); i -= 1 }
+        return a
+    }
+
+    private static func seedHash(_ parts: String...) -> UInt64 {
+        var h: UInt64 = 1469598103934665603
+        for p in parts {
+            for b in p.utf8 { h = (h ^ UInt64(b)) &* 1099511628211 }
+            h = (h ^ 0x2f) &* 1099511628211   // separator, so "ab"+"c" ≠ "a"+"bc"
+        }
+        return h
+    }
+}
+
 // MARK: - The day's draw
 
 /// The random half of a day, kept. Reopening the app or stepping back to the

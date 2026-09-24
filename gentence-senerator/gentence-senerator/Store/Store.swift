@@ -415,13 +415,24 @@ final class Store {
         // rather than inside the prompt, so the point recorded below is always
         // the point the learner was actually invited to use.
         let offered = (settings.mode != .produce || used.isEmpty) ? stretch : nil
+        // One turn's worth of seasoning, rotated by how many prompts are already
+        // out this session. The day fixes the pool; the turn picks from it, so a
+        // sitting no longer forces the same two words into every sentence. The
+        // rotating domain gives translate a spread of its own — produce sets its
+        // own corner and takes none.
+        let turn = used.count
+        let seed = DayPlan.seed(from: plan.words, turn: turn)
+        let domain = settings.mode == .translate
+            ? DayPlan.domain(day: Spend.key(.now), language: settings.language, turn: turn)
+            : nil
         let (made, usage) = try await tutor.nextPrompt(
             mode: settings.mode,
             language: settings.language,
             level: settings.level,
             revisit: revisit,
             stretch: offered,
-            words: plan.words,
+            seed: seed,
+            domain: domain,
             avoid: used
         )
         note(usage)
