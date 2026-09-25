@@ -43,9 +43,9 @@ struct ModeScreen: View {
             case .transcribing:
                 Busy(text: "Writing down what you said…")
             case .assessing:
-                Busy(text: store.settings.mode == .produce
-                     ? "Reading the whole exchange…"
-                     : "Looking at what you said…")
+                Busy(text: "Looking at what you said…")
+            case .reference:
+                reference
             case .reviewing:
                 review
             case .complete:
@@ -88,7 +88,8 @@ struct ModeScreen: View {
     /// the language instead.
     private var title: String {
         if case .idle = store.phase { return store.settings.language.name }
-        return store.settings.mode.name
+        // While reading, what is on screen may be another mode's review.
+        return (store.current?.mode ?? store.settings.mode).name
     }
 
     private var progressLabel: String {
@@ -105,6 +106,7 @@ struct ModeScreen: View {
     private var start: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                GradingPanel(store: store)
                 ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
                 ForEach(Mode.allCases) { mode in
                     let tally = store.tally(mode)
@@ -152,7 +154,8 @@ struct ModeScreen: View {
     private var attempt: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
-                if let stretch = store.stretch, store.settings.mode == .produce {
+                if let stretch = store.stretch, store.settings.mode == .produce,
+                   store.current?.prompt.pointID == stretch.id {
                     Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("TRY TO USE").font(Theme.F.label).tracking(1.1)
@@ -172,8 +175,12 @@ struct ModeScreen: View {
                         Panel { Text(store.draft.isEmpty ? "…" : store.draft).font(Theme.F.target) }
                         MainButton(title: "Done") { store.stopRecording() }
                     }
-                } else if store.settings.prefersTyping {
+                } else if store.settings.prefersTyping || store.speechTrouble != nil {
                     VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                        if let trouble = store.speechTrouble {
+                            Text(trouble + " Type it instead.")
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        }
                         TextField("Type it…", text: $typing, axis: .vertical)
                             .font(Theme.F.target)
                             .textFieldStyle(.plain)
@@ -182,7 +189,7 @@ struct ModeScreen: View {
                             .padding(Theme.M.pad)
                             .background(Theme.C.sunk)
                             .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-                        MainButton(title: "Review", enabled: !typing.isEmpty) {
+                        MainButton(title: "Continue", enabled: !typing.isEmpty) {
                             store.typed(typing); typing = ""
                         }
                     }
@@ -294,23 +301,57 @@ struct ModeScreen: View {
                         }
                     },
                     answers: store.asked[turn.id.uuidString] ?? [],
-                    isAsking: store.asking.contains(turn.id.uuidString),
-                    deepening: store.deepening,
-                    streaming: store.streamingReview,
-                    depthError: store.reviewDepthError,
-                    onRetryDepth: { Task { await store.retryDepth() } }
+                    isAsking: store.asking.contains(turn.id.uuidString)
                 )
-                MainButton(title: "Next") { Task { await store.advance() } }
+                MainButton(title: store.reading.count == 1 ? "Done" : "Next") {
+                    Task { await store.advance() }
+                }
             }
         }
+    }
+
+    /// A translate answer, and one good way to say it. Not a grade: the
+    /// review comes with the batch.
+    private var reference: some View {
+        VStack(alignment: .leading, spacing: Theme.M.gap) {
+            if let turn = store.current {
+                ModuleLabel(text: "Asked")
+                Text(turn.prompt.english ?? "").font(Theme.F.body)
+                ModuleLabel(text: "You said")
+                Text(turn.attempt.confirmed).font(Theme.F.target)
+                if let reference = turn.prompt.reference {
+                    ModuleLabel(text: "One way to say it")
+                    Panel(fill: Theme.C.sunk, edge: Theme.C.seam2) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(reference).font(Theme.F.target)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer()
+                            TinyButton(title: "Hear") { store.say(reference) }
+                        }
+                    }
+                    Text("A reference, not a mark. Graded with the rest.")
+                        .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
+                }
+            }
+            MainButton(title: "Next") { Task { await store.advance() } }
+            Spacer()
+        }
+        .padding(Theme.M.gap)
     }
 
     private var done: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             ModuleLabel(text: "\(store.settings.mode.name) done")
             if let session = store.session {
-                Text("\(session.completedCount) attempts · average \(session.averageScore)")
-                    .font(Theme.F.body)
+                if session.mode == .listen {
+                    Text("\(session.completedCount) attempts · average \(session.averageScore)")
+                        .font(Theme.F.body)
+                } else {
+                    Text(store.notificationsOn
+                         ? "\(session.completedCount) answers sent for grading. You'll get a notification."
+                         : "\(session.completedCount) answers sent for grading. Notifications are off, so check back here.")
+                        .font(Theme.F.body)
+                }
             }
             MainButton(title: store.dayComplete ? "See the day" : "Back") {
                 store.endSession()
@@ -382,5 +423,62 @@ struct Trouble: View {
             Spacer()
         }
         .padding(Theme.M.gap)
+    }
+}
+
+/// Sessions out for grading, and the ones that have come back.
+struct GradingPanel: View {
+    @Bindable var store: Store
+
+    var body: some View {
+        if !store.jobs.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                ModuleLabel(text: "Feedback")
+                VStack(spacing: 0) {
+                    ForEach(store.jobs.reversed()) { job in
+                        row(job)
+                    }
+                }
+            }
+        }
+    }
+
+    /// The language only once there is more than one out.
+    private func status(_ job: GradingJob) -> String {
+        let mixed = Set(store.jobs.map(\.language)).count > 1
+        return (mixed ? "\(job.language.flag) " : "") + store.status(of: job)
+    }
+
+    private func row(_ job: GradingJob) -> some View {
+        let ready = store.canRead(job) && job.state == .done
+        return HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text(job.mode.name.uppercased())
+                .font(Theme.F.label).tracking(1)
+                .foregroundStyle(ready ? Theme.C.accent : Theme.C.ink3)
+                .frame(width: 84, alignment: .leading)
+            Text(status(job))
+                .font(Theme.F.bodyTight)
+                .foregroundStyle(Theme.C.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if store.hasFailures(job) {
+                TinyButton(title: "Retry") { store.regrade(job) }
+            }
+            if job.batchID == nil, !store.sendingNow.contains(job.id) {
+                TinyButton(title: "Send now") { Task { await store.sendNow(job) } }
+            }
+            if ready {
+                TinyButton(title: "Read") { store.read(job) }
+            } else if job.state == .grading {
+                ProgressView(value: Double(job.graded), total: Double(max(job.total, 1)))
+                    .tint(Theme.C.accent)
+                    .frame(width: 60)
+            }
+        }
+        .padding(Theme.M.padTight)
+        .background(Theme.C.surface)
+        .overlay(alignment: .leading) {
+            Rectangle().fill(ready ? Theme.C.accent : Theme.C.seam2).frame(width: Theme.M.edge)
+        }
+        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
     }
 }

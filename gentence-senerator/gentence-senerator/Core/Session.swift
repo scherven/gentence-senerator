@@ -39,6 +39,9 @@ enum Phase: Hashable {
     case transcribing
     case confirming
     case assessing
+    /// A translate answer is in, and one good rendering is on screen. Not a
+    /// grade — that arrives with the batch.
+    case reference
     case reviewing
     case complete
     case failed(String)
@@ -64,11 +67,18 @@ struct Turn: Identifiable, Codable, Hashable {
     var prompt: Prompt
     var attempt: Attempt
     var review: Review?
+    /// The turns one review covers share this. One turn in translate and
+    /// listen; a whole held exchange in produce. Nil on turns from before
+    /// grading moved to a batch, where "no review yet" was the grouping.
+    var exchangeID: UUID? = nil
 
     struct Prompt: Codable, Hashable {
         var english: String?
         /// The sentence played in listen, the question asked in produce.
         var target: String?
+        /// Translate: one natural rendering, shown once the learner has
+        /// answered. A reference, not a verdict.
+        var reference: String? = nil
         var audioSource: AudioSource?
         var pointID: String?
         /// Due subjects woven into this prompt. What the review is checked
@@ -97,6 +107,7 @@ extension Turn.Prompt {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         english = try container.decodeIfPresent(String.self, forKey: .english)
         target = try container.decodeIfPresent(String.self, forKey: .target)
+        reference = try container.decodeIfPresent(String.self, forKey: .reference)
         audioSource = try container.decodeIfPresent(AudioSource.self, forKey: .audioSource)
         pointID = try container.decodeIfPresent(String.self, forKey: .pointID)
         revisited = try container.decodeIfPresent([String].self, forKey: .revisited) ?? []
@@ -185,6 +196,12 @@ struct Session: Identifiable, Codable, Hashable {
     var turns: [Turn]
     /// A cap, not a target. Nothing goes past it.
     var goal: Int
+    /// Translate and produce: every prompt the session will ask, written
+    /// before it starts. Optional so archives from before it still decode.
+    var planned: [Turn.Prompt]? = nil
+    /// The level it was answered at. Graded at that level, however long the
+    /// grading waits and whatever the learner has switched to since.
+    var level: Int? = nil
 
     /// Turns the learner actually finished. Counting reviewed turns instead
     /// would never advance in produce mode, where the review is deliberately

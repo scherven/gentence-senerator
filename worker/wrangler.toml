@@ -1,0 +1,22 @@
+name = "gentence-grader"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Every two minutes: KV lists are capped at 1,000 a day on the free tier.
+# Batches take minutes to an hour, so the lag is noise.
+[triggers]
+crons = ["*/2 * * * *"]
+
+[[kv_namespaces]]
+binding = "STATE"
+id = "be87c6ff51174dc8933b05a20b02579a"
+
+[vars]
+APNS_TEAM_ID = "SM7F898GQH"
+APNS_TOPIC = "com.technaplex.gentence-senerator"
+
+# Secrets, set with `wrangler secret put`, never written here:
+#   ANTHROPIC_KEY   the same key as Key.anthropicKey
+#   APNS_KEY        the whole AuthKey_XXXX.p8, PEM header lines included
+#   APNS_KEY_ID     the ten-character key id
+#   WATCH_SECRET    shared with the app; guards /watch

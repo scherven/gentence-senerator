@@ -190,11 +190,7 @@ struct PastReview: View {
                 }
             },
             answers: store.asked[turn.id.uuidString] ?? [],
-            isAsking: store.asking.contains(turn.id.uuidString),
-            deepening: false,
-            streaming: false,
-            depthError: nil,
-            onRetryDepth: {}
+            isAsking: store.asking.contains(turn.id.uuidString)
         )
         .navigationTitle(turn.mode.name)
         .navigationBarTitleDisplayMode(.inline)

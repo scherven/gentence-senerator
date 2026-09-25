@@ -44,8 +44,7 @@ struct AtomRow: View {
 /// answer, so the answer arrives — there is nothing left to confirm. After it
 /// they say whether they knew it, which decides whether this is scheduled.
 ///
-/// The staging of the *text* still matters and is unchanged: `locate` comes
-/// with the review, the rest is fetched while the learner is reading it.
+/// Every stage arrives with the review; the staging is only in what is shown.
 struct StagedAtomRow: View {
     let atom: Atom
     @Binding var open: Bool
@@ -53,14 +52,11 @@ struct StagedAtomRow: View {
     let onClassify: (Progress.Encounter.Knowledge) -> Void
     let onOpen: () -> Void
 
+    /// Reviews from before grading moved to a batch can be missing everything
+    /// after `locate`; those stay on it.
     private var headline: String {
-        if !open { return atom.stages.locate }
-        return atom.isDeep ? atom.stages.name : "Working it out…"
+        open && atom.isDeep ? atom.stages.name : atom.stages.locate
     }
-
-    /// The second call may not have landed yet. Tapping ahead of it waits
-    /// rather than showing an empty row.
-    private var waiting: Bool { open && !atom.isDeep }
 
     private var affordance: String { open ? "LESSON →" : "FIX +" }
 
@@ -112,8 +108,9 @@ struct StagedAtomRow: View {
     @ViewBuilder
     private var opened: some View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-            if waiting {
-                ProgressView().tint(Theme.C.accent)
+            if !atom.isDeep {
+                Text("No fix was written for this one.")
+                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
             } else {
                 Text(atom.stages.fix)
                     .font(Theme.F.targetSmall)

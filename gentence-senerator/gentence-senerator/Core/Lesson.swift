@@ -130,3 +130,11 @@ struct LessonRequest: Hashable, Codable {
 
     var cacheKey: String { "\(language.rawValue)|\(kind.rawValue)|\(seed.subject)" }
 }
+
+/// Lessons kept across launches, with the order they were written in so the
+/// oldest can be dropped.
+struct LessonShelf: Codable {
+    static let cap = 400
+    var order: [String]
+    var lessons: [String: Lesson]
+}

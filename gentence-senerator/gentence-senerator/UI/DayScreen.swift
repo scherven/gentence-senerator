@@ -9,6 +9,7 @@ struct DayScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                GradingPanel(store: store)
                 tally
                 section("What came up", store.todayFindings.filter(\.isProblem),
                         empty: "Nothing came up today.")

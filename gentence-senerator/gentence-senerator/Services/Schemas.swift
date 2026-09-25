@@ -93,38 +93,41 @@ enum Schemas {
         ], required: ["drills", "patterns"])
     }
 
-    // MARK: Review — two stages
+    // MARK: Review
     //
-    // The opening is what the learner sees at once: a score and where each
-    // problem is. Naming and fixing arrive while they are still trying to
-    // repair it themselves.
+    // One call per exchange, graded in a batch while nobody is waiting. Every
+    // stage of every finding, and a lesson for each problem, come back
+    // together — there is no second pass to hold anything back for.
 
-    static func reviewOpening(for language: Language) -> [String: Any] {
-        object([
+    static func review(for language: Language) -> [String: Any] {
+        let kinds = enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category.")
+        let rung = object([
+            "support": enumOf(["free", "transform", "frame", "choice"],
+                              "free is unaided production; choice is two options."),
+            "prompt": string,
+            "accept": array(string),
+            "options": ["type": ["array", "null"], "items": string],
+            "answerIndex": ["type": ["integer", "null"]]
+        ], required: ["support", "prompt", "accept", "options", "answerIndex"])
+        let pair = object(["target": string, "gloss": string], required: ["target", "gloss"])
+
+        return object([
             "score": ["type": "integer", "description": "0 to 100."],
             "readOfScore": ["type": "string", "description": "One clause on what it means. Not a breakdown."],
             "findings": array(object([
-                "kind": enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category."),
+                "kind": kinds,
                 "verdict": enumOf(["breaks", "weakens", "kept"],
                                   "breaks stops comprehension; weakens marks a learner; kept is right and worth knowing why."),
                 "weight": enumOf(["start", "also"], "Exactly one is start."),
                 "locate": ["type": "string",
                            "description": "Where, without saying what. The learner should be able to try repairing it from this alone. Never name the fix here."],
+                "name": ["type": "string", "description": "What is wrong, still without the corrected text. For kept: what they did right."],
+                "fix": ["type": "string", "description": "The corrected text. For kept: the words that were right."],
+                "note": ["type": "string", "description": "One or two sentences on why."],
                 "subject": ["type": "string", "description": "What a lesson about this would be about."]
-            ], required: ["kind", "verdict", "weight", "locate", "subject"]))
-        ], required: ["score", "readOfScore", "findings"])
-    }
-
-    static func reviewDepth(for language: Language) -> [String: Any] {
-        object([
+            ], required: ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject"])),
             "natural": ["type": ["string", "null"],
                         "description": "What a speaker would actually say, if different from the minimal fix."],
-                "findings": array(object([
-                "id": ["type": "string", "description": "The number of the finding being filled in, exactly as given."],
-                "name": ["type": "string", "description": "What is wrong, still without the corrected text."],
-                "fix": ["type": "string", "description": "The corrected text."],
-                "note": ["type": "string", "description": "One or two sentences on why."]
-            ], required: ["id", "name", "fix", "note"])),
             "respeaks": array(object([
                 "instruction": ["type": "string",
                                 "description": "Say the same sentence again with one thing changed — a different subject, tense, or added detail. Never a plain repeat."],
@@ -132,12 +135,48 @@ enum Schemas {
                 "correct": string,
                 "incorrect": string
             ], required: ["instruction", "accept", "correct", "incorrect"])),
-            // Last, so it is written after the findings the learner is waiting
-            // on. Nothing on screen reads it — it is evidence for reach.
+            "lessons": ["type": "array",
+                        "description": "One per problem finding (breaks or weakens), none for kept.",
+                        "items": object([
+                "finding": ["type": "integer", "description": "Index of the finding in `findings`, from 0."],
+                "title": string,
+                "rule": ["type": "string", "description": "The explanation. A short paragraph, not an essay."],
+                "contrastTerm": ["type": ["string", "null"], "description": "The confusable neighbour, or null."],
+                "contrastNote": nullableString,
+                "contrastSubject": ["type": ["string", "null"], "description": "What a lesson about the neighbour would be about."],
+                "examples": array(pair),
+                "drills": array(object([
+                    "rungs": ["type": "array", "items": rung,
+                              "description": "At least two, hardest first. Each later rung removes something the learner has to build."],
+                    "correct": string,
+                    "incorrect": string
+                ], required: ["rungs", "correct", "incorrect"])),
+                "patterns": ["type": "array",
+                             "description": "Shown instead of the rule on a third visit. Pattern only, no explanation.",
+                             "items": pair]
+            ], required: ["finding", "title", "rule", "contrastTerm", "contrastNote",
+                          "contrastSubject", "examples", "drills", "patterns"])],
             "used": ["type": "array", "items": string,
-                     "description": "Ids of the grammar points the learner's own sentence used, correctly or not. Only ids from the list given. Empty is a normal answer."]
-        ], required: ["natural", "findings", "respeaks", "used"])
+                     "description": "Ids of the grammar points the learner's own sentences used, correctly or not. Only ids from the list given. Empty is a normal answer."]
+        ], required: ["score", "readOfScore", "findings", "natural", "respeaks", "lessons", "used"])
     }
+
+    // MARK: The day's prompts
+
+    /// Everything a session will ask, written in one call so the set can be
+    /// spread deliberately rather than turn by turn.
+    static let daySet: [String: Any] = object([
+        "items": array(object([
+            "english": ["type": "string",
+                        "description": "For translate, what the learner reads. For produce, the gloss of the question."],
+            "target": ["type": ["string", "null"],
+                       "description": "Produce: the question, one sentence ending in a single question mark. Null for translate."],
+            "reference": ["type": ["string", "null"],
+                          "description": "Translate: one natural rendering, shown after the learner answers. Null for produce."],
+            "revisited": ["type": "array", "items": string,
+                          "description": "Which of the listed revisit subjects this sentence actually calls for, copied exactly."]
+        ], required: ["english", "target", "reference", "revisited"]))
+    ], required: ["items"])
 
     // MARK: Prompt generation
 

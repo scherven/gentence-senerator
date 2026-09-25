@@ -8,7 +8,7 @@ import Foundation
 /// feedback never needs a new prompt or a new view.
 actor Tutor {
 
-    private let api: Anthropic
+    let api: Anthropic
     private var lessons: [String: Lesson] = [:]
 
     init(api: Anthropic) { self.api = api }
@@ -132,292 +132,154 @@ actor Tutor {
         """
     }
 
-    // MARK: Assessment — two stages
+    // MARK: Assessment
+    //
+    // One call per exchange. It used to be two — a score and `locate` first,
+    // the rest streamed in behind — because the learner was waiting. Graded in
+    // a batch, nobody is, so every stage and a lesson per problem come back
+    // together and the model reasons about the exchange once.
 
-    struct Opening: Codable {
+    struct Graded: Codable {
         struct Finding: Codable {
-            var kind: AtomKind; var verdict: Atom.Verdict
-            var weight: Atom.Weight; var locate: String; var subject: String
+            var kind: AtomKind; var verdict: Atom.Verdict; var weight: Atom.Weight
+            var locate: String; var name: String; var fix: String; var note: String
+            var subject: String
+        }
+        struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
+        struct Pair: Codable { var target: String; var gloss: String }
+        struct Drill: Codable { var rungs: [Practice.R]; var correct: String; var incorrect: String }
+        struct Taught: Codable {
+            var finding: Int
+            var title: String
+            var rule: String
+            var contrastTerm: String?
+            var contrastNote: String?
+            var contrastSubject: String?
+            var examples: [Pair]
+            var drills: [Drill]
+            var patterns: [Pair]
         }
         var score: Int
         var readOfScore: String
         var findings: [Finding]
-    }
-
-    struct Depth: Codable {
-        struct Filled: Codable { var id: String; var name: String; var fix: String; var note: String }
-        struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
         var natural: String?
-        var findings: [Filled]
         var respeaks: [Say]
-        /// Grammar points the attempt used. Tagged here and not on the opening
-        /// call, which the learner is waiting on.
-        var used: [String] = []
+        var lessons: [Taught]
+        var used: [String]
     }
 
-    /// The opening review as it is written. `score` and `readOfScore` land
-    /// about halfway through the call; the findings follow one at a time, so
-    /// the learner reads a real score while the rest is still arriving.
-    ///
-    /// Each element is the review so far. The last one carries the usage.
-    func streamOpening(turn: Turn, history: [Turn] = [], level: Int)
-    -> AsyncThrowingStream<(Review, Anthropic.Usage?), Error> {
+    /// The whole request for one exchange, for a batch.
+    nonisolated func reviewParams(turn: Turn, history: [Turn], level: Int) -> [String: Any] {
         let pack = LanguagePacks.pack(for: turn.language)
-        let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
-        let pointID = turn.prompt.pointID
-        let events = api.stream(
-            cachedSystem: Self.openingSystem(pack),
+        return api.params(
+            cachedSystem: Self.reviewSystem(pack),
             user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
-            schema: Schemas.reviewOpening(for: turn.language),
-            effort: .medium
+            schema: Schemas.review(for: turn.language),
+            effort: Self.reviewEffort,
+            maxTokens: 32000,
+            batched: true
         )
-
-        return AsyncThrowingStream { continuation in
-            let work = Task {
-                var buffer = ""
-                var sent = Review(score: 0, readOfScore: "", atoms: [])
-                var published = 0
-                let decoder = JSONDecoder()
-                do {
-                    for try await event in events {
-                        switch event {
-                        case .refused(let why):
-                            throw Anthropic.Failure.refused(why)
-
-                        case .finished(let usage):
-                            // The streamed values are a preview. What lands on
-                            // screen for good is a strict parse of the whole
-                            // document, so a scanning artifact can never be
-                            // what gets kept or written to history.
-                            if let whole = try? decoder.decode(Opening.self,
-                                                               from: Data(buffer.utf8)) {
-                                continuation.yield((Review(
-                                    score: whole.score,
-                                    readOfScore: whole.readOfScore,
-                                    atoms: whole.findings.map {
-                                        Self.atom(from: $0, said: said, pointID: pointID)
-                                    },
-                                    natural: nil
-                                ), usage))
-                            } else {
-                                continuation.yield((sent, usage))
-                            }
-                            continuation.finish()
-                            return
-
-                        case .text(let chunk):
-                            buffer += chunk
-                            var changed = false
-                            if sent.score == 0,
-                               let score = PartialJSON.integer(at: "score", in: buffer) {
-                                sent.score = score
-                                changed = true
-                            }
-                            if sent.readOfScore.isEmpty,
-                               let read = PartialJSON.string(at: "readOfScore", in: buffer) {
-                                sent.readOfScore = read
-                                changed = true
-                            }
-                            let elements = PartialJSON.elements(ofArrayAt: "findings", in: buffer)
-                            if elements.count > published {
-                                for element in elements[published...] {
-                                    guard let finding = try? decoder.decode(
-                                        Opening.Finding.self, from: element) else { continue }
-                                    sent.atoms.append(Self.atom(from: finding, said: said,
-                                                                pointID: pointID))
-                                }
-                                published = elements.count
-                                changed = true
-                            }
-                            // Nothing goes out until the score does, so the
-                            // screen never opens on an empty review.
-                            if changed, sent.score != 0 {
-                                continuation.yield((sent, nil))
-                            }
-                        }
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
-            }
-            continuation.onTermination = { _ in work.cancel() }
-        }
     }
 
-    private static func atom(from finding: Opening.Finding,
-                             said: String, pointID: String?) -> Atom {
-        Atom(id: Atom.identify(finding.kind, finding.subject),
-             kind: finding.kind, verdict: finding.verdict,
-             stages: .init(locate: finding.locate),
-             seed: .init(subject: finding.subject, context: said, pointID: pointID),
-             weight: finding.weight)
+    /// The one lever on quality left once latency stopped mattering.
+    nonisolated static let reviewEffort: Anthropic.Effort = .high
+
+    /// Graded on the spot. Listen still works this way until it is rebuilt.
+    func review(turn: Turn, history: [Turn] = [], level: Int)
+    async throws -> (Review, [Lesson], Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: turn.language)
+        let reply = try await api.send(
+            cachedSystem: Self.reviewSystem(pack),
+            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
+            schema: Schemas.review(for: turn.language),
+            effort: Self.reviewEffort,
+            maxTokens: 32000
+        )
+        let (review, lessons) = try Self.read(reply, turn: turn, history: history)
+        return (review, lessons, reply.usage)
     }
 
-    /// What the learner sees at once. Kept for the non-streaming path.
-    func assessOpening(turn: Turn, history: [Turn] = [], level: Int)
-    async throws -> (Review, Anthropic.Usage) {
+    /// A finished reply, as a review and the lessons behind its problems.
+    /// `known` drops point ids the model invented: anything that gets past
+    /// here is written into `Progress` under that id and stays there.
+    nonisolated static func read(_ reply: Anthropic.Reply, turn: Turn, history: [Turn])
+    throws -> (Review, [Lesson]) {
+        let graded = try Anthropic.decode(Graded.self, from: reply)
         let pack = LanguagePacks.pack(for: turn.language)
         // A finding can sit in any answer of a held exchange, so the seed
         // carries all of them rather than only the last.
         let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
-        let (opening, usage) = try await api.send(
-            Opening.self,
-            cachedSystem: Self.openingSystem(pack),
-            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
-            schema: Schemas.reviewOpening(for: turn.language),
-            effort: .medium
-        )
 
+        let atoms = graded.findings.map { f in
+            Atom(id: Atom.identify(f.kind, f.subject),
+                 kind: f.kind, verdict: f.verdict,
+                 stages: .init(locate: f.locate, name: f.name, fix: f.fix, note: f.note),
+                 seed: .init(subject: f.subject, context: said, pointID: turn.prompt.pointID),
+                 weight: f.weight)
+        }
         let review = Review(
-            score: opening.score,
-            readOfScore: opening.readOfScore,
-            atoms: opening.findings.map {
-                Atom(id: Atom.identify($0.kind, $0.subject),
-                     kind: $0.kind, verdict: $0.verdict,
-                     stages: .init(locate: $0.locate),
-                     seed: .init(subject: $0.subject, context: said,
-                                 pointID: turn.prompt.pointID),
-                     weight: $0.weight)
+            score: graded.score,
+            readOfScore: graded.readOfScore,
+            atoms: atoms,
+            natural: graded.natural,
+            respeaks: graded.respeaks.enumerated().map { index, say in
+                Respeak(id: "r\(index)", instruction: say.instruction, accept: say.accept,
+                        correct: say.correct, incorrect: say.incorrect)
             },
-            natural: nil
-        )
-        return (review, usage)
-    }
-
-    /// Fetched while the learner is still looking at where the problem is.
-    /// Kept for the non-streaming path; `streamDepth` is what the app uses.
-    func assessDepth(turn: Turn, opening: Review, history: [Turn] = [], level: Int)
-    async throws -> (Review, Anthropic.Usage) {
-        let pack = LanguagePacks.pack(for: turn.language)
-        let listed = opening.atoms.enumerated()
-            .map { "\($0.offset): \($0.element.stages.locate)" }
-            .joined(separator: "\n")
-
-        let (depth, usage) = try await api.send(
-            Depth.self,
-            cachedSystem: Self.depthSystem(pack),
-            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack)
-                + "\n\nFindings to fill in, by number:\n" + listed,
-            schema: Schemas.reviewDepth(for: turn.language),
-            effort: .medium
+            usedPoints: Array(Set(graded.used).intersection(pack.pointIDs)).sorted(),
+            isDeep: true
         )
 
-        return (Self.merge(depth, into: opening, known: pack.pointIDs), usage)
-    }
-
-    /// `known` throws away ids the model invented. Anything that gets past here
-    /// is written into `Progress` under that id and stays there.
-    private static func merge(_ depth: Depth, into opening: Review,
-                              known: Set<String>) -> Review {
-        var merged = opening
-        let byIndex = Dictionary(
-            depth.findings.compactMap { finding in Int(finding.id).map { ($0, finding) } },
-            uniquingKeysWith: { first, _ in first }
-        )
-        merged.atoms = opening.atoms.enumerated().map { index, atom in
-            guard let filled = byIndex[index] else { return atom }
-            var copy = atom
-            copy.stages.name = filled.name
-            copy.stages.fix = filled.fix
-            copy.stages.note = filled.note
-            return copy
+        let lessons = graded.lessons.compactMap { taught -> Lesson? in
+            guard atoms.indices.contains(taught.finding) else { return nil }
+            let atom = atoms[taught.finding]
+            let request = LessonRequest(seed: atom.seed, kind: atom.kind, language: turn.language)
+            return lesson(from: taught, request: request)
         }
-        merged.natural = depth.natural
-        merged.respeaks = depth.respeaks.enumerated().map { index, say in
-            Respeak(id: "r\(index)", instruction: say.instruction, accept: say.accept,
-                    correct: say.correct, incorrect: say.incorrect)
-        }
-        merged.usedPoints = Array(Set(depth.used).intersection(known)).sorted()
-        merged.isDeep = true
-        return merged
+        return (review, lessons)
     }
 
-    /// The same call, published one finding at a time. Half the wall-clock is
-    /// thinking before any text exists, and the findings are then written in
-    /// the order they were listed — so the row carrying `.start`, which is the
-    /// one the learner reaches for first, is filled in at roughly half the
-    /// wait, without the others holding it up.
-    ///
-    /// Each element is the review so far. The last one carries the usage.
-    func streamDepth(turn: Turn, opening: Review, history: [Turn] = [], level: Int)
-    -> AsyncThrowingStream<(Review, Anthropic.Usage?), Error> {
-        let pack = LanguagePacks.pack(for: turn.language)
-        let listed = opening.atoms.enumerated()
-            .map { "\($0.offset): \($0.element.stages.locate)" }
-            .joined(separator: "\n")
-        let events = api.stream(
-            cachedSystem: Self.depthSystem(pack),
-            user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack)
-                + "\n\nFindings to fill in, by number:\n" + listed,
-            schema: Schemas.reviewDepth(for: turn.language),
-            effort: .medium
-        )
-
-        return AsyncThrowingStream { continuation in
-            let work = Task {
-                var buffer = ""
-                var sent = opening
-                var published = 0
-                let decoder = JSONDecoder()
-                do {
-                    for try await event in events {
-                        switch event {
-                        case .refused(let why):
-                            throw Anthropic.Failure.refused(why)
-
-                        case .finished(let usage):
-                            // As in the opening: what is kept is a strict parse
-                            // of the whole document, so a scanning artifact can
-                            // only ever appear in the preview.
-                            if let whole = try? decoder.decode(Depth.self,
-                                                               from: Data(buffer.utf8)) {
-                                continuation.yield((Self.merge(whole, into: opening,
-                                                               known: pack.pointIDs), usage))
-                            } else {
-                                sent.isDeep = true
-                                continuation.yield((sent, usage))
-                            }
-                            continuation.finish()
-                            return
-
-                        case .text(let chunk):
-                            buffer += chunk
-                            var changed = false
-                            if sent.natural == nil,
-                               let natural = PartialJSON.string(at: "natural", in: buffer) {
-                                sent.natural = natural
-                                changed = true
-                            }
-                            let elements = PartialJSON.elements(ofArrayAt: "findings", in: buffer)
-                            if elements.count > published {
-                                for element in elements[published...] {
-                                    guard let filled = try? decoder.decode(
-                                            Depth.Filled.self, from: element),
-                                          let index = Int(filled.id),
-                                          sent.atoms.indices.contains(index) else { continue }
-                                    sent.atoms[index].stages.name = filled.name
-                                    sent.atoms[index].stages.fix = filled.fix
-                                    sent.atoms[index].stages.note = filled.note
-                                }
-                                published = elements.count
-                                changed = true
-                            }
-                            // `respeaks` and the natural version are still to
-                            // come, so `isDeep` stays false until `.finished`.
-                            if changed { continuation.yield((sent, nil)) }
-                        }
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
+    private nonisolated static func lesson(from taught: Graded.Taught, request: LessonRequest) -> Lesson {
+        var blocks: [Block] = [Block(id: "rule", kind: .rule, label: nil, text: taught.rule)]
+        if let term = taught.contrastTerm, let note = taught.contrastNote {
+            blocks.append(Block(
+                id: "contrast", kind: .contrast, label: "Not to be confused with",
+                sides: [
+                    Side(id: "a", term: request.seed.subject, note: "What you were doing.", seed: nil),
+                    Side(id: "b", term: term, note: note,
+                         seed: taught.contrastSubject.map {
+                             Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
+                         })
+                ]
+            ))
+        }
+        blocks.append(Block(
+            id: "examples", kind: .examples, label: "In the wild",
+            examples: taught.examples.enumerated().map { index, pair in
+                Example(id: "ex\(index)", target: pair.target, gloss: pair.gloss, seed: nil)
             }
-            continuation.onTermination = { _ in work.cancel() }
-        }
+        ))
+        blocks.append(Block(
+            id: "drills", kind: .drills, label: "Your turn",
+            drills: taught.drills.enumerated().map { index, drill in
+                Drill(id: "d\(index)",
+                      rungs: drill.rungs.enumerated().map { rungIndex, rung in
+                          Rung(id: "d\(index)r\(rungIndex)", support: rung.support,
+                               prompt: rung.prompt, accept: rung.accept,
+                               options: rung.options, answerIndex: rung.answerIndex)
+                      },
+                      correct: drill.correct, incorrect: drill.incorrect, atoms: [])
+            }
+        ))
+        return Lesson(
+            id: request.cacheKey, title: taught.title, blocks: blocks,
+            patterns: taught.patterns.enumerated().map { index, pair in
+                Example(id: "p\(index)", target: pair.target, gloss: pair.gloss, seed: nil)
+            }
+        )
     }
 
-    private static func attemptFacts(turn: Turn, history: [Turn], level: Int, pack: LanguagePack) -> String {
+    nonisolated private static func attemptFacts(turn: Turn, history: [Turn], level: Int, pack: LanguagePack) -> String {
         // Listen is dictation. Labelling the played sentence "Asked" and the
         // transcript "The learner said" got it graded as production: a dropped
         // 吧 came back as a weak sentence rather than as an unstressed
@@ -458,7 +320,7 @@ actor Tutor {
     /// changes what a miss means. `wasTyped` decides whether the characters are
     /// the learner's at all: spoken back, recognition wrote them, and no
     /// orthography finding is attributable.
-    private static func heardFacts(turn: Turn, level: Int, pack: LanguagePack) -> String {
+    nonisolated private static func heardFacts(turn: Turn, level: Int, pack: LanguagePack) -> String {
         let played = turn.prompt.audioSource?.kind == .recording
             ? "a recording of a speaker" : "synthesised speech"
         var facts = """
@@ -579,17 +441,113 @@ actor Tutor {
             """
         }
 
-        // One sentence under fifteen words, against a two-field schema. The
-        // learner waits on this at the top of every turn with nothing on
-        // screen, so it is the call where effort costs the most and buys the
-        // least.
+        // Listen only now; translate and produce are written a session at a
+        // time by `daySet`.
         return try await api.send(
             Generated.self,
             cachedSystem: Self.generateSystem(pack),
             user: facts,
             schema: Schemas.prompt,
-            effort: .low
+            effort: .medium
         )
+    }
+
+    // MARK: The day's prompts
+
+    struct DaySet: Codable {
+        struct Item: Codable {
+            var english: String
+            var target: String?
+            var reference: String?
+            var revisited: [String]
+        }
+        var items: [Item]
+    }
+
+    /// One slot of a session: the corner of a life for translate, and at most
+    /// one word to season it with. Decided by the caller, like the stretch.
+    struct Slot { var domain: String?; var seed: String? }
+
+    /// Everything a translate or produce session will ask, in one call. Written
+    /// together so the model sees the whole spread and can keep it varied,
+    /// rather than being told turn by turn what the earlier turns were.
+    ///
+    /// `stretch` goes on the first item only: a reach is one question, three
+    /// is drilling. `revisit` subjects are spread across the set, and each item
+    /// says which it actually called for, so a subject is only checked against
+    /// a sentence that asked for it.
+    func daySet(mode: Mode, language: Language, level: Int,
+                slots: [Slot], revisit: [String], stretch: GrammarPoint?,
+                avoid: [String]) async throws -> ([Turn.Prompt], Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: language)
+        var facts = """
+        Mode: \(mode.rawValue)
+        Level: \(pack.level(level))
+        Items: \(slots.count)
+        """
+        if !revisit.isEmpty {
+            facts += """
+
+            Due for review — spread these across the set, each in at least one \
+            item, woven in without drawing attention to them: \
+            \(revisit.joined(separator: ", "))
+            """
+        }
+        if let stretch {
+            facts += mode == .produce
+                ? """
+
+                  Item 1 only: if the answer happens to want \(stretch.name) — \
+                  \(stretch.instruction) — so much the better. Do not go looking \
+                  for a topic that would need it.
+                  """
+                : """
+
+                  Item 1 only: write it so a natural rendering needs \
+                  \(stretch.name). \(stretch.instruction)
+                  """
+        }
+        facts += "\n\nPer item:"
+        for (index, slot) in slots.enumerated() {
+            var line = "\n\(index + 1)."
+            if let domain = slot.domain { line += " Set it in: \(domain)." }
+            if let seed = slot.seed {
+                line += " A word to work in only if it fits, never the point: \(seed)."
+            }
+            if slot.domain == nil && slot.seed == nil { line += " —" }
+            facts += line
+        }
+        if !avoid.isEmpty {
+            facts += """
+
+
+            Already asked today — do not repeat one, or ask about the same \
+            setting: \(avoid.suffix(20).joined(separator: " | "))
+            """
+        }
+
+        let (set, usage) = try await api.send(
+            DaySet.self,
+            cachedSystem: Self.daySetSystem(pack),
+            user: facts,
+            schema: Schemas.daySet,
+            effort: .high
+        )
+        let asked = Set(revisit.map { $0.lowercased() })
+        let prompts = set.items.prefix(slots.count).enumerated().map { index, item in
+            Turn.Prompt(
+                english: item.english,
+                target: mode == .translate ? nil : item.target,
+                reference: mode == .translate ? item.reference : nil,
+                audioSource: nil,
+                pointID: index == 0 ? stretch?.id : nil,
+                revisited: item.revisited.filter { asked.contains($0.lowercased()) }
+            )
+        }
+        guard prompts.count == slots.count else {
+            throw Anthropic.Failure.malformed("asked for \(slots.count) items, got \(prompts.count)")
+        }
+        return (prompts, usage)
     }
 
     // MARK: Drills and questions
@@ -635,7 +593,7 @@ actor Tutor {
     // Byte-identical per language so the cache prefix holds. Everything that
     // varies per call goes in the user message.
 
-    private static func voice(_ pack: LanguagePack) -> String {
+    nonisolated private static func voice(_ pack: LanguagePack) -> String {
         """
         You are a \(pack.language.name) tutor: warm, exacting, and brief.
         Write the way a good teacher talks, not the way a textbook reads. Never
@@ -674,8 +632,43 @@ actor Tutor {
         Sentences are things a person would actually say. No textbook filler, no
         sentences that exist only to contain a grammar point.
         \(pack.generationNotes)
-        Latency-sensitive — the learner is waiting on a blank screen. Begin the
-        reply immediately.
+        """
+    }
+
+    private static func daySetSystem(_ pack: LanguagePack) -> String {
+        """
+        \(voice(pack))
+
+        You write a whole practice session at once: one item per numbered slot,
+        in order.
+
+        translate — `english` is a sentence to render in \(pack.language.name).
+        `target` is null. Write it so a natural rendering needs the target
+        structure, rather than naming the structure. `reference` is one
+        natural rendering a speaker would say — shown to the learner after they
+        answer, as one good way to say it, not the only one.
+
+        produce — `target` is a question to answer in \(pack.language.name),
+        written first and in \(pack.language.name); `english` is its meaning;
+        `reference` is null. Each is exactly one question about the learner's
+        own life: one sentence, one question mark, under fifteen words. No
+        preamble, no second question, no "and why?". Answerable in two or three
+        sentences. The questions are asked in order as one conversation, so
+        they may follow on from each other, but each must stand alone.
+        Decide what is worth asking before you think about grammar at all. Ask
+        what you would actually ask a person. A structure you are pointed at is
+        at most something the answer may happen to need; it is never the reason
+        for the question.
+
+        Across the set, land somewhere different each time: two items about the
+        same place, or the same afternoon, are one item asked twice however
+        different the words. Sentences are things a person would actually say.
+        No textbook filler, no sentences that exist only to contain a grammar
+        point.
+
+        `revisited` lists which of the due-for-review subjects that item
+        actually calls for, copied exactly. Empty when it calls for none.
+        \(pack.generationNotes)
         """
     }
 
@@ -721,15 +714,21 @@ actor Tutor {
         """
     }
 
-    private static func openingSystem(_ pack: LanguagePack) -> String {
+    nonisolated private static func reviewSystem(_ pack: LanguagePack) -> String {
         """
         \(voice(pack))
 
-        You return a score and where each problem is — nothing more. Naming and
-        fixing happen in a second pass, so `locate` must not give the answer
-        away: the learner reads it and tries to repair the sentence themselves.
-        "Something is in the wrong place in the second half" is right.
-        "已经 should come before the verb" is not.
+        You review an attempt and return everything the learner will read: a
+        score, every finding at every stage, and a short lesson behind each
+        problem. The learner reads it later, not while waiting, so take the
+        time to be right.
+
+        Each finding is revealed in stages, so keep them apart. `locate` says
+        where, and must not give the answer away: the learner reads it first
+        and tries to repair the sentence themselves. "Something is in the
+        wrong place in the second half" is right. "已经 should come before the
+        verb" is not. `name` says what is wrong, still without the corrected
+        text. `fix` is the correction. `note` is one or two sentences on why.
 
         Rank them: exactly one finding has weight "start", the one that costs
         the learner most: being understood in translate and produce, catching
@@ -739,9 +738,11 @@ actor Tutor {
         choice you would not have made is not an error, and an attempt with
         nothing wrong in it is an ordinary outcome — return no problems at all
         and say what carried it. Being corrected for something they got right is
-        what stops a learner trusting any of it.
+        what stops a learner trusting any of it. Before you finish, go back
+        over each problem and drop any you could not defend to a native
+        speaker.
 
-        In produce the corrections are held back and the exchange is reviewed
+        In produce the corrections were held back and the exchange is reviewed
         as one thing. Every answer in it is being assessed, not only the last:
         a problem in the first answer counts as much as one in the third, and
         `locate` must say which answer it is in. The same mistake in two
@@ -761,11 +762,15 @@ actor Tutor {
         Which of the three belongs in `locate`, and it is still where and not
         what: "you caught every syllable, but one character in the first half is
         not the one that sound writes" gives nothing away, and naming the
-        character does. The score is how much of the sentence arrived. "breaks"
-        is a miss that changed what the sentence meant; a syllable lost with the
-        meaning intact is "weakens". Praise something hard that landed, not the
-        easy syllables. `subject` is what would catch it next time — the sound,
-        or the pair of characters, not the sentence.
+        character does. `name` says which of the three it was; `note` says what
+        makes that sound easy to lose, or, when they heard it, that the ear was
+        right and only the writing was not. The score is how much of the
+        sentence arrived. "breaks" is a miss that changed what the sentence
+        meant; a syllable lost with the meaning intact is "weakens". Praise
+        something hard that landed, not the easy syllables. `subject` is what
+        would catch it next time — the sound, or the pair of characters, not
+        the sentence. `natural` is null there: the played sentence is already
+        what a speaker said. Build the respeaks from the played sentence.
 
         Report what they got right as well, with verdict "kept". Praise that
         names a real choice teaches; generic praise does not.
@@ -790,18 +795,6 @@ actor Tutor {
         first and fall back only when nothing else does.
         \(pack.routing)
         \(pack.assessmentNotes)
-        """
-    }
-
-    private static func depthSystem(_ pack: LanguagePack) -> String {
-        """
-        \(voice(pack))
-
-        You fill in findings that have already been located. For each number
-        you are given, say what is wrong (`name`, still without the corrected
-        text), then the correction (`fix`), then one or two sentences on why
-        (`note`). Return every number you are given, as `id`, copied exactly.
-        Invent no others.
 
         `natural` is what a speaker would actually say when that differs from
         the minimal correction. Null when it does not.
@@ -811,24 +804,25 @@ actor Tutor {
         added detail. Never a plain repeat: the point is transfer, not recall of
         the correction. Two or three, each with the forms you would accept.
 
-        In listen the learner was writing down someone else's sentence. `name`
-        says which of the three it was — misheard, heard and written wrong, or
-        not known — and `note` says what makes that sound easy to lose, or, when
-        they heard it, that the ear was right and only the writing was not.
-        `natural` is null there: the played sentence is already what a speaker
-        said. Build the respeaks from the played sentence.
+        `lessons`: one for each finding whose verdict is breaks or weakens,
+        pointing at it by its index in `findings`. None for kept. A lesson
+        teaches the point, not the sentence. `rule` says what governs the
+        choice, not what the learner did. The contrast is the confusable
+        neighbour, which is usually what they need next; null it only when
+        there genuinely is no near neighbour. `examples` are the pattern in
+        use — three or four things a person would say. `drills`: two, each with
+        at least two rungs, hardest first. Rung 0 is unaided production; each
+        later rung removes something the learner has to build — a frame with a
+        gap, then a choice between two — and must test the same point with less
+        to construct, never a different point. `accept` lists every form a
+        speaker would accept, not just the neatest. `patterns` replaces the
+        rule on a third visit: examples only, no explanation.
 
-        Every `links` entry is a way onward: `subject` is what a lesson about it
-        would be about — a real teachable point, never a restatement of the
-        sentence — and `headline` is one line on what opening it would teach.
-        Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
-
-        `used` is the other half of the job, and it is not about the errors.
-        List the points below that the learner's own words actually used,
-        whether they used them well or badly and whether or not anyone asked
-        for them. A point you cannot put a finger on in their sentence is not
-        used, and an empty list is an ordinary answer. Ids only, copied exactly;
-        invent none.
+        `used` is not about the errors. List the points below that the
+        learner's own words actually used, whether they used them well or badly
+        and whether or not anyone asked for them. A point you cannot put a
+        finger on in their sentence is not used, and an empty list is an
+        ordinary answer. Ids only, copied exactly; invent none.
 
         The points, by id:
         \(pack.points.map { "\($0.id) — \($0.name)" }.joined(separator: "\n"))
@@ -853,18 +847,5 @@ actor Tutor {
         teaches.
         Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
         """
-    }
-}
-
-/// `used` was added after the rest of the deep review existed, and the reply is
-/// still whole without it — the synthesised decoder would throw all of it away
-/// over one absent array, and the deep call has no second chance.
-extension Tutor.Depth {
-    init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        natural = try container.decodeIfPresent(String.self, forKey: .natural)
-        findings = try container.decode([Filled].self, forKey: .findings)
-        respeaks = try container.decode([Say].self, forKey: .respeaks)
-        used = try container.decodeIfPresent([String].self, forKey: .used) ?? []
     }
 }

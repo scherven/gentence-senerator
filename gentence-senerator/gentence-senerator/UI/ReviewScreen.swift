@@ -13,11 +13,6 @@ struct ReviewScreen: View {
     let onAsk: (String) -> Void
     let answers: [AskItem]
     let isAsking: Bool
-    let deepening: Bool
-    /// The opening is still being written; more findings are on the way.
-    let streaming: Bool
-    let depthError: String?
-    let onRetryDepth: () -> Void
 
     /// Findings the learner has opened. Per screen, not persisted: reopening a
     /// review is asking to read it again.
@@ -36,16 +31,6 @@ struct ReviewScreen: View {
 
                 if let review {
                     findings(review)
-                    if streaming {
-                        HStack(spacing: Theme.M.gapTight) {
-                            ProgressView().tint(Theme.C.accent)
-                            Text("Still reading…")
-                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(Theme.M.padTight)
-                    }
-                    if !review.isDeep { rest }
                     if let natural = review.natural {
                         sentence(natural, label: "What a speaker would say", edge: Theme.C.accent)
                     }
@@ -105,6 +90,11 @@ struct ReviewScreen: View {
                     Text(turn.attempt.confirmed)
                         .font(Theme.F.target)
                         .foregroundStyle(review.map { $0.problems.isEmpty ? Theme.C.ink : Theme.C.bad } ?? Theme.C.ink)
+                }
+                if let reference = turn.prompt.reference {
+                    specimenRow("Ref") {
+                        Text(reference).font(Theme.F.targetSmall).foregroundStyle(Theme.C.ink2)
+                    }
                 }
             }
             if let review {
@@ -227,37 +217,6 @@ struct ReviewScreen: View {
                     .buttonStyle(.plain)
                 }
             }
-        }
-    }
-
-    /// The second call is still out, or it failed. Either way the learner is
-    /// told, rather than shown half a review and left to wonder.
-    @ViewBuilder
-    private var rest: some View {
-        if let depthError {
-            VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-                Text("Couldn't fetch the rest: \(depthError)")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                    .fixedSize(horizontal: false, vertical: true)
-                TinyButton(title: "Try again", action: onRetryDepth)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.M.pad)
-            .background(Theme.C.surface)
-            .overlay(alignment: .leading) {
-                Rectangle().fill(Theme.C.bad).frame(width: Theme.M.edge)
-            }
-            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-        } else if deepening {
-            HStack(spacing: Theme.M.gapTight) {
-                ProgressView().tint(Theme.C.accent)
-                Text("Working out the fixes…")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.M.pad)
-            .background(Theme.C.surface)
-            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }
     }
 

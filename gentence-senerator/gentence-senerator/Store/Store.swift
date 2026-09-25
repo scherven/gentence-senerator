@@ -1,4 +1,5 @@
 import Foundation
+import Network
 import Observation
 
 /// All app state. Views read it and call methods; nothing mutates it directly.
@@ -34,10 +35,34 @@ final class Store {
     private var coreLoads: [String: Task<Void, Never>] = [:]
     private var practiceLoads: [String: Task<Void, Never>] = [:]
     private(set) var lessonError: String?
-    private(set) var reviewDepthError: String?
-    private(set) var deepening = false
-    /// True while the review is still being written onto the screen.
-    private(set) var streamingReview = false
+    /// Lessons, in the order they were written, so the shelf can be capped.
+    private var lessonOrder: [String] = []
+
+    /// Finished sessions out for grading, oldest first, until their reviews
+    /// are in the archive.
+    private(set) var jobs: [GradingJob] = []
+    /// Reviews being read, as the turns they landed on. Empty outside reading.
+    private(set) var reading: [UUID] = []
+    /// The day's prompt sets being written, by hold key, so starting a
+    /// session joins the one already running.
+    private var writing: [String: Task<Void, Never>] = [:]
+    private var polling: Task<Void, Never>?
+    private let sender = Sender()
+    /// Jobs whose failed answers are being graded again right now, so the
+    /// screen says so and Retry cannot start a second, paid-for copy.
+    private(set) var regrading: Set<UUID> = []
+    /// Jobs being sent by hand right now.
+    private(set) var sendingNow: Set<UUID> = []
+    /// Whether the phone has a route to the internet. Watched so a session
+    /// waiting for signal is sent the moment it comes back, and so the screen
+    /// can say which of the two it is waiting on.
+    private(set) var online = true
+    private let network = NWPathMonitor()
+    /// Whether a finished session can promise a notification.
+    private(set) var notificationsOn = true
+    /// Recognition could not start — usually no signal, in a language this
+    /// phone cannot recognise offline. The answer is typed instead, this once.
+    private(set) var speechTrouble: String?
 
     /// Slip or gap, per atom, for the review on screen.
     private(set) var knowledge: [String: Progress.Encounter.Knowledge] = [:]
@@ -75,9 +100,9 @@ final class Store {
         "\(language.rawValue)|\(mode.rawValue)"
     }
 
-    /// The turn after the one on screen, written while the learner is still
-    /// working on it. The first prompt of a session is not prefetched — there
-    /// is nothing to hide it behind — so only that one is ever waited for.
+    /// Listen only: the turn after the one on screen, written while the
+    /// learner is still working on it. Translate and produce are written a
+    /// session at a time and have nothing to prefetch.
     private var pending: Task<Turn?, Never>?
 
     private let tutor: Tutor
@@ -127,6 +152,11 @@ final class Store {
         holds = Vault.load([String: Unfinished].self, Vault.holds) ?? [:]
         passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
         draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
+        jobs = Vault.load([GradingJob].self, Vault.grading) ?? []
+        if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
+            lessons = shelf.lessons
+            lessonOrder = shelf.order
+        }
         if let old = Vault.load(Unfinished.self, Vault.inProgress) {
             holds[Store.holdKey(old.session.language, old.session.mode)] = old
             UserDefaults.standard.removeObject(forKey: Vault.inProgress)
@@ -134,20 +164,54 @@ final class Store {
         }
         retireStaleHolds()
         refreshPlan()
+        sender.onResult = { [weak self] id, result in self?.submitted(id, result) }
+        sender.resume()
+        network.pathUpdateHandler = { [weak self] update in
+            let now = update.status == .satisfied
+            Task { @MainActor in
+                guard let self, now != self.online else { return }
+                self.online = now
+                if now { await self.pump() }
+            }
+        }
+        network.start(queue: .global(qos: .utility))
     }
 
     /// A session belongs to the day it was started on — the day is capped, so
     /// yesterday's half-finished translate cannot eat today's three. Archive
     /// those rather than leaving them to be overwritten by the next hold.
+    ///
+    /// Earlier days only: tomorrow's set, written ahead, is held too.
     private func retireStaleHolds() {
         let today = Spend.key(.now)
-        let stale = holds.filter { !$0.value.session.id.hasPrefix(today) }
+        let stale = holds.filter { String($0.value.session.id.prefix(10)) < today }
         guard !stale.isEmpty else { return }
-        past.append(contentsOf: stale.values.map(\.session).filter { !$0.turns.isEmpty })
+        let unfinished = stale.values.map(\.session).filter { $0.completedCount > 0 }
+        past.append(contentsOf: unfinished)
         past.sort { $0.startedAt < $1.startedAt }
         for key in stale.keys { holds[key] = nil }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
         Vault.save(holds, Vault.holds)
+        // A session left part-way is still worth grading: those answers were
+        // given, and nobody is going to finish them now.
+        for session in unfinished where session.mode != .listen { enqueue(session) }
+    }
+
+    /// A session still on screen from an earlier day — the app was never
+    /// closed overnight — is stepped out of and filed with the rest, before
+    /// anything can write today over it.
+    private func retireStale() {
+        if let live = session, live.mode != .listen,
+           String(live.id.prefix(10)) < Spend.key(.now) {
+            hold()
+            session = nil
+            current = nil
+            phase = .idle
+            path = []
+            knowledge = [:]
+        }
+        retireStaleHolds()
+        refreshPlan()
     }
 
     // MARK: The day
@@ -192,6 +256,9 @@ final class Store {
             ? live
             : past.first { $0.turns.contains { $0.id == turn.id } }?.turns ?? []
         guard let end = turns.firstIndex(where: { $0.id == turn.id }) else { return [turn] }
+        if let id = turn.exchangeID {
+            return turns[...end].filter { $0.exchangeID == id }
+        }
         var start = end
         while start > 0, turns[start - 1].review == nil { start -= 1 }
         return Array(turns[start...end])
@@ -280,13 +347,22 @@ final class Store {
         settings.mode = mode
         knowledge = [:]
         path = []
+        reading = []
         dropPending()
+
+        // The day's set may be being written already; join it rather than
+        // writing a second one.
+        if let running = writing[Store.holdKey(settings.language, mode)] {
+            phase = .preparing
+            await running.value
+        }
 
         // Pick up where it was left, rather than throwing the turns away.
         if resumable(mode) != nil,
            let held = holds[Store.holdKey(settings.language, mode)] {
             session = held.session
             current = held.turn
+            stretch = stretch(of: held.session)
             draft = ""
             if current == nil {
                 await nextPrompt()
@@ -301,13 +377,134 @@ final class Store {
         // single clips when the library has nothing at this level.
         if mode == .listen, startPassage() { return }
 
-        stretch = (settings.offerStretch && mode == .produce) ? plan.stretch : nil
-
         session = Session(
             id: sessionID(for: mode), language: settings.language, mode: mode,
-            startedAt: .now, turns: [], goal: settings.dailyGoal
+            startedAt: .now, turns: [], goal: settings.dailyGoal, level: settings.level
         )
+        stretch = nil
         await nextPrompt()
+        if let session { stretch = stretch(of: session) }
+    }
+
+    /// The structure produce is reaching for this session, if any. Read off the
+    /// written set, so it is the one the question was actually written for.
+    private func stretch(of session: Session) -> GrammarPoint? {
+        guard session.mode == .produce,
+              let id = session.planned?.first?.pointID else { return nil }
+        return pack.points.first { $0.id == id }
+    }
+
+    // MARK: Writing the day
+
+    /// Writes today's translate and produce sets ahead of time, so starting
+    /// either on a train with no signal still works. Each is held as an
+    /// unstarted session, which `begin` resumes.
+    ///
+    /// Run after the grading pump, so what yesterday's reviews put on the
+    /// schedule is in `Progress` before today's sentences are written from it.
+    ///
+    /// Once a mode is done for today and its feedback is in, tomorrow's set is
+    /// written too — so a first open on the train with no signal still has
+    /// something to practise. Never over a held session: those are answers.
+    func prepareDay() async {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        for mode in [Mode.translate, .produce] {
+            let key = Store.holdKey(settings.language, mode)
+            guard writing[key] == nil, holds[key] == nil else { continue }
+
+            let day: Date
+            let stretch: GrammarPoint?
+            let words: WordSeeds
+            if today(mode) == nil {
+                day = .now
+                (stretch, words) = (plan.stretch, plan.words)
+            } else if isDone(mode), feedbackIsIn(for: sessionID(for: mode)) {
+                day = tomorrow
+                let draw = nextDraw(on: tomorrow)
+                stretch = draw.stretchID.flatMap { id in pack.points.first { $0.id == id } }
+                words = draw.words
+            } else {
+                continue
+            }
+
+            let draft = Session(id: sessionID(for: mode, on: day), language: settings.language,
+                                mode: mode, startedAt: day, turns: [], goal: settings.dailyGoal,
+                                level: settings.level)
+            let task = Task { [weak self] in
+                guard let self else { return }
+                guard let prompts = try? await self.writeSet(for: draft, from: 0,
+                                                             stretch: stretch, words: words)
+                else { return }
+                // Started by hand while this was being written: that one owns
+                // the slot, and this set goes unused.
+                guard self.holds[key] == nil, self.session?.id != draft.id else { return }
+                var planned = draft
+                planned.planned = prompts
+                self.holds[key] = Unfinished(session: planned, turn: nil)
+                Vault.save(self.holds, Vault.holds)
+            }
+            writing[key] = task
+            await task.value
+            writing[key] = nil
+        }
+    }
+
+    /// Every job for that session has come back. No job — nothing was
+    /// answered — counts as in.
+    private func feedbackIsIn(for sessionID: String) -> Bool {
+        jobs.filter { $0.sessionID == sessionID }.allSatisfy { $0.state == .done }
+    }
+
+    /// Tomorrow's draw, made now and kept in its own slot so today's plan is
+    /// not redrawn under it. `refreshPlan` promotes it when tomorrow comes.
+    private func nextDraw(on day: Date) -> DayDraw {
+        let language = settings.language
+        let level = settings.level
+        let slot = language.rawValue + "|next"
+        let drawn = DayDraw.forToday(draws[slot], day: Spend.key(day),
+                                     language: language, level: level) {
+            (pickStretch()?.id,
+             WordSeeds.read(band: lexicon.band(upTo: level, language: language),
+                            above: lexicon.band(at: level + 1, language: language),
+                            progress: progress, language: language))
+        }
+        if drawn != draws[slot] {
+            draws[slot] = drawn
+            Vault.save(draws, Vault.plan)
+        }
+        return drawn
+    }
+
+    /// Prompts for every turn from `index` to the end of the session. The
+    /// per-turn choices — which corner of a life, which word — are the ones
+    /// the turn-by-turn generation made, so a turn index still gets the same
+    /// seasoning it always did. `stretch` and `words` are the draw of the day
+    /// the session belongs to, which is not always today.
+    private func writeSet(for session: Session, from index: Int,
+                          stretch: GrammarPoint?, words: WordSeeds) async throws -> [Turn.Prompt] {
+        guard session.goal > index else { return [] }
+        let day = String(session.id.prefix(10))
+        let slots = (index..<session.goal).map { turn in
+            Tutor.Slot(
+                domain: session.mode == .translate
+                    ? DayPlan.domain(day: day, language: session.language, turn: turn) : nil,
+                seed: DayPlan.seed(from: words, turn: turn)
+            )
+        }
+        let reach = session.mode == .produce && index == 0 && settings.offerStretch
+            ? stretch : nil
+        let avoid = Mode.allCases.compactMap { today($0) }
+            .flatMap { ($0.planned ?? []) + $0.turns.map(\.prompt) }
+            .compactMap(\.english)
+        let (prompts, usage) = try await tutor.daySet(
+            mode: session.mode, language: session.language,
+            level: session.level ?? settings.level,
+            slots: slots,
+            revisit: progress.seedsForGeneration(language: session.language),
+            stretch: reach, avoid: avoid
+        )
+        note(usage)
+        return prompts
     }
 
     /// A point at the learner's level that they have never once attempted.
@@ -328,6 +525,15 @@ final class Store {
     private func refreshPlan() {
         let language = settings.language
         let level = settings.level
+        // Tomorrow's draw, made the evening before with its set, becomes
+        // today's rather than being drawn again.
+        let next = language.rawValue + "|next"
+        if draws[language.rawValue]?.day != Spend.key(.now),
+           let ahead = draws[next], ahead.day == Spend.key(.now) {
+            draws[language.rawValue] = ahead
+            draws[next] = nil
+            Vault.save(draws, Vault.plan)
+        }
         let drawn = DayDraw.forToday(draws[language.rawValue], day: Spend.key(.now),
                                      language: language, level: level) {
             (pickStretch()?.id,
@@ -387,6 +593,8 @@ final class Store {
     /// Produces a turn without touching what is on screen, so it is safe to run
     /// ahead of time.
     private func makeTurn() async throws -> Turn {
+        if settings.mode != .listen { return try await plannedTurn() }
+
         // Real speech where the library has it. Falls through to a generated
         // sentence and synthesis otherwise, which is the normal case for
         // Mandarin.
@@ -451,7 +659,33 @@ final class Store {
         )
     }
 
+    /// The next prompt off the session's written set, writing the rest of the
+    /// set first if it is missing — a session held from before sets existed,
+    /// or one whose set failed to write while offline.
+    private func plannedTurn() async throws -> Turn {
+        guard let live = session else { throw Anthropic.Failure.malformed("no session") }
+        let index = live.turns.count
+        var planned = live.planned ?? []
+        if planned.count <= index {
+            let written = try await writeSet(for: live, from: index,
+                                             stretch: plan.stretch, words: plan.words)
+            planned = Array(live.turns.map(\.prompt).prefix(index)) + written
+            session?.planned = planned
+        }
+        guard planned.indices.contains(index) else {
+            throw Anthropic.Failure.malformed("nothing left to ask")
+        }
+        return Turn(
+            id: UUID(), mode: live.mode, language: live.language, createdAt: .now,
+            prompt: planned[index],
+            attempt: .init(heard: "", confirmed: "", wasTyped: false,
+                           audioFilename: nil, pronunciation: nil),
+            review: nil
+        )
+    }
+
     private func install(_ turn: Turn) {
+        speechTrouble = nil
         current = turn
         phase = .ready
         hold()
@@ -462,7 +696,7 @@ final class Store {
     /// answering than the call takes, so the next turn costs nothing to wait
     /// for.
     private func prefetchNext() {
-        guard pending == nil, session != nil else { return }
+        guard pending == nil, session != nil, settings.mode == .listen else { return }
         pending = Task { [weak self] in
             guard let self else { return nil }
             return try? await self.makeTurn()
@@ -481,9 +715,13 @@ final class Store {
         guard let speech else { return }
         do {
             try speech.startListening(locale: settings.language.localeID)
+            speechTrouble = nil
             phase = .recording
         } catch {
-            phase = .failed(error.localizedDescription)
+            // Not a dead end: the answer can still be typed, and the session
+            // goes on.
+            speechTrouble = error.localizedDescription
+            phase = .ready
         }
     }
 
@@ -512,142 +750,427 @@ final class Store {
 
     /// Only the confirmed text is assessed, so a recognition error is never
     /// scored as a language error.
+    ///
+    /// Translate and produce are not graded here. The answer is filed, and the
+    /// whole session goes to a batch when it ends; the learner hears back by
+    /// notification. Listen is still graded on the spot until it is rebuilt.
     func submit() async {
-        guard var turn = current else { return }
+        guard var turn = current, let live = session else { return }
         turn.attempt.confirmed = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !turn.attempt.confirmed.isEmpty else { return }
+
+        turn.exchangeID = Store.exchangeID(after: live.turns, mode: live.mode,
+                                           size: settings.turnsBeforeReview)
         current = turn
 
-        // Produce holds corrections until the exchange is done. "Done" means
-        // this many turns since the last review, not since the session began —
-        // otherwise every turn after the first review would trigger one. The
-        // last turn of a session reviews regardless: an exchange held past the
-        // cap is one the learner never gets back.
-        let unreviewed = session?.turns.reversed().prefix { $0.review == nil }.count ?? 0
-        let lastOfSession = session.map { $0.completedCount + 1 >= $0.goal } ?? false
-        if !settings.mode.reviewsEachAttempt, !lastOfSession,
-           unreviewed < settings.turnsBeforeReview - 1 {
-            session?.turns.append(turn)
-            hold()
-            await nextPrompt()
-            return
-        }
-
-        phase = .assessing
-        streamingReview = true
-
         // Scored against what they should have said: the played sentence in
-        // listen mode, their own words otherwise.
-        //
-        // Started, not awaited: the review prompt never reads the pronunciation
-        // result, so running Azure before the model call only added its latency
-        // to a wait the learner is already sitting through.
-        let scoring: Task<PronunciationResult?, Never>? = {
-            guard !turn.attempt.wasTyped, let wav = speech?.lastRecording else { return nil }
+        // listen, their own words otherwise. Attached whenever it lands — the
+        // review never reads it.
+        if !turn.attempt.wasTyped, let wav = speech?.lastRecording {
             let reference = turn.mode == .listen
                 ? (turn.prompt.target ?? turn.attempt.confirmed)
                 : turn.attempt.confirmed
             let service = pronunciation
             let locale = settings.language.localeID
-            return Task { try? await service.assess(wav: wav, reference: reference, locale: locale) }
-        }()
-
-        // Only the turns this review covers.
-        let history = settings.mode.reviewsEachAttempt
-            ? []
-            : Array((session?.turns ?? []).suffix(unreviewed))
-        do {
-            // Shown as it is written: the score arrives about halfway through
-            // the call and the findings one at a time after it, so the screen
-            // opens on a real score instead of a spinner.
-            var opening: Review?
-            var usage: Anthropic.Usage?
-            let updates = await tutor.streamOpening(
-                turn: turn, history: history, level: settings.level
-            )
-            for try await (partial, final) in updates {
-                opening = partial
-                usage = final ?? usage
-                turn.review = partial
-                current = turn
-                if phase != .reviewing { phase = .reviewing }
+            let id = turn.id
+            Task {
+                guard let sounds = try? await service.assess(wav: wav, reference: reference,
+                                                             locale: locale) else { return }
+                self.amend(id) { $0.attempt.pronunciation = sounds }
             }
-            guard let opening else { throw Anthropic.Failure.malformed("no review arrived") }
+        }
 
-            if let usage { note(usage) }
-            turn.review = opening
+        if live.mode == .listen {
+            await gradeNow(turn)
+            return
+        }
+
+        session?.turns.append(turn)
+        hold()
+        if turn.prompt.reference != nil {
+            phase = .reference
+        } else {
+            await advance()
+        }
+    }
+
+    /// Produce holds corrections until an exchange of `size` answers is done;
+    /// a session that ends part-way through one grades it short rather than
+    /// dropping it. Each translate and listen answer is its own exchange.
+    nonisolated static func exchangeID(after turns: [Turn], mode: Mode, size: Int) -> UUID {
+        if mode == .produce, let id = turns.last?.exchangeID,
+           turns.filter({ $0.exchangeID == id }).count < size {
+            return id
+        }
+        return UUID()
+    }
+
+    /// Listen's path: one call, waited on.
+    private func gradeNow(_ turn: Turn) async {
+        var turn = turn
+        phase = .assessing
+        do {
+            let (review, written, usage) = try await tutor.review(turn: turn, level: settings.level)
+            note(usage)
+            turn.review = review
             current = turn
             session?.turns.append(turn)
-            record(for: turn, review: opening)
-            streamingReview = false
+            record(for: turn, review: review)
+            reached(review, in: turn)
+            shelve(written)
             hold()
-
-            // The rest lands while the learner is still reading where the
-            // problems are and trying to fix them. Started before the
-            // pronunciation result is waited on — the two are independent, and
-            // anything in front of this is time the learner can spend looking
-            // at "Working it out…".
-            Task { await deepen(turn: turn, opening: opening, history: history) }
-            prefetchLessons(for: opening)
-
-            // Merged in when it arrives, against whatever is on screen by then
-            // rather than the copy above, which the depth call may already
-            // have filled in.
-            if let sounds = await scoring?.value {
-                if var live = current, live.id == turn.id {
-                    live.attempt.pronunciation = sounds
-                    current = live
-                }
-                if let index = session?.turns.firstIndex(where: { $0.id == turn.id }) {
-                    session?.turns[index].attempt.pronunciation = sounds
-                }
-                hold()
-            }
+            phase = .reviewing
         } catch {
-            streamingReview = false
             phase = .failed(error.localizedDescription)
         }
     }
 
-    private func deepen(turn: Turn, opening: Review, history: [Turn]) async {
-        deepening = true
-        reviewDepthError = nil
-        defer { deepening = false }
-        do {
-            // Written onto the screen as it arrives, so a row stops saying
-            // "Working it out…" the moment its own name exists rather than
-            // when the last one does.
-            let updates = await tutor.streamDepth(
-                turn: turn, opening: opening, history: history, level: settings.level
-            )
-            for try await (partial, usage) in updates {
-                if let usage { note(usage) }
-                // Before the guard below: what the sentence used is true
-                // whether or not the learner is still looking at the review of
-                // it. Only the last element is deep, so this fires once.
-                if partial.isDeep { reached(partial, in: turn) }
-                guard var live = current, live.id == turn.id else { return }
-                live.review = partial
-                current = live
-                if let index = session?.turns.firstIndex(where: { $0.id == turn.id }) {
-                    session?.turns[index].review = partial
-                }
-            }
+    /// A change to one turn wherever it now lives: on screen, in the live
+    /// session, or already archived.
+    private func amend(_ id: UUID, _ change: (inout Turn) -> Void) {
+        if current?.id == id, var live = current {
+            change(&live)
+            current = live
+        }
+        if let index = session?.turns.firstIndex(where: { $0.id == id }) {
+            change(&session!.turns[index])
             hold()
-        } catch {
-            // The opening still stands. Say so rather than leaving half a
-            // review on screen with no explanation.
-            reviewDepthError = error.localizedDescription
+        }
+        for s in past.indices {
+            if let t = past[s].turns.firstIndex(where: { $0.id == id }) {
+                change(&past[s].turns[t])
+                Vault.save(Array(past.suffix(120)), Vault.sessions)
+            }
         }
     }
 
-    /// Ask for the rest again after a failure.
-    func retryDepth() async {
-        guard let turn = current, let opening = turn.review, !opening.isDeep else { return }
-        let history = settings.mode.reviewsEachAttempt
-            ? []
-            : Array((session?.turns ?? []).dropLast().suffix(settings.turnsBeforeReview))
-        await deepen(turn: turn, opening: opening, history: history)
+    private func archived(_ id: UUID) -> Turn? {
+        for session in past.reversed() {
+            if let turn = session.turns.first(where: { $0.id == id }) { return turn }
+        }
+        return nil
+    }
+
+    // MARK: Grading
+
+    /// Files a finished session for grading. Nothing is sent here, so this is
+    /// safe offline and at launch; `pump` does the sending.
+    private func enqueue(_ session: Session) {
+        guard !jobs.contains(where: { $0.sessionID == session.id }) else { return }
+        let exchanges = GradingJob.exchanges(of: session)
+        guard !exchanges.isEmpty else { return }
+        // A session from before sessions carried a level, retired after a
+        // language switch, can only take the setting — which is shared.
+        jobs.append(GradingJob(id: UUID(), sessionID: session.id, language: session.language,
+                               mode: session.mode, createdAt: .now,
+                               level: session.level ?? settings.level, exchanges: exchanges))
+        saveJobs()
+    }
+
+    private var pumping = false
+
+    /// Moves every job one step on: hands what is unsent to the background
+    /// uploader, tells the push worker about anything it is not watching,
+    /// counts what is graded, and reads in whatever has finished. Safe to call
+    /// as often as liked; a failure in one job or one step is retried on the
+    /// next call and never stops the others.
+    func pump() async {
+        guard !pumping else { return }
+        pumping = true
+        defer { pumping = false }
+
+        for id in jobs.map(\.id) {
+            guard var job = jobs.first(where: { $0.id == id }), job.state != .done else { continue }
+            do {
+                if job.batchID == nil {
+                    if !job.uploading { try submit(&job) }
+                    put(job)
+                    continue
+                }
+                guard let batchID = job.batchID else { continue }
+
+                if !job.watched, await watch(batchID, label: label(of: job)) {
+                    job.watched = true
+                }
+
+                let batch = try await tutor.api.retrieveBatch(batchID)
+                job.graded = batch.succeeded
+                job.failed = batch.failed
+                job.error = nil
+                if batch.ended {
+                    ingest(try await tutor.api.batchResults(batch), into: job)
+                    job.state = .done
+                }
+            } catch {
+                job.error = error.localizedDescription
+            }
+            put(job)
+        }
+
+        // A failed answer gets one second attempt on its own, outside the
+        // batch — where the refusal fallback is allowed. After that it waits
+        // for Retry.
+        for id in jobs.map(\.id) {
+            guard var job = jobs.first(where: { $0.id == id }),
+                  job.state == .done, !job.retried, hasFailures(job) else { continue }
+            job.retried = true
+            put(job)
+            await gradeMissing(of: job)
+        }
+
+        // Done jobs stay a day and a half, so the screen can still say what
+        // came back.
+        let cutoff = Date.now.addingTimeInterval(-36 * 3600)
+        jobs.removeAll { $0.state == .done && $0.createdAt < cutoff }
+        saveJobs()
+    }
+
+    private func label(of job: GradingJob) -> String {
+        "\(job.language.name) \(job.mode.name.lowercased())"
+    }
+
+    /// Hands a job to the background uploader. From here iOS owns it: it goes
+    /// when there is signal, with or without the app, and `submitted` hears
+    /// back.
+    private func submit(_ job: inout GradingJob) throws {
+        guard let body = try body(of: job) else {
+            job.state = .done
+            return
+        }
+        let token = UserDefaults.standard.string(forKey: Vault.pushToken)
+        try sender.send(job: job.id, body: body, token: token, label: label(of: job))
+        job.uploading = true
+        job.error = nil
+    }
+
+    /// The batch a job sends. Nil when none of its answers can be found.
+    private func body(of job: GradingJob) throws -> Data? {
+        let level = job.level ?? settings.level
+        let requests: [[String: Any]] = job.exchanges.compactMap { exchange in
+            let turns = exchange.turnIDs.compactMap(archived)
+            guard let last = turns.last else { return nil }
+            return ["custom_id": exchange.customID,
+                    "params": tutor.reviewParams(turn: last, history: Array(turns.dropLast()),
+                                                 level: level)]
+        }
+        guard !requests.isEmpty else { return nil }
+        return try JSONSerialization.data(withJSONObject: ["requests": requests])
+    }
+
+    /// Sends a job from the app, now, beside whatever iOS is holding for it.
+    func sendNow(_ job: GradingJob) async {
+        guard job.batchID == nil, sendingNow.insert(job.id).inserted else { return }
+        defer { sendingNow.remove(job.id) }
+        do {
+            guard let body = try body(of: job) else { return }
+            let batch = try await sender.sendNow(
+                job: job.id, body: body,
+                token: UserDefaults.standard.string(forKey: Vault.pushToken),
+                label: label(of: job))
+            submitted(job.id, .success(batch))
+            await pump()
+        } catch {
+            if var now = jobs.first(where: { $0.id == job.id }) {
+                now.error = online ? error.localizedDescription : "Still no connection."
+                put(now)
+            }
+        }
+    }
+
+    /// The uploader's answer, possibly delivered with the app in the
+    /// background. Saved before anything else: this is the only record of
+    /// which batch the answers became.
+    private func submitted(_ id: UUID, _ result: Result<String, Error>) {
+        guard var job = jobs.first(where: { $0.id == id }) else { return }
+        job.uploading = false
+        // Sent both ways: the second answer is the same batch, or a failure
+        // that no longer matters.
+        if job.batchID != nil {
+            put(job)
+            return
+        }
+        switch result {
+        case .success(let batch):
+            job.batchID = batch
+            job.state = .grading
+            job.watched = UserDefaults.standard.string(forKey: Vault.pushToken) != nil
+            job.error = nil
+        case .failure(let error):
+            job.error = error.localizedDescription
+        }
+        put(job)
+    }
+
+    /// An upload iOS no longer holds — the app was reinstalled, or the
+    /// system dropped it — is sent again. The worker returns the batch it
+    /// already made if the first one did arrive.
+    private func reconcileUploads() async {
+        let flying = await sender.inFlight()
+        for var job in jobs where job.uploading && !flying.contains(job.id) {
+            job.uploading = false
+            put(job)
+        }
+    }
+
+    /// Answers the batch did not grade, graded one at a time on the spot.
+    /// Each is saved as it lands, so being interrupted loses only the one in
+    /// flight.
+    private func gradeMissing(of job: GradingJob) async {
+        guard regrading.insert(job.id).inserted else { return }
+        defer { regrading.remove(job.id) }
+        let level = job.level ?? settings.level
+        for exchange in job.exchanges {
+            let turns = exchange.turnIDs.compactMap(archived)
+            guard let last = turns.last, last.review == nil else { continue }
+            do {
+                let (review, lessons, usage) = try await tutor.review(
+                    turn: last, history: Array(turns.dropLast()), level: level)
+                note(usage)
+                land(review, lessons, on: last)
+            } catch {
+                if var now = jobs.first(where: { $0.id == job.id }) {
+                    now.error = error.localizedDescription
+                    put(now)
+                }
+            }
+        }
+        refreshPlan()
+    }
+
+    /// One review into the archive, and everything it is evidence of into
+    /// `Progress`.
+    private func land(_ review: Review, _ lessons: [Lesson], on turn: Turn) {
+        amend(turn.id) { $0.review = review }
+        var graded = turn
+        graded.review = review
+        record(for: graded, review: review)
+        reached(review, in: graded)
+        shelve(lessons)
+    }
+
+    /// Reviews into the archive, in the order the answers were given.
+    /// Idempotent: an answer already reviewed is skipped, so a crash halfway
+    /// through costs nothing on the next pass.
+    private func ingest(_ results: [Anthropic.BatchResult], into job: GradingJob) {
+        let byID = Dictionary(results.map { ($0.customID, $0) }, uniquingKeysWith: { a, _ in a })
+        for exchange in job.exchanges {
+            guard let result = byID[exchange.customID], let reply = result.reply else { continue }
+            let turns = exchange.turnIDs.compactMap(archived)
+            guard let last = turns.last, last.review == nil else { continue }
+            note(reply.usage, batched: true)
+            guard let (review, lessons) = try? Tutor.read(reply, turn: last,
+                                                           history: Array(turns.dropLast()))
+            else { continue }
+            land(review, lessons, on: last)
+        }
+        // What the reviews put into `Progress` moves the record on screen.
+        refreshPlan()
+    }
+
+    /// Tells the push worker to notify this device when the batch ends — for
+    /// a job submitted before the device had a token. False when it could
+    /// not, so the next pump tries again.
+    private func watch(_ batchID: String, label: String) async -> Bool {
+        guard let token = UserDefaults.standard.string(forKey: Vault.pushToken),
+              let url = URL(string: Key.graderURL + "/watch") else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        request.httpBody = try? JSONSerialization.data(
+            withJSONObject: ["batch": batchID, "token": token, "label": label,
+                             "sandbox": Sender.sandbox])
+        guard let (_, response) = try? await URLSession.shared.data(for: request) else { return false }
+        return (response as? HTTPURLResponse)?.statusCode == 200
+    }
+
+    private func saveJobs() { Vault.save(jobs, Vault.grading) }
+
+    /// By id: the list can change under an await.
+    private func put(_ job: GradingJob) {
+        guard let index = jobs.firstIndex(where: { $0.id == job.id }) else { return }
+        jobs[index] = job
+        saveJobs()
+    }
+
+    /// Anything not yet handed to the uploader or not yet watched, so going
+    /// to the background can ask for time to finish it.
+    var hasUnsent: Bool {
+        jobs.contains { ($0.batchID == nil && !$0.uploading) || ($0.batchID != nil && !$0.watched) }
+    }
+
+    /// Everything the app does on coming to the front, in order: a session
+    /// left open since yesterday is filed and graded before today can be
+    /// written over it; lost uploads are resent; what finished is read in;
+    /// then the day — and, once today's feedback is in, tomorrow — is written.
+    /// Polls while anything is out, so the graded count moves on screen.
+    func wake() async {
+        retireStale()
+        await reconcileUploads()
+        await pump()
+        notificationsOn = await Push.allowed()
+        await prepareDay()
+        polling?.cancel()
+        polling = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(20))
+                guard let self, self.jobs.contains(where: { $0.state != .done }) else { return }
+                await self.pump()
+            }
+        }
+    }
+
+    func sleep() {
+        polling?.cancel()
+        polling = nil
+    }
+
+    /// Grades the answers a finished job is still missing, on the spot.
+    func regrade(_ job: GradingJob) {
+        Task { await gradeMissing(of: job) }
+    }
+
+    // MARK: Reading
+
+    /// The graded reviews of one job, one screen per exchange.
+    func read(_ job: GradingJob) {
+        let ids = job.exchanges.compactMap(\.turnIDs.last)
+            .filter { archived($0)?.review != nil }
+        guard let first = ids.first, let turn = archived(first) else { return }
+        session = nil
+        knowledge = [:]
+        path = []
+        reading = ids
+        current = turn
+        phase = .reviewing
+    }
+
+    /// Where a job stands, in the learner's words.
+    func status(of job: GradingJob) -> String {
+        switch job.state {
+        case .unsent:
+            if sendingNow.contains(job.id) { return "Sending…" }
+            if !online { return "No connection — sends when there's signal" }
+            return job.uploading ? "Sending…" : "Not sent yet — will retry"
+        case .grading:
+            return "\(job.graded) of \(job.total) graded"
+        case .done:
+            let missing = job.exchanges.filter {
+                $0.turnIDs.last.flatMap(archived)?.review == nil
+            }.count
+            if missing == 0 { return "Graded" }
+            return regrading.contains(job.id) ? "Grading \(missing) again…" : "Graded, \(missing) failed"
+        }
+    }
+
+    func canRead(_ job: GradingJob) -> Bool {
+        job.exchanges.contains { $0.turnIDs.last.flatMap(archived)?.review != nil }
+    }
+
+    func hasFailures(_ job: GradingJob) -> Bool {
+        job.state == .done && !regrading.contains(job.id) && job.exchanges.contains {
+            $0.turnIDs.last.flatMap(archived)?.review == nil
+        }
     }
 
     /// Structures the deep review says the sentence actually used, asked for or
@@ -704,9 +1227,23 @@ final class Store {
     }
 
     func advance() async {
-        guard let live = session else { return }
         knowledge = [:]
         path = []
+
+        // Reading a graded session: on to its next review, or back out.
+        if !reading.isEmpty {
+            reading.removeFirst()
+            if let next = reading.first, let turn = archived(next) {
+                current = turn
+            } else {
+                reading = []
+                current = nil
+                phase = .idle
+            }
+            return
+        }
+
+        guard let live = session else { return }
         if live.isComplete {
             phase = .complete
             past.append(live)
@@ -715,6 +1252,10 @@ final class Store {
             Vault.save(holds, Vault.holds)
             dropPending()
             usedClips = []
+            if live.mode != .listen {
+                enqueue(live)
+                Task { await pump() }
+            }
         } else {
             await nextPrompt()
         }
@@ -724,8 +1265,12 @@ final class Store {
     /// or a force-quit does not cost them the session either.
     private func hold() {
         guard let live = session, !live.isComplete else { return }
-        holds[Store.holdKey(live.language, live.mode)] =
-            Unfinished(session: live, turn: phase == .reviewing ? nil : current)
+        // The turn on screen is only held while it is unanswered; once
+        // submitted it is already in the session's turns.
+        let open = current.flatMap { turn in
+            live.turns.contains { $0.id == turn.id } ? nil : turn
+        }
+        holds[Store.holdKey(live.language, live.mode)] = Unfinished(session: live, turn: open)
         Vault.save(holds, Vault.holds)
     }
 
@@ -737,6 +1282,7 @@ final class Store {
         dropPending()
         session = nil
         current = nil
+        reading = []
         phase = .idle
         path = []
         knowledge = [:]
@@ -985,12 +1531,17 @@ final class Store {
 
     /// The one entry point. Every openable thing in the app ends up here, at
     /// any depth, with a request built from the atom rather than the screen.
+    /// The language of what is on screen. Usually the setting; while reading
+    /// a graded session it is that session's, which can be another language
+    /// entirely — its lessons, its schedule, its voice.
+    private var language: Language { current?.language ?? settings.language }
+
     func open(_ atom: Atom) {
         let request = LessonRequest(
-            seed: atom.seed, kind: atom.kind, language: settings.language,
+            seed: atom.seed, kind: atom.kind, language: language,
             priorVisits: progress.visits(to: atom.id)
         )
-        progress.opened(atom, language: settings.language)
+        progress.opened(atom, language: language)
         save()
         path.append(request)
         Task { await load(request) }
@@ -999,7 +1550,7 @@ final class Store {
     /// A way onward from inside a lesson. The context comes from where it was
     /// tapped, which is why the link itself does not carry one.
     func open(_ link: AtomLink, context: String) {
-        let request = link.request(in: settings.language, context: context,
+        let request = link.request(in: language, context: context,
                                    priorVisits: progress.visits(to: link.id))
         path.append(request)
         Task { await load(request) }
@@ -1008,28 +1559,9 @@ final class Store {
     /// Opening something that is not itself a finding — an example, half of a
     /// contrast — where there is no atom to record.
     func open(seed: Atom.Seed, kind: AtomKind) {
-        let request = LessonRequest(seed: seed, kind: kind, language: settings.language)
+        let request = LessonRequest(seed: seed, kind: kind, language: language)
         path.append(request)
         Task { await load(request) }
-    }
-
-    /// The rules behind the findings on screen, written before any of them is
-    /// tapped. Ranked order, so the start finding — the one most often opened —
-    /// is warm first, and the rest follow without competing with it. Rules
-    /// only: the drills cost more than everything else in a turn put together
-    /// and most of these are never opened.
-    private func prefetchLessons(for review: Review) {
-        let requests = review.problems.map { atom in
-            LessonRequest(seed: atom.seed, kind: atom.kind, language: settings.language,
-                          priorVisits: progress.visits(to: atom.id))
-        }
-        guard !requests.isEmpty else { return }
-        Task {
-            for request in requests {
-                guard !Task.isCancelled else { return }
-                await loadCore(request)
-            }
-        }
     }
 
     func lesson(for request: LessonRequest) -> Lesson? { lessons[request.cacheKey] }
@@ -1062,7 +1594,7 @@ final class Store {
             do {
                 let (lesson, usage) = try await self.tutor.expand(request)
                 if let usage { self.note(usage) }
-                self.lessons[key] = lesson
+                self.shelve([lesson])
             } catch {
                 self.lessonError = error.localizedDescription
             }
@@ -1090,7 +1622,7 @@ final class Store {
             do {
                 if let (full, usage) = try await self.tutor.practice(for: request) {
                     self.note(usage)
-                    self.lessons[key] = full
+                    self.shelve([full])
                 }
             } catch {
                 self.lessonError = error.localizedDescription
@@ -1173,7 +1705,7 @@ final class Store {
     /// schedules on its own; this is the other way in, and the only way back out.
     func setReturn(_ atom: Atom, wanted: Bool) {
         if wanted {
-            progress.bringBack(atom, language: settings.language)
+            progress.bringBack(atom, language: language)
         } else {
             progress.leaveOut(atom.id)
         }
@@ -1182,7 +1714,7 @@ final class Store {
 
     func classify(_ atom: Atom, as verdict: Progress.Encounter.Knowledge) {
         knowledge[atom.id] = verdict
-        progress.classify(atom, as: verdict, language: settings.language)
+        progress.classify(atom, as: verdict, language: language)
         save()
     }
 
@@ -1193,7 +1725,7 @@ final class Store {
         asking.insert(context)
         do {
             let (item, usage) = try await tutor.answer(
-                question: question, about: seed, in: settings.language
+                question: question, about: seed, in: language
             )
             note(usage)
             asked[context, default: []].append(item)
@@ -1216,7 +1748,7 @@ final class Store {
         }
         do {
             let (verdict, usage) = try await tutor.grade(
-                answer: answer, to: rung, in: settings.language
+                answer: answer, to: rung, in: language
             )
             note(usage)
             return verdict
@@ -1249,7 +1781,7 @@ final class Store {
         if let source = current?.prompt.audioSource, source.kind == .recording {
             Task { try? await speech?.play(source) }
         } else {
-            speech?.speak(text, locale: settings.language.localeID)
+            speech?.speak(text, locale: language.localeID)
         }
     }
 
@@ -1262,9 +1794,24 @@ final class Store {
 
     // MARK: Bookkeeping
 
-    private func note(_ usage: Anthropic.Usage) {
-        spend.add(usage)
+    private func note(_ usage: Anthropic.Usage, batched: Bool = false) {
+        spend.add(usage, batched: batched)
         Vault.save(spend, Vault.spend)
+    }
+
+    /// Lessons are kept across launches, since the batch wrote them once and
+    /// nothing will write them again. Capped, oldest out.
+    private func shelve(_ written: [Lesson]) {
+        guard !written.isEmpty else { return }
+        for lesson in written {
+            lessons[lesson.id] = lesson
+            lessonOrder.removeAll { $0 == lesson.id }
+            lessonOrder.append(lesson.id)
+        }
+        while lessonOrder.count > LessonShelf.cap {
+            lessons[lessonOrder.removeFirst()] = nil
+        }
+        Vault.save(LessonShelf(order: lessonOrder, lessons: lessons), Vault.lessons)
     }
 
     private func save() {

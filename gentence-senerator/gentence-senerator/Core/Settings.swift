@@ -25,24 +25,35 @@ struct Spend: Codable, Hashable {
 
     struct Day: Codable, Hashable {
         var input = 0, output = 0, cacheRead = 0, cacheWrite = 0
+        /// The same four, sent through the Batch API at half price.
+        var batchInput = 0, batchOutput = 0, batchCacheRead = 0, batchCacheWrite = 0
 
         /// Opus 5: $5/MTok in, $25/MTok out. Cache reads are a tenth of input,
         /// writes a quarter more, so both fall out of the input price.
         var dollars: Double {
-            (Double(input) * 5
-             + Double(output) * 25
-             + Double(cacheRead) * 0.5
-             + Double(cacheWrite) * 6.25) / 1_000_000
+            Self.price(input, output, cacheRead, cacheWrite)
+                + Self.price(batchInput, batchOutput, batchCacheRead, batchCacheWrite) / 2
+        }
+
+        private static func price(_ i: Int, _ o: Int, _ r: Int, _ w: Int) -> Double {
+            (Double(i) * 5 + Double(o) * 25 + Double(r) * 0.5 + Double(w) * 6.25) / 1_000_000
         }
     }
 
-    mutating func add(_ usage: Anthropic.Usage, on day: Date = .now) {
+    mutating func add(_ usage: Anthropic.Usage, batched: Bool = false, on day: Date = .now) {
         let key = Spend.key(day)
         var d = days[key] ?? Day()
-        d.input += usage.inputTokens
-        d.output += usage.outputTokens
-        d.cacheRead += usage.cacheReadTokens
-        d.cacheWrite += usage.cacheWriteTokens
+        if batched {
+            d.batchInput += usage.inputTokens
+            d.batchOutput += usage.outputTokens
+            d.batchCacheRead += usage.cacheReadTokens
+            d.batchCacheWrite += usage.cacheWriteTokens
+        } else {
+            d.input += usage.inputTokens
+            d.output += usage.outputTokens
+            d.cacheRead += usage.cacheReadTokens
+            d.cacheWrite += usage.cacheWriteTokens
+        }
         days[key] = d
     }
 
@@ -67,6 +78,10 @@ extension Spend.Day {
         output = try c.decodeIfPresent(Int.self, forKey: .output) ?? 0
         cacheRead = try c.decodeIfPresent(Int.self, forKey: .cacheRead) ?? 0
         cacheWrite = try c.decodeIfPresent(Int.self, forKey: .cacheWrite) ?? 0
+        batchInput = try c.decodeIfPresent(Int.self, forKey: .batchInput) ?? 0
+        batchOutput = try c.decodeIfPresent(Int.self, forKey: .batchOutput) ?? 0
+        batchCacheRead = try c.decodeIfPresent(Int.self, forKey: .batchCacheRead) ?? 0
+        batchCacheWrite = try c.decodeIfPresent(Int.self, forKey: .batchCacheWrite) ?? 0
     }
 }
 
@@ -101,4 +116,10 @@ enum Vault {
     /// The dialogue in progress, per language. Kept off `holds` on purpose:
     /// holds are retired at the end of the day and a passage is not.
     static let passages = "passages.v1"
+    /// Sessions sent for grading, until their results are read in.
+    static let grading = "grading.v1"
+    /// Lessons written with a review, by `LessonRequest.cacheKey`.
+    static let lessons = "lessons.v1"
+    /// This device's APNs token, as hex.
+    static let pushToken = "push.token"
 }

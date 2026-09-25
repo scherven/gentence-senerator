@@ -52,16 +52,20 @@ actor Anthropic {
     /// `thinking` is deliberately never set. On Opus 5 — unlike 4.8 and 4.7 —
     /// omitting it runs adaptive thinking, which is what we want: every reply
     /// here is schema-constrained JSON, and `thinking: {type: "disabled"}` on
-    /// this model can leak `<thinking>` tags into the text, which would land
-    /// verbatim in a rule or a question, and would break the partial-JSON
-    /// scanners in `Tutor`. `effort` is the lever instead.
-    nonisolated private func request(cachedSystem: String, user: String, schema: [String: Any]?,
-                        effort: Effort, maxTokens: Int, streaming: Bool) throws -> URLRequest {
+    /// this model can leak `<thinking>` tags into the text. `effort` is the
+    /// lever instead.
+    ///
+    /// The body of one Messages request — sent on its own, or as one entry of
+    /// a batch.
+    ///
+    /// Batches refuse `fallbacks`, so a batched request that trips a safety
+    /// classifier comes back as a refusal and is left ungraded.
+    nonisolated func params(cachedSystem: String, user: String, schema: [String: Any]?,
+                            effort: Effort, maxTokens: Int, batched: Bool = false) -> [String: Any] {
         var outputConfig: [String: Any] = ["effort": effort.rawValue]
         if let schema {
             outputConfig["format"] = ["type": "json_schema", "schema": schema]
         }
-
         var body: [String: Any] = [
             "model": model,
             "max_tokens": maxTokens,
@@ -71,112 +75,37 @@ actor Anthropic {
                 "cache_control": ["type": "ephemeral"]
             ]],
             "messages": [["role": "user", "content": user]],
-            "output_config": outputConfig,
-            // Routes around a safety refusal instead of failing the turn.
-            "fallbacks": "default"
+            "output_config": outputConfig
         ]
-        if streaming { body["stream"] = true }
+        // Routes around a safety refusal instead of failing the turn.
+        if !batched { body["fallbacks"] = "default" }
+        return body
+    }
 
-        var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/messages")!)
-        request.httpMethod = "POST"
+    nonisolated private func request(_ path: String, method: String = "POST",
+                                     body: [String: Any]? = nil) throws -> URLRequest {
+        var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/\(path)")!)
+        request.httpMethod = method
         request.setValue(key, forHTTPHeaderField: "x-api-key")
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         request.setValue("server-side-fallback-2026-07-01", forHTTPHeaderField: "anthropic-beta")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        request.timeoutInterval = 120
+        if let body { request.httpBody = try JSONSerialization.data(withJSONObject: body) }
+        // Long enough for a high-effort reply that sends nothing until it is done.
+        request.timeoutInterval = 600
         return request
     }
 
-    /// A reply as it is written, for the one call the learner waits on. Half
-    /// its wall-clock is thinking, before any text exists; the rest arrives at
-    /// a steady rate, so showing it as it lands halves the visible wait.
-    enum Event {
-        case text(String)
-        case finished(Usage)
-        case refused(String)
-    }
-
-    /// Opens the connection and hands back the bytes to read.
-    nonisolated private func open(cachedSystem: String, user: String, schema: [String: Any],
-                                  effort: Effort, maxTokens: Int)
-    async throws -> URLSession.AsyncBytes {
-        var request = try self.request(cachedSystem: cachedSystem, user: user,
-                                       schema: schema, effort: effort,
-                                       maxTokens: maxTokens, streaming: true)
-        request.timeoutInterval = 180
-
-        let (bytes, response) = try await self.session.bytes(for: request)
+    private func data(for request: URLRequest) async throws -> Data {
+        let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw Failure.malformed("no HTTP response")
         }
         guard (200..<300).contains(http.statusCode) else {
-            var body = ""
-            for try await line in bytes.lines {
-                body += line
-                if body.count > 400 { break }
-            }
-            throw Failure.http(http.statusCode, String(body.prefix(400)))
+            let detail = String(data: data, encoding: .utf8) ?? ""
+            throw Failure.http(http.statusCode, String(detail.prefix(400)))
         }
-        return bytes
-    }
-
-    nonisolated func stream(cachedSystem: String,
-                user: String,
-                schema: [String: Any],
-                effort: Effort = .medium,
-                maxTokens: Int = 8000) -> AsyncThrowingStream<Event, Error> {
-        AsyncThrowingStream { continuation in
-            let work = Task {
-                do {
-                    guard !key.isEmpty else { throw Failure.noKey }
-                    let bytes = try await self.open(
-                        cachedSystem: cachedSystem, user: user, schema: schema,
-                        effort: effort, maxTokens: maxTokens)
-
-                    var usage = Usage(inputTokens: 0, outputTokens: 0,
-                                      cacheReadTokens: 0, cacheWriteTokens: 0)
-                    for try await line in bytes.lines {
-                        guard line.hasPrefix("data:") else { continue }
-                        let payload = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
-                        guard let data = payload.data(using: .utf8),
-                              let object = try? JSONSerialization.jsonObject(with: data)
-                                as? [String: Any] else { continue }
-
-                        switch object["type"] as? String {
-                        case "content_block_delta":
-                            if let delta = object["delta"] as? [String: Any],
-                               let text = delta["text"] as? String, !text.isEmpty {
-                                continuation.yield(.text(text))
-                            }
-                        case "message_start":
-                            if let message = object["message"] as? [String: Any] {
-                                usage = Self.usage(from: message["usage"] as? [String: Any] ?? [:])
-                            }
-                        case "message_delta":
-                            if let delta = object["delta"] as? [String: Any],
-                               delta["stop_reason"] as? String == "refusal" {
-                                let why = (object["stop_details"] as? [String: Any])?["explanation"]
-                                    as? String ?? "no explanation given"
-                                continuation.yield(.refused(why))
-                            }
-                            // Output tokens are only final here.
-                            if let u = object["usage"] as? [String: Any] {
-                                let final = Self.usage(from: u)
-                                usage.outputTokens = final.outputTokens
-                            }
-                        default:
-                            break
-                        }
-                    }
-                    continuation.yield(.finished(usage))
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
-            }
-            continuation.onTermination = { _ in work.cancel() }
-        }
+        return data
     }
 
     /// One call. `schema` constrains the reply to valid JSON; `cachedSystem` is
@@ -190,23 +119,18 @@ actor Anthropic {
 
         guard !key.isEmpty else { throw Failure.noKey }
 
-        let request = try self.request(cachedSystem: cachedSystem, user: user, schema: schema,
-                                       effort: effort, maxTokens: maxTokens,
-                                       streaming: false)
-        let (data, response) = try await session.data(for: request)
-
-        guard let http = response as? HTTPURLResponse else {
-            throw Failure.malformed("no HTTP response")
-        }
-        guard (200..<300).contains(http.statusCode) else {
-            let detail = String(data: data, encoding: .utf8) ?? ""
-            throw Failure.http(http.statusCode, String(detail.prefix(400)))
-        }
+        let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
+                          effort: effort, maxTokens: maxTokens)
+        let data = try await data(for: try request("messages", body: body))
 
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw Failure.malformed("not a JSON object")
         }
+        return try Self.reply(from: object)
+    }
 
+    /// A finished message, from `/messages` or from one line of batch results.
+    static func reply(from object: [String: Any]) throws -> Reply {
         let usage = Self.usage(from: object["usage"] as? [String: Any] ?? [:])
 
         // Always check before reading content — a refusal is an HTTP 200.
@@ -236,13 +160,16 @@ actor Anthropic {
 
         let reply = try await send(cachedSystem: cachedSystem, user: user,
                                    schema: schema, effort: effort, maxTokens: maxTokens)
-        if let refusal = reply.refusal { throw Failure.refused(refusal) }
+        return (try Self.decode(T.self, from: reply), reply.usage)
+    }
 
+    static func decode<T: Decodable>(_ type: T.Type, from reply: Reply) throws -> T {
+        if let refusal = reply.refusal { throw Failure.refused(refusal) }
         guard let data = reply.text.data(using: .utf8) else {
             throw Failure.malformed("reply was not UTF-8")
         }
         do {
-            return (try JSONDecoder().decode(T.self, from: data), reply.usage)
+            return try JSONDecoder().decode(T.self, from: data)
         } catch let error as DecodingError {
             throw Failure.malformed("\(Self.explain(error)) — \(reply.text.prefix(400))")
         } catch {
@@ -269,6 +196,79 @@ actor Anthropic {
         @unknown default:
             return error.localizedDescription
         }
+    }
+
+    // MARK: Batches
+    //
+    // Half price, and nobody is waiting. Results can only be downloaded once
+    // every request in the batch has ended; the counts are readable before.
+
+    struct Batch {
+        var id: String
+        var ended: Bool
+        var succeeded: Int
+        var failed: Int
+        var processing: Int
+        var resultsURL: URL?
+    }
+
+    /// One result line. `reply` is nil when the request errored or expired.
+    struct BatchResult {
+        var customID: String
+        var reply: Reply?
+        var error: String?
+    }
+
+    func retrieveBatch(_ id: String) async throws -> Batch {
+        try Self.batch(from: try await data(for: try request("messages/batches/\(id)", method: "GET")))
+    }
+
+    func batchResults(_ batch: Batch) async throws -> [BatchResult] {
+        guard let url = batch.resultsURL else { throw Failure.malformed("batch has no results yet") }
+        var request = try request("", method: "GET")
+        request.url = url
+        return Self.results(from: try await data(for: request))
+    }
+
+    /// One `BatchResult` per line of a results file. A line that will not
+    /// parse is skipped, not fatal: its answer shows as failed and is retried.
+    static func results(from data: Data) -> [BatchResult] {
+        String(decoding: data, as: UTF8.self)
+            .split(whereSeparator: \.isNewline)
+            .compactMap { line -> BatchResult? in
+                guard let object = try? JSONSerialization.jsonObject(with: Data(line.utf8))
+                        as? [String: Any],
+                      let id = object["custom_id"] as? String,
+                      let result = object["result"] as? [String: Any] else { return nil }
+                if result["type"] as? String == "succeeded",
+                   let message = result["message"] as? [String: Any] {
+                    do {
+                        return BatchResult(customID: id, reply: try Self.reply(from: message), error: nil)
+                    } catch {
+                        return BatchResult(customID: id, reply: nil, error: error.localizedDescription)
+                    }
+                }
+                let why = ((result["error"] as? [String: Any])?["error"] as? [String: Any])?["message"]
+                    as? String ?? (result["type"] as? String ?? "failed")
+                return BatchResult(customID: id, reply: nil, error: why)
+            }
+    }
+
+    private static func batch(from data: Data) throws -> Batch {
+        guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let id = object["id"] as? String else {
+            throw Failure.malformed("not a batch")
+        }
+        let counts = object["request_counts"] as? [String: Any] ?? [:]
+        func n(_ key: String) -> Int { counts[key] as? Int ?? 0 }
+        return Batch(
+            id: id,
+            ended: object["processing_status"] as? String == "ended",
+            succeeded: n("succeeded"),
+            failed: n("errored") + n("expired") + n("canceled"),
+            processing: n("processing"),
+            resultsURL: (object["results_url"] as? String).flatMap(URL.init(string:))
+        )
     }
 
     private static func usage(from raw: [String: Any]) -> Usage {
