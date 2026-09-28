@@ -17509,5 +17509,7406 @@
   "decoys": [
    "很"
   ]
+ },
+ {
+  "id": "zh.q.adv-1",
+  "entry": "zh.adv-conditions.yaome",
+  "format": "pick-one",
+  "prompt": "要么你来找我，＿我去找你。",
+  "gloss": "Either you come to me or I come to you.",
+  "why": "要么…要么",
+  "steps": [
+   {
+    "options": [
+     "于是",
+     "要么",
+     "还是",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-2",
+  "entry": "zh.adv-conditions.yaome",
+  "format": "spot-it",
+  "prompt": "要么你道歉，还是我走",
+  "gloss": "Either you apologise or I leave.",
+  "why": "要么…要么",
+  "steps": [
+   {
+    "options": [
+     "要么",
+     "你",
+     "道歉，",
+     "还是",
+     "我",
+     "走"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "还是",
+    "options": [
+     "而且",
+     "于是",
+     "要么"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-3",
+  "entry": "zh.adv-conditions.chufei-cai",
+  "format": "pick-one",
+  "prompt": "除非你亲自去请，他＿会来。",
+  "gloss": "He'll only come if you invite him in person.",
+  "why": "除非 → 才",
+  "steps": [
+   {
+    "options": [
+     "都",
+     "才",
+     "就",
+     "也"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-4",
+  "entry": "zh.adv-conditions.chufei-cai",
+  "format": "spot-it",
+  "prompt": "除非下大雨，比赛就会取消",
+  "gloss": "The match will only be called off if it pours.",
+  "why": "除非 → 才",
+  "steps": [
+   {
+    "options": [
+     "除非",
+     "下大雨，",
+     "比赛",
+     "就",
+     "会",
+     "取消"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "就",
+    "options": [
+     "才",
+     "又",
+     "都"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-5",
+  "entry": "zh.adv-conditions.chufei-cai",
+  "format": "build",
+  "gloss": "He'll only agree if you ask him yourself.",
+  "tiles": [
+   "除非",
+   "你亲自开口",
+   "他",
+   "才会",
+   "同意"
+  ],
+  "decoys": [
+   "就会"
+  ]
+ },
+ {
+  "id": "zh.q.adv-6",
+  "entry": "zh.adv-conditions.chufei-fouze",
+  "format": "pick-one",
+  "prompt": "除非提前预约，＿进不去。",
+  "gloss": "You can't get in unless you book ahead.",
+  "why": "除非 → 否则",
+  "steps": [
+   {
+    "options": [
+     "所以",
+     "而且",
+     "然后",
+     "否则"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-7",
+  "entry": "zh.adv-conditions.chufei-fouze",
+  "format": "flip",
+  "prompt": "除非你答应我的条件，＿我不会签字。",
+  "gloss": "Unless you accept my terms, I won't sign.",
+  "why": "除非 → 否则",
+  "steps": [
+   {
+    "options": [
+     "所以",
+     "否则"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-8",
+  "entry": "zh.adv-conditions.chufei-fouze",
+  "format": "transform",
+  "prompt": "如果不提前预约，就进不去。",
+  "gloss": "You can't get in unless you book ahead.",
+  "task": "→ 除非…否则…",
+  "accept": [
+   "除非提前预约，否则进不去。",
+   "除非提前预约否则进不去。",
+   "除非提前预约，否则就进不去。",
+   "除非提前预约否则就进不去。",
+   "除非你提前预约，否则进不去。",
+   "除非你提前预约否则进不去。",
+   "除非你提前预约，否则就进不去。",
+   "除非你提前预约否则就进不去。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-9",
+  "entry": "zh.adv-conditions.fanshi-dou",
+  "format": "pick-one",
+  "prompt": "凡是报了名的人＿可以参加。",
+  "gloss": "Everyone who has signed up can take part.",
+  "why": "凡是 → 都",
+  "steps": [
+   {
+    "options": [
+     "却",
+     "再",
+     "才",
+     "都"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-10",
+  "entry": "zh.adv-conditions.fanshi-dou",
+  "format": "build",
+  "gloss": "Anyone who has been to Beijing has heard of this place.",
+  "tiles": [
+   "凡是",
+   "去过北京的人",
+   "都",
+   "听说过",
+   "这个地方"
+  ],
+  "decoys": [
+   "才"
+  ]
+ },
+ {
+  "id": "zh.q.adv-11",
+  "entry": "zh.adv-conditions.fanshi-dou",
+  "format": "spot-it",
+  "prompt": "凡是他推荐的书我才买",
+  "gloss": "I buy every book he recommends.",
+  "why": "凡是 → 都",
+  "steps": [
+   {
+    "options": [
+     "凡是",
+     "他",
+     "推荐的书",
+     "我",
+     "才",
+     "买"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "才",
+    "options": [
+     "都",
+     "再",
+     "又"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-12",
+  "entry": "zh.adv-conditions.fan-zhe-jun",
+  "format": "pick-one",
+  "prompt": "凡逾期未缴费＿，均按违约处理。",
+  "gloss": "Anyone who has not paid by the deadline is in breach.",
+  "why": "凡 → 者",
+  "steps": [
+   {
+    "options": [
+     "所",
+     "之",
+     "其",
+     "者"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-13",
+  "entry": "zh.adv-conditions.fan-zhe-jun",
+  "format": "pick-one",
+  "prompt": "凡持本卡者，＿可享受九折优惠。",
+  "gloss": "All holders of this card get 10% off.",
+  "why": "者 → 均",
+  "steps": [
+   {
+    "options": [
+     "故",
+     "乃",
+     "均",
+     "岂"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-14",
+  "entry": "zh.adv-conditions.feide-cai",
+  "format": "pick-one",
+  "prompt": "他这个人，非得亲眼看见＿肯相信。",
+  "gloss": "He won't believe anything until he sees it himself.",
+  "why": "非得 → 才",
+  "steps": [
+   {
+    "options": [
+     "都",
+     "才",
+     "再",
+     "就"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-15",
+  "entry": "zh.adv-conditions.feide-cai",
+  "format": "spot-it",
+  "prompt": "这件事非得你亲自去就行",
+  "gloss": "Only you going in person will do.",
+  "why": "非得 → 才",
+  "steps": [
+   {
+    "options": [
+     "这件事",
+     "非得",
+     "你",
+     "亲自去",
+     "就",
+     "行"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "就",
+    "options": [
+     "才",
+     "都",
+     "再"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-16",
+  "entry": "zh.adv-conditions.ren-ye",
+  "format": "pick-one",
+  "prompt": "＿你怎么劝，他也不肯回头。",
+  "gloss": "However you plead, he won't turn back.",
+  "why": "无论 → 任",
+  "steps": [
+   {
+    "options": [
+     "任",
+     "被",
+     "使",
+     "把"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-17",
+  "entry": "zh.adv-conditions.ren-ye",
+  "format": "pick-one",
+  "prompt": "任风吹雨打，这棵树＿一动不动。",
+  "gloss": "Wind or rain, the tree doesn't budge.",
+  "why": "任 → 也",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "才",
+     "就",
+     "再"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-18",
+  "entry": "zh.adv-conditions.wulun-yufou",
+  "format": "pick-one",
+  "prompt": "无论成功＿，都要认真总结经验。",
+  "gloss": "Succeed or not, we must review what we learned.",
+  "why": "无论 → 与否",
+  "steps": [
+   {
+    "options": [
+     "或者",
+     "罢了",
+     "而已",
+     "与否"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-19",
+  "entry": "zh.adv-conditions.wulun-yufou",
+  "format": "transform",
+  "prompt": "无论你同意还是不同意，我都要去。",
+  "gloss": "Whether or not you agree, I'm going.",
+  "task": "→ 与否",
+  "accept": [
+   "无论你同意与否，我都要去。",
+   "无论你同意与否我都要去。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-20",
+  "entry": "zh.adv-conditions.wulun-yufou",
+  "format": "build",
+  "gloss": "Whether or not he comes, the meeting starts on time.",
+  "tiles": [
+   "无论",
+   "他",
+   "来",
+   "与否",
+   "会议",
+   "都",
+   "准时开始"
+  ],
+  "decoys": [
+   "或者"
+  ]
+ },
+ {
+  "id": "zh.q.adv-21",
+  "entry": "zh.adv-conditions.wulun-ruhe",
+  "format": "pick-one",
+  "prompt": "这件事＿也要在月底前完成。",
+  "gloss": "Whatever happens, this must be done by month's end.",
+  "why": "不管怎样",
+  "steps": [
+   {
+    "options": [
+     "无可奈何",
+     "无论如何",
+     "何去何从",
+     "不知不觉"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-22",
+  "entry": "zh.adv-conditions.wulun-ruhe",
+  "format": "pick-one",
+  "prompt": "我＿也想不明白他为什么辞职。",
+  "gloss": "I just can't work out why he quit.",
+  "why": "不管怎样",
+  "steps": [
+   {
+    "options": [
+     "无论如何",
+     "除非",
+     "非得",
+     "无可奈何"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-23",
+  "entry": "zh.adv-conditions.yeba-yehao",
+  "format": "pick-one",
+  "prompt": "你同意也好，反对＿，结果都一样。",
+  "gloss": "Agree or object, the outcome is the same.",
+  "why": "也好 → 也罢",
+  "steps": [
+   {
+    "options": [
+     "而已",
+     "也罢",
+     "也许",
+     "罢了"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-24",
+  "entry": "zh.adv-conditions.yeba-yehao",
+  "format": "spot-it",
+  "prompt": "去也好，不去也罢，你才得早点儿决定",
+  "gloss": "Go or don't, either way you need to decide soon.",
+  "why": "也罢 → 都",
+  "steps": [
+   {
+    "options": [
+     "去也好，",
+     "不去也罢，",
+     "你",
+     "才",
+     "得",
+     "早点儿决定"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "才",
+    "options": [
+     "再",
+     "都",
+     "又"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-25",
+  "entry": "zh.adv-conditions.xingkui-buran",
+  "format": "pick-one",
+  "prompt": "幸亏带了伞，＿就被淋湿了。",
+  "gloss": "Good thing I brought an umbrella, or I'd be soaked.",
+  "why": "幸亏 → 不然",
+  "steps": [
+   {
+    "options": [
+     "于是",
+     "不然",
+     "所以",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-26",
+  "entry": "zh.adv-conditions.xingkui-buran",
+  "format": "pick-one",
+  "prompt": "＿你提醒我，不然我就把这事忘了。",
+  "gloss": "Lucky you reminded me, or I'd have forgotten.",
+  "why": "幸亏 → 不然",
+  "steps": [
+   {
+    "options": [
+     "即使",
+     "尽管",
+     "幸亏",
+     "虽然"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-27",
+  "entry": "zh.adv-conditions.xingkui-buran",
+  "format": "build",
+  "gloss": "Luckily we set off early, or we'd have missed the train.",
+  "tiles": [
+   "幸亏",
+   "我们",
+   "出发得早",
+   "不然",
+   "就",
+   "赶不上火车了"
+  ],
+  "decoys": [
+   "所以"
+  ],
+  "accept": [
+   "我们 幸亏 出发得早 不然 就 赶不上火车了"
+  ]
+ },
+ {
+  "id": "zh.q.adv-28",
+  "entry": "zh.adv-conditions.miande",
+  "format": "pick-one",
+  "prompt": "出门前先打个电话，＿白跑一趟。",
+  "gloss": "Call before you go, so you don't make a wasted trip.",
+  "why": "避免 → 免得",
+  "steps": [
+   {
+    "options": [
+     "以便",
+     "何况",
+     "因此",
+     "免得"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-29",
+  "entry": "zh.adv-conditions.miande",
+  "format": "pick-one",
+  "prompt": "多带一件外套，＿天气突然变冷。",
+  "gloss": "Take an extra coat in case it turns cold.",
+  "why": "防备 → 以防",
+  "steps": [
+   {
+    "options": [
+     "以防",
+     "以为",
+     "以便",
+     "以至"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-30",
+  "entry": "zh.adv-conditions.miande",
+  "format": "flip",
+  "prompt": "你最好写下来，＿忘了。",
+  "gloss": "Better write it down so you don't forget.",
+  "why": "避免 → 免得",
+  "steps": [
+   {
+    "options": [
+     "免得",
+     "以便"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-31",
+  "entry": "zh.adv-concession.jiusuan-ye",
+  "format": "pick-one",
+  "prompt": "就算下雨，我们＿要去。",
+  "gloss": "Even if it rains, we're going.",
+  "why": "就算 → 也",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "才",
+     "却",
+     "就"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-32",
+  "entry": "zh.adv-concession.jiusuan-ye",
+  "format": "spot-it",
+  "prompt": "就算你不说，我就知道",
+  "gloss": "Even if you don't tell me, I know.",
+  "why": "就算 → 也",
+  "steps": [
+   {
+    "options": [
+     "就算",
+     "你",
+     "不说，",
+     "我",
+     "就",
+     "知道"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "就",
+    "options": [
+     "再",
+     "也",
+     "才"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-33",
+  "entry": "zh.adv-concession.jiusuan-ye",
+  "format": "transform",
+  "prompt": "即使明天下雨，比赛也会照常进行。",
+  "gloss": "Even if it rains tomorrow, the match goes ahead.",
+  "task": "即使 → 就算",
+  "accept": [
+   "就算明天下雨，比赛也会照常进行。",
+   "就算明天下雨比赛也会照常进行。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-34",
+  "entry": "zh.adv-concession.zongran-ye",
+  "format": "pick-one",
+  "prompt": "＿困难重重，我们也不能就此放弃。",
+  "gloss": "However many the difficulties, we can't give up now.",
+  "why": "即使 → 纵然",
+  "steps": [
+   {
+    "options": [
+     "突然",
+     "居然",
+     "纵然",
+     "果然"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-35",
+  "entry": "zh.adv-concession.zongran-ye",
+  "format": "flip",
+  "prompt": "纵然失败了，＿不是没有收获。",
+  "gloss": "Even in failure, something was gained.",
+  "why": "纵然 → 也",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "就"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-36",
+  "entry": "zh.adv-concession.zongran-ye",
+  "format": "spot-it",
+  "prompt": "纵然有再多困难，我们就不会放弃",
+  "gloss": "However many the difficulties, we won't give up.",
+  "why": "纵然 → 也",
+  "steps": [
+   {
+    "options": [
+     "纵然",
+     "有",
+     "再多困难，",
+     "我们",
+     "就",
+     "不会",
+     "放弃"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "就",
+    "options": [
+     "才",
+     "也",
+     "再"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-37",
+  "entry": "zh.adv-concession.suishuo-dan",
+  "format": "pick-one",
+  "prompt": "＿年纪不小了，但他身体还很硬朗。",
+  "gloss": "He's no longer young, but he's still fit.",
+  "why": "让步 → 虽说",
+  "steps": [
+   {
+    "options": [
+     "如果",
+     "虽说",
+     "既然",
+     "因为"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-38",
+  "entry": "zh.adv-concession.suishuo-dan",
+  "format": "spot-it",
+  "prompt": "虽说价格贵了点儿，所以质量确实不错",
+  "gloss": "It's a bit pricey, but the quality really is good.",
+  "why": "虽说 → 但",
+  "steps": [
+   {
+    "options": [
+     "虽说",
+     "价格",
+     "贵了点儿，",
+     "所以",
+     "质量",
+     "确实不错"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "所以",
+    "options": [
+     "但",
+     "就",
+     "而且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-39",
+  "entry": "zh.adv-concession.suishuo-dan",
+  "format": "transform",
+  "prompt": "虽然他工作很忙，但他每天都锻炼。",
+  "gloss": "Busy as he is, he works out every day.",
+  "task": "虽然 → 虽说",
+  "accept": [
+   "虽说他工作很忙，但他每天都锻炼。",
+   "虽说他工作很忙但他每天都锻炼。",
+   "虽说他工作很忙，但每天都锻炼。",
+   "虽说他工作很忙但每天都锻炼。",
+   "他虽说工作很忙，但每天都锻炼。",
+   "他虽说工作很忙但每天都锻炼。",
+   "他虽说工作很忙，但他每天都锻炼。",
+   "他虽说工作很忙但他每天都锻炼。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-40",
+  "entry": "zh.adv-concession.biekan",
+  "format": "pick-one",
+  "prompt": "＿他个子小，力气可大了。",
+  "gloss": "He may be small, but he's really strong.",
+  "why": "外表 → 别看",
+  "steps": [
+   {
+    "options": [
+     "看来",
+     "因为",
+     "如果",
+     "别看"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-41",
+  "entry": "zh.adv-concession.biekan",
+  "format": "build",
+  "gloss": "She may not say much, but she's full of ideas.",
+  "tiles": [
+   "别看",
+   "她",
+   "不爱说话",
+   "主意",
+   "可多了"
+  ],
+  "decoys": [
+   "因为"
+  ]
+ },
+ {
+  "id": "zh.q.adv-42",
+  "entry": "zh.adv-concession.biekan",
+  "format": "spot-it",
+  "prompt": "别看他平时不说话，所以心里什么都明白",
+  "gloss": "He may not talk much, but he understands everything.",
+  "why": "别看 → 其实",
+  "steps": [
+   {
+    "options": [
+     "别看",
+     "他",
+     "平时",
+     "不说话，",
+     "所以",
+     "心里",
+     "什么都明白"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "所以",
+    "options": [
+     "因此",
+     "其实",
+     "于是"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-43",
+  "entry": "zh.adv-concession.x-daoshi-x",
+  "format": "pick-one",
+  "prompt": "书看倒是＿了，就是没看懂。",
+  "gloss": "I did read the book, I just didn't understand it.",
+  "why": "X倒是X",
+  "steps": [
+   {
+    "options": [
+     "看",
+     "借",
+     "写",
+     "买"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-44",
+  "entry": "zh.adv-concession.x-daoshi-x",
+  "format": "pick-one",
+  "prompt": "饭吃倒是吃了，＿没吃饱。",
+  "gloss": "I did eat, I'm just not full.",
+  "why": "倒是 → 就是",
+  "steps": [
+   {
+    "options": [
+     "而且",
+     "所以",
+     "就是",
+     "于是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-45",
+  "entry": "zh.adv-concession.x-daoshi-x",
+  "format": "spot-it",
+  "prompt": "钱借倒是借到了，所以还不够",
+  "gloss": "I did manage to borrow money, it's just not enough.",
+  "why": "倒是 → 就是",
+  "steps": [
+   {
+    "options": [
+     "钱",
+     "借",
+     "倒是",
+     "借到了，",
+     "所以",
+     "还不够"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "所以",
+    "options": [
+     "于是",
+     "就是",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-46",
+  "entry": "zh.adv-concession.x-gui-x",
+  "format": "pick-one",
+  "prompt": "朋友＿朋友，生意归生意。",
+  "gloss": "Friends are friends, and business is business.",
+  "why": "X归X",
+  "steps": [
+   {
+    "options": [
+     "跟",
+     "归",
+     "对",
+     "和"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-47",
+  "entry": "zh.adv-concession.x-gui-x",
+  "format": "pick-one",
+  "prompt": "说归说，＿归做，你可别当真。",
+  "gloss": "Saying is one thing, doing another; don't take it seriously.",
+  "why": "说归说，做归做",
+  "steps": [
+   {
+    "options": [
+     "想",
+     "做",
+     "听",
+     "说"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-48",
+  "entry": "zh.adv-concession.bieshuo-dou",
+  "format": "pick-one",
+  "prompt": "＿一千块，一百块我都拿不出来。",
+  "gloss": "Never mind a thousand, I can't even find a hundred.",
+  "why": "别说 → 都",
+  "steps": [
+   {
+    "options": [
+     "虽说",
+     "别说",
+     "不但",
+     "别看"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-49",
+  "entry": "zh.adv-concession.bieshuo-dou",
+  "format": "spot-it",
+  "prompt": "别说跑步，他现在走路就困难",
+  "gloss": "Forget running, even walking is hard for him now.",
+  "why": "别说 → 都",
+  "steps": [
+   {
+    "options": [
+     "别说",
+     "跑步，",
+     "他",
+     "现在",
+     "走路",
+     "就",
+     "困难"
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "就",
+    "options": [
+     "都",
+     "再",
+     "才"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-50",
+  "entry": "zh.adv-concession.bushuo-hai",
+  "format": "pick-one",
+  "prompt": "这家店东西贵不说，服务＿特别差。",
+  "gloss": "This shop is pricey, and the service is terrible on top.",
+  "why": "不说 → 还",
+  "steps": [
+   {
+    "options": [
+     "才",
+     "还",
+     "却",
+     "就"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-51",
+  "entry": "zh.adv-concession.bushuo-hai",
+  "format": "build",
+  "gloss": "He was late, and on top of that didn't apologise once.",
+  "tiles": [
+   "他",
+   "迟到了",
+   "不说",
+   "还",
+   "一句道歉都没有"
+  ],
+  "decoys": [
+   "就"
+  ]
+ },
+ {
+  "id": "zh.q.adv-52",
+  "entry": "zh.adv-concession.shangqie-hekuang",
+  "format": "pick-one",
+  "prompt": "专家＿没有把握，何况我们这些外行？",
+  "gloss": "If even experts aren't sure, what about us amateurs?",
+  "why": "尚且 → 何况",
+  "steps": [
+   {
+    "options": [
+     "况且",
+     "并且",
+     "而且",
+     "尚且"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-53",
+  "entry": "zh.adv-concession.shangqie-hekuang",
+  "format": "pick-one",
+  "prompt": "成年人尚且吃不消，＿孩子呢？",
+  "gloss": "If adults can't take it, how could a child?",
+  "why": "尚且 → 何况",
+  "steps": [
+   {
+    "options": [
+     "何不",
+     "何必",
+     "况且",
+     "何况"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-54",
+  "entry": "zh.adv-concession.shangqie-hekuang",
+  "format": "transform",
+  "prompt": "大人都搬不动，孩子更搬不动了。",
+  "gloss": "If adults can't shift it, a child certainly can't.",
+  "task": "→ 尚且…何况…",
+  "accept": [
+   "大人尚且搬不动，何况孩子？",
+   "大人尚且搬不动何况孩子？",
+   "大人尚且搬不动，更何况孩子？",
+   "大人尚且搬不动更何况孩子？",
+   "大人尚且搬不动，何况孩子呢？",
+   "大人尚且搬不动何况孩子呢？",
+   "大人尚且搬不动，更何况孩子呢？",
+   "大人尚且搬不动更何况孩子呢？",
+   "大人尚且搬不动，何况是孩子？",
+   "大人尚且搬不动何况是孩子？",
+   "大人尚且搬不动，更何况是孩子？",
+   "大人尚且搬不动更何况是孩子？",
+   "大人尚且搬不动，何况是孩子呢？",
+   "大人尚且搬不动何况是孩子呢？",
+   "大人尚且搬不动，更何况是孩子呢？",
+   "大人尚且搬不动更何况是孩子呢？"
+  ]
+ },
+ {
+  "id": "zh.q.adv-55",
+  "entry": "zh.adv-concession.lian-gengbuyong",
+  "format": "pick-one",
+  "prompt": "他连汉字都认不全，＿读小说了。",
+  "gloss": "He can't read all the characters, never mind novels.",
+  "why": "连 → 更不用说",
+  "steps": [
+   {
+    "options": [
+     "更加",
+     "更不用说",
+     "不但",
+     "何必"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-56",
+  "entry": "zh.adv-concession.lian-gengbuyong",
+  "format": "build",
+  "gloss": "I don't even have time to eat, never mind exercise.",
+  "tiles": [
+   "我",
+   "连",
+   "吃饭的时间",
+   "都没有",
+   "更不用说",
+   "运动了"
+  ],
+  "decoys": [
+   "就"
+  ]
+ },
+ {
+  "id": "zh.q.adv-57",
+  "entry": "zh.adv-concession.bujin-gengshi",
+  "format": "pick-one",
+  "prompt": "这不仅是技术问题，＿管理问题。",
+  "gloss": "This isn't only a technical problem; above all it's one of management.",
+  "why": "不仅 → 更是",
+  "steps": [
+   {
+    "options": [
+     "而是",
+     "于是",
+     "更是",
+     "可是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-58",
+  "entry": "zh.adv-concession.bujin-gengshi",
+  "format": "transform",
+  "prompt": "这不只是一次比赛。这是一次学习的机会。",
+  "gloss": "This is not just a contest but a chance to learn.",
+  "task": "→ 不仅…更是…",
+  "accept": [
+   "这不仅是一次比赛，更是一次学习的机会。",
+   "这不仅是一次比赛更是一次学习的机会。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-59",
+  "entry": "zh.adv-concession.bujin-gengshi",
+  "format": "spot-it",
+  "prompt": "读书不仅是为了考试，而是为了丰富自己",
+  "gloss": "Reading isn't just for exams, but above all to enrich yourself.",
+  "why": "不仅 → 更是",
+  "steps": [
+   {
+    "options": [
+     "读书",
+     "不仅",
+     "是",
+     "为了考试，",
+     "而是",
+     "为了",
+     "丰富自己"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "而是",
+    "options": [
+     "可是",
+     "更是",
+     "于是"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-60",
+  "entry": "zh.adv-concession.zai-tongshi",
+  "format": "pick-one",
+  "prompt": "在提高效率的＿，也降低了成本。",
+  "gloss": "It raised efficiency and cut costs at the same time.",
+  "why": "在…的同时",
+  "steps": [
+   {
+    "options": [
+     "以来",
+     "当时",
+     "同时",
+     "以上"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-61",
+  "entry": "zh.adv-concession.zai-tongshi",
+  "format": "build",
+  "gloss": "While developing the economy, we must also protect the environment.",
+  "tiles": [
+   "在",
+   "发展经济",
+   "的同时",
+   "也要",
+   "保护环境"
+  ],
+  "decoys": [
+   "以后"
+  ]
+ },
+ {
+  "id": "zh.q.adv-62",
+  "entry": "zh.adv-reasons.ningke-yebu",
+  "format": "pick-one",
+  "prompt": "我宁可走路回家，＿坐他的车。",
+  "gloss": "I'd rather walk home than ride in his car.",
+  "why": "宁可 → 也不",
+  "steps": [
+   {
+    "options": [
+     "还是",
+     "也不",
+     "不如",
+     "也要"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-63",
+  "entry": "zh.adv-reasons.ningke-yebu",
+  "format": "build",
+  "gloss": "I'd rather stay up late than leave the work till tomorrow.",
+  "tiles": [
+   "我",
+   "宁可",
+   "熬夜",
+   "也不",
+   "把工作",
+   "留到明天"
+  ],
+  "decoys": [
+   "不如"
+  ]
+ },
+ {
+  "id": "zh.q.adv-64",
+  "entry": "zh.adv-reasons.ningke-yebu",
+  "format": "spot-it",
+  "prompt": "他宁可饿着，不如吃那种东西",
+  "gloss": "He'd rather go hungry than eat that stuff.",
+  "why": "宁可 → 也不",
+  "steps": [
+   {
+    "options": [
+     "他",
+     "宁可",
+     "饿着，",
+     "不如",
+     "吃",
+     "那种东西"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "不如",
+    "options": [
+     "也要",
+     "也不",
+     "还是"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-65",
+  "entry": "zh.adv-reasons.ningke-yebu",
+  "format": "flip",
+  "prompt": "我宁可少赚点儿，＿不愿天天加班。",
+  "gloss": "I'd rather earn less than work late every day.",
+  "why": "宁可 → 也",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "就"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-66",
+  "entry": "zh.adv-reasons.yuqi-buru",
+  "format": "pick-one",
+  "prompt": "与其在这儿干等，＿先回去休息。",
+  "gloss": "Rather than wait here, better to go back and rest.",
+  "why": "与其 → 不如",
+  "steps": [
+   {
+    "options": [
+     "何况",
+     "尚且",
+     "不如",
+     "宁可"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-67",
+  "entry": "zh.adv-reasons.yuqi-buru",
+  "format": "pick-one",
+  "prompt": "＿花钱修，不如直接买个新的。",
+  "gloss": "Rather than paying for repairs, just buy a new one.",
+  "why": "与其 → 不如",
+  "steps": [
+   {
+    "options": [
+     "尽管",
+     "即使",
+     "与其",
+     "宁可"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-68",
+  "entry": "zh.adv-reasons.yuqi-buru",
+  "format": "transform",
+  "prompt": "在这儿等不好，先回去更好。",
+  "gloss": "Better to go back than wait here.",
+  "task": "→ 与其…不如…",
+  "accept": [
+   "与其在这儿等，不如先回去。",
+   "与其在这儿等不如先回去。",
+   "与其在这儿等，还不如先回去。",
+   "与其在这儿等还不如先回去。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-69",
+  "entry": "zh.adv-reasons.yuqi-buru",
+  "format": "spot-it",
+  "prompt": "与其抱怨，何况想想办法",
+  "gloss": "Rather than complain, think of a solution.",
+  "why": "与其 → 不如",
+  "steps": [
+   {
+    "options": [
+     "与其",
+     "抱怨，",
+     "何况",
+     "想想",
+     "办法"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "何况",
+    "options": [
+     "不如",
+     "宁可",
+     "尚且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-70",
+  "entry": "zh.adv-reasons.yuqishuo-buru",
+  "format": "pick-one",
+  "prompt": "他的成功与其说是运气，＿是准备充分。",
+  "gloss": "His success was less luck than good preparation.",
+  "why": "与其说 → 不如说",
+  "steps": [
+   {
+    "options": [
+     "不如说",
+     "何况",
+     "宁可说",
+     "尚且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-71",
+  "entry": "zh.adv-reasons.yuqishuo-buru",
+  "format": "build",
+  "gloss": "This trip is less a holiday than a business trip.",
+  "tiles": [
+   "这次旅行",
+   "与其说是",
+   "度假",
+   "不如说是",
+   "出差"
+  ],
+  "decoys": [
+   "宁可"
+  ]
+ },
+ {
+  "id": "zh.q.adv-72",
+  "entry": "zh.adv-reasons.yuqishuo-buru",
+  "format": "transform",
+  "prompt": "这不是批评，是提醒。",
+  "gloss": "It's less a criticism than a reminder.",
+  "task": "→ 与其说…不如说…",
+  "accept": [
+   "与其说这是批评，不如说这是提醒。",
+   "与其说这是批评不如说这是提醒。",
+   "这与其说是批评，不如说是提醒。",
+   "这与其说是批评不如说是提醒。",
+   "与其说是批评，不如说是提醒。",
+   "与其说是批评不如说是提醒。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-73",
+  "entry": "zh.adv-reasons.yuqishuo-buru",
+  "format": "spot-it",
+  "prompt": "这与其说是失败，宁可说是一次教训",
+  "gloss": "It's less a failure than a lesson.",
+  "why": "与其说 → 不如说",
+  "steps": [
+   {
+    "options": [
+     "这",
+     "与其说是",
+     "失败，",
+     "宁可说是",
+     "一次教训"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "宁可说是",
+    "options": [
+     "尚且是",
+     "不如说是",
+     "何况是"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-74",
+  "entry": "zh.adv-reasons.zhisuoyi",
+  "format": "pick-one",
+  "prompt": "他之所以成功，＿他从不轻易放弃。",
+  "gloss": "He succeeded because he never gives up easily.",
+  "why": "之所以 → 是因为",
+  "steps": [
+   {
+    "options": [
+     "所以",
+     "因此",
+     "于是",
+     "是因为"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-75",
+  "entry": "zh.adv-reasons.zhisuoyi",
+  "format": "transform",
+  "prompt": "因为他从来不放弃，所以他成功了。",
+  "gloss": "The reason he succeeded is that he never gives up.",
+  "task": "→ 之所以…是因为…",
+  "accept": [
+   "他之所以成功，是因为他从来不放弃。",
+   "他之所以成功是因为他从来不放弃。",
+   "他之所以成功，是因为从来不放弃。",
+   "他之所以成功是因为从来不放弃。",
+   "他之所以成功了，是因为他从来不放弃。",
+   "他之所以成功了是因为他从来不放弃。",
+   "他之所以成功了，是因为从来不放弃。",
+   "他之所以成功了是因为从来不放弃。",
+   "他之所以能成功，是因为他从来不放弃。",
+   "他之所以能成功是因为他从来不放弃。",
+   "他之所以能成功，是因为从来不放弃。",
+   "他之所以能成功是因为从来不放弃。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-76",
+  "entry": "zh.adv-reasons.zhisuoyi",
+  "format": "spot-it",
+  "prompt": "我之所以迟到，所以路上堵车",
+  "gloss": "The reason I was late is the traffic.",
+  "why": "之所以 → 是因为",
+  "steps": [
+   {
+    "options": [
+     "我",
+     "之所以",
+     "迟到，",
+     "所以",
+     "路上",
+     "堵车"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "所以",
+    "options": [
+     "是因为",
+     "因此",
+     "于是"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-77",
+  "entry": "zh.adv-reasons.yilai-erlai",
+  "format": "pick-one",
+  "prompt": "这次我不去了，一来太远，＿也没时间。",
+  "gloss": "I'm not going: for one it's too far, for another I've no time.",
+  "why": "一来 → 二来",
+  "steps": [
+   {
+    "options": [
+     "二来",
+     "本来",
+     "将来",
+     "后来"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-78",
+  "entry": "zh.adv-reasons.yilai-erlai",
+  "format": "build",
+  "gloss": "I chose this place: for one it's cheap, for another it's close to home.",
+  "tiles": [
+   "我选这家",
+   "一来",
+   "便宜",
+   "二来",
+   "离家近"
+  ],
+  "decoys": [
+   "后来"
+  ]
+ },
+ {
+  "id": "zh.q.adv-79",
+  "entry": "zh.adv-reasons.yilai-erlai",
+  "format": "spot-it",
+  "prompt": "我不想搬家，一来太麻烦，后来也没钱",
+  "gloss": "I don't want to move: it's a hassle, and I've no money.",
+  "why": "一来 → 二来",
+  "steps": [
+   {
+    "options": [
+     "我",
+     "不想",
+     "搬家，",
+     "一来",
+     "太麻烦，",
+     "后来",
+     "也没钱"
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "后来",
+    "options": [
+     "将来",
+     "二来",
+     "本来"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-80",
+  "entry": "zh.adv-reasons.yize-erze",
+  "format": "pick-one",
+  "prompt": "采用新系统，一则可以节约成本，＿可以提高效率。",
+  "gloss": "The new system saves money and raises efficiency.",
+  "why": "一则 → 二则",
+  "steps": [
+   {
+    "options": [
+     "规则",
+     "原则",
+     "二则",
+     "否则"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-81",
+  "entry": "zh.adv-reasons.yize-erze",
+  "format": "flip",
+  "prompt": "＿可以锻炼身体，二则可以结交朋友。",
+  "gloss": "It keeps you fit, and you make friends.",
+  "why": "一则 → 二则",
+  "steps": [
+   {
+    "options": [
+     "否则",
+     "一则"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-82",
+  "entry": "zh.adv-reasons.yize-erze",
+  "format": "spot-it",
+  "prompt": "这样做一则可以省钱，否则可以省时间",
+  "gloss": "This saves money, and time as well.",
+  "why": "一则 → 二则",
+  "steps": [
+   {
+    "options": [
+     "这样做",
+     "一则",
+     "可以省钱，",
+     "否则",
+     "可以省时间"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "否则",
+    "options": [
+     "二则",
+     "规则",
+     "原则"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-83",
+  "entry": "zh.adv-reasons.kuangqie",
+  "format": "pick-one",
+  "prompt": "路太远了，＿我也没时间。",
+  "gloss": "It's too far, and besides, I've no time.",
+  "why": "补充理由",
+  "steps": [
+   {
+    "options": [
+     "况且",
+     "尚且",
+     "否则",
+     "以便"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-84",
+  "entry": "zh.adv-reasons.kuangqie",
+  "format": "flip",
+  "prompt": "这件衣服太贵了，＿颜色我也不喜欢。",
+  "gloss": "This top is too pricey, and I don't like the colour anyway.",
+  "why": "补充理由",
+  "steps": [
+   {
+    "options": [
+     "况且",
+     "尚且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-85",
+  "entry": "zh.adv-reasons.kuangqie",
+  "format": "build",
+  "gloss": "It's already dark, and besides, it's raining.",
+  "tiles": [
+   "天已经黑了",
+   "况且",
+   "还",
+   "下着雨"
+  ],
+  "decoys": [
+   "尚且"
+  ]
+ },
+ {
+  "id": "zh.q.adv-86",
+  "entry": "zh.adv-reasons.yin-er",
+  "format": "pick-one",
+  "prompt": "他因表现优异＿获得晋升。",
+  "gloss": "He was promoted for his outstanding work.",
+  "why": "因 → 而",
+  "steps": [
+   {
+    "options": [
+     "所以",
+     "但",
+     "而",
+     "却"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-87",
+  "entry": "zh.adv-reasons.yin-er",
+  "format": "pick-one",
+  "prompt": "不要因一次失败＿灰心。",
+  "gloss": "Don't lose heart over a single failure.",
+  "why": "因 → 而",
+  "steps": [
+   {
+    "options": [
+     "但",
+     "并",
+     "却",
+     "而"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-88",
+  "entry": "zh.adv-reasons.yin-er",
+  "format": "transform",
+  "prompt": "因为天气不好，比赛推迟了。",
+  "gloss": "The match was postponed because of bad weather.",
+  "task": "→ 因…而…",
+  "accept": [
+   "比赛因天气不好而推迟。",
+   "比赛因天气不好而推迟了。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-89",
+  "entry": "zh.adv-reasons.yin-er",
+  "format": "build",
+  "gloss": "He became famous for this book.",
+  "tiles": [
+   "他",
+   "因",
+   "这本书",
+   "而",
+   "出名"
+  ],
+  "decoys": [
+   "所以"
+  ]
+ },
+ {
+  "id": "zh.q.adv-90",
+  "entry": "zh.adv-reasons.yizhiyu",
+  "format": "pick-one",
+  "prompt": "他看书看得太投入了，＿忘了吃饭。",
+  "gloss": "He was so absorbed in reading he forgot to eat.",
+  "why": "结果 → 以至于",
+  "steps": [
+   {
+    "options": [
+     "以免",
+     "以防",
+     "以至于",
+     "以便"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-91",
+  "entry": "zh.adv-reasons.yizhiyu",
+  "format": "flip",
+  "prompt": "雨下得太大，＿航班全部取消。",
+  "gloss": "It rained so hard that every flight was cancelled.",
+  "why": "结果 → 以至于",
+  "steps": [
+   {
+    "options": [
+     "以至于",
+     "以便"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-92",
+  "entry": "zh.adv-reasons.yizhiyu",
+  "format": "spot-it",
+  "prompt": "他太紧张了，以便一句话都说不出来",
+  "gloss": "He was so nervous he couldn't say a word.",
+  "why": "结果 → 以至于",
+  "steps": [
+   {
+    "options": [
+     "他",
+     "太紧张了，",
+     "以便",
+     "一句话",
+     "都",
+     "说不出来"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "以便",
+    "options": [
+     "以防",
+     "以至于",
+     "以免"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-93",
+  "entry": "zh.adv-written-links.gu",
+  "format": "pick-one",
+  "prompt": "因证据不足，＿不予受理。",
+  "gloss": "The case is not accepted, as the evidence is insufficient.",
+  "why": "所以 → 故",
+  "steps": [
+   {
+    "options": [
+     "之",
+     "且",
+     "乃",
+     "故"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-94",
+  "entry": "zh.adv-written-links.gu",
+  "format": "flip",
+  "prompt": "本店内部装修，＿暂停营业三天。",
+  "gloss": "Closed three days for renovation.",
+  "why": "所以 → 故",
+  "steps": [
+   {
+    "options": [
+     "乃",
+     "故"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-95",
+  "entry": "zh.adv-written-links.yibian",
+  "format": "pick-one",
+  "prompt": "请提前提交材料，＿及时审核。",
+  "gloss": "Please submit early so it can be reviewed in time.",
+  "why": "为了 → 以便",
+  "steps": [
+   {
+    "options": [
+     "以免",
+     "以防",
+     "以至于",
+     "以便"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-96",
+  "entry": "zh.adv-written-links.yibian",
+  "format": "flip",
+  "prompt": "请留下联系方式，＿我们及时通知您。",
+  "gloss": "Leave your details so we can let you know promptly.",
+  "why": "为了 → 以便",
+  "steps": [
+   {
+    "options": [
+     "以便",
+     "以免"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-97",
+  "entry": "zh.adv-written-links.yibian",
+  "format": "spot-it",
+  "prompt": "请提前到场，以免办理入场手续",
+  "gloss": "Please arrive early to complete check-in.",
+  "why": "为了 → 以便",
+  "steps": [
+   {
+    "options": [
+     "请",
+     "提前",
+     "到场，",
+     "以免",
+     "办理",
+     "入场手续"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "以免",
+    "options": [
+     "以至于",
+     "以防",
+     "以便"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-98",
+  "entry": "zh.adv-written-links.yi-purpose",
+  "format": "pick-one",
+  "prompt": "加强管理，＿提高效率。",
+  "gloss": "Tighten management to raise efficiency.",
+  "why": "为了 → 以",
+  "steps": [
+   {
+    "options": [
+     "于",
+     "乃",
+     "之",
+     "以"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-99",
+  "entry": "zh.adv-written-links.yi-purpose",
+  "format": "pick-one",
+  "prompt": "各部门应密切配合，＿确保项目按时完成。",
+  "gloss": "Departments must work closely to finish on time.",
+  "why": "为了 → 以",
+  "steps": [
+   {
+    "options": [
+     "以",
+     "于",
+     "其",
+     "乃"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-100",
+  "entry": "zh.adv-written-links.yi-purpose",
+  "format": "build",
+  "gloss": "Measures were taken to protect the environment.",
+  "tiles": [
+   "采取措施",
+   "以",
+   "保护",
+   "生态环境"
+  ],
+  "decoys": [
+   "于"
+  ]
+ },
+ {
+  "id": "zh.q.adv-101",
+  "entry": "zh.adv-written-links.weile-qijian",
+  "format": "pick-one",
+  "prompt": "为安全＿，请系好安全带。",
+  "gloss": "For safety, please fasten your seat belt.",
+  "why": "为…起见",
+  "steps": [
+   {
+    "options": [
+     "为止",
+     "之际",
+     "而言",
+     "起见"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-102",
+  "entry": "zh.adv-written-links.weile-qijian",
+  "format": "build",
+  "gloss": "To be on the safe side, let's check it once more.",
+  "tiles": [
+   "为",
+   "保险",
+   "起见",
+   "我们",
+   "再检查",
+   "一遍"
+  ],
+  "decoys": [
+   "为止"
+  ]
+ },
+ {
+  "id": "zh.q.adv-103",
+  "entry": "zh.adv-written-links.weile-qijian",
+  "format": "flip",
+  "prompt": "为慎重＿，此事需提交董事会讨论。",
+  "gloss": "To be prudent, this goes to the board.",
+  "why": "为…起见",
+  "steps": [
+   {
+    "options": [
+     "为止",
+     "起见"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-104",
+  "entry": "zh.adv-written-links.written-if",
+  "format": "pick-one",
+  "prompt": "＿有疑问，请与我们联系。",
+  "gloss": "If you have questions, please contact us.",
+  "why": "如果 → 若",
+  "steps": [
+   {
+    "options": [
+     "乃",
+     "若",
+     "虽",
+     "故"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-105",
+  "entry": "zh.adv-written-links.written-if",
+  "format": "pick-one",
+  "prompt": "＿消息属实，后果将不堪设想。",
+  "gloss": "If the report is true, the consequences are unthinkable.",
+  "why": "如果 → 倘若",
+  "steps": [
+   {
+    "options": [
+     "况且",
+     "尚且",
+     "以便",
+     "倘若"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-106",
+  "entry": "zh.adv-written-links.written-if",
+  "format": "transform",
+  "prompt": "如果有问题，请及时反映。",
+  "gloss": "If there's a problem, report it promptly.",
+  "task": "如果 → 若",
+  "accept": [
+   "若有问题，请及时反映。",
+   "若有问题请及时反映。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-107",
+  "entry": "zh.adv-written-links.er",
+  "format": "pick-one",
+  "prompt": "内容要少＿精。",
+  "gloss": "Content should be lean but good.",
+  "why": "少而精",
+  "steps": [
+   {
+    "options": [
+     "同",
+     "和",
+     "而",
+     "跟"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-108",
+  "entry": "zh.adv-written-links.er",
+  "format": "pick-one",
+  "prompt": "他们不战＿胜。",
+  "gloss": "They won without a fight.",
+  "why": "不战而胜",
+  "steps": [
+   {
+    "options": [
+     "就",
+     "且",
+     "而",
+     "也"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-109",
+  "entry": "zh.adv-written-links.er",
+  "format": "pick-one",
+  "prompt": "这里冬天寒冷，＿夏天却十分凉爽。",
+  "gloss": "Winters here are cold, while summers are cool.",
+  "why": "对比 → 而",
+  "steps": [
+   {
+    "options": [
+     "以",
+     "而",
+     "故",
+     "乃"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-110",
+  "entry": "zh.adv-written-links.qie-naizhi",
+  "format": "pick-one",
+  "prompt": "该产品价格合理＿质量可靠。",
+  "gloss": "The product is reasonably priced and reliable.",
+  "why": "并且 → 且",
+  "steps": [
+   {
+    "options": [
+     "且",
+     "乃",
+     "于",
+     "故"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-111",
+  "entry": "zh.adv-written-links.qie-naizhi",
+  "format": "pick-one",
+  "prompt": "这一发现影响遍及全国＿海外。",
+  "gloss": "The discovery's impact reached the whole country and even abroad.",
+  "why": "甚至 → 乃至",
+  "steps": [
+   {
+    "options": [
+     "至于",
+     "乃至",
+     "以便",
+     "何况"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-112",
+  "entry": "zh.adv-written-links.qie-naizhi",
+  "format": "pick-one",
+  "prompt": "路况复杂，＿天气恶劣，救援进展缓慢。",
+  "gloss": "Roads are tricky and the weather bad, so rescue is slow.",
+  "why": "再加上 → 加之",
+  "steps": [
+   {
+    "options": [
+     "否则",
+     "加之",
+     "以便",
+     "至于"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-113",
+  "entry": "zh.adv-written-links.buliao",
+  "format": "pick-one",
+  "prompt": "本想早点儿出发，＿路上堵车了。",
+  "gloss": "We meant to leave early, but the traffic was bad.",
+  "why": "没想到 → 不料",
+  "steps": [
+   {
+    "options": [
+     "不如",
+     "不料",
+     "不管",
+     "不但"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-114",
+  "entry": "zh.adv-written-links.buliao",
+  "format": "flip",
+  "prompt": "我们正准备出门，＿下起了大雨。",
+  "gloss": "Just as we were leaving, it started pouring.",
+  "why": "意外 → 不料",
+  "steps": [
+   {
+    "options": [
+     "以便",
+     "不料"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-115",
+  "entry": "zh.adv-written-links.buliao",
+  "format": "build",
+  "gloss": "I meant to rest a bit, but unexpectedly guests arrived.",
+  "tiles": [
+   "本想",
+   "休息一下",
+   "不料",
+   "来了",
+   "客人"
+  ],
+  "decoys": [
+   "以便"
+  ]
+ },
+ {
+  "id": "zh.q.adv-116",
+  "entry": "zh.adv-written-links.zhiyu",
+  "format": "pick-one",
+  "prompt": "时间就定在周五，＿地点，我们明天再商量。",
+  "gloss": "Friday it is; as for the venue, we'll talk tomorrow.",
+  "why": "转话题 → 至于",
+  "steps": [
+   {
+    "options": [
+     "以至于",
+     "由于",
+     "甚至",
+     "至于"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-117",
+  "entry": "zh.adv-written-links.zhiyu",
+  "format": "flip",
+  "prompt": "我只负责翻译，＿内容对不对，我不清楚。",
+  "gloss": "I only translate; as for whether it's right, I can't say.",
+  "why": "转话题 → 至于",
+  "steps": [
+   {
+    "options": [
+     "至于",
+     "由于"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-118",
+  "entry": "zh.adv-written-links.jianyu",
+  "format": "pick-one",
+  "prompt": "＿目前的情况，会议推迟举行。",
+  "gloss": "In view of the situation, the meeting is postponed.",
+  "why": "考虑到 → 鉴于",
+  "steps": [
+   {
+    "options": [
+     "至于",
+     "属于",
+     "鉴于",
+     "在于"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-119",
+  "entry": "zh.adv-written-links.jianyu",
+  "format": "flip",
+  "prompt": "＿他的出色表现，公司决定给予奖励。",
+  "gloss": "In view of his fine work, the company will reward him.",
+  "why": "考虑到 → 鉴于",
+  "steps": [
+   {
+    "options": [
+     "鉴于",
+     "至于"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-120",
+  "entry": "zh.adv-written-links.jianyu",
+  "format": "spot-it",
+  "prompt": "至于天气原因，比赛推迟举行",
+  "gloss": "Owing to the weather, the match is postponed.",
+  "why": "考虑到 → 鉴于",
+  "steps": [
+   {
+    "options": [
+     "至于",
+     "天气",
+     "原因，",
+     "比赛",
+     "推迟",
+     "举行"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "至于",
+    "options": [
+     "属于",
+     "鉴于",
+     "在于"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-121",
+  "entry": "zh.adv-written-links.benzhe-jiyu",
+  "format": "pick-one",
+  "prompt": "我们将＿公平、公正的原则处理此事。",
+  "gloss": "We'll handle this on principles of fairness and justice.",
+  "why": "原则 → 本着",
+  "steps": [
+   {
+    "options": [
+     "对着",
+     "本着",
+     "顺着",
+     "沿着"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-122",
+  "entry": "zh.adv-written-links.benzhe-jiyu",
+  "format": "pick-one",
+  "prompt": "＿以上分析，我们建议暂缓实施。",
+  "gloss": "Based on the above, we suggest a delay.",
+  "why": "依据 → 基于",
+  "steps": [
+   {
+    "options": [
+     "在于",
+     "基于",
+     "至于",
+     "本着"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-123",
+  "entry": "zh.adv-written-links.benzhe-jiyu",
+  "format": "build",
+  "gloss": "Based on this data, we drew up a new plan.",
+  "tiles": [
+   "基于",
+   "这些数据",
+   "我们",
+   "制定了",
+   "新的方案"
+  ],
+  "decoys": [
+   "本着"
+  ]
+ },
+ {
+  "id": "zh.q.adv-124",
+  "entry": "zh.adv-classical.suo",
+  "format": "pick-one",
+  "prompt": "我＿知道的就这些。",
+  "gloss": "That's all I know.",
+  "why": "所 + 动词",
+  "steps": [
+   {
+    "options": [
+     "以",
+     "被",
+     "为",
+     "所"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-125",
+  "entry": "zh.adv-classical.suo",
+  "format": "pick-one",
+  "prompt": "众＿周知，吸烟有害健康。",
+  "gloss": "As everyone knows, smoking harms health.",
+  "why": "众所周知",
+  "steps": [
+   {
+    "options": [
+     "人",
+     "都",
+     "皆",
+     "所"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-126",
+  "entry": "zh.adv-classical.suo",
+  "format": "build",
+  "gloss": "This is exactly what I was worried about.",
+  "tiles": [
+   "这",
+   "正是",
+   "我",
+   "所",
+   "担心的"
+  ],
+  "decoys": [
+   "被"
+  ]
+ },
+ {
+  "id": "zh.q.adv-127",
+  "entry": "zh.adv-classical.suo",
+  "format": "spot-it",
+  "prompt": "这是我们被关心的问题",
+  "gloss": "This is the issue we care about.",
+  "why": "所 + 动词",
+  "steps": [
+   {
+    "options": [
+     "这",
+     "是",
+     "我们",
+     "被",
+     "关心的",
+     "问题"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "被",
+    "options": [
+     "以",
+     "为",
+     "所"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-128",
+  "entry": "zh.adv-classical.wei-suo",
+  "format": "pick-one",
+  "prompt": "这一观点已为大多数学者＿接受。",
+  "gloss": "This view is accepted by most scholars.",
+  "why": "为 → 所",
+  "steps": [
+   {
+    "options": [
+     "之",
+     "所",
+     "而",
+     "被"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-129",
+  "entry": "zh.adv-classical.wei-suo",
+  "format": "flip",
+  "prompt": "他的名字早已＿人们所熟知。",
+  "gloss": "His name has long been well known.",
+  "why": "为…所…",
+  "steps": [
+   {
+    "options": [
+     "为",
+     "以"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-130",
+  "entry": "zh.adv-classical.wei-suo",
+  "format": "transform",
+  "prompt": "他的作品被很多人喜爱。",
+  "gloss": "His work is loved by many.",
+  "task": "被 → 为…所…",
+  "accept": [
+   "他的作品为很多人所喜爱。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-131",
+  "entry": "zh.adv-classical.wei-suo",
+  "format": "spot-it",
+  "prompt": "他的作品为世人被熟知",
+  "gloss": "His work is known to the world.",
+  "why": "为 → 所",
+  "steps": [
+   {
+    "options": [
+     "他的",
+     "作品",
+     "为",
+     "世人",
+     "被",
+     "熟知"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "被",
+    "options": [
+     "之",
+     "所",
+     "以"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-132",
+  "entry": "zh.adv-classical.yu-verb",
+  "format": "pick-one",
+  "prompt": "这座桥建＿一九六八年。",
+  "gloss": "The bridge was built in 1968.",
+  "why": "建 + 于",
+  "steps": [
+   {
+    "options": [
+     "在",
+     "以",
+     "于",
+     "到"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-133",
+  "entry": "zh.adv-classical.yu-verb",
+  "format": "pick-one",
+  "prompt": "这家公司位＿市中心。",
+  "gloss": "The company is in the city centre.",
+  "why": "位于",
+  "steps": [
+   {
+    "options": [
+     "于",
+     "以",
+     "置",
+     "到"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-134",
+  "entry": "zh.adv-classical.yu-verb",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "问题＿时间不够",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "这本书＿图书馆",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "学校＿城市东边",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "灵感＿生活",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "成功的关键＿坚持",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "这片土地＿国家",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "故宫＿北京市中心",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "这个故事＿一个真实事件",
+    "options": [
+     "在于",
+     "属于",
+     "位于",
+     "来源于"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-135",
+  "entry": "zh.adv-classical.yu-verb",
+  "format": "build",
+  "gloss": "The problem lies in a lack of funds.",
+  "tiles": [
+   "问题",
+   "在于",
+   "资金",
+   "不足"
+  ],
+  "decoys": [
+   "属于"
+  ]
+ },
+ {
+  "id": "zh.q.adv-136",
+  "entry": "zh.adv-classical.yu-compare",
+  "format": "pick-one",
+  "prompt": "新方案的成本明显低＿旧方案。",
+  "gloss": "The new plan costs clearly less than the old.",
+  "why": "低于",
+  "steps": [
+   {
+    "options": [
+     "于",
+     "比",
+     "在",
+     "对"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-137",
+  "entry": "zh.adv-classical.yu-compare",
+  "format": "transform",
+  "prompt": "今年的收入比去年高。",
+  "gloss": "This year's income is higher than last year's.",
+  "task": "→ 形容词 + 于",
+  "accept": [
+   "今年的收入高于去年。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-138",
+  "entry": "zh.adv-classical.yu-compare",
+  "format": "pick-one",
+  "prompt": "人固有一死，或重＿泰山，或轻于鸿毛。",
+  "gloss": "All must die; some deaths outweigh Mount Tai, some are lighter than a feather.",
+  "why": "重于泰山",
+  "steps": [
+   {
+    "options": [
+     "在",
+     "于",
+     "比",
+     "以"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-139",
+  "entry": "zh.adv-classical.nai",
+  "format": "pick-one",
+  "prompt": "此＿当务之急。",
+  "gloss": "This is the most urgent task.",
+  "why": "是 → 乃",
+  "steps": [
+   {
+    "options": [
+     "之",
+     "而",
+     "且",
+     "乃"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-140",
+  "entry": "zh.adv-classical.nai",
+  "format": "pick-one",
+  "prompt": "失败＿成功之母。",
+  "gloss": "Failure is the mother of success.",
+  "why": "是 → 乃",
+  "steps": [
+   {
+    "options": [
+     "以",
+     "于",
+     "乃",
+     "所"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-141",
+  "entry": "zh.adv-classical.nai",
+  "format": "flip",
+  "prompt": "此＿千载难逢的好机会。",
+  "gloss": "This is a once-in-a-lifetime chance.",
+  "why": "是 → 乃",
+  "steps": [
+   {
+    "options": [
+     "且",
+     "乃"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-142",
+  "entry": "zh.adv-classical.qi",
+  "format": "pick-one",
+  "prompt": "这样做＿不是自相矛盾？",
+  "gloss": "Isn't that contradicting yourself?",
+  "why": "难道 → 岂",
+  "steps": [
+   {
+    "options": [
+     "岂",
+     "难",
+     "何",
+     "若"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-143",
+  "entry": "zh.adv-classical.qi",
+  "format": "pick-one",
+  "prompt": "机会难得，＿能轻易放弃？",
+  "gloss": "Such a rare chance; how could we give it up?",
+  "why": "难道 → 岂",
+  "steps": [
+   {
+    "options": [
+     "岂",
+     "乃",
+     "故",
+     "且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-144",
+  "entry": "zh.adv-classical.qi",
+  "format": "transform",
+  "prompt": "难道能因为一次失败就放弃吗？",
+  "gloss": "How could one give up over a single failure?",
+  "task": "难道…吗 → 岂",
+  "accept": [
+   "岂能因为一次失败就放弃？",
+   "岂能因一次失败就放弃？",
+   "岂能因为一次失败就放弃呢？"
+  ]
+ },
+ {
+  "id": "zh.q.adv-145",
+  "entry": "zh.adv-classical.zhi",
+  "format": "pick-one",
+  "prompt": "全班三分＿一的学生去过中国。",
+  "gloss": "A third of the class have been to China.",
+  "why": "三分之一",
+  "steps": [
+   {
+    "options": [
+     "所",
+     "其",
+     "的",
+     "之"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-146",
+  "entry": "zh.adv-classical.zhi",
+  "format": "pick-one",
+  "prompt": "这是一场前所未有＿变局。",
+  "gloss": "This is an unprecedented upheaval.",
+  "why": "的 → 之",
+  "steps": [
+   {
+    "options": [
+     "之",
+     "所",
+     "地",
+     "其"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-147",
+  "entry": "zh.adv-classical.zhi",
+  "format": "flip",
+  "prompt": "旧制度逐渐被新制度取而代＿。",
+  "gloss": "The old system was gradually replaced by the new.",
+  "why": "取而代之",
+  "steps": [
+   {
+    "options": [
+     "之",
+     "的"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-148",
+  "entry": "zh.adv-classical.yi-wei",
+  "format": "pick-one",
+  "prompt": "我们的产品一直以质量＿核心。",
+  "gloss": "Our products have always centred on quality.",
+  "why": "以 → 为",
+  "steps": [
+   {
+    "options": [
+     "在",
+     "于",
+     "为",
+     "是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-149",
+  "entry": "zh.adv-classical.yi-wei",
+  "format": "pick-one",
+  "prompt": "这次活动＿环保为主题。",
+  "gloss": "The event's theme is the environment.",
+  "why": "以…为…",
+  "steps": [
+   {
+    "options": [
+     "拿",
+     "把",
+     "以",
+     "用"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-150",
+  "entry": "zh.adv-classical.yi-wei",
+  "format": "build",
+  "gloss": "Take this as an example.",
+  "tiles": [
+   "以",
+   "此",
+   "为",
+   "例"
+  ],
+  "decoys": [
+   "是"
+  ]
+ },
+ {
+  "id": "zh.q.adv-151",
+  "entry": "zh.adv-classical.yi-wei",
+  "format": "transform",
+  "prompt": "我们把学生当作中心。",
+  "gloss": "We put students at the centre.",
+  "task": "→ 以…为…",
+  "accept": [
+   "我们以学生为中心。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-152",
+  "entry": "zh.adv-classical.yiba-yi",
+  "format": "pick-one",
+  "prompt": "＿，随他去吧，我不管了。",
+  "gloss": "Oh well, let him do as he likes.",
+  "why": "算了 → 也罢",
+  "steps": [
+   {
+    "options": [
+     "何必",
+     "而已",
+     "也罢",
+     "况且"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-153",
+  "entry": "zh.adv-classical.yiba-yi",
+  "format": "pick-one",
+  "prompt": "悔之晚＿。",
+  "gloss": "It is too late for regrets.",
+  "why": "悔之晚矣",
+  "steps": [
+   {
+    "options": [
+     "矣",
+     "哉",
+     "耶",
+     "乎"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-154",
+  "entry": "zh.adv-classical.yiba-yi",
+  "format": "flip",
+  "prompt": "他不来＿，我们自己去。",
+  "gloss": "If he won't come, fine, we'll go ourselves.",
+  "why": "算了 → 也罢",
+  "steps": [
+   {
+    "options": [
+     "而已",
+     "也罢"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-155",
+  "entry": "zh.adv-formal-verbs.yousuo",
+  "format": "pick-one",
+  "prompt": "经过治疗，他的病情＿好转。",
+  "gloss": "After treatment, his condition has improved somewhat.",
+  "why": "有所 + 动词",
+  "steps": [
+   {
+    "options": [
+     "有所",
+     "有关",
+     "所有",
+     "所以"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-156",
+  "entry": "zh.adv-formal-verbs.yousuo",
+  "format": "flip",
+  "prompt": "双方在这个问题上＿保留。",
+  "gloss": "Both sides have some reservations on this.",
+  "why": "有所 + 动词",
+  "steps": [
+   {
+    "options": [
+     "有所",
+     "所有"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-157",
+  "entry": "zh.adv-formal-verbs.yousuo",
+  "format": "transform",
+  "prompt": "两国关系改善了一些。",
+  "gloss": "Relations between the two countries have improved somewhat.",
+  "task": "→ 有所",
+  "accept": [
+   "两国关系有所改善。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-158",
+  "entry": "zh.adv-formal-verbs.yuyi-jiayi",
+  "format": "pick-one",
+  "prompt": "这些问题必须＿解决。",
+  "gloss": "These problems must be dealt with.",
+  "why": "加以 + 动词",
+  "steps": [
+   {
+    "options": [
+     "加以",
+     "加之",
+     "以便",
+     "所以"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-159",
+  "entry": "zh.adv-formal-verbs.yuyi-jiayi",
+  "format": "pick-one",
+  "prompt": "对表现突出的员工＿表彰。",
+  "gloss": "Outstanding staff will be commended.",
+  "why": "予以 + 表彰",
+  "steps": [
+   {
+    "options": [
+     "予以",
+     "以至",
+     "所以",
+     "于是"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-160",
+  "entry": "zh.adv-formal-verbs.yuyi-jiayi",
+  "format": "flip",
+  "prompt": "对这些意见，我们会认真＿研究。",
+  "gloss": "We will study these opinions carefully.",
+  "why": "加以 + 动词",
+  "steps": [
+   {
+    "options": [
+     "加以",
+     "以便"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-161",
+  "entry": "zh.adv-formal-verbs.ling-shi",
+  "format": "pick-one",
+  "prompt": "这一发现＿人深思。",
+  "gloss": "This finding gives pause for thought.",
+  "why": "引起 → 令",
+  "steps": [
+   {
+    "options": [
+     "把",
+     "被",
+     "对",
+     "令"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-162",
+  "entry": "zh.adv-formal-verbs.ling-shi",
+  "format": "pick-one",
+  "prompt": "新技术的出现＿生产效率大大提高。",
+  "gloss": "New technology has greatly raised productivity.",
+  "why": "导致 → 使",
+  "steps": [
+   {
+    "options": [
+     "把",
+     "被",
+     "使",
+     "由"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-163",
+  "entry": "zh.adv-formal-verbs.ling-shi",
+  "format": "transform",
+  "prompt": "这个消息让人很难过。",
+  "gloss": "The news is very saddening.",
+  "task": "让 → 令",
+  "accept": [
+   "这个消息令人很难过。",
+   "这个消息令人难过。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-164",
+  "entry": "zh.adv-formal-verbs.ba-situation",
+  "format": "build",
+  "gloss": "A heavy rain got the match postponed.",
+  "tiles": [
+   "一场大雨",
+   "把",
+   "比赛",
+   "推迟了"
+  ],
+  "decoys": [
+   "被"
+  ]
+ },
+ {
+  "id": "zh.q.adv-165",
+  "entry": "zh.adv-formal-verbs.ba-situation",
+  "format": "pick-one",
+  "prompt": "这个消息＿他吓坏了。",
+  "gloss": "The news frightened him badly.",
+  "why": "情况 + 把",
+  "steps": [
+   {
+    "options": [
+     "向",
+     "被",
+     "对",
+     "把"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-166",
+  "entry": "zh.adv-formal-verbs.ba-situation",
+  "format": "transform",
+  "prompt": "他被这件事气坏了。",
+  "gloss": "This made him furious.",
+  "task": "被 → 把",
+  "accept": [
+   "这件事把他气坏了。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-167",
+  "entry": "zh.adv-formal-verbs.bingfei",
+  "format": "pick-one",
+  "prompt": "这＿个别现象，而是普遍问题。",
+  "gloss": "This is no isolated case but a common problem.",
+  "why": "不是 → 并非",
+  "steps": [
+   {
+    "options": [
+     "非常",
+     "并非",
+     "无非",
+     "莫非"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-168",
+  "entry": "zh.adv-formal-verbs.bingfei",
+  "format": "flip",
+  "prompt": "成功＿一朝一夕的事。",
+  "gloss": "Success doesn't happen overnight.",
+  "why": "不是 → 并非",
+  "steps": [
+   {
+    "options": [
+     "无非",
+     "并非"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-169",
+  "entry": "zh.adv-formal-verbs.kewei",
+  "format": "pick-one",
+  "prompt": "此举＿一举两得。",
+  "gloss": "This move kills two birds with one stone.",
+  "why": "可以说 → 可谓",
+  "steps": [
+   {
+    "options": [
+     "无谓",
+     "所谓",
+     "可谓",
+     "何谓"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-170",
+  "entry": "zh.adv-formal-verbs.kewei",
+  "format": "flip",
+  "prompt": "他为这个项目＿费尽心血。",
+  "gloss": "He truly poured his heart into this project.",
+  "why": "可以说 → 可谓",
+  "steps": [
+   {
+    "options": [
+     "可谓",
+     "所谓"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-171",
+  "entry": "zh.adv-formal-verbs.wucong-wuke",
+  "format": "pick-one",
+  "prompt": "他的说法＿厚非。",
+  "gloss": "His view is beyond reproach.",
+  "why": "无可厚非",
+  "steps": [
+   {
+    "options": [
+     "不容",
+     "无可",
+     "无从",
+     "无须"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-172",
+  "entry": "zh.adv-formal-verbs.wucong-wuke",
+  "format": "pick-one",
+  "prompt": "资料都丢了，我们根本＿查起。",
+  "gloss": "The files are lost; there's nowhere to start checking.",
+  "why": "没办法 → 无从",
+  "steps": [
+   {
+    "options": [
+     "不容",
+     "无须",
+     "无从",
+     "无可"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-173",
+  "entry": "zh.adv-formal-verbs.wucong-wuke",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "＿下手",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "＿厚非",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "＿担心",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "＿乐观",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "＿得知",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "＿奈何",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "＿多说",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "＿错过",
+    "options": [
+     "无从",
+     "无可",
+     "无须",
+     "不容"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-174",
+  "entry": "zh.adv-formal-verbs.youyu",
+  "format": "pick-one",
+  "prompt": "新方案明显＿旧方案。",
+  "gloss": "The new plan is clearly better than the old.",
+  "why": "比…好 → 优于",
+  "steps": [
+   {
+    "options": [
+     "属于",
+     "在于",
+     "优于",
+     "由于"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-175",
+  "entry": "zh.adv-formal-verbs.youyu",
+  "format": "pick-one",
+  "prompt": "实际支出＿预算。",
+  "gloss": "Actual spending exceeds the budget.",
+  "why": "比…高 → 高于",
+  "steps": [
+   {
+    "options": [
+     "比",
+     "多",
+     "高于",
+     "更"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-176",
+  "entry": "zh.adv-formal-verbs.youyu",
+  "format": "flip",
+  "prompt": "在他心里，友情＿一切。",
+  "gloss": "To him, friendship beats everything.",
+  "why": "比…好 → 胜过",
+  "steps": [
+   {
+    "options": [
+     "比如",
+     "胜过"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-177",
+  "entry": "zh.adv-formal-verbs.moguoyu",
+  "format": "pick-one",
+  "prompt": "人生最大的幸福，＿家人平安健康。",
+  "gloss": "Life's greatest happiness is a safe, healthy family.",
+  "why": "最 → 莫过于",
+  "steps": [
+   {
+    "options": [
+     "取决于",
+     "莫过于",
+     "以至于",
+     "不亚于"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-178",
+  "entry": "zh.adv-formal-verbs.moguoyu",
+  "format": "build",
+  "gloss": "The happiest thing is being with family.",
+  "tiles": [
+   "最幸福的事",
+   "莫过于",
+   "和家人",
+   "在一起"
+  ],
+  "decoys": [
+   "不亚于"
+  ]
+ },
+ {
+  "id": "zh.q.adv-179",
+  "entry": "zh.adv-formal-verbs.buyayu",
+  "format": "pick-one",
+  "prompt": "这次改革的影响＿一场革命。",
+  "gloss": "This reform's impact is no less than a revolution.",
+  "why": "不比…差",
+  "steps": [
+   {
+    "options": [
+     "莫过于",
+     "不亚于",
+     "属于",
+     "在于"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-180",
+  "entry": "zh.adv-formal-verbs.buyayu",
+  "format": "pick-one",
+  "prompt": "黄河的长度＿长江，是中国第二长河。",
+  "gloss": "The Yellow River is second only to the Yangtze in length.",
+  "why": "第二 → 仅次于",
+  "steps": [
+   {
+    "options": [
+     "仅次于",
+     "莫过于",
+     "不亚于",
+     "取决于"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-181",
+  "entry": "zh.adv-formal-verbs.bale-eryi",
+  "format": "pick-one",
+  "prompt": "这无非是个借口＿。",
+  "gloss": "It's nothing but an excuse.",
+  "why": "无非 → 罢了",
+  "steps": [
+   {
+    "options": [
+     "罢了",
+     "为止",
+     "也罢",
+     "之际"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-182",
+  "entry": "zh.adv-formal-verbs.bale-eryi",
+  "format": "pick-one",
+  "prompt": "我不过是随便说说＿，你别当真。",
+  "gloss": "I was only talking; don't take it seriously.",
+  "why": "不过 → 而已",
+  "steps": [
+   {
+    "options": [
+     "从而",
+     "并且",
+     "以及",
+     "而已"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-183",
+  "entry": "zh.adv-formal-verbs.bale-eryi",
+  "format": "spot-it",
+  "prompt": "这只不过是巧合以及",
+  "gloss": "It's only a coincidence.",
+  "why": "不过 → 而已",
+  "steps": [
+   {
+    "options": [
+     "这",
+     "只不过",
+     "是",
+     "巧合",
+     "以及"
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "以及",
+    "options": [
+     "而已",
+     "从而",
+     "并且"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-184",
+  "entry": "zh.adv-formal-verbs.shi-erding",
+  "format": "pick-one",
+  "prompt": "具体时间视天气＿。",
+  "gloss": "The exact time depends on the weather.",
+  "why": "视 → 而定",
+  "steps": [
+   {
+    "options": [
+     "而已",
+     "为止",
+     "而定",
+     "而言"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-185",
+  "entry": "zh.adv-formal-verbs.shi-erding",
+  "format": "transform",
+  "prompt": "具体安排要看情况决定。",
+  "gloss": "The exact arrangements depend on circumstances.",
+  "task": "→ 视…而定",
+  "accept": [
+   "具体安排视情况而定。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-186",
+  "entry": "zh.adv-framing.ju-suozhi",
+  "format": "pick-one",
+  "prompt": "＿，该项目已于上月正式启动。",
+  "gloss": "It is reported the project launched last month.",
+  "why": "听说 → 据悉",
+  "steps": [
+   {
+    "options": [
+     "以便",
+     "至于",
+     "据悉",
+     "鉴于"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-187",
+  "entry": "zh.adv-framing.ju-suozhi",
+  "format": "pick-one",
+  "prompt": "据我所＿，情况并非如此。",
+  "gloss": "As far as I know, that's not the case.",
+  "why": "据我所知",
+  "steps": [
+   {
+    "options": [
+     "知",
+     "说",
+     "看",
+     "想"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-188",
+  "entry": "zh.adv-framing.zongguan",
+  "format": "pick-one",
+  "prompt": "＿全局，不难发现问题的根源。",
+  "gloss": "Looking at the whole, the root is easy to see.",
+  "why": "纵观 → 不难发现",
+  "steps": [
+   {
+    "options": [
+     "观看",
+     "参观",
+     "纵然",
+     "纵观"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-189",
+  "entry": "zh.adv-framing.zongguan",
+  "format": "pick-one",
+  "prompt": "纵观历史，＿发现，改革往往伴随着阻力。",
+  "gloss": "History shows reform tends to meet resistance.",
+  "why": "纵观 → 不难",
+  "steps": [
+   {
+    "options": [
+     "不料",
+     "不必",
+     "不如",
+     "不难"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-190",
+  "entry": "zh.adv-framing.jiezhi",
+  "format": "pick-one",
+  "prompt": "＿目前，已有三千人报名。",
+  "gloss": "As of now, three thousand have signed up.",
+  "why": "截至 + 时间",
+  "steps": [
+   {
+    "options": [
+     "截止",
+     "至于",
+     "以至",
+     "截至"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-191",
+  "entry": "zh.adv-framing.jiezhi",
+  "format": "pick-one",
+  "prompt": "＿，这一问题仍未得到解决。",
+  "gloss": "To this day, the problem remains unsolved.",
+  "why": "到今天",
+  "steps": [
+   {
+    "options": [
+     "争分夺秒",
+     "时至今日",
+     "迫在眉睫",
+     "日新月异"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-192",
+  "entry": "zh.adv-framing.dao-weizhi",
+  "format": "pick-one",
+  "prompt": "到目前＿，一切顺利。",
+  "gloss": "So far, all is well.",
+  "why": "到 → 为止",
+  "steps": [
+   {
+    "options": [
+     "起见",
+     "之际",
+     "为止",
+     "以来"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-193",
+  "entry": "zh.adv-framing.dao-weizhi",
+  "format": "build",
+  "gloss": "That's all for today's class.",
+  "tiles": [
+   "今天的课",
+   "就",
+   "上到",
+   "这里",
+   "为止"
+  ],
+  "decoys": [
+   "以来"
+  ]
+ },
+ {
+  "id": "zh.q.adv-194",
+  "entry": "zh.adv-framing.zhici-zhiji",
+  "format": "pick-one",
+  "prompt": "＿新春佳节之际，谨向各位致以诚挚的问候。",
+  "gloss": "On the occasion of Spring Festival, warm greetings to all.",
+  "why": "值此 → 之际",
+  "steps": [
+   {
+    "options": [
+     "因此",
+     "至此",
+     "值此",
+     "就此"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-195",
+  "entry": "zh.adv-framing.zhici-zhiji",
+  "format": "flip",
+  "prompt": "值此公司成立十周年＿，我谨代表全体员工表示祝贺。",
+  "gloss": "On the company's tenth anniversary, congratulations from all staff.",
+  "why": "值此 → 之际",
+  "steps": [
+   {
+    "options": [
+     "之际",
+     "为止"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-196",
+  "entry": "zh.adv-framing.xiang-zhiyi",
+  "format": "pick-one",
+  "prompt": "我谨代表公司向全体员工＿衷心的感谢。",
+  "gloss": "On behalf of the company, heartfelt thanks to all staff.",
+  "why": "向 → 致以",
+  "steps": [
+   {
+    "options": [
+     "加以",
+     "致以",
+     "以便",
+     "所以"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-197",
+  "entry": "zh.adv-framing.xiang-zhiyi",
+  "format": "spot-it",
+  "prompt": "向全体医护人员给崇高的敬意",
+  "gloss": "Our highest respect to all medical staff.",
+  "why": "向 → 致以",
+  "steps": [
+   {
+    "options": [
+     "向",
+     "全体",
+     "医护人员",
+     "给",
+     "崇高的",
+     "敬意"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "给",
+    "options": [
+     "致以",
+     "以便",
+     "加以"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-198",
+  "entry": "zh.adv-framing.zai-zhiyu",
+  "format": "pick-one",
+  "prompt": "在工作之＿，他还坚持写作。",
+  "gloss": "Outside work, he keeps writing.",
+  "why": "工作之余",
+  "steps": [
+   {
+    "options": [
+     "际",
+     "上",
+     "下",
+     "余"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-199",
+  "entry": "zh.adv-framing.zai-zhiyu",
+  "format": "build",
+  "gloss": "Outside work, she also volunteers.",
+  "tiles": [
+   "她",
+   "在",
+   "工作",
+   "之余",
+   "还",
+   "做志愿者"
+  ],
+  "decoys": [
+   "之际"
+  ]
+ },
+ {
+  "id": "zh.q.adv-200",
+  "entry": "zh.adv-framing.suowei",
+  "format": "pick-one",
+  "prompt": "＿共享经济，就是把闲置资源重新利用起来。",
+  "gloss": "The sharing economy means putting idle resources to use.",
+  "why": "定义 → 所谓",
+  "steps": [
+   {
+    "options": [
+     "称谓",
+     "可谓",
+     "所谓",
+     "所以"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-201",
+  "entry": "zh.adv-framing.suowei",
+  "format": "transform",
+  "prompt": "低碳的意思是减少二氧化碳排放。",
+  "gloss": "'Low carbon' means cutting CO₂ emissions.",
+  "task": "→ 所谓…，就是…",
+  "accept": [
+   "所谓低碳，就是减少二氧化碳排放。",
+   "所谓低碳就是减少二氧化碳排放。",
+   "所谓低碳，就是减少二氧化碳的排放。",
+   "所谓低碳就是减少二氧化碳的排放。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-202",
+  "entry": "zh.adv-framing.guanjian-zaiyu",
+  "format": "pick-one",
+  "prompt": "计划本身没问题，关键＿执行。",
+  "gloss": "The plan is fine; the key is execution.",
+  "why": "关键在于",
+  "steps": [
+   {
+    "options": [
+     "对于",
+     "属于",
+     "由于",
+     "在于"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-203",
+  "entry": "zh.adv-framing.guanjian-zaiyu",
+  "format": "flip",
+  "prompt": "问题＿时间太紧，不是人手不够。",
+  "gloss": "The trouble is time, not staff.",
+  "why": "问题在于",
+  "steps": [
+   {
+    "options": [
+     "由于",
+     "在于"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-204",
+  "entry": "zh.adv-framing.guigen-daodi",
+  "format": "pick-one",
+  "prompt": "说来说去，＿还是钱的问题。",
+  "gloss": "When all's said, it comes down to money.",
+  "why": "根本上",
+  "steps": [
+   {
+    "options": [
+     "归根到底",
+     "一模一样",
+     "迫在眉睫",
+     "争分夺秒"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-205",
+  "entry": "zh.adv-framing.guigen-daodi",
+  "format": "flip",
+  "prompt": "这些矛盾＿是利益分配的问题。",
+  "gloss": "At root these conflicts are about sharing the gains.",
+  "why": "根本上",
+  "steps": [
+   {
+    "options": [
+     "归根到底",
+     "迄今为止"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-206",
+  "entry": "zh.adv-framing.tui-yibu",
+  "format": "pick-one",
+  "prompt": "＿，就算他不同意，我们也可以先做起来。",
+  "gloss": "Even granting he disagrees, we can start anyway.",
+  "why": "让步",
+  "steps": [
+   {
+    "options": [
+     "退一步说",
+     "据悉",
+     "以便",
+     "不料"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-207",
+  "entry": "zh.adv-framing.tui-yibu",
+  "format": "pick-one",
+  "prompt": "＿说，就算这次输了，也没什么大不了。",
+  "gloss": "Even if we lose this time, it's no big deal.",
+  "why": "让步",
+  "steps": [
+   {
+    "options": [
+     "再一次",
+     "下一步",
+     "第一步",
+     "退一步"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-208",
+  "entry": "zh.adv-framing.zonger-yanzhi",
+  "format": "pick-one",
+  "prompt": "以上三点都说明，改革势在必行。＿，我们必须尽快行动。",
+  "gloss": "All three points show reform is needed. In short, we must act fast.",
+  "why": "总结",
+  "steps": [
+   {
+    "options": [
+     "总而言之",
+     "以免",
+     "除非",
+     "不料"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-209",
+  "entry": "zh.adv-framing.zonger-yanzhi",
+  "format": "pick-one",
+  "prompt": "＿，这个方案成本高、风险大，不宜采用。",
+  "gloss": "In short, this plan is costly and risky; don't adopt it.",
+  "why": "概括",
+  "steps": [
+   {
+    "options": [
+     "与其",
+     "以便",
+     "何况",
+     "简言之"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-210",
+  "entry": "zh.adv-framing.huanju",
+  "format": "pick-one",
+  "prompt": "他没说不行，＿，他同意了。",
+  "gloss": "He didn't say no; in other words, he agreed.",
+  "why": "同一个意思",
+  "steps": [
+   {
+    "options": [
+     "以便",
+     "反过来说",
+     "除非",
+     "换句话说"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-211",
+  "entry": "zh.adv-framing.huanju",
+  "format": "pick-one",
+  "prompt": "我们需要他们的技术，＿，他们也需要我们的市场。",
+  "gloss": "We need their tech; conversely, they need our market.",
+  "why": "从另一面说",
+  "steps": [
+   {
+    "options": [
+     "除非",
+     "综上所述",
+     "反过来说",
+     "以便"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-212",
+  "entry": "zh.adv-framing.shared-subject",
+  "format": "build",
+  "gloss": "He pushed the door open, walked in and sat down.",
+  "tiles": [
+   "他",
+   "推开门，",
+   "走进屋子，",
+   "坐了下来"
+  ],
+  "decoys": [
+   "他"
+  ]
+ },
+ {
+  "id": "zh.q.adv-213",
+  "entry": "zh.adv-framing.shared-subject",
+  "format": "build",
+  "gloss": "She got home, took off her coat and started cooking.",
+  "tiles": [
+   "她",
+   "回到家，",
+   "脱下外套，",
+   "就开始做饭"
+  ],
+  "decoys": [
+   "她"
+  ]
+ },
+ {
+  "id": "zh.q.adv-214",
+  "entry": "zh.adv-framing.shared-subject",
+  "format": "transform",
+  "prompt": "我吃完饭。我洗了碗。我出去散步了。",
+  "gloss": "I ate, washed up and went for a walk.",
+  "task": "→ 一个主语",
+  "accept": [
+   "我吃完饭，洗了碗，出去散步了。",
+   "我吃完饭洗了碗出去散步了。",
+   "我吃完饭，洗了碗，就出去散步了。",
+   "我吃完饭洗了碗就出去散步了。",
+   "我吃完饭，洗完碗，出去散步了。",
+   "我吃完饭洗完碗出去散步了。",
+   "我吃完饭，洗完碗，就出去散步了。",
+   "我吃完饭洗完碗就出去散步了。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-215",
+  "entry": "zh.adv-framing.topic-chain",
+  "format": "build",
+  "gloss": "That film — I've seen it three times and still can't get enough.",
+  "tiles": [
+   "那部电影",
+   "我",
+   "看了三遍，",
+   "还是",
+   "看不够"
+  ],
+  "decoys": [
+   "把"
+  ]
+ },
+ {
+  "id": "zh.q.adv-216",
+  "entry": "zh.adv-framing.topic-chain",
+  "format": "pick-one",
+  "prompt": "这件事＿早就知道了，只是没说。",
+  "gloss": "This, I knew long ago; I just didn't say.",
+  "why": "话题在前",
+  "steps": [
+   {
+    "options": [
+     "把我",
+     "我",
+     "被我",
+     "对我"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-217",
+  "entry": "zh.adv-attitude.mingming",
+  "format": "pick-one",
+  "prompt": "他＿知道答案，却故意不说。",
+  "gloss": "He plainly knows the answer but won't say.",
+  "why": "明摆着 → 明明",
+  "steps": [
+   {
+    "options": [
+     "究竟",
+     "难道",
+     "难怪",
+     "明明"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-218",
+  "entry": "zh.adv-attitude.mingming",
+  "format": "spot-it",
+  "prompt": "他明明在家，所以不开门",
+  "gloss": "He's clearly home, yet won't open the door.",
+  "why": "明明 → 却",
+  "steps": [
+   {
+    "options": [
+     "他",
+     "明明",
+     "在家，",
+     "所以",
+     "不开门"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "所以",
+    "options": [
+     "却",
+     "再",
+     "才"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-219",
+  "entry": "zh.adv-attitude.mingming",
+  "format": "build",
+  "gloss": "I definitely locked the door; how come it's open?",
+  "tiles": [
+   "我",
+   "明明",
+   "锁了门，",
+   "门",
+   "怎么",
+   "开着呢"
+  ],
+  "decoys": [
+   "果然"
+  ]
+ },
+ {
+  "id": "zh.q.adv-220",
+  "entry": "zh.adv-attitude.weibi",
+  "format": "pick-one",
+  "prompt": "贵的＿就好。",
+  "gloss": "Expensive isn't necessarily good.",
+  "why": "不一定 → 未必",
+  "steps": [
+   {
+    "options": [
+     "不必",
+     "必须",
+     "必定",
+     "未必"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-221",
+  "entry": "zh.adv-attitude.weibi",
+  "format": "flip",
+  "prompt": "他说的话＿可信。",
+  "gloss": "What he says isn't necessarily true.",
+  "why": "不一定 → 未必",
+  "steps": [
+   {
+    "options": [
+     "不必",
+     "未必"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-222",
+  "entry": "zh.adv-attitude.weibi",
+  "format": "transform",
+  "prompt": "他不一定会来。",
+  "gloss": "He won't necessarily come.",
+  "task": "不一定 → 未必",
+  "accept": [
+   "他未必会来。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-223",
+  "entry": "zh.adv-attitude.dao",
+  "format": "pick-one",
+  "prompt": "别人都很着急，他＿一点儿也不急。",
+  "gloss": "Everyone else is anxious, but he's not bothered at all.",
+  "why": "意外 → 倒",
+  "steps": [
+   {
+    "options": [
+     "才",
+     "再",
+     "倒",
+     "更"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-224",
+  "entry": "zh.adv-attitude.dao",
+  "format": "pick-one",
+  "prompt": "你说得＿轻松，你来试试！",
+  "gloss": "Easy for you to say — you try it!",
+  "why": "反讽 → 倒",
+  "steps": [
+   {
+    "options": [
+     "倒",
+     "就",
+     "却",
+     "才"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-225",
+  "entry": "zh.adv-attitude.dao",
+  "format": "flip",
+  "prompt": "这个办法＿是可以试试。",
+  "gloss": "This idea is actually worth a try.",
+  "why": "意外 → 倒",
+  "steps": [
+   {
+    "options": [
+     "才",
+     "倒"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-226",
+  "entry": "zh.adv-attitude.gancui",
+  "format": "pick-one",
+  "prompt": "等了半天车还不来，我们＿走回去吧。",
+  "gloss": "The bus still isn't here; let's just walk.",
+  "why": "索性 → 干脆",
+  "steps": [
+   {
+    "options": [
+     "始终",
+     "简直",
+     "干脆",
+     "干净"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-227",
+  "entry": "zh.adv-attitude.gancui",
+  "format": "flip",
+  "prompt": "既然修不好，＿买个新的吧。",
+  "gloss": "If it can't be fixed, just buy a new one.",
+  "why": "索性 → 干脆",
+  "steps": [
+   {
+    "options": [
+     "简直",
+     "干脆"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-228",
+  "entry": "zh.adv-attitude.gancui",
+  "format": "build",
+  "gloss": "Let's just not go.",
+  "tiles": [
+   "我们",
+   "干脆",
+   "别去了"
+  ],
+  "decoys": [
+   "简直"
+  ]
+ },
+ {
+  "id": "zh.q.adv-229",
+  "entry": "zh.adv-attitude.zongsuan",
+  "format": "pick-one",
+  "prompt": "等了三个小时，＿轮到我们了。",
+  "gloss": "After three hours, our turn finally came.",
+  "why": "终于 → 总算",
+  "steps": [
+   {
+    "options": [
+     "一共",
+     "总共",
+     "总是",
+     "总算"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-230",
+  "entry": "zh.adv-attitude.zongsuan",
+  "format": "flip",
+  "prompt": "忙了一整年，这个项目＿完成了。",
+  "gloss": "After a whole year's work, the project is finally done.",
+  "why": "终于 → 总算",
+  "steps": [
+   {
+    "options": [
+     "总算",
+     "总是"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-231",
+  "entry": "zh.adv-attitude.zongsuan",
+  "format": "spot-it",
+  "prompt": "找了一个月，他总是找到了工作",
+  "gloss": "After a month of looking, he finally found a job.",
+  "why": "终于 → 总算",
+  "steps": [
+   {
+    "options": [
+     "找了",
+     "一个月，",
+     "他",
+     "总是",
+     "找到了",
+     "工作"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "总是",
+    "options": [
+     "总算",
+     "总结",
+     "总共"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-232",
+  "entry": "zh.adv-attitude.haoburongyi",
+  "format": "pick-one",
+  "prompt": "我好不容易＿买到票。",
+  "gloss": "I only got tickets after a real struggle.",
+  "why": "好不容易 → 才",
+  "steps": [
+   {
+    "options": [
+     "都",
+     "就",
+     "才",
+     "再"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-233",
+  "entry": "zh.adv-attitude.haoburongyi",
+  "format": "transform",
+  "prompt": "我很不容易才找到这家店。",
+  "gloss": "It took me ages to find this shop.",
+  "task": "→ 好不容易",
+  "accept": [
+   "我好不容易才找到这家店。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-234",
+  "entry": "zh.adv-attitude.yijiu",
+  "format": "pick-one",
+  "prompt": "多年过去了，这里的风景＿那么美。",
+  "gloss": "Years later, the scenery is as lovely as ever.",
+  "why": "还是 → 依旧",
+  "steps": [
+   {
+    "options": [
+     "依照",
+     "依靠",
+     "依旧",
+     "陈旧"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-235",
+  "entry": "zh.adv-attitude.yijiu",
+  "format": "flip",
+  "prompt": "尽管医生尽了力，他的病情＿没有好转。",
+  "gloss": "Despite the doctors' efforts, he's still no better.",
+  "why": "还是 → 仍旧",
+  "steps": [
+   {
+    "options": [
+     "依靠",
+     "仍旧"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-236",
+  "entry": "zh.adv-attitude.yijiu",
+  "format": "transform",
+  "prompt": "虽然过了很多年，他还是那么年轻。",
+  "gloss": "Many years on, he's as young as ever.",
+  "task": "还是 → 依旧",
+  "accept": [
+   "虽然过了很多年，他依旧那么年轻。",
+   "虽然过了很多年他依旧那么年轻。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-237",
+  "entry": "zh.adv-attitude.yizai-zaisan",
+  "format": "pick-one",
+  "prompt": "老师＿强调，考试时不能用手机。",
+  "gloss": "The teacher kept stressing: no phones in the exam.",
+  "why": "反复 → 一再",
+  "steps": [
+   {
+    "options": [
+     "再说",
+     "一旦",
+     "一齐",
+     "一再"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-238",
+  "entry": "zh.adv-attitude.yizai-zaisan",
+  "format": "pick-one",
+  "prompt": "经过＿考虑，他决定接受这份工作。",
+  "gloss": "After much thought, he took the job.",
+  "why": "再三考虑",
+  "steps": [
+   {
+    "options": [
+     "一齐",
+     "一旦",
+     "三番",
+     "再三"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-239",
+  "entry": "zh.adv-attitude.teyi-tedi",
+  "format": "pick-one",
+  "prompt": "他＿从上海赶来参加你的婚礼。",
+  "gloss": "He came all the way from Shanghai for your wedding.",
+  "why": "专门 → 特意",
+  "steps": [
+   {
+    "options": [
+     "故意",
+     "特意",
+     "意外",
+     "随意"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-240",
+  "entry": "zh.adv-attitude.teyi-tedi",
+  "format": "flip",
+  "prompt": "这是我＿为你做的蛋糕。",
+  "gloss": "I made this cake specially for you.",
+  "why": "专门 → 特地",
+  "steps": [
+   {
+    "options": [
+     "特地",
+     "故意"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-241",
+  "entry": "zh.adv-attitude.teyi-tedi",
+  "format": "transform",
+  "prompt": "他专门来看你。",
+  "gloss": "He came specially to see you.",
+  "task": "专门 → 特地",
+  "accept": [
+   "他特地来看你。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-242",
+  "entry": "zh.adv-attitude.nanmian",
+  "format": "pick-one",
+  "prompt": "刚开始学，＿会出错。",
+  "gloss": "When you're starting out, mistakes are inevitable.",
+  "why": "避免不了",
+  "steps": [
+   {
+    "options": [
+     "避免",
+     "以免",
+     "难免",
+     "免得"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-243",
+  "entry": "zh.adv-attitude.nanmian",
+  "format": "flip",
+  "prompt": "两个人在一起生活，＿会有矛盾。",
+  "gloss": "Two people living together are bound to clash.",
+  "why": "避免不了",
+  "steps": [
+   {
+    "options": [
+     "免不了",
+     "免得"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-244",
+  "entry": "zh.adv-attitude.nanmian",
+  "format": "transform",
+  "prompt": "新手不可避免会犯错误。",
+  "gloss": "Beginners are bound to make mistakes.",
+  "task": "→ 难免",
+  "accept": [
+   "新手难免会犯错误。",
+   "新手难免犯错误。",
+   "新手难免会犯错。",
+   "新手难免犯错。"
+  ]
+ },
+ {
+  "id": "zh.q.adv-245",
+  "entry": "zh.adv-attitude.dongbudong",
+  "format": "pick-one",
+  "prompt": "他动不动＿发脾气。",
+  "gloss": "He loses his temper at the slightest thing.",
+  "why": "动不动就",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "才",
+     "都",
+     "就"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-246",
+  "entry": "zh.adv-attitude.dongbudong",
+  "format": "build",
+  "gloss": "This kid cries at the slightest thing.",
+  "tiles": [
+   "这孩子",
+   "动不动",
+   "就",
+   "哭"
+  ],
+  "decoys": [
+   "才"
+  ]
+ },
+ {
+  "id": "zh.q.adv-247",
+  "entry": "zh.adv-attitude.dongbudong",
+  "format": "pick-one",
+  "prompt": "别＿就请假，老板会不高兴的。",
+  "gloss": "Don't keep taking time off; the boss won't like it.",
+  "why": "动不动就",
+  "steps": [
+   {
+    "options": [
+     "动不动",
+     "一动不动",
+     "动一动",
+     "不动"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-248",
+  "entry": "zh.adv-spoken.tou-le",
+  "format": "pick-one",
+  "prompt": "我对他失望＿了。",
+  "gloss": "I'm utterly disappointed in him.",
+  "why": "极点 → 透了",
+  "steps": [
+   {
+    "options": [
+     "住",
+     "过",
+     "透",
+     "完"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-249",
+  "entry": "zh.adv-spoken.tou-le",
+  "format": "flip",
+  "prompt": "这鬼天气，糟糕＿了！",
+  "gloss": "This weather is absolutely awful!",
+  "why": "极点 → 透了",
+  "steps": [
+   {
+    "options": [
+     "透",
+     "完"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-250",
+  "entry": "zh.adv-spoken.de-yaoming",
+  "format": "pick-one",
+  "prompt": "今天热得＿。",
+  "gloss": "It's boiling today.",
+  "why": "得要命",
+  "steps": [
+   {
+    "options": [
+     "要命",
+     "要紧",
+     "生命",
+     "拼命"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-251",
+  "entry": "zh.adv-spoken.de-yaoming",
+  "format": "spot-it",
+  "prompt": "考试前我紧张地要死",
+  "gloss": "Before exams I'm nervous to death.",
+  "why": "形容词 + 得",
+  "steps": [
+   {
+    "options": [
+     "考试前",
+     "我",
+     "紧张",
+     "地",
+     "要死"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "地",
+    "options": [
+     "了",
+     "得",
+     "的"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-252",
+  "entry": "zh.adv-spoken.ma-la-bei",
+  "format": "pick-one",
+  "prompt": "这不是很简单＿！",
+  "gloss": "Come on, this is easy!",
+  "why": "显而易见 → 嘛",
+  "steps": [
+   {
+    "options": [
+     "着",
+     "呢",
+     "嘛",
+     "过"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-253",
+  "entry": "zh.adv-spoken.ma-la-bei",
+  "format": "pick-one",
+  "prompt": "不会就学＿，有什么大不了的。",
+  "gloss": "If you can't, just learn; no big deal.",
+  "why": "无所谓 → 呗",
+  "steps": [
+   {
+    "options": [
+     "的",
+     "吗",
+     "呗",
+     "呢"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-254",
+  "entry": "zh.adv-spoken.ma-la-bei",
+  "format": "flip",
+  "prompt": "我早就说过＿，你就是不听。",
+  "gloss": "I told you ages ago, you just didn't listen.",
+  "why": "了+啊 → 啦",
+  "steps": [
+   {
+    "options": [
+     "啦",
+     "吗"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-255",
+  "entry": "zh.adv-spoken.renjia",
+  "format": "pick-one",
+  "prompt": "你看＿小王，每天都来得最早。",
+  "gloss": "Look at Xiao Wang — always first in.",
+  "why": "别人 → 人家",
+  "steps": [
+   {
+    "options": [
+     "家人",
+     "大家",
+     "自家",
+     "人家"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-256",
+  "entry": "zh.adv-spoken.renjia",
+  "format": "flip",
+  "prompt": "＿不想去嘛，你别逼我了。",
+  "gloss": "I don't want to go, stop pushing me.",
+  "why": "我(撒娇) → 人家",
+  "steps": [
+   {
+    "options": [
+     "大家",
+     "人家"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-257",
+  "entry": "zh.adv-spoken.babude",
+  "format": "pick-one",
+  "prompt": "我＿马上放假。",
+  "gloss": "I can't wait for the holidays.",
+  "why": "非常希望",
+  "steps": [
+   {
+    "options": [
+     "免不了",
+     "怪不得",
+     "巴不得",
+     "舍不得"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-258",
+  "entry": "zh.adv-spoken.babude",
+  "format": "pick-one",
+  "prompt": "他气得＿把手机扔了。",
+  "gloss": "He was so angry he could have thrown his phone.",
+  "why": "冲动 → 恨不得",
+  "steps": [
+   {
+    "options": [
+     "免不了",
+     "恨不得",
+     "怪不得",
+     "舍不得"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-259",
+  "entry": "zh.adv-spoken.fanbuzhao",
+  "format": "pick-one",
+  "prompt": "＿为这点儿小事生气。",
+  "gloss": "It's not worth getting angry over something so small.",
+  "why": "不值得",
+  "steps": [
+   {
+    "options": [
+     "来不及",
+     "犯不着",
+     "巴不得",
+     "怪不得"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-260",
+  "entry": "zh.adv-spoken.fanbuzhao",
+  "format": "pick-one",
+  "prompt": "为这点儿钱，＿跟他吵吗？",
+  "gloss": "Is it worth fighting with him over so little money?",
+  "why": "反问 → 犯得着",
+  "steps": [
+   {
+    "options": [
+     "舍得",
+     "犯不着",
+     "来得及",
+     "犯得着"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-261",
+  "entry": "zh.adv-spoken.mei-shenme-hao",
+  "format": "pick-one",
+  "prompt": "这没什么好说＿。",
+  "gloss": "There's nothing to say about it.",
+  "why": "没什么好…的",
+  "steps": [
+   {
+    "options": [
+     "着",
+     "的",
+     "过",
+     "了"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-262",
+  "entry": "zh.adv-spoken.mei-shenme-hao",
+  "format": "build",
+  "gloss": "There's nothing to be afraid of.",
+  "tiles": [
+   "这",
+   "没什么",
+   "好",
+   "怕的"
+  ],
+  "decoys": [
+   "很"
+  ]
+ },
+ {
+  "id": "zh.q.adv-263",
+  "entry": "zh.adv-spoken.hebi-heku",
+  "format": "pick-one",
+  "prompt": "时间还早，＿这么着急？",
+  "gloss": "It's still early; why the rush?",
+  "why": "不必 → 何必",
+  "steps": [
+   {
+    "options": [
+     "何况",
+     "何不",
+     "何止",
+     "何必"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-264",
+  "entry": "zh.adv-spoken.hebi-heku",
+  "format": "pick-one",
+  "prompt": "既然有空，＿一起去看看？",
+  "gloss": "Since you're free, why not come and see?",
+  "why": "为什么不 → 何不",
+  "steps": [
+   {
+    "options": [
+     "何况",
+     "何不",
+     "何必",
+     "何苦"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-265",
+  "entry": "zh.adv-spoken.hebi-heku",
+  "format": "flip",
+  "prompt": "你＿自讨苦吃呢？",
+  "gloss": "Why bring trouble on yourself?",
+  "why": "何苦 = 何必",
+  "steps": [
+   {
+    "options": [
+     "何况",
+     "何苦"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-266",
+  "entry": "zh.adv-spoken.kanzai-mianzi",
+  "format": "pick-one",
+  "prompt": "看在老朋友的＿上，这次就算了吧。",
+  "gloss": "For old times' sake, let it go this time.",
+  "why": "看在…面子上",
+  "steps": [
+   {
+    "options": [
+     "表面",
+     "面子",
+     "样子",
+     "场面"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-267",
+  "entry": "zh.adv-spoken.kanzai-mianzi",
+  "format": "build",
+  "gloss": "For your mum's sake, I'll let it go.",
+  "tiles": [
+   "看在",
+   "你妈妈的",
+   "面子上",
+   "我",
+   "不跟你计较了"
+  ],
+  "decoys": [
+   "对于"
+  ]
+ },
+ {
+  "id": "zh.q.adv-268",
+  "entry": "zh.adv-spoken.ai-a-bu-a",
+  "format": "pick-one",
+  "prompt": "我已经说清楚了，你爱信＿信。",
+  "gloss": "I've made it clear — believe it or don't.",
+  "why": "爱A不A",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没",
+     "就",
+     "也"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-269",
+  "entry": "zh.adv-spoken.ai-a-bu-a",
+  "format": "flip",
+  "prompt": "饭做好了，你爱吃＿吃。",
+  "gloss": "Dinner's ready — eat it or don't, up to you.",
+  "why": "爱A不A",
+  "steps": [
+   {
+    "options": [
+     "没",
+     "不"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-270",
+  "entry": "zh.adv-spoken.a-zhe-a-na",
+  "format": "pick-one",
+  "prompt": "买东西别挑这＿那的。",
+  "gloss": "Don't be so picky when shopping.",
+  "why": "A这A那",
+  "steps": [
+   {
+    "options": [
+     "选",
+     "拿",
+     "挑",
+     "看"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-271",
+  "entry": "zh.adv-spoken.a-zhe-a-na",
+  "format": "pick-one",
+  "prompt": "他一天到晚说这＿那，烦死了。",
+  "gloss": "He's on about this and that all day — so annoying.",
+  "why": "A这A那",
+  "steps": [
+   {
+    "options": [
+     "想",
+     "看",
+     "说",
+     "做"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-272",
+  "entry": "zh.adv-spoken.zuo-you",
+  "format": "pick-one",
+  "prompt": "他左思右＿，还是拿不定主意。",
+  "gloss": "He turned it over and over and still couldn't decide.",
+  "why": "左思右想",
+  "steps": [
+   {
+    "options": [
+     "看",
+     "想",
+     "做",
+     "说"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-273",
+  "entry": "zh.adv-spoken.zuo-you",
+  "format": "pick-one",
+  "prompt": "左等＿等，他就是不来。",
+  "gloss": "I waited and waited, and he just didn't come.",
+  "why": "左…右…",
+  "steps": [
+   {
+    "options": [
+     "还",
+     "又",
+     "再",
+     "右"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-274",
+  "entry": "zh.adv-spoken.hedges",
+  "format": "pick-one",
+  "prompt": "这个计划有很多问题。不过＿，他也不容易。",
+  "gloss": "The plan has lots of problems. That said, he's had it hard.",
+  "why": "转回来",
+  "steps": [
+   {
+    "options": [
+     "总而言之",
+     "据悉",
+     "话说回来",
+     "换句话说"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-275",
+  "entry": "zh.adv-spoken.hedges",
+  "format": "flip",
+  "prompt": "＿，我也没什么把握。",
+  "gloss": "Honestly, I'm not sure either.",
+  "why": "坦白 → 老实说",
+  "steps": [
+   {
+    "options": [
+     "据悉",
+     "老实说"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-276",
+  "entry": "zh.adv-spoken.markers",
+  "format": "pick-one",
+  "prompt": "刚说他呢，＿，他自己来了。",
+  "gloss": "We were just talking about him — look, here he is.",
+  "why": "眼前例子 → 这不",
+  "steps": [
+   {
+    "options": [
+     "这样",
+     "这么",
+     "这不",
+     "不是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-277",
+  "entry": "zh.adv-spoken.markers",
+  "format": "pick-one",
+  "prompt": "A：太麻烦你了！B：＿，咱们谁跟谁啊！",
+  "gloss": "A: Sorry for the trouble! B: Don't be silly, we're friends!",
+  "why": "客气回应",
+  "steps": [
+   {
+    "options": [
+     "说到哪儿去了",
+     "话说回来",
+     "你还别说",
+     "这不"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-278",
+  "entry": "zh.adv-spoken.markers",
+  "format": "pick-one",
+  "prompt": "我本来不信，＿，这个办法真管用。",
+  "gloss": "I didn't believe it, but you know what, it really works.",
+  "why": "出乎意料",
+  "steps": [
+   {
+    "options": [
+     "何必",
+     "你还别说",
+     "据悉",
+     "说到哪儿去了"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-279",
+  "entry": "zh.adv-word-building.hua",
+  "format": "pick-one",
+  "prompt": "这个问题被你简单＿了。",
+  "gloss": "You've oversimplified this problem.",
+  "why": "变成 → 化",
+  "steps": [
+   {
+    "options": [
+     "化",
+     "性",
+     "地",
+     "的"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-280",
+  "entry": "zh.adv-word-building.hua",
+  "format": "pick-one",
+  "prompt": "近年来，这里的农业越来越机械＿了。",
+  "gloss": "Farming here is increasingly mechanised.",
+  "why": "变成 → 化",
+  "steps": [
+   {
+    "options": [
+     "者",
+     "性",
+     "化",
+     "式"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-281",
+  "entry": "zh.adv-word-building.hua",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "数字＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "可能＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "城市＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "重要＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "老龄＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "积极＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "自动＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "必要＿",
+    "options": [
+     "化",
+     "性"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-282",
+  "entry": "zh.adv-word-building.xing",
+  "format": "pick-one",
+  "prompt": "这个方案的可行＿还需要进一步论证。",
+  "gloss": "The plan's feasibility needs more study.",
+  "why": "性质 → 性",
+  "steps": [
+   {
+    "options": [
+     "者",
+     "性",
+     "式",
+     "化"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-283",
+  "entry": "zh.adv-word-building.xing",
+  "format": "pick-one",
+  "prompt": "大家都认识到了环保的重要＿。",
+  "gloss": "Everyone now sees the importance of the environment.",
+  "why": "性质 → 性",
+  "steps": [
+   {
+    "options": [
+     "者",
+     "性",
+     "家",
+     "化"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-284",
+  "entry": "zh.adv-word-building.wu",
+  "format": "pick-one",
+  "prompt": "他们＿条件地支持了我们。",
+  "gloss": "They backed us unconditionally.",
+  "why": "没有 → 无",
+  "steps": [
+   {
+    "options": [
+     "反",
+     "非",
+     "无",
+     "不"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-285",
+  "entry": "zh.adv-word-building.wu",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "＿条件",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "＿正式",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "＿腐败",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "＿高速",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "＿意义",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "＿卖品",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "＿义词",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "＿低温",
+    "options": [
+     "无",
+     "非",
+     "反",
+     "超"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-286",
+  "entry": "zh.adv-word-building.fei",
+  "format": "pick-one",
+  "prompt": "这只是一次＿正式的会谈。",
+  "gloss": "This is only an informal talk.",
+  "why": "不是 → 非",
+  "steps": [
+   {
+    "options": [
+     "超",
+     "反",
+     "无",
+     "非"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-287",
+  "entry": "zh.adv-word-building.fei",
+  "format": "flip",
+  "prompt": "这是＿卖品，只供展览。",
+  "gloss": "Not for sale; display only.",
+  "why": "非卖品",
+  "steps": [
+   {
+    "options": [
+     "非",
+     "无"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-288",
+  "entry": "zh.adv-word-building.chao",
+  "format": "pick-one",
+  "prompt": "这家店只卖＿大号的衣服。",
+  "gloss": "This shop only sells extra-large clothes.",
+  "why": "超过 → 超",
+  "steps": [
+   {
+    "options": [
+     "无",
+     "反",
+     "非",
+     "超"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-289",
+  "entry": "zh.adv-word-building.chao",
+  "format": "flip",
+  "prompt": "这辆车＿速了，要罚款。",
+  "gloss": "The car was speeding; it'll be fined.",
+  "why": "超速",
+  "steps": [
+   {
+    "options": [
+     "反",
+     "超"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-290",
+  "entry": "zh.adv-word-building.fan",
+  "format": "pick-one",
+  "prompt": "他参加过＿战游行。",
+  "gloss": "He has joined anti-war marches.",
+  "why": "反对 → 反",
+  "steps": [
+   {
+    "options": [
+     "无",
+     "反",
+     "非",
+     "超"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-291",
+  "entry": "zh.adv-word-building.fan",
+  "format": "flip",
+  "prompt": "“高”的＿义词是“低”。",
+  "gloss": "The antonym of 'high' is 'low'.",
+  "why": "反义词",
+  "steps": [
+   {
+    "options": [
+     "超",
+     "反"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-292",
+  "entry": "zh.adv-word-building.chuan",
+  "format": "pick-one",
+  "prompt": "他买了一＿葡萄。",
+  "gloss": "He bought a bunch of grapes.",
+  "why": "成串 → 串",
+  "steps": [
+   {
+    "options": [
+     "枝",
+     "串",
+     "扇",
+     "滴"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-293",
+  "entry": "zh.adv-word-building.chuan",
+  "format": "pick-one",
+  "prompt": "我把那一＿钥匙弄丢了。",
+  "gloss": "I lost that bunch of keys.",
+  "why": "成串 → 串",
+  "steps": [
+   {
+    "options": [
+     "扇",
+     "串",
+     "张",
+     "滴"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-294",
+  "entry": "zh.adv-word-building.chuan",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "葡萄",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "水",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "门",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "玫瑰",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "钥匙",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "血",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "窗户",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "柳条",
+    "options": [
+     "串",
+     "滴",
+     "扇",
+     "枝"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-295",
+  "entry": "zh.adv-word-building.di",
+  "format": "pick-one",
+  "prompt": "他一＿酒也不喝。",
+  "gloss": "He doesn't touch a drop of alcohol.",
+  "why": "液体 → 滴",
+  "steps": [
+   {
+    "options": [
+     "枝",
+     "串",
+     "扇",
+     "滴"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-296",
+  "entry": "zh.adv-word-building.di",
+  "format": "flip",
+  "prompt": "他连一＿水都没喝。",
+  "gloss": "He didn't even drink a drop of water.",
+  "why": "液体 → 滴",
+  "steps": [
+   {
+    "options": [
+     "滴",
+     "串"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-297",
+  "entry": "zh.adv-word-building.shan",
+  "format": "pick-one",
+  "prompt": "房间里只有一＿小窗户。",
+  "gloss": "The room has just one small window.",
+  "why": "门窗 → 扇",
+  "steps": [
+   {
+    "options": [
+     "枝",
+     "扇",
+     "串",
+     "条"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-298",
+  "entry": "zh.adv-word-building.shan",
+  "format": "flip",
+  "prompt": "这＿门怎么打不开？",
+  "gloss": "Why won't this door open?",
+  "why": "门窗 → 扇",
+  "steps": [
+   {
+    "options": [
+     "枝",
+     "扇"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-299",
+  "entry": "zh.adv-word-building.zhi-branch",
+  "format": "pick-one",
+  "prompt": "他送了我一＿玫瑰花。",
+  "gloss": "He gave me a rose.",
+  "why": "带茎 → 枝",
+  "steps": [
+   {
+    "options": [
+     "滴",
+     "扇",
+     "串",
+     "枝"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-300",
+  "entry": "zh.adv-word-building.zhi-branch",
+  "format": "flip",
+  "prompt": "花瓶里插着三＿花。",
+  "gloss": "Three flowers stand in the vase.",
+  "why": "带茎 → 枝",
+  "steps": [
+   {
+    "options": [
+     "串",
+     "枝"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-301",
+  "entry": "zh.adv-word-building.bu-a-bu-b",
+  "format": "pick-one",
+  "prompt": "这件衣服不大不＿，正合适。",
+  "gloss": "This top's neither too big nor too small — just right.",
+  "why": "不A不B",
+  "steps": [
+   {
+    "options": [
+     "小",
+     "大",
+     "多",
+     "短"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-302",
+  "entry": "zh.adv-word-building.bu-a-bu-b",
+  "format": "pick-one",
+  "prompt": "他说话不卑不＿，让人很佩服。",
+  "gloss": "He speaks with quiet dignity, which people admire.",
+  "why": "不卑不亢",
+  "steps": [
+   {
+    "options": [
+     "大",
+     "亢",
+     "低",
+     "高"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-303",
+  "entry": "zh.adv-word-building.wu-a-bu-b",
+  "format": "pick-one",
+  "prompt": "他们俩无话不＿。",
+  "gloss": "Those two tell each other everything.",
+  "why": "无话不谈",
+  "steps": [
+   {
+    "options": [
+     "问",
+     "写",
+     "谈",
+     "听"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-304",
+  "entry": "zh.adv-word-building.wu-a-bu-b",
+  "format": "flip",
+  "prompt": "这种广告真是无孔不＿。",
+  "gloss": "These ads get in everywhere.",
+  "why": "无孔不入",
+  "steps": [
+   {
+    "options": [
+     "入",
+     "出"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-305",
+  "entry": "zh.adv-word-building.fei-a-fei-b",
+  "format": "pick-one",
+  "prompt": "我们非亲非＿，他为什么要帮我？",
+  "gloss": "We're no relation at all — why would he help me?",
+  "why": "非亲非故",
+  "steps": [
+   {
+    "options": [
+     "友",
+     "朋",
+     "故",
+     "近"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-306",
+  "entry": "zh.adv-word-building.parallel",
+  "format": "pick-one",
+  "prompt": "这篇论文条理清晰，论证＿。",
+  "gloss": "The paper is clearly organised and tightly argued.",
+  "why": "四字对称",
+  "steps": [
+   {
+    "options": [
+     "热闹",
+     "可口",
+     "拥挤",
+     "严密"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-307",
+  "entry": "zh.adv-word-building.parallel",
+  "format": "pick-one",
+  "prompt": "该报告内容详实，结构＿。",
+  "gloss": "The report is detailed and well structured.",
+  "why": "四字对称",
+  "steps": [
+   {
+    "options": [
+     "合理",
+     "年轻",
+     "好吃",
+     "拥挤"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-308",
+  "entry": "zh.adv-word-building.parallel",
+  "format": "pick-one",
+  "prompt": "这家餐厅环境优雅，＿周到。",
+  "gloss": "The restaurant is elegant and the service attentive.",
+  "why": "服务周到",
+  "steps": [
+   {
+    "options": [
+     "服务",
+     "位置",
+     "价格",
+     "味道"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-309",
+  "entry": "zh.adv-idioms.quanli",
+  "format": "pick-one",
+  "prompt": "为了这次比赛，他＿地准备了三个月。",
+  "gloss": "He went all out preparing for three months.",
+  "why": "尽全力",
+  "steps": [
+   {
+    "options": [
+     "半途而废",
+     "全力以赴",
+     "大同小异",
+     "屈指可数"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-310",
+  "entry": "zh.adv-idioms.quanli",
+  "format": "flip",
+  "prompt": "这个项目很重要，大家一定要＿。",
+  "gloss": "This project matters; everyone must give it their all.",
+  "why": "尽全力",
+  "steps": [
+   {
+    "options": [
+     "半途而废",
+     "全力以赴"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-311",
+  "entry": "zh.adv-idioms.jianchi",
+  "format": "pick-one",
+  "prompt": "经过十年＿的努力，他终于成功了。",
+  "gloss": "After ten years of steady effort he finally succeeded.",
+  "why": "不放弃",
+  "steps": [
+   {
+    "options": [
+     "转眼之间",
+     "半途而废",
+     "坚持不懈",
+     "支支吾吾"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-312",
+  "entry": "zh.adv-idioms.jianchi",
+  "format": "flip",
+  "prompt": "学语言贵在＿。",
+  "gloss": "The key to learning a language is persistence.",
+  "why": "不放弃",
+  "steps": [
+   {
+    "options": [
+     "滔滔不绝",
+     "坚持不懈"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-313",
+  "entry": "zh.adv-idioms.bantu",
+  "format": "pick-one",
+  "prompt": "做事最忌＿。",
+  "gloss": "The worst thing is to give up halfway.",
+  "why": "中途放弃",
+  "steps": [
+   {
+    "options": [
+     "全力以赴",
+     "日新月异",
+     "半途而废",
+     "坚持不懈"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-314",
+  "entry": "zh.adv-idioms.bantu",
+  "format": "flip",
+  "prompt": "既然开始了，就不要＿。",
+  "gloss": "Now you've started, don't quit halfway.",
+  "why": "中途放弃",
+  "steps": [
+   {
+    "options": [
+     "半途而废",
+     "争分夺秒"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-315",
+  "entry": "zh.adv-idioms.renshan",
+  "format": "pick-one",
+  "prompt": "国庆节的广场上＿。",
+  "gloss": "The square is packed on National Day.",
+  "why": "人很多",
+  "steps": [
+   {
+    "options": [
+     "截然不同",
+     "人山人海",
+     "束手无策",
+     "屈指可数"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-316",
+  "entry": "zh.adv-idioms.renshan",
+  "format": "flip",
+  "prompt": "演唱会现场＿，挤都挤不进去。",
+  "gloss": "The concert was so packed you couldn't get in.",
+  "why": "人很多",
+  "steps": [
+   {
+    "options": [
+     "屈指可数",
+     "人山人海"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-317",
+  "entry": "zh.adv-idioms.luoyi",
+  "format": "pick-one",
+  "prompt": "来参观的游客＿。",
+  "gloss": "Visitors keep streaming in.",
+  "why": "连续不断",
+  "steps": [
+   {
+    "options": [
+     "支支吾吾",
+     "迫在眉睫",
+     "相辅相成",
+     "络绎不绝"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-318",
+  "entry": "zh.adv-idioms.luoyi",
+  "format": "flip",
+  "prompt": "展览开幕后，前来参观的人＿。",
+  "gloss": "Since the show opened, visitors have kept coming.",
+  "why": "连续不断",
+  "steps": [
+   {
+    "options": [
+     "半途而废",
+     "络绎不绝"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-319",
+  "entry": "zh.adv-idioms.quzhi",
+  "format": "pick-one",
+  "prompt": "如今，能读懂这种古文字的人已经＿了。",
+  "gloss": "Few people today can read this ancient script.",
+  "why": "很少",
+  "steps": [
+   {
+    "options": [
+     "屈指可数",
+     "络绎不绝",
+     "滔滔不绝",
+     "人山人海"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-320",
+  "entry": "zh.adv-idioms.quzhi",
+  "format": "flip",
+  "prompt": "全国能做这种手术的医生＿。",
+  "gloss": "Only a handful of doctors nationwide can do this operation.",
+  "why": "很少",
+  "steps": [
+   {
+    "options": [
+     "屈指可数",
+     "络绎不绝"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-321",
+  "entry": "zh.adv-idioms.zhengfen",
+  "format": "pick-one",
+  "prompt": "离截止日期只剩两天，大家都在＿地赶工。",
+  "gloss": "Two days to the deadline, everyone's racing to finish.",
+  "why": "抓紧时间",
+  "steps": [
+   {
+    "options": [
+     "争分夺秒",
+     "日新月异",
+     "大同小异",
+     "转眼之间"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-322",
+  "entry": "zh.adv-idioms.zhengfen",
+  "format": "flip",
+  "prompt": "救援人员＿，终于救出了被困的人。",
+  "gloss": "Racing the clock, rescuers got the trapped people out.",
+  "why": "抓紧时间",
+  "steps": [
+   {
+    "options": [
+     "争分夺秒",
+     "支支吾吾"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-323",
+  "entry": "zh.adv-idioms.rixin",
+  "format": "pick-one",
+  "prompt": "科技发展＿。",
+  "gloss": "Technology changes by the day.",
+  "why": "变化很快",
+  "steps": [
+   {
+    "options": [
+     "转眼之间",
+     "争分夺秒",
+     "屈指可数",
+     "日新月异"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-324",
+  "entry": "zh.adv-idioms.rixin",
+  "format": "flip",
+  "prompt": "这座城市的变化＿。",
+  "gloss": "The city is changing by the day.",
+  "why": "变化很快",
+  "steps": [
+   {
+    "options": [
+     "支支吾吾",
+     "日新月异"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-325",
+  "entry": "zh.adv-idioms.zhuanyan",
+  "format": "pick-one",
+  "prompt": "＿，孩子们都长大了。",
+  "gloss": "In a blink, the children have grown up.",
+  "why": "很快",
+  "steps": [
+   {
+    "options": [
+     "相辅相成",
+     "转眼之间",
+     "争分夺秒",
+     "日新月异"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-326",
+  "entry": "zh.adv-idioms.zhuanyan",
+  "format": "flip",
+  "prompt": "刚才还是晴天，＿就下起了大雨。",
+  "gloss": "It was sunny a moment ago; in a flash it's pouring.",
+  "why": "很快",
+  "steps": [
+   {
+    "options": [
+     "转眼之间",
+     "屈指可数"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-327",
+  "entry": "zh.adv-idioms.taotao",
+  "format": "pick-one",
+  "prompt": "他一说起足球就＿。",
+  "gloss": "Get him onto football and he never stops.",
+  "why": "说个不停",
+  "steps": [
+   {
+    "options": [
+     "迫在眉睫",
+     "大同小异",
+     "屈指可数",
+     "滔滔不绝"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-328",
+  "entry": "zh.adv-idioms.taotao",
+  "format": "flip",
+  "prompt": "他在会上＿地讲了一个小时。",
+  "gloss": "He talked non-stop for an hour at the meeting.",
+  "why": "说个不停",
+  "steps": [
+   {
+    "options": [
+     "屈指可数",
+     "滔滔不绝"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-329",
+  "entry": "zh.adv-idioms.zhiyan",
+  "format": "pick-one",
+  "prompt": "他对公司的问题＿，一点儿也不客气。",
+  "gloss": "He's blunt about the company's problems, no politeness at all.",
+  "why": "直说",
+  "steps": [
+   {
+    "options": [
+     "支支吾吾",
+     "屈指可数",
+     "日新月异",
+     "直言不讳"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-330",
+  "entry": "zh.adv-idioms.zhiyan",
+  "format": "flip",
+  "prompt": "作为朋友，我就＿了：这个计划不行。",
+  "gloss": "As a friend I'll be blunt: this plan won't work.",
+  "why": "直说",
+  "steps": [
+   {
+    "options": [
+     "直言不讳",
+     "支支吾吾"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-331",
+  "entry": "zh.adv-idioms.zhiwu",
+  "format": "pick-one",
+  "prompt": "问他昨晚去哪儿了，他＿地说不清楚。",
+  "gloss": "Asked where he was last night, he hemmed and hawed.",
+  "why": "说不清",
+  "steps": [
+   {
+    "options": [
+     "滔滔不绝",
+     "支支吾吾",
+     "络绎不绝",
+     "直言不讳"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-332",
+  "entry": "zh.adv-idioms.zhiwu",
+  "format": "flip",
+  "prompt": "被老师问到时，他＿，半天答不上来。",
+  "gloss": "When the teacher asked, he stammered and couldn't answer.",
+  "why": "说不清",
+  "steps": [
+   {
+    "options": [
+     "支支吾吾",
+     "直言不讳"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-333",
+  "entry": "zh.adv-idioms.pozai",
+  "format": "pick-one",
+  "prompt": "环境治理已＿。",
+  "gloss": "Environmental action can't wait.",
+  "why": "非常紧急",
+  "steps": [
+   {
+    "options": [
+     "大同小异",
+     "迫在眉睫",
+     "滔滔不绝",
+     "人山人海"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-334",
+  "entry": "zh.adv-idioms.pozai",
+  "format": "flip",
+  "prompt": "考试＿，他却还在玩游戏。",
+  "gloss": "The exam is right on top of him, yet he's still gaming.",
+  "why": "非常紧急",
+  "steps": [
+   {
+    "options": [
+     "迫在眉睫",
+     "大同小异"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-335",
+  "entry": "zh.adv-idioms.shushou",
+  "format": "pick-one",
+  "prompt": "面对这种局面，大家都＿。",
+  "gloss": "Faced with this, everyone was at a loss.",
+  "why": "没办法",
+  "steps": [
+   {
+    "options": [
+     "直言不讳",
+     "日新月异",
+     "迫在眉睫",
+     "束手无策"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-336",
+  "entry": "zh.adv-idioms.shushou",
+  "format": "flip",
+  "prompt": "电脑突然坏了，我＿。",
+  "gloss": "The computer suddenly died and I had no idea what to do.",
+  "why": "没办法",
+  "steps": [
+   {
+    "options": [
+     "束手无策",
+     "络绎不绝"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-337",
+  "entry": "zh.adv-idioms.jubu",
+  "format": "pick-one",
+  "prompt": "资金链断了以后，公司＿。",
+  "gloss": "Once the funding dried up, the company struggled at every step.",
+  "why": "很艰难",
+  "steps": [
+   {
+    "options": [
+     "滔滔不绝",
+     "相辅相成",
+     "举步维艰",
+     "转眼之间"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-338",
+  "entry": "zh.adv-idioms.jubu",
+  "format": "flip",
+  "prompt": "没有资金支持，这个项目＿。",
+  "gloss": "Without funding, the project can barely move.",
+  "why": "很艰难",
+  "steps": [
+   {
+    "options": [
+     "日新月异",
+     "举步维艰"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-339",
+  "entry": "zh.adv-idioms.jieran",
+  "format": "pick-one",
+  "prompt": "兄弟俩性格＿，一个外向，一个内向。",
+  "gloss": "The brothers are nothing alike: one outgoing, one shy.",
+  "why": "完全不同",
+  "steps": [
+   {
+    "options": [
+     "相辅相成",
+     "屈指可数",
+     "截然不同",
+     "大同小异"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-340",
+  "entry": "zh.adv-idioms.jieran",
+  "format": "flip",
+  "prompt": "这两种观点＿。",
+  "gloss": "The two views are completely different.",
+  "why": "完全不同",
+  "steps": [
+   {
+    "options": [
+     "争分夺秒",
+     "截然不同"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-341",
+  "entry": "zh.adv-idioms.datong",
+  "format": "pick-one",
+  "prompt": "这几个方案＿，没有本质区别。",
+  "gloss": "These plans are much the same, no real difference.",
+  "why": "差不多",
+  "steps": [
+   {
+    "options": [
+     "迫在眉睫",
+     "大同小异",
+     "截然不同",
+     "相辅相成"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-342",
+  "entry": "zh.adv-idioms.datong",
+  "format": "flip",
+  "prompt": "各家店的价格都＿。",
+  "gloss": "Prices are much the same everywhere.",
+  "why": "差不多",
+  "steps": [
+   {
+    "options": [
+     "大同小异",
+     "支支吾吾"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-343",
+  "entry": "zh.adv-idioms.xiangfu",
+  "format": "pick-one",
+  "prompt": "理论和实践＿，缺一不可。",
+  "gloss": "Theory and practice go hand in hand; neither can be missing.",
+  "why": "互相促进",
+  "steps": [
+   {
+    "options": [
+     "滔滔不绝",
+     "相辅相成",
+     "截然不同",
+     "屈指可数"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-344",
+  "entry": "zh.adv-idioms.xiangfu",
+  "format": "flip",
+  "prompt": "效率和质量应该＿，而不是互相矛盾。",
+  "gloss": "Efficiency and quality should reinforce, not contradict, each other.",
+  "why": "互相促进",
+  "steps": [
+   {
+    "options": [
+     "截然不同",
+     "相辅相成"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-345",
+  "entry": "zh.adv-idioms-more.niaoyu",
+  "format": "pick-one",
+  "prompt": "春天的公园里＿，景色宜人。",
+  "gloss": "In spring the park is full of birdsong and flowers.",
+  "why": "春天景色",
+  "steps": [
+   {
+    "options": [
+     "舍本逐末",
+     "鸟语花香",
+     "平易近人",
+     "功亏一篑"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-346",
+  "entry": "zh.adv-idioms-more.niaoyu",
+  "format": "flip",
+  "prompt": "山间＿，让人心情舒畅。",
+  "gloss": "Birdsong and flowers fill the hills; it lifts the spirits.",
+  "why": "春天景色",
+  "steps": [
+   {
+    "options": [
+     "事与愿违",
+     "鸟语花香"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-347",
+  "entry": "zh.adv-idioms-more.wanlai",
+  "format": "pick-one",
+  "prompt": "夜深了，四周＿。",
+  "gloss": "Late at night, all is silent.",
+  "why": "非常安静",
+  "steps": [
+   {
+    "options": [
+     "循序渐进",
+     "德高望重",
+     "万籁俱寂",
+     "鸟语花香"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-348",
+  "entry": "zh.adv-idioms-more.wanlai",
+  "format": "flip",
+  "prompt": "深夜的村庄＿，只听得见风声。",
+  "gloss": "The village at midnight is silent but for the wind.",
+  "why": "非常安静",
+  "steps": [
+   {
+    "options": [
+     "万籁俱寂",
+     "美不胜收"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-349",
+  "entry": "zh.adv-idioms-more.meibu",
+  "format": "pick-one",
+  "prompt": "黄山的风景＿。",
+  "gloss": "Huangshan's scenery is breathtaking.",
+  "why": "非常美",
+  "steps": [
+   {
+    "options": [
+     "功亏一篑",
+     "美不胜收",
+     "平易近人",
+     "一意孤行"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-350",
+  "entry": "zh.adv-idioms-more.meibu",
+  "format": "flip",
+  "prompt": "秋天的香山红叶满山，＿。",
+  "gloss": "In autumn Xiangshan is covered in red leaves — stunning.",
+  "why": "非常美",
+  "steps": [
+   {
+    "options": [
+     "因噎废食",
+     "美不胜收"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-351",
+  "entry": "zh.adv-idioms-more.quanheng",
+  "format": "pick-one",
+  "prompt": "＿之后，他选择了留下。",
+  "gloss": "Having weighed it up, he chose to stay.",
+  "why": "比较好坏",
+  "steps": [
+   {
+    "options": [
+     "功亏一篑",
+     "一意孤行",
+     "深藏不露",
+     "权衡利弊"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-352",
+  "entry": "zh.adv-idioms-more.quanheng",
+  "format": "flip",
+  "prompt": "做重大决定前，一定要＿。",
+  "gloss": "Before a big decision, weigh the pros and cons.",
+  "why": "比较好坏",
+  "steps": [
+   {
+    "options": [
+     "权衡利弊",
+     "舍本逐末"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-353",
+  "entry": "zh.adv-idioms-more.xunxu",
+  "format": "pick-one",
+  "prompt": "学习要＿，不能急于求成。",
+  "gloss": "Learning goes step by step; don't rush.",
+  "why": "一步一步",
+  "steps": [
+   {
+    "options": [
+     "美不胜收",
+     "事与愿违",
+     "一意孤行",
+     "循序渐进"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-354",
+  "entry": "zh.adv-idioms-more.xunxu",
+  "format": "flip",
+  "prompt": "训练强度应该＿地增加。",
+  "gloss": "Training intensity should rise gradually.",
+  "why": "一步一步",
+  "steps": [
+   {
+    "options": [
+     "循序渐进",
+     "功亏一篑"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-355",
+  "entry": "zh.adv-idioms-more.yinshi",
+  "format": "pick-one",
+  "prompt": "老师要根据学生的兴趣＿。",
+  "gloss": "Teachers should build on students' interests.",
+  "why": "顺着引导",
+  "steps": [
+   {
+    "options": [
+     "因势利导",
+     "一意孤行",
+     "因噎废食",
+     "舍本逐末"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-356",
+  "entry": "zh.adv-idioms-more.yinshi",
+  "format": "flip",
+  "prompt": "发现孩子喜欢画画，父母就＿，送他去学美术。",
+  "gloss": "Seeing he loved drawing, his parents built on it and sent him to art class.",
+  "why": "顺着引导",
+  "steps": [
+   {
+    "options": [
+     "因噎废食",
+     "因势利导"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-357",
+  "entry": "zh.adv-idioms-more.yiyi",
+  "format": "pick-one",
+  "prompt": "大家都劝他，可他＿，最终失败了。",
+  "gloss": "Everyone warned him, but he pressed on alone and failed.",
+  "why": "不听劝",
+  "steps": [
+   {
+    "options": [
+     "平易近人",
+     "循序渐进",
+     "一意孤行",
+     "水到渠成"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-358",
+  "entry": "zh.adv-idioms-more.yiyi",
+  "format": "flip",
+  "prompt": "他不听任何人的意见，＿。",
+  "gloss": "He listens to no one and does as he pleases.",
+  "why": "不听劝",
+  "steps": [
+   {
+    "options": [
+     "一意孤行",
+     "权衡利弊"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-359",
+  "entry": "zh.adv-idioms-more.yiyi",
+  "format": "sort",
+  "steps": [
+   {
+    "prompt": "德高望重",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "一意孤行",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "平易近人",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "舍本逐末",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "美不胜收",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "因噎废食",
+    "options": [
+     "褒义",
+     "贬义"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-360",
+  "entry": "zh.adv-idioms-more.sheben",
+  "format": "pick-one",
+  "prompt": "只重包装不重质量，这无异于＿。",
+  "gloss": "Caring about packaging over quality misses the point entirely.",
+  "why": "轻重颠倒",
+  "steps": [
+   {
+    "options": [
+     "舍本逐末",
+     "平易近人",
+     "万籁俱寂",
+     "水到渠成"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-361",
+  "entry": "zh.adv-idioms-more.sheben",
+  "format": "flip",
+  "prompt": "为了考试分数而忽视能力培养，是＿的做法。",
+  "gloss": "Chasing scores at the cost of real ability misses the point.",
+  "why": "轻重颠倒",
+  "steps": [
+   {
+    "options": [
+     "循序渐进",
+     "舍本逐末"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-362",
+  "entry": "zh.adv-idioms-more.yinye",
+  "format": "pick-one",
+  "prompt": "不能因为一次事故就停止所有户外活动，那是＿。",
+  "gloss": "Banning all outdoor activity over one accident is overreacting.",
+  "why": "小问题 → 全停",
+  "steps": [
+   {
+    "options": [
+     "因势利导",
+     "因噎废食",
+     "水到渠成",
+     "美不胜收"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-363",
+  "entry": "zh.adv-idioms-more.yinye",
+  "format": "flip",
+  "prompt": "网络有风险，但我们岂能＿，完全不用网络？",
+  "gloss": "The internet has risks, but should we give it up entirely?",
+  "why": "小问题 → 全停",
+  "steps": [
+   {
+    "options": [
+     "权衡利弊",
+     "因噎废食"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-364",
+  "entry": "zh.adv-idioms-more.degao",
+  "format": "pick-one",
+  "prompt": "这位老教授＿，深受学生尊敬。",
+  "gloss": "The old professor is widely revered by his students.",
+  "why": "受人尊敬",
+  "steps": [
+   {
+    "options": [
+     "德高望重",
+     "鸟语花香",
+     "功亏一篑",
+     "一意孤行"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-365",
+  "entry": "zh.adv-idioms-more.degao",
+  "format": "flip",
+  "prompt": "他是村里＿的老人，大家都听他的。",
+  "gloss": "He's the village's most respected elder; everyone listens to him.",
+  "why": "受人尊敬",
+  "steps": [
+   {
+    "options": [
+     "事与愿违",
+     "德高望重"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-366",
+  "entry": "zh.adv-idioms-more.pingyi",
+  "format": "pick-one",
+  "prompt": "他虽然是校长，却非常＿。",
+  "gloss": "He's the head, yet very approachable.",
+  "why": "容易接近",
+  "steps": [
+   {
+    "options": [
+     "美不胜收",
+     "平易近人",
+     "功亏一篑",
+     "万籁俱寂"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-367",
+  "entry": "zh.adv-idioms-more.pingyi",
+  "format": "flip",
+  "prompt": "他为人＿，从来不摆架子。",
+  "gloss": "He's approachable and never puts on airs.",
+  "why": "容易接近",
+  "steps": [
+   {
+    "options": [
+     "一意孤行",
+     "平易近人"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-368",
+  "entry": "zh.adv-idioms-more.shencang",
+  "format": "pick-one",
+  "prompt": "别看他平时不说话，其实他＿，是个围棋高手。",
+  "gloss": "He's quiet, but secretly a master Go player.",
+  "why": "不显本事",
+  "steps": [
+   {
+    "options": [
+     "平易近人",
+     "水到渠成",
+     "深藏不露",
+     "因噎废食"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-369",
+  "entry": "zh.adv-idioms-more.shencang",
+  "format": "flip",
+  "prompt": "真正的高手往往＿。",
+  "gloss": "True masters often keep their skills hidden.",
+  "why": "不显本事",
+  "steps": [
+   {
+    "options": [
+     "事与愿违",
+     "深藏不露"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-370",
+  "entry": "zh.adv-idioms-more.shuidao",
+  "format": "pick-one",
+  "prompt": "准备充分了，成功自然＿。",
+  "gloss": "Prepare well and success will follow naturally.",
+  "why": "自然成功",
+  "steps": [
+   {
+    "options": [
+     "功亏一篑",
+     "水到渠成",
+     "舍本逐末",
+     "事与愿违"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-371",
+  "entry": "zh.adv-idioms-more.shuidao",
+  "format": "flip",
+  "prompt": "感情是慢慢培养的，时间到了自然＿。",
+  "gloss": "Feelings grow slowly; in time things fall into place.",
+  "why": "自然成功",
+  "steps": [
+   {
+    "options": [
+     "水到渠成",
+     "因噎废食"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-372",
+  "entry": "zh.adv-idioms-more.shiyu",
+  "format": "pick-one",
+  "prompt": "我们本想帮忙，结果却＿。",
+  "gloss": "We meant to help, but it went the other way.",
+  "why": "结果相反",
+  "steps": [
+   {
+    "options": [
+     "美不胜收",
+     "德高望重",
+     "水到渠成",
+     "事与愿违"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-373",
+  "entry": "zh.adv-idioms-more.shiyu",
+  "format": "flip",
+  "prompt": "他努力了很久，可惜＿。",
+  "gloss": "He tried for ages, but sadly it didn't work out.",
+  "why": "结果相反",
+  "steps": [
+   {
+    "options": [
+     "事与愿违",
+     "循序渐进"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-374",
+  "entry": "zh.adv-idioms-more.gongkui",
+  "format": "pick-one",
+  "prompt": "只差最后一步，却因为一个小错误＿。",
+  "gloss": "One step from the end, a small mistake ruined it all.",
+  "why": "最后失败",
+  "steps": [
+   {
+    "options": [
+     "水到渠成",
+     "鸟语花香",
+     "平易近人",
+     "功亏一篑"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "zh.q.adv-375",
+  "entry": "zh.adv-idioms-more.gongkui",
+  "format": "flip",
+  "prompt": "坚持到最后，别让之前的努力＿。",
+  "gloss": "Hold on to the end; don't let the effort go to waste.",
+  "why": "最后失败",
+  "steps": [
+   {
+    "options": [
+     "美不胜收",
+     "功亏一篑"
+    ],
+    "answer": 1
+   }
+  ]
  }
 ]
