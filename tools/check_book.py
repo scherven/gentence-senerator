@@ -2,13 +2,17 @@
 """Validate Curriculum/book-<lang>.json and quiz-<lang>.json against the
 contract in Core/Book.swift and Core/Quiz.swift. Exits nonzero on any error.
 
-    python3 tools/check_book.py [mandarin german french]
+    python3 tools/check_book.py [--upto N] [mandarin german french]
+
+--upto N limits the coverage check (every curriculum point has an entry, and
+2+ items across its entries) to points at level N or below.
 """
 import json, sys, pathlib, collections
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CUR = ROOT / "gentence-senerator/gentence-senerator/Curriculum"
 PREFIX = {"mandarin": "zh", "german": "de", "french": "fr"}
+LEVELS = {"mandarin": 9, "german": 6, "french": 6}
 LAYOUTS = {"list", "cards", "formulas", "pairs", "split"}
 GAP = "＿"
 # (steps, options, tiles, accept) — mirrors QuizFormat.rules
@@ -24,7 +28,7 @@ RULES = {
 }
 
 
-def check(lang):
+def check(lang, upto=None):
     errs, warn = [], []
     p = PREFIX[lang]
     book_path, quiz_path = CUR / f"book-{lang}.json", CUR / f"quiz-{lang}.json"
@@ -32,7 +36,8 @@ def check(lang):
         return [f"{lang}: missing {book_path.name}"], warn
     book = json.loads(book_path.read_text())
     items = json.loads(quiz_path.read_text()) if quiz_path.exists() else []
-    points = {g["id"] for g in json.loads((CUR / f"grammar-{lang}.json").read_text())}
+    point_level = {g["id"]: g["level"] for g in json.loads((CUR / f"grammar-{lang}.json").read_text())}
+    points = set(point_level)
 
     if book.get("language") != lang:
         errs.append(f"book language {book.get('language')!r} != {lang!r}")
@@ -60,6 +65,9 @@ def check(lang):
                 errs.append(f"duplicate entry {eid}")
             if not e.get("head"):
                 errs.append(f"{eid}: missing head")
+            lv = e.get("level")
+            if not isinstance(lv, int) or not 1 <= lv <= LEVELS[lang]:
+                errs.append(f"{eid}: level must be 1-{LEVELS[lang]}, is {lv!r}")
             if e.get("point") and e["point"] not in points:
                 errs.append(f"{eid}: unknown point {e['point']!r}")
             if ch.get("layout") in ("pairs", "split"):
@@ -122,6 +130,19 @@ def check(lang):
         per_chapter[chapter_of[eid]] += 1
         per_chapter_format[chapter_of[eid]].add(f)
 
+    point_entries = collections.defaultdict(list)
+    for eid, e in entries.items():
+        if e.get("point"):
+            point_entries[e["point"]].append(eid)
+    per_entry = collections.Counter(it.get("entry") for it in items)
+    for pid, lv in sorted(point_level.items(), key=lambda kv: kv[1]):
+        if upto is not None and lv > upto:
+            continue
+        if not point_entries[pid]:
+            errs.append(f"point {pid} (level {lv}) has no entry")
+        elif sum(per_entry[e] for e in point_entries[pid]) < 2:
+            errs.append(f"point {pid} (level {lv}) has fewer than 2 items")
+
     for ch in book.get("chapters", []):
         cid = ch["id"]
         if per_chapter[cid] < 30:
@@ -133,10 +154,16 @@ def check(lang):
 
 
 def main():
-    langs = sys.argv[1:] or list(PREFIX)
+    args = sys.argv[1:]
+    upto = None
+    if "--upto" in args:
+        i = args.index("--upto")
+        upto = int(args[i + 1])
+        del args[i:i + 2]
+    langs = args or list(PREFIX)
     bad = False
     for lang in langs:
-        errs, warn = check(lang)
+        errs, warn = check(lang, upto)
         for w in warn:
             print(f"warn {lang}: {w}")
         for e in errs:

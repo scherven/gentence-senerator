@@ -58,6 +58,10 @@ struct Chapter: Identifiable, Codable, Hashable {
         var example: String?
         /// Curriculum point id, for the lesson and for production evidence.
         var point: String?
+        /// HSK band or CEFR step (1 = A1) of this entry itself, which can
+        /// differ from its point's: 匹 is later than 个. The learner sees
+        /// entries up to their level + 1. Nil falls back to the point's level.
+        var level: Int?
     }
 }
 
