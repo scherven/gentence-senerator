@@ -4,27 +4,18 @@ import SwiftUI
 /// screen until the day is over.
 struct HistoryScreen: View {
     @Bindable var store: Store
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Theme.M.gap) {
-                    if !weakest.isEmpty { recurring }
-                    sessions
-                }
-                .padding(Theme.M.gap)
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.M.gap) {
+                if !weakest.isEmpty { recurring }
+                sessions
             }
-            .background(Theme.C.surface)
-            .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    TinyButton(title: "Done") { dismiss() }
-                }
-            }
+            .padding(Theme.M.gap)
         }
-        .tint(Theme.C.accent)
+        .background(Theme.C.surface)
+        .navigationTitle("History")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     /// Everything scheduled to return, plus anything opened more than once.
@@ -95,7 +86,7 @@ struct HistoryScreen: View {
         }
     }
 
-    /// Read opens on the main screen, the way today's feedback does.
+    /// Read opens on Today, the way today's feedback does.
     private func row(_ session: Session) -> some View {
         let graded = session.turns.contains { $0.review != nil }
         return HStack(alignment: .firstTextBaseline, spacing: 10) {
@@ -110,10 +101,7 @@ struct HistoryScreen: View {
                         : "\(session.completedCount) · ungraded")
                 .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
             if graded {
-                TinyButton(title: "Read") {
-                    dismiss()
-                    store.read(session)
-                }
+                TinyButton(title: "Read") { store.read(session) }
             }
         }
         .padding(Theme.M.padTight)

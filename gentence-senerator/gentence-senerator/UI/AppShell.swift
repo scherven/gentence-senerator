@@ -1,18 +1,137 @@
 import SwiftUI
 
-/// The whole app. One stack, one destination type: every screen below the root
-/// is a lesson, and a lesson is reached by expanding an atom.
+/// The whole app: three tabs. Lessons ride on `store.path`, which belongs to
+/// whichever tab is showing; each tab's is set aside while another is up.
 struct AppShell: View {
     @State var store: Store
+    @State private var tab: RootTab = .today
+    @State private var paths: [RootTab: [LessonRequest]] = [:]
+    @State private var bookRoutes: [BookRoute] = []
+    @State private var quiz: QuizPlan?
 
     var body: some View {
-        NavigationStack(path: $store.path) {
-            ModeScreen(store: store)
-                .navigationDestination(for: LessonRequest.self) { request in
-                    LessonHost(store: store, request: request)
-                }
+        VStack(spacing: 0) {
+            tabs
+            // A sitting runs uninterrupted.
+            if showsTabs { TabBar(tab: tabBinding) }
         }
         .tint(Theme.C.accent)
+        .environment(\.startQuiz) { quiz = $0 }
+        .fullScreenCover(item: $quiz) { plan in
+            QuizScreen(store: store, plan: plan)
+        }
+        // Reading a review, from a tapped push or History, happens on Today.
+        .onChange(of: store.reading.isEmpty) { _, idle in
+            if !idle {
+                quiz = nil
+                if tab != .today { paths[tab] = nil; tab = .today }
+            }
+        }
+        .onChange(of: store.settings.language) { bookRoutes = [] }
+    }
+
+    @ViewBuilder
+    private var tabs: some View {
+        switch tab {
+        case .today:
+            NavigationStack(path: $store.path) {
+                ModeScreen(store: store)
+                    .navigationDestination(for: LessonRequest.self) { request in
+                        LessonHost(store: store, request: request)
+                    }
+            }
+        case .book:
+            NavigationStack(path: bookPath) {
+                BookScreen(store: store)
+                    .navigationDestination(for: BookRoute.self) { route in
+                        switch route {
+                        case .chapter(let id):
+                            ChapterScreen(store: store, chapterID: id)
+                        case .entry(let chapter, let entry):
+                            EntryScreen(store: store, chapterID: chapter, entryID: entry)
+                        case .lesson(let request):
+                            LessonHost(store: store, request: request)
+                        }
+                    }
+            }
+        case .history:
+            NavigationStack {
+                HistoryScreen(store: store)
+            }
+        }
+    }
+
+    private var showsTabs: Bool {
+        if tab != .today { return true }
+        if case .idle = store.phase { return true }
+        return false
+    }
+
+    /// Switching sets the outgoing tab's lessons aside and brings back the
+    /// incoming one's.
+    private var tabBinding: Binding<RootTab> {
+        Binding(get: { tab }, set: { next in
+            guard next != tab else {
+                // The tab you are on goes back to its top.
+                store.path = []
+                if next == .book { bookRoutes = [] }
+                return
+            }
+            paths[tab] = store.path
+            store.path = paths[next] ?? []
+            tab = next
+        })
+    }
+
+    /// Book pages below, lessons above.
+    private var bookPath: Binding<[BookRoute]> {
+        Binding(get: { bookRoutes + store.path.map(BookRoute.lesson) }, set: { routes in
+            let cut = routes.firstIndex { if case .lesson = $0 { true } else { false } } ?? routes.count
+            bookRoutes = Array(routes[..<cut])
+            let lessons: [LessonRequest] = routes[cut...].compactMap {
+                if case .lesson(let request) = $0 { request } else { nil }
+            }
+            if lessons != store.path { store.path = lessons }
+        })
+    }
+}
+
+enum RootTab: Hashable, CaseIterable {
+    case today, book, history
+
+    var title: String {
+        switch self {
+        case .today: return "TODAY"
+        case .book: return "BOOK"
+        case .history: return "HISTORY"
+        }
+    }
+}
+
+/// Mono labels; the active one carries an accent rule on top.
+struct TabBar: View {
+    @Binding var tab: RootTab
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(RootTab.allCases, id: \.self) { item in
+                Button { tab = item } label: {
+                    Text(item.title)
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .tracking(1.1)
+                        .foregroundStyle(item == tab ? Theme.C.ink : Theme.C.ink3)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .overlay(alignment: .top) {
+                            Rectangle().fill(item == tab ? Theme.C.accent : .clear).frame(height: 2)
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .background(Theme.C.surface.ignoresSafeArea(edges: .bottom))
+        .overlay(alignment: .top) { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
     }
 }
 
@@ -22,7 +141,6 @@ struct ModeScreen: View {
     @Bindable var store: Store
     @State private var typing = ""
     @State private var showingSettings = false
-    @State private var showingHistory = false
     /// The English is a fallback, not the prompt. Reading it first turns
     /// producing into translating.
     @State private var showGloss = false
@@ -59,10 +177,6 @@ struct ModeScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if case .idle = store.phase {
-                ToolbarItem(placement: .topBarLeading) {
-                    TinyButton(title: "History") { showingHistory = true }
-                }
-                ToolbarItem(placement: .topBarLeading) { TextbookButton(store: store) }
                 ToolbarItem(placement: .topBarTrailing) {
                     TinyButton(title: store.settings.language.flag) { showingSettings = true }
                 }
@@ -82,10 +196,9 @@ struct ModeScreen: View {
             }
         }
         .sheet(isPresented: $showingSettings) { SettingsScreen(store: store) }
-        .sheet(isPresented: $showingHistory) { HistoryScreen(store: store) }
         // A tapped push can start reading under an open sheet.
         .onChange(of: store.reading.isEmpty) { _, idle in
-            if !idle { showingSettings = false; showingHistory = false }
+            if !idle { showingSettings = false }
         }
     }
 
@@ -140,6 +253,7 @@ struct ModeScreen: View {
                     .buttonStyle(.plain)
                     .disabled(spent)
                 }
+                RecommendedRound(store: store)
                 PlanView(plan: store.plan)
             }
             .padding(Theme.M.gap)
@@ -449,5 +563,33 @@ struct GradingPanel: View {
             Rectangle().fill(ready ? Theme.C.accent : Theme.C.seam2).frame(width: Theme.M.edge)
         }
         .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+    }
+}
+
+/// The round the record says to do next. Absent when there is none.
+struct RecommendedRound: View {
+    let store: Store
+    @Environment(\.startQuiz) private var startQuiz
+
+    var body: some View {
+        if let pick = store.recommended() {
+            Button { startQuiz(pick.plan) } label: {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("SPEED ROUND · \(pick.plan.name.uppercased())")
+                            .foregroundStyle(Theme.C.surface)
+                            .lineLimit(1)
+                        Spacer()
+                        Text("\(pick.plan.count) ›").foregroundStyle(BookColour.onInk)
+                    }
+                    .font(Theme.F.meta.weight(.medium)).tracking(1)
+                    Text(pick.reason).font(.system(size: 15)).foregroundStyle(Theme.C.seam)
+                        .multilineTextAlignment(.leading)
+                }
+                .padding(.horizontal, Theme.M.pad).padding(.vertical, 14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(BookKeyStyle(edge: .black, fill: Theme.C.ink, drop: 3))
+        }
     }
 }

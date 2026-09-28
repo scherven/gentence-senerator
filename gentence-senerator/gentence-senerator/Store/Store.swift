@@ -607,7 +607,7 @@ final class Store {
         let slot = language.rawValue + "|next"
         let drawn = DayDraw.forToday(draws[slot], day: Spend.key(day),
                                      language: language, level: level) {
-            (pickStretch()?.id,
+            (requestedStretch(on: Spend.key(day)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
                             progress: progress, language: language))
@@ -680,7 +680,7 @@ final class Store {
         }
         let drawn = DayDraw.forToday(draws[language.rawValue], day: Spend.key(.now),
                                      language: language, level: level) {
-            (pickStretch()?.id,
+            (requestedStretch(on: Spend.key(.now)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
                             progress: progress, language: language))
@@ -2050,6 +2050,131 @@ final class Store {
 
     func togglePin(_ entry: Textbook.Entry) {
         if isKept(entry.id) { unkeep(entry.id) } else { keep(entry) }
+    }
+
+    // MARK: Book
+
+    /// The book as the tab shows it: the shipped chapters, then Noted.
+    struct BookIndex {
+        var book: Book
+        var chapters: [Chapter]
+        /// Noted chapter entries, back to the textbook entries they came from.
+        var noted: [String: Textbook.Entry]
+
+        func chapter(_ id: String) -> Chapter? { chapters.first { $0.id == id } }
+    }
+
+    var bookIndex: BookIndex {
+        let book = self.book
+        var chapters = book.chapters
+        var noted: [String: Textbook.Entry] = [:]
+        if let extra = Textbook.notedChapter(
+            language: settings.language, sections: textbook(scope: .mine),
+            bookPoints: Set(chapters.flatMap(\.entries).compactMap(\.point)),
+            known: Set(pack.points.map(\.id))) {
+            chapters.append(extra.chapter)
+            noted = extra.sources
+        }
+        return BookIndex(book: book, chapters: chapters, noted: noted)
+    }
+
+    func bookState(of entry: Chapter.Entry, in index: BookIndex) -> EntryState {
+        if let source = index.noted[entry.id] { return Textbook.state(of: source) }
+        return state(of: entry)
+    }
+
+    func point(_ id: String?) -> GrammarPoint? {
+        id.flatMap { id in pack.points.first { $0.id == id } }
+    }
+
+    /// The learner's own sentences where this point was noted, newest first.
+    func noted(point: String) -> [Textbook.Noted] {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.noted(in: sessions, language: settings.language)
+            .filter { $0.atom.seed.pointID == point }
+            .sorted { $0.at > $1.at }
+    }
+
+    /// Questions whose answers pointed at this point, newest first.
+    func asked(point: String) -> [Textbook.Suggestion] {
+        suggestions.filter { $0.language == settings.language && $0.pointID == point }
+            .sorted { $0.at > $1.at }
+    }
+
+    /// The same request the textbook's curriculum rows made, so the lesson is
+    /// the one already on the shelf.
+    func ruleRequest(for point: GrammarPoint) -> LessonRequest {
+        LessonRequest(seed: Atom.Seed(subject: point.name, context: point.examples.first ?? "",
+                                      pointID: point.id),
+                      kind: point.kind, language: settings.language)
+    }
+
+    /// When a rule was first written from the book, by lesson cache key.
+    private(set) var ruleSaved: [String: Date] =
+        Vault.load([String: Date].self, Vault.bookRules) ?? [:]
+
+    /// Writes the rule and shelves it. The practice half waits for the lesson
+    /// to be opened.
+    func loadRule(_ request: LessonRequest) async {
+        let key = request.cacheKey
+        let had = lessons[key] != nil
+        await loadCore(request)
+        if !had, lessons[key] != nil {
+            ruleSaved[key] = .now
+            Vault.save(ruleSaved, Vault.bookRules)
+        }
+    }
+
+    /// Asked for from the book, by language. Spent by the next day drawn.
+    private(set) var requests: [String: StretchRequest] =
+        Vault.load([String: StretchRequest].self, Vault.requests) ?? [:]
+
+    /// Makes `point` tomorrow's stretch.
+    func requestTomorrow(point: String) {
+        let language = settings.language
+        guard pack.points.contains(where: { $0.id == point }) else { return }
+        let request = StretchRequest(pointID: point, language: language, madeOn: Spend.key(.now))
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        let slot = language.rawValue + "|next"
+        if let drawn = request.replacing(draws[slot], tomorrow: Spend.key(tomorrow)) {
+            // Tomorrow is already drawn: the request goes straight in.
+            draws[slot] = drawn
+            Vault.save(draws, Vault.plan)
+            requests[language.rawValue] = nil
+            // Its produce set was written for the old stretch. Unstarted, it
+            // is written again.
+            let key = Store.holdKey(language, .produce)
+            if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
+               held.session.id == sessionID(for: .produce, on: tomorrow) {
+                holds[key] = nil
+                Vault.save(holds, Vault.holds)
+            }
+        } else {
+            requests[language.rawValue] = request
+        }
+        Vault.save(requests, Vault.requests)
+    }
+
+    func isRequested(point: String) -> Bool {
+        let language = settings.language
+        if requests[language.rawValue]?.pointID == point { return true }
+        let tomorrow = Spend.key(Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now)
+        guard let ahead = draws[language.rawValue + "|next"], ahead.day == tomorrow else { return false }
+        return ahead.stretchID == point
+    }
+
+    /// The stretch for a draw on `day`, spending a request that applies.
+    private func requestedStretch(on day: String, fallback: () -> String?) -> String? {
+        let key = settings.language.rawValue
+        let (id, spent) = StretchRequest.stretch(on: day, language: settings.language,
+                                                 request: requests[key],
+                                                 known: Set(pack.points.map(\.id)),
+                                                 fallback: fallback)
+        if spent {
+            requests[key] = nil
+            Vault.save(requests, Vault.requests)
+        }
+        return id
     }
 }
 
