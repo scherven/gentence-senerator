@@ -82,6 +82,10 @@ struct ModeScreen: View {
         }
         .sheet(isPresented: $showingSettings) { SettingsScreen(store: store) }
         .sheet(isPresented: $showingHistory) { HistoryScreen(store: store) }
+        // A tapped push can start reading under an open sheet.
+        .onChange(of: store.reading.isEmpty) { _, idle in
+            if !idle { showingSettings = false; showingHistory = false }
+        }
     }
 
     /// Before a mode is picked there is no mode to name, so the title carries

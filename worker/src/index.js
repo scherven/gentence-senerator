@@ -55,7 +55,7 @@ export default {
       await env.STATE.put(JOB + job, batch, { expirationTtl: 3 * 24 * 3600 });
       if (token) {
         await env.STATE.put(WATCH + batch,
-          JSON.stringify({ batch, token, label, sandbox, since: Date.now() }),
+          JSON.stringify({ batch, token, label, sandbox, job, since: Date.now() }),
           { expirationTtl: GIVE_UP_MS / 1000 });
       }
       return Response.json({ batch, watched: !!token });
@@ -66,10 +66,13 @@ export default {
       }
       // `label` names the session in the push — "Mandarin produce" — since two
       // languages can be out at once and "1 graded" alone says neither.
-      const { batch, token, label, sandbox } = await request.json();
+      // `job` is optional: the app's late /watch doesn't send it, and the push
+      // falls back to the batch id.
+      const { batch, token, label, sandbox, job } = await request.json();
       if (!batch || !token) return new Response("batch and token", { status: 400 });
       await env.STATE.put(WATCH + batch,
-                          JSON.stringify({ batch, token, label, sandbox: sandbox !== false, since: Date.now() }),
+                          JSON.stringify({ batch, token, label, sandbox: sandbox !== false,
+                                           job: job || null, since: Date.now() }),
                           { expirationTtl: GIVE_UP_MS / 1000 });
       return Response.json({ watching: batch });
     }
@@ -130,7 +133,10 @@ async function push(env, w, batch) {
     },
     body: JSON.stringify({
       aps: { alert: { title: "Feedback's in", body }, sound: "default" },
+      // What a tap opens. Watches stored before job ids were kept have only
+      // the batch, which the app matches too.
       batch: batch.id,
+      ...(w.job ? { job: w.job } : {}),
     }),
   });
   // A bad token is logged and dropped; retrying would only fail again.

@@ -1819,6 +1819,51 @@ final class Store {
     }
 
     var spentToday: Double { spend.today().dollars }
+
+    // MARK: Opening from a notification
+
+    /// What a tapped push names. The worker sends `job` and `batch`; pushes
+    /// from before it kept job ids have only `batch`.
+    struct Tap: Equatable, Sendable {
+        var job: UUID?
+        var batch: String?
+
+        init(job: UUID? = nil, batch: String? = nil) {
+            self.job = job
+            self.batch = batch
+        }
+
+        init(_ userInfo: [AnyHashable: Any]) {
+            job = (userInfo["job"] as? String).flatMap(UUID.init(uuidString:))
+            batch = userInfo["batch"] as? String
+        }
+    }
+
+    /// The job a tap is about. A tap naming nothing opens the newest graded
+    /// job; one naming a job that cannot be read yet opens nothing.
+    nonisolated static func target(of tap: Tap, in jobs: [GradingJob],
+                                   readable: (GradingJob) -> Bool) -> GradingJob? {
+        let named = jobs.first { job in
+            tap.job == job.id || (tap.batch != nil && tap.batch == job.batchID)
+        }
+        if tap.job != nil || tap.batch != nil {
+            return named.flatMap { $0.state == .done && readable($0) ? $0 : nil }
+        }
+        return jobs.last { $0.state == .done && readable($0) }
+    }
+
+    /// Reads the results in, then opens the review. Mid-attempt it only reads
+    /// them in: the panel shows them when the learner steps out.
+    func open(_ tap: Tap) async {
+        // Launch's `wake` may be mid-pump; a second pump would return at once.
+        while pumping { try? await Task.sleep(for: .milliseconds(200)) }
+        await pump()
+        let interruptible = phase == .idle || phase == .complete
+            || (phase == .reviewing && !reading.isEmpty)
+        guard interruptible,
+              let job = Store.target(of: tap, in: jobs, readable: canRead) else { return }
+        read(job)
+    }
 }
 
 // MARK: - Moving the level
