@@ -67,6 +67,23 @@ struct QuizTests {
 
     // MARK: Decoding
 
+    @Test func optionsMoveButTheAnswerFollows() {
+        let pick = QuizItem(id: "p", entry: "e", format: .pickOne, prompt: "＿",
+                            steps: [.init(options: ["a", "b", "c", "d"], answer: 0)])
+        let flip = QuizItem(id: "f", entry: "e", format: .flip, prompt: "＿",
+                            steps: [.init(options: ["der", "die"], answer: 1)])
+        var rng = SystemRandomNumberGenerator()
+        var firsts = Set<String>()
+        for _ in 0..<40 {
+            let s = QuizRound.shuffledOptions(pick, using: &rng).steps[0]
+            #expect(s.options[s.answer] == "a")
+            #expect(Set(s.options) == ["a", "b", "c", "d"])
+            firsts.insert(s.options[0])
+        }
+        #expect(firsts.count > 1)
+        #expect(QuizRound.shuffledOptions(flip, using: &rng) == flip)
+    }
+
     @Test func missingArraysDecodeEmpty() throws {
         let item = try JSONDecoder().decode(QuizItem.self, from: Data("""
             {"id": "x", "entry": "e", "format": "transform"}

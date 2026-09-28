@@ -189,7 +189,30 @@ extension QuizRound {
             picked.append(item)
         }
         picked += rest.prefix(count - picked.count)
-        return QuizRound(plan: plan, items: arrange(picked), started: now)
+        let items = arrange(picked).map { shuffledOptions($0, using: &rng) }
+        return QuizRound(plan: plan, items: items, started: now)
+    }
+
+    /// Where an option's position carries no meaning, it moves each round,
+    /// so the answer can't be learned by place. Flip halves, tone marks, sort
+    /// buckets and spot-it's tokens keep their order.
+    static func shuffledOptions<R: RandomNumberGenerator>(_ item: QuizItem,
+                                                          using rng: inout R) -> QuizItem {
+        let free: [Int]
+        switch item.format {
+        case .pickOne, .twoStep: free = Array(item.steps.indices)
+        case .spotIt:            free = item.steps.count > 1 ? [1] : []
+        default:                 free = []
+        }
+        var out = item
+        for i in free {
+            let step = item.steps[i]
+            let order = step.options.indices.shuffled(using: &rng)
+            out.steps[i] = QuizItem.Step(prompt: step.prompt,
+                                         options: order.map { step.options[$0] },
+                                         answer: order.firstIndex(of: step.answer) ?? step.answer)
+        }
+        return out
     }
 
     static func assemble(plan: QuizPlan, book: Book, bank: [QuizItem],
