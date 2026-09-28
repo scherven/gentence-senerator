@@ -37,6 +37,8 @@ struct GradingJob: Codable, Identifiable, Hashable {
     }
 
     /// The turns one review covers, in order. The review lands on the last.
+    /// One turn, except in produce jobs filed before each answer was graded
+    /// alone.
     struct Exchange: Codable, Hashable {
         /// `x0`, `x1` — what the batch hands back to match results to turns.
         var customID: String
@@ -45,20 +47,13 @@ struct GradingJob: Codable, Identifiable, Hashable {
 
     var total: Int { exchanges.count }
 
-    /// Consecutive turns sharing an exchange id become one exchange. Turns
-    /// from before exchange ids existed are each their own.
+    /// Every answer is its own review, produce included — also answers held
+    /// from before that, which share an exchange id.
     static func exchanges(of session: Session) -> [Exchange] {
-        var groups: [[Turn]] = []
-        for turn in session.turns where !turn.attempt.confirmed.isEmpty {
-            if let id = turn.exchangeID, let last = groups.last?.last, last.exchangeID == id {
-                groups[groups.count - 1].append(turn)
-            } else {
-                groups.append([turn])
+        session.turns.filter { !$0.attempt.confirmed.isEmpty }
+            .enumerated().map { index, turn in
+                Exchange(customID: "x\(index)", turnIDs: [turn.id])
             }
-        }
-        return groups.enumerated().map { index, turns in
-            Exchange(customID: "x\(index)", turnIDs: turns.map(\.id))
-        }
     }
 }
 

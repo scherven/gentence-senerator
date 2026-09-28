@@ -67,9 +67,10 @@ struct Turn: Identifiable, Codable, Hashable {
     var prompt: Prompt
     var attempt: Attempt
     var review: Review?
-    /// The turns one review covers share this. One turn in translate and
-    /// listen; a whole held exchange in produce. Nil on turns from before
-    /// grading moved to a batch, where "no review yet" was the grouping.
+    /// The turns one review covers share this. Unique per turn now; shared
+    /// across a held produce exchange before each answer was graded alone.
+    /// Nil on turns from before grading moved to a batch, where "no review
+    /// yet" was the grouping.
     var exchangeID: UUID? = nil
 
     struct Prompt: Codable, Hashable {
