@@ -245,6 +245,54 @@ enum Textbook {
         return (l.level ?? 0) < (r.level ?? 0)
     }
 
+    // MARK: The book's last chapter
+
+    /// Everything of the learner's — noted, suggested, pinned — whose point
+    /// no book entry carries, as a list chapter. Nil when there is none.
+    /// Returns the textbook entries too, keyed by the chapter entry ids.
+    static func notedChapter(language: Language, sections: [Section],
+                             bookPoints: Set<String>, known: Set<String>)
+        -> (chapter: Chapter, sources: [String: Entry])? {
+        let prefix = chapterPrefix(language)
+        var seen: Set<String> = []
+        var entries: [Chapter.Entry] = []
+        var sources: [String: Entry] = [:]
+        for e in sections.flatMap(\.entries) where e.isMine && seen.insert(e.id).inserted {
+            let point = (e.pointID ?? e.seed.pointID).flatMap { known.contains($0) ? $0 : nil }
+            if let point, bookPoints.contains(point) { continue }
+            let id = "\(prefix).noted.\(e.id)"
+            entries.append(Chapter.Entry(id: id, head: e.title,
+                                         gloss: e.detail.isEmpty ? nil : e.detail,
+                                         group: e.kind.label, example: e.sentence,
+                                         point: point))
+            sources[id] = e
+        }
+        guard !entries.isEmpty else { return nil }
+        let sub = entries.prefix(3).map(\.head).joined(separator: " · ")
+        return (Chapter(id: "\(prefix).noted", name: "Noted", sub: sub, layout: .list,
+                        entries: entries, formats: []), sources)
+    }
+
+    static func chapterPrefix(_ language: Language) -> String {
+        switch language {
+        case .mandarin: return "zh"
+        case .german:   return "de"
+        case .french:   return "fr"
+        }
+    }
+
+    /// Where a Noted entry stands. No quiz reaches these, so it is read off
+    /// the record: a scheduled finding is slipping until it holds.
+    static func state(of e: Entry) -> EntryState {
+        if e.held { return EntryState(standing: .holding, slipping: false, lastSeen: e.lastNoted, recent: []) }
+        if e.noted > 0 { return EntryState(standing: .tried, slipping: true, lastSeen: e.lastNoted, recent: []) }
+        if e.used > 0 {
+            return EntryState(standing: e.clean > 0 ? .holding : .tried, slipping: false,
+                              lastSeen: nil, recent: [])
+        }
+        return EntryState(standing: .never, slipping: false, lastSeen: nil, recent: [])
+    }
+
     /// Every problem finding in these sessions, in one language.
     static func noted(in sessions: [Session], language: Language) -> [Noted] {
         var seen: Set<UUID> = []
