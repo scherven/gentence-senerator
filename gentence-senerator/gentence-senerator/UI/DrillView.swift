@@ -24,7 +24,7 @@ struct DrillView: View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
             support
             if steppedDown && result == nil {
-                Text("Less to build.")
+                Text("Easier version.")
                     .font(Theme.F.note)
                     .foregroundStyle(Theme.C.warn)
                     .padding(.leading, Theme.M.gapTight)
@@ -105,7 +105,7 @@ struct DrillView: View {
                 .foregroundStyle(Theme.C.ink)
 
             if correct && rungIndex > 0 {
-                TinyButton(title: "Back up to the full version") {
+                TinyButton(title: "Harder version") {
                     rungIndex -= 1
                     reset()
                 }

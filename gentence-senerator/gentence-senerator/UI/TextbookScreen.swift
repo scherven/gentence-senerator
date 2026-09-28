@@ -17,7 +17,7 @@ struct TextbookScreen: View {
                     let sections = store.textbook(scope: current, search: search)
                     if sections.isEmpty {
                         Text(search.isEmpty
-                             ? "Empty. Findings, pins and tutor suggestions land here."
+                             ? "Nothing yet."
                              : "No match.")
                             .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
                     }

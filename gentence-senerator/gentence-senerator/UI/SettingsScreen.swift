@@ -78,7 +78,7 @@ struct SettingsScreen: View {
                 }
             }
 
-            Text("Sentences are built to sit at this level. Below B1 or HSK 4, being understood counts for more than being exactly right.")
+            Text("Below B1 or HSK 4, errors that keep the meaning count less.")
                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
         }
     }
@@ -94,7 +94,7 @@ struct SettingsScreen: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(store.settings.dailyGoal) of each mode a day")
                                 .font(Theme.F.body)
-                            Text("A cap, not a target. The day ends when all three are spent.")
+                            Text("The day ends when all three are done.")
                                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                         }
                     }
@@ -106,11 +106,7 @@ struct SettingsScreen: View {
                 }
                 row {
                     Toggle(isOn: $store.settings.offerStretch) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Push my range").font(Theme.F.body)
-                            Text("Offer a structure you have never tried.")
-                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                        }
+                        Text("Suggest structures I haven't used").font(Theme.F.body)
                     }
                 }
             }

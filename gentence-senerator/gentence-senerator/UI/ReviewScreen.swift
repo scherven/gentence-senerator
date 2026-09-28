@@ -165,8 +165,8 @@ struct ReviewScreen: View {
     private func label(for count: Int) -> String {
         switch count {
         case 0:  return "Nothing to fix"
-        case 1:  return "One thing to look at"
-        default: return "\(count) things to look at"
+        case 1:  return "1 to fix"
+        default: return "\(count) to fix"
         }
     }
 
@@ -177,7 +177,7 @@ struct ReviewScreen: View {
         return VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Sounds · \(result.overall)")
             if weak.isEmpty {
-                Text("Nothing stood out.")
+                Text("No weak sounds.")
                     .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
             }
             VStack(spacing: 0) {
@@ -187,8 +187,8 @@ struct ReviewScreen: View {
                             id: "pronunciation/\(unit.name ?? unit.gloss ?? "\(unit.index)")",
                             kind: .pronunciation, verdict: .weakens,
                             stages: .init(
-                                locate: "This sound came out at \(unit.score).",
-                                name: unit.name.map { "The sound \($0)." }
+                                locate: "Scored \(unit.score).",
+                                name: unit.name.map { "Sound \($0)." }
                                     ?? "A sound in \(unit.gloss ?? "this word").",
                                 fix: unit.gloss ?? "",
                                 note: ""
@@ -237,7 +237,7 @@ struct ReviewScreen: View {
 
     private func respeak(_ items: [Respeak]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Say it again, changed")
+            ModuleLabel(text: "Say it differently")
             RespeakView(items: items)
         }
     }
@@ -298,7 +298,7 @@ struct RespeakView: View {
                 }
             }
 
-            TinyButton(title: "A different change") {
+            TinyButton(title: "Another change") {
                 index += 1
                 input = ""
                 result = nil

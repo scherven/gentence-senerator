@@ -17,7 +17,7 @@ struct DayPlan: Hashable {
         var label: String {
             switch self {
             case .structure: return "Structure"
-            case .words:     return "Words you have"
+            case .words:     return "Known words"
             case .new:       return "New"
             case .back:      return "Back"
             }
@@ -40,8 +40,8 @@ struct DayPlan: Hashable {
         /// Learner language. The legend under the record.
         var name: String {
             switch self {
-            case .never:   return "never produced"
-            case .tried:   return "tried, not landing"
+            case .never:   return "never used"
+            case .tried:   return "tried, with errors"
             case .holding: return "holding"
             case .solid:   return "solid"
             }

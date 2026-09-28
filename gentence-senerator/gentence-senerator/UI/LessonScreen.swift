@@ -32,17 +32,17 @@ struct LessonScreen: View {
                 header
 
                 if showingPatterns {
-                    revisitBanner("Third time. Patterns instead of explanation.")
+                    revisitBanner("Third visit. Patterns only.")
                     BlockView(block: patternBlock,
                               onOpenLink: onOpenLink,
                               onOpenSeed: onOpenSeed,
                               onDrillOutcome: onDrillOutcome,
                               grade: grade)
                     if !showRuleAnyway {
-                        TinyButton(title: "Show the rule anyway") { showRuleAnyway = true }
+                        TinyButton(title: "Show the rule") { showRuleAnyway = true }
                     }
                 } else if priorVisits == 1 {
-                    revisitBanner("Second time. Straight to the drill.")
+                    revisitBanner("Second visit. Skip to the drills.")
                 }
 
                 ForEach(blocks) { block in
@@ -58,7 +58,7 @@ struct LessonScreen: View {
                 if !lesson.hasPractice {
                     HStack(spacing: Theme.M.gapTight) {
                         ProgressView().tint(Theme.C.accent)
-                        Text("Writing practice for this…")
+                        Text("Writing practice…")
                             .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,7 +87,7 @@ struct LessonScreen: View {
 
     private var patternBlock: Block {
         Block(id: "\(lesson.id)-patterns", kind: .examples,
-              label: "Just the patterns", examples: lesson.patterns)
+              label: "Patterns", examples: lesson.patterns)
     }
 
     private func revisitBanner(_ text: String) -> some View {

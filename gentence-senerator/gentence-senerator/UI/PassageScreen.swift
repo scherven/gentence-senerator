@@ -73,7 +73,7 @@ struct PassageScreen: View {
 
             MainButton(title: run.played ? "Play again" : "Play",
                        enabled: !run.played || run.canReplay) { store.playGist() }
-            MainButton(title: "Go to the questions", enabled: run.played) { store.toQuiz() }
+            MainButton(title: "Questions", enabled: run.played) { store.toQuiz() }
         }
     }
 
@@ -110,7 +110,7 @@ struct PassageScreen: View {
                    let line = passage.line(from) {
                     Panel {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("True — of line \(from), not this question.")
+                            Text("That's from line \(from).")
                                 .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                             Text(line.text).font(Theme.F.targetSmall)
                         }
@@ -119,7 +119,7 @@ struct PassageScreen: View {
                     Panel { Text("Right.").font(Theme.F.meta).foregroundStyle(Theme.C.good) }
                 }
                 MainButton(title: run.quizAt + 1 < passage.quiz.count
-                           ? "Next question" : "What to go back to") { store.advanceQuiz() }
+                           ? "Next question" : "Repair") { store.advanceQuiz() }
             }
         }
     }
@@ -145,7 +145,7 @@ struct PassageScreen: View {
                     }
                 }
                 HStack {
-                    TinyButton(title: "Hear this line") { store.hearLine(n) }
+                    TinyButton(title: "Hear line") { store.hearLine(n) }
                     Spacer()
                 }
                 options(choices.options, picked: picked.map(choices.slot(of:)),
@@ -154,7 +154,7 @@ struct PassageScreen: View {
                 }
                 if picked != nil {
                     MainButton(title: run.repairAt + 1 < run.repair.count
-                               ? "Next line" : "Try those questions again") {
+                               ? "Next line" : "Retry questions") {
                         store.advanceRepair()
                     }
                 }
@@ -256,8 +256,6 @@ struct PassageScreen: View {
                 }
             }
 
-            Text("One dialogue is the whole listening day. Translate and produce are still open.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
             MainButton(title: "Done") { store.leavePassage() }
         }
     }

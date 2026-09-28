@@ -1289,8 +1289,8 @@ final class Store {
         switch job.state {
         case .unsent:
             if sendingNow.contains(job.id) { return "Sending…" }
-            if !online { return "No connection — sends when there's signal" }
-            return job.uploading ? "Sending…" : "Not sent yet — will retry"
+            if !online { return "Offline. Sends when online." }
+            return job.uploading ? "Sending…" : "Not sent. Will retry."
         case .grading:
             return "\(job.graded) of \(job.total) graded"
         case .done:
@@ -1635,7 +1635,7 @@ final class Store {
                 verdict: right ? .kept : (brokeMeaning ? .breaks : .weakens),
                 stages: .init(
                     locate: "Line \(n) of \(passage.lines.count).",
-                    name: right ? "\(gap.answer) landed" : "\(gap.answer), not \(chose)",
+                    name: right ? "\(gap.answer), correct" : "\(gap.answer), not \(chose)",
                     fix: gap.answer,
                     note: gap.why
                 ),
@@ -1902,7 +1902,7 @@ final class Store {
             return verdict
         } catch {
             return Tutor.DrillVerdict(
-                correct: false, note: "Couldn't check that just now."
+                correct: false, note: "Couldn't check that."
             )
         }
     }
@@ -2080,8 +2080,8 @@ struct LevelOffer: Hashable {
            !broke, holding >= LevelEvidence.promoteHolding {
             return LevelOffer(
                 level: level + 1,
-                reason: "Nothing broke in \(turns.count) sentences at \(here), "
-                    + "and you've used most of what it has. Move up?"
+                reason: "Nothing broke in \(turns.count) sentences at \(here). "
+                    + "Most of its points used."
             )
         }
 
@@ -2089,7 +2089,7 @@ struct LevelOffer: Hashable {
             return LevelOffer(
                 level: level - 1,
                 reason: "Your last \(turns.count) sentences at \(here) averaged "
-                    + "\(average). Try \(pack.level(level - 1)) for a while?"
+                    + "\(average)."
             )
         }
 

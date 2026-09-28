@@ -28,7 +28,7 @@ struct PlanView: View {
 
     private var record: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "The record")
+            ModuleLabel(text: "Grammar")
             Panel {
                 VStack(alignment: .leading, spacing: Theme.M.pad) {
                     ForEach(plan.bands) { band in

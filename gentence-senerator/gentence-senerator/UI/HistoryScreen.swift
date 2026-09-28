@@ -46,7 +46,7 @@ struct HistoryScreen: View {
 
     private var recurring: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Keeps coming back")
+            ModuleLabel(text: "Recurring")
             VStack(spacing: 0) {
                 ForEach(weakest) { encounter in
                     HStack(alignment: .firstTextBaseline, spacing: 10) {

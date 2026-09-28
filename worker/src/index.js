@@ -132,7 +132,7 @@ async function push(env, w, batch) {
       "apns-priority": "10",
     },
     body: JSON.stringify({
-      aps: { alert: { title: "Feedback's in", body }, sound: "default" },
+      aps: { alert: { title: "Feedback ready", body }, sound: "default" },
       // What a tap opens. Watches stored before job ids were kept have only
       // the batch, which the app matches too.
       batch: batch.id,

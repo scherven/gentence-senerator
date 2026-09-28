@@ -20,7 +20,7 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
         switch self {
         case .translate: return "Read English, say it in the language."
         case .listen:    return "Hear it, write what was said."
-        case .produce:   return "Hold a conversation. Corrections wait."
+        case .produce:   return "Conversation. Corrections at the end."
         }
     }
 

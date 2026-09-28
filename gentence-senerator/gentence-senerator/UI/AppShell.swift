@@ -33,7 +33,7 @@ struct ModeScreen: View {
             case .idle:
                 if store.dayComplete { DayScreen(store: store) } else { start }
             case .preparing:
-                Busy(text: "Writing something for you…")
+                Busy(text: "Writing prompts…")
             case .passage:
                 PassageScreen(store: store)
             case .ready, .recording:
@@ -41,9 +41,9 @@ struct ModeScreen: View {
             case .confirming:
                 confirm
             case .transcribing:
-                Busy(text: "Writing down what you said…")
+                Busy(text: "Transcribing…")
             case .assessing:
-                Busy(text: "Looking at what you said…")
+                Busy(text: "Checking…")
             case .reference:
                 reference
             case .reviewing:
@@ -146,13 +146,13 @@ struct ModeScreen: View {
     }
 
     private func blurb(_ mode: Mode, spent: Bool, started: Bool) -> String {
-        if spent { return "Spent. Back tomorrow." }
+        if spent { return "Done for today." }
         if mode == .listen, let held = store.heldPassage {
             return held.run.stage == .gist
-                ? "A dialogue: \(held.passage.title). Heard once, then questions."
-                : "Carry on with \(held.passage.title)."
+                ? "\(held.passage.title). One listen, then questions."
+                : "Resume \(held.passage.title)."
         }
-        if started { return "Carry on where you left off." }
+        if started { return "In progress." }
         return mode.blurb
     }
 
@@ -241,7 +241,7 @@ struct ModeScreen: View {
                                 }
                             }
                             if turn.mode == .listen {
-                                Text(store.hearingRealVoice ? "A real recording" : "Synthesised")
+                                Text(store.hearingRealVoice ? "Human recording" : "Synthesised")
                                     .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                             }
                         }
@@ -271,10 +271,10 @@ struct ModeScreen: View {
                 .padding(Theme.M.pad)
                 .background(Theme.C.sunk)
                 .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-            Text(store.current?.attempt.wasTyped == true
-                 ? "Only this is marked."
-                 : "Fix anything the microphone got wrong. Only this is marked.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            if store.current?.attempt.wasTyped != true {
+                Text("Fix any recognition errors. Only this text is graded.")
+                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            }
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
             }
@@ -334,7 +334,7 @@ struct ModeScreen: View {
                             TinyButton(title: "Hear") { store.say(reference) }
                         }
                     }
-                    Text("A reference, not a mark. Graded with the rest.")
+                    Text("Graded later with the rest.")
                         .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
                 }
             }
@@ -352,9 +352,11 @@ struct ModeScreen: View {
                     Text("\(session.completedCount) attempts · average \(session.averageScore)")
                         .font(Theme.F.body)
                 } else {
+                    let sent = session.open.filter { !$0.attempt.confirmed.isEmpty }.count
+                    let count = "\(sent) answer\(sent == 1 ? "" : "s") sent for grading."
                     Text(store.notificationsOn
-                         ? "\(session.completedCount) answers sent for grading. You'll get a notification."
-                         : "\(session.completedCount) answers sent for grading. Notifications are off, so check back here.")
+                         ? "\(count) You'll get a notification."
+                         : "\(count) Notifications are off. Check back here.")
                         .font(Theme.F.body)
                 }
             }
@@ -394,7 +396,7 @@ struct LessonHost: View {
             } else if let error = store.lessonError {
                 Trouble(message: error) { }
             } else {
-                Busy(text: "Working it out…")
+                Busy(text: "Writing the lesson…")
             }
         }
         .navigationTitle(store.lesson(for: request)?.title ?? request.seed.subject)
@@ -422,7 +424,7 @@ struct Trouble: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Stuck")
+            ModuleLabel(text: "Error")
             Text(message).font(Theme.F.body).foregroundStyle(Theme.C.ink)
             MainButton(title: "Try again", action: retry)
             Spacer()

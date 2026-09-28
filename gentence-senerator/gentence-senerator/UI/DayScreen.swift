@@ -11,9 +11,9 @@ struct DayScreen: View {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 GradingPanel(store: store)
                 tally
-                section("What came up", store.todayFindings.filter(\.isProblem),
-                        empty: "Nothing came up today.")
-                section("What held", store.todayFindings.filter { !$0.isProblem },
+                section("To fix", store.todayFindings.filter(\.isProblem),
+                        empty: "Nothing to fix today.")
+                section("Got right", store.todayFindings.filter { !$0.isProblem },
                         empty: nil)
             }
             .padding(Theme.M.gap)

@@ -147,7 +147,7 @@ struct AskView: View {
             }
 
             HStack(spacing: 0) {
-                TextField(isAsking ? "Thinking…" : "Ask something else…", text: $typed)
+                TextField(isAsking ? "Thinking…" : "Ask a question…", text: $typed)
                     .font(Theme.F.bodyTight)
                     .textFieldStyle(.plain)
                     .padding(Theme.M.padTight)
