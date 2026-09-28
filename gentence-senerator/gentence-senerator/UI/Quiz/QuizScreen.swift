@@ -73,7 +73,8 @@ struct QuizScreen: View {
                 .id(item.id)
                 .padding(.top, 36)
                 .frame(maxHeight: .infinity, alignment: .top)
-            footer.frame(height: 44)
+            // Holds its height before the answer too, so nothing jumps.
+            ZStack { Color.clear; footer }.frame(height: 44)
         }
         .padding(.horizontal, Theme.M.gap)
         .padding(.top, 8)
