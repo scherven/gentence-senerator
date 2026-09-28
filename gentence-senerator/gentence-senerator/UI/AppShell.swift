@@ -430,16 +430,16 @@ struct Trouble: View {
     }
 }
 
-/// Sessions out for grading, and the ones that have come back.
+/// Today's sessions out for grading, and what came back today.
 struct GradingPanel: View {
     @Bindable var store: Store
 
     var body: some View {
-        if !store.jobs.isEmpty {
+        if !store.todaysJobs.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 ModuleLabel(text: "Feedback")
                 VStack(spacing: 0) {
-                    ForEach(store.jobs.reversed()) { job in
+                    ForEach(store.todaysJobs.reversed()) { job in
                         row(job)
                     }
                 }
@@ -449,7 +449,7 @@ struct GradingPanel: View {
 
     /// The language only once there is more than one out.
     private func status(_ job: GradingJob) -> String {
-        let mixed = Set(store.jobs.map(\.language)).count > 1
+        let mixed = Set(store.todaysJobs.map(\.language)).count > 1
         return (mixed ? "\(job.language.flag) " : "") + store.status(of: job)
     }
 

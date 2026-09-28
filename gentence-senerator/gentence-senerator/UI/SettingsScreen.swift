@@ -88,21 +88,13 @@ struct SettingsScreen: View {
             ModuleLabel(text: "Session")
             VStack(spacing: 0) {
                 row {
-                    Stepper(value: $store.settings.dailyGoal, in: 1...10) {
+                    Stepper(value: Binding(get: { store.settings.dailyGoal },
+                                           set: { store.setGoal($0) }),
+                            in: 1...10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(store.settings.dailyGoal) of each mode a day")
                                 .font(Theme.F.body)
                             Text("A cap, not a target. The day ends when all three are spent.")
-                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                        }
-                    }
-                }
-                row {
-                    Stepper(value: $store.settings.turnsBeforeReview, in: 1...8) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(store.settings.turnsBeforeReview) turns before review")
-                                .font(Theme.F.body)
-                            Text("Produce only. Corrections wait this long.")
                                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                         }
                     }
