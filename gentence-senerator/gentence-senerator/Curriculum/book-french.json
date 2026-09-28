@@ -1,0 +1,1847 @@
+{
+ "language": "french",
+ "chapters": [
+  {
+   "id": "fr.etre-avoir",
+   "name": "Être or avoir",
+   "sub": "je suis allé · j'ai vu · j'ai sorti le chien",
+   "layout": "split",
+   "entries": [
+    {
+     "id": "fr.etre-avoir.aller",
+     "head": "aller",
+     "reading": "suis allé",
+     "gloss": "go",
+     "group": "aller",
+     "tag": "ÊTRE",
+     "example": "Je suis allé à Nice.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.venir",
+     "head": "venir",
+     "reading": "suis venu",
+     "gloss": "come",
+     "group": "venir",
+     "tag": "ÊTRE",
+     "example": "Il est venu seul.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.arriver",
+     "head": "arriver",
+     "reading": "suis arrivé",
+     "gloss": "arrive",
+     "group": "arriver",
+     "tag": "ÊTRE",
+     "example": "Le train est arrivé.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.partir",
+     "head": "partir",
+     "reading": "suis parti",
+     "gloss": "leave",
+     "group": "partir",
+     "tag": "ÊTRE",
+     "example": "Elle est partie tôt.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.entrer",
+     "head": "entrer",
+     "reading": "suis entré",
+     "gloss": "go in",
+     "group": "entrer",
+     "tag": "ÊTRE",
+     "example": "Il est entré sans frapper.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.rester",
+     "head": "rester",
+     "reading": "suis resté",
+     "gloss": "stay",
+     "group": "rester",
+     "tag": "ÊTRE",
+     "example": "Je suis resté chez moi.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.tomber",
+     "head": "tomber",
+     "reading": "suis tombé",
+     "gloss": "fall",
+     "group": "tomber",
+     "tag": "ÊTRE",
+     "example": "Elle est tombée.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.naitre",
+     "head": "naître",
+     "reading": "suis né",
+     "gloss": "be born",
+     "group": "naître",
+     "tag": "ÊTRE",
+     "example": "Je suis né en 2001.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.mourir",
+     "head": "mourir",
+     "reading": "suis mort",
+     "gloss": "die",
+     "group": "mourir",
+     "tag": "ÊTRE",
+     "example": "Il est mort en 1990.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.devenir",
+     "head": "devenir",
+     "reading": "suis devenu",
+     "gloss": "become",
+     "group": "devenir",
+     "tag": "ÊTRE",
+     "example": "Elle est devenue médecin.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.revenir",
+     "head": "revenir",
+     "reading": "suis revenu",
+     "gloss": "come back",
+     "group": "revenir",
+     "tag": "ÊTRE",
+     "example": "Ils sont revenus hier.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.se-lever",
+     "head": "se lever",
+     "reading": "me suis levé",
+     "gloss": "get up · every reflexive",
+     "group": "se lever",
+     "tag": "ÊTRE",
+     "example": "Je me suis levé tard.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.sortir-etre",
+     "head": "sortir",
+     "reading": "suis sorti",
+     "gloss": "go out",
+     "group": "sortir",
+     "tag": "ÊTRE",
+     "example": "Je suis sorti.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.sortir-avoir",
+     "head": "sortir",
+     "reading": "ai sorti",
+     "gloss": "take out + object",
+     "group": "sortir",
+     "tag": "AVOIR",
+     "example": "J'ai sorti la poubelle.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.monter-etre",
+     "head": "monter",
+     "reading": "suis monté",
+     "gloss": "go up",
+     "group": "monter",
+     "tag": "ÊTRE",
+     "example": "Elle est montée.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.monter-avoir",
+     "head": "monter",
+     "reading": "ai monté",
+     "gloss": "carry up + object",
+     "group": "monter",
+     "tag": "AVOIR",
+     "example": "Elle a monté les valises.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.descendre-etre",
+     "head": "descendre",
+     "reading": "suis descendu",
+     "gloss": "go down",
+     "group": "descendre",
+     "tag": "ÊTRE",
+     "example": "Il est descendu.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.descendre-avoir",
+     "head": "descendre",
+     "reading": "ai descendu",
+     "gloss": "bring down + object",
+     "group": "descendre",
+     "tag": "AVOIR",
+     "example": "Il a descendu la poubelle.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.passer-etre",
+     "head": "passer",
+     "reading": "suis passé",
+     "gloss": "drop by",
+     "group": "passer",
+     "tag": "ÊTRE",
+     "example": "Je suis passé chez toi.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.passer-avoir",
+     "head": "passer",
+     "reading": "ai passé",
+     "gloss": "spend (time) + object",
+     "group": "passer",
+     "tag": "AVOIR",
+     "example": "J'ai passé une semaine à Rome.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.rentrer-etre",
+     "head": "rentrer",
+     "reading": "suis rentré",
+     "gloss": "come home",
+     "group": "rentrer",
+     "tag": "ÊTRE",
+     "example": "Elle est rentrée tard.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.rentrer-avoir",
+     "head": "rentrer",
+     "reading": "ai rentré",
+     "gloss": "bring in + object",
+     "group": "rentrer",
+     "tag": "AVOIR",
+     "example": "Elle a rentré la voiture.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.retourner-etre",
+     "head": "retourner",
+     "reading": "suis retourné",
+     "gloss": "go back",
+     "group": "retourner",
+     "tag": "ÊTRE",
+     "example": "Il est retourné à Lyon.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.retourner-avoir",
+     "head": "retourner",
+     "reading": "ai retourné",
+     "gloss": "turn over + object",
+     "group": "retourner",
+     "tag": "AVOIR",
+     "example": "Il a retourné la crêpe.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.marcher",
+     "head": "marcher",
+     "reading": "ai marché",
+     "gloss": "walk",
+     "group": "marcher",
+     "tag": "AVOIR",
+     "example": "On a marché trois heures.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.courir",
+     "head": "courir",
+     "reading": "ai couru",
+     "gloss": "run",
+     "group": "courir",
+     "tag": "AVOIR",
+     "example": "J'ai couru.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.voyager",
+     "head": "voyager",
+     "reading": "ai voyagé",
+     "gloss": "travel",
+     "group": "voyager",
+     "tag": "AVOIR",
+     "example": "Ils ont beaucoup voyagé.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.quitter",
+     "head": "quitter",
+     "reading": "ai quitté",
+     "gloss": "leave (a place)",
+     "group": "quitter",
+     "tag": "AVOIR",
+     "example": "Elle a quitté Paris.",
+     "point": "passe-compose-aux"
+    },
+    {
+     "id": "fr.etre-avoir.etre",
+     "head": "être",
+     "reading": "ai été",
+     "gloss": "be",
+     "group": "être",
+     "tag": "AVOIR",
+     "example": "J'ai été malade.",
+     "point": "passe-compose-aux"
+    }
+   ],
+   "formats": [
+    "flip",
+    "two-step"
+   ]
+  },
+  {
+   "id": "fr.agreement",
+   "name": "Agreement",
+   "sub": "elle est allée · je les ai vus · elle s'est lavée",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.agreement.etre-f",
+     "head": "être, feminine subject",
+     "reading": "elle est allée",
+     "gloss": "-e",
+     "example": "Ma sœur est arrivée.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.etre-pl",
+     "head": "être, plural subject",
+     "reading": "ils sont allés",
+     "gloss": "-s",
+     "example": "Paul et Léa sont venus.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.etre-fpl",
+     "head": "être, feminine plural",
+     "reading": "elles sont allées",
+     "gloss": "-es",
+     "example": "Les filles sont parties.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.vous",
+     "head": "vous for one person",
+     "reading": "vous êtes allée, madame",
+     "gloss": "agrees with the person",
+     "example": "Madame, vous êtes arrivée quand ?",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.avoir",
+     "head": "avoir, object after",
+     "reading": "elle a acheté la robe",
+     "gloss": "no agreement",
+     "example": "Elles ont vu un film.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.pronoun",
+     "head": "le, la, les before avoir",
+     "reading": "je les ai vus",
+     "gloss": "agrees with the object",
+     "example": "Ta lettre ? Je l'ai lue.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.que",
+     "head": "que before avoir",
+     "reading": "la robe que j'ai achetée",
+     "gloss": "agrees with the noun",
+     "example": "Les photos que tu as prises.",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.quel",
+     "head": "quel before avoir",
+     "reading": "quelles villes as-tu visitées ?",
+     "gloss": "agrees with the noun",
+     "example": "Quelle voiture as-tu choisie ?",
+     "point": "written-agreement"
+    },
+    {
+     "id": "fr.agreement.refl",
+     "head": "reflexive, se = object",
+     "reading": "elle s'est lavée",
+     "gloss": "agrees",
+     "example": "Elles se sont levées tôt.",
+     "point": "pronominal-participle-agreement"
+    },
+    {
+     "id": "fr.agreement.refl-body",
+     "head": "reflexive + object after",
+     "reading": "elle s'est lavé les mains",
+     "gloss": "no agreement",
+     "example": "Il s'est cassé la jambe.",
+     "point": "pronominal-participle-agreement"
+    },
+    {
+     "id": "fr.agreement.refl-indirect",
+     "head": "reflexive, se = à",
+     "reading": "ils se sont parlé",
+     "gloss": "no agreement",
+     "example": "Elles se sont téléphoné.",
+     "point": "pronominal-participle-agreement"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "two-step"
+   ]
+  },
+  {
+   "id": "fr.gender",
+   "name": "Gender",
+   "sub": "le fromage · la liberté · le problème",
+   "layout": "cards",
+   "entries": [
+    {
+     "id": "fr.gender.age",
+     "head": "-age",
+     "gloss": "le fromage, le voyage",
+     "group": "le",
+     "tag": "LE",
+     "example": "le message",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ment",
+     "head": "-ment",
+     "gloss": "le moment, le document",
+     "group": "le",
+     "tag": "LE",
+     "example": "le gouvernement",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.eau",
+     "head": "-eau",
+     "gloss": "le bureau, le gâteau",
+     "group": "le",
+     "tag": "LE",
+     "example": "le chapeau",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.isme",
+     "head": "-isme",
+     "gloss": "le tourisme",
+     "group": "le",
+     "tag": "LE",
+     "example": "le journalisme",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.eme",
+     "head": "-ème",
+     "gloss": "le problème, le système",
+     "group": "le",
+     "tag": "LE",
+     "example": "le thème",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.oir",
+     "head": "-oir",
+     "gloss": "le soir, le couloir",
+     "group": "le",
+     "tag": "LE",
+     "example": "le miroir",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ier",
+     "head": "-ier",
+     "gloss": "le papier, le quartier",
+     "group": "le",
+     "tag": "LE",
+     "example": "le métier",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.tion",
+     "head": "-tion, -sion",
+     "gloss": "la question, la télévision",
+     "group": "la",
+     "tag": "LA",
+     "example": "la solution",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.te",
+     "head": "-té",
+     "gloss": "la liberté, la santé",
+     "group": "la",
+     "tag": "LA",
+     "example": "l'université",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ure",
+     "head": "-ure",
+     "gloss": "la voiture, la culture",
+     "group": "la",
+     "tag": "LA",
+     "example": "la nature",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ette",
+     "head": "-ette",
+     "gloss": "la baguette, la fourchette",
+     "group": "la",
+     "tag": "LA",
+     "example": "l'assiette",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ence",
+     "head": "-ence, -ance",
+     "gloss": "la différence, la chance",
+     "group": "la",
+     "tag": "LA",
+     "example": "l'enfance",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ee",
+     "head": "-ée",
+     "gloss": "la soirée, l'idée",
+     "group": "la",
+     "tag": "LA",
+     "example": "la journée",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.ie",
+     "head": "-ie",
+     "gloss": "la boulangerie, la vie",
+     "group": "la",
+     "tag": "LA",
+     "example": "la pharmacie",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.eur",
+     "head": "-eur (feeling, quality)",
+     "gloss": "la couleur, la peur",
+     "group": "la",
+     "tag": "LA",
+     "example": "la chaleur",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-age",
+     "head": "-age → la",
+     "gloss": "la plage, la page, l'image",
+     "group": "la",
+     "tag": "LA",
+     "example": "la cage",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-eau",
+     "head": "-eau → la",
+     "gloss": "l'eau, la peau",
+     "group": "la",
+     "tag": "LA",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-ee",
+     "head": "-ée → le",
+     "gloss": "le musée, le lycée",
+     "group": "le",
+     "tag": "LE",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-te",
+     "head": "-té → le",
+     "gloss": "l'été, le côté",
+     "group": "le",
+     "tag": "LE",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-ence",
+     "head": "-ence → le",
+     "gloss": "le silence",
+     "group": "le",
+     "tag": "LE",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-eur",
+     "head": "-eur → le",
+     "gloss": "le bonheur, le moteur",
+     "group": "le",
+     "tag": "LE",
+     "example": "l'ordinateur",
+     "point": "gender"
+    },
+    {
+     "id": "fr.gender.x-eme",
+     "head": "-ème → la",
+     "gloss": "la crème",
+     "group": "la",
+     "tag": "LA",
+     "point": "gender"
+    }
+   ],
+   "formats": [
+    "sort",
+    "flip"
+   ]
+  },
+  {
+   "id": "fr.pronouns",
+   "name": "Pronoun placement",
+   "sub": "je le lui donne · il y en a · donne-le-moi",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.pronouns.direct",
+     "head": "le · la · les",
+     "reading": "je la vois",
+     "gloss": "the thing or person",
+     "example": "Le film ? Je le connais.",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.indirect",
+     "head": "lui · leur",
+     "reading": "je lui parle",
+     "gloss": "to him, to her, to them",
+     "example": "Je leur téléphone.",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.me-te",
+     "head": "me · te · nous · vous",
+     "reading": "il me voit",
+     "gloss": "both kinds",
+     "example": "Tu m'aides ?",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.y",
+     "head": "y",
+     "reading": "j'y vais",
+     "gloss": "à + place or thing",
+     "example": "Je pense à mon examen → j'y pense.",
+     "point": "y-en"
+    },
+    {
+     "id": "fr.pronouns.en",
+     "head": "en",
+     "reading": "j'en veux",
+     "gloss": "de + thing, quantities",
+     "example": "J'en ai deux.",
+     "point": "y-en"
+    },
+    {
+     "id": "fr.pronouns.me-le",
+     "head": "me le · te la · nous les",
+     "reading": "il me le donne",
+     "gloss": "me before le",
+     "example": "Il me la prête.",
+     "point": "clitic-clusters"
+    },
+    {
+     "id": "fr.pronouns.le-lui",
+     "head": "le lui · la leur",
+     "reading": "je le lui donne",
+     "gloss": "le before lui",
+     "example": "Je la leur montre.",
+     "point": "clitic-clusters"
+    },
+    {
+     "id": "fr.pronouns.y-en",
+     "head": "y en",
+     "reading": "il y en a",
+     "gloss": "y before en",
+     "example": "Il n'y en a plus.",
+     "point": "clitic-clusters"
+    },
+    {
+     "id": "fr.pronouns.compound",
+     "head": "before avoir, être",
+     "reading": "je l'ai vu",
+     "gloss": "on the auxiliary",
+     "example": "Je leur ai écrit.",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.infinitive",
+     "head": "before the infinitive",
+     "reading": "je vais le voir",
+     "gloss": "on the verb it belongs to",
+     "example": "Je peux t'aider.",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.negation",
+     "head": "inside ne…pas",
+     "reading": "je ne le vois pas",
+     "gloss": "ne + pronoun + verb",
+     "example": "Je ne lui ai pas dit.",
+     "point": "object-pronouns"
+    },
+    {
+     "id": "fr.pronouns.imperative",
+     "head": "imperative",
+     "reading": "donne-le-moi",
+     "gloss": "after, with hyphens",
+     "example": "Dis-lui !",
+     "point": "imperative-pronouns"
+    },
+    {
+     "id": "fr.pronouns.imperative-neg",
+     "head": "negative imperative",
+     "reading": "ne me le donne pas",
+     "gloss": "back in front",
+     "example": "Ne le touche pas !",
+     "point": "imperative-pronouns"
+    }
+   ],
+   "formats": [
+    "build",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.negation",
+   "name": "Negation",
+   "sub": "ne…pas · ne…jamais · personne",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.negation.pas",
+     "head": "ne…pas",
+     "reading": "je ne sais pas",
+     "gloss": "not",
+     "example": "Il ne parle pas anglais.",
+     "point": "ne-pas"
+    },
+    {
+     "id": "fr.negation.jamais",
+     "head": "ne…jamais",
+     "reading": "je ne fume jamais",
+     "gloss": "never",
+     "example": "Elle ne mange jamais de viande.",
+     "point": "negation-frames"
+    },
+    {
+     "id": "fr.negation.plus",
+     "head": "ne…plus",
+     "reading": "il ne travaille plus",
+     "gloss": "no longer",
+     "example": "Il n'y a plus de lait.",
+     "point": "negation-frames"
+    },
+    {
+     "id": "fr.negation.rien",
+     "head": "ne…rien",
+     "reading": "je n'ai rien dit",
+     "gloss": "nothing",
+     "example": "Rien n'a changé.",
+     "point": "negation-frames"
+    },
+    {
+     "id": "fr.negation.personne",
+     "head": "ne…personne",
+     "reading": "je n'ai vu personne",
+     "gloss": "nobody",
+     "example": "Personne n'est venu.",
+     "point": "negation-frames"
+    },
+    {
+     "id": "fr.negation.que",
+     "head": "ne…que",
+     "reading": "il n'a que deux euros",
+     "gloss": "only",
+     "example": "Il ne boit que de l'eau.",
+     "point": "negation-frames"
+    },
+    {
+     "id": "fr.negation.pas-de",
+     "head": "pas de",
+     "reading": "je n'ai pas de voiture",
+     "gloss": "un, du, des → de",
+     "example": "Il n'y a pas de pain.",
+     "point": "pas-de"
+    },
+    {
+     "id": "fr.negation.compound",
+     "head": "around avoir, être",
+     "reading": "je n'ai pas vu",
+     "gloss": "personne goes after",
+     "example": "Je ne suis pas allé.",
+     "point": "ne-pas"
+    },
+    {
+     "id": "fr.negation.infinitive",
+     "head": "ne pas + infinitive",
+     "reading": "de ne pas fumer",
+     "gloss": "both before",
+     "example": "Je préfère ne pas sortir.",
+     "point": "negation-infinitive"
+    }
+   ],
+   "formats": [
+    "build",
+    "transform"
+   ]
+  },
+  {
+   "id": "fr.verb-prep",
+   "name": "Verb + à / de",
+   "sub": "commencer à · finir de · regarder Ø",
+   "layout": "pairs",
+   "entries": [
+    {
+     "id": "fr.verb-prep.commencer",
+     "head": "commencer",
+     "gloss": "start to",
+     "group": "à",
+     "tag": "À",
+     "example": "Il commence à pleuvoir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.aider",
+     "head": "aider",
+     "gloss": "help to",
+     "group": "à",
+     "tag": "À",
+     "example": "Je t'aide à porter ça.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.apprendre",
+     "head": "apprendre",
+     "gloss": "learn to",
+     "group": "à",
+     "tag": "À",
+     "example": "J'apprends à nager.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.reussir",
+     "head": "réussir",
+     "gloss": "manage to",
+     "group": "à",
+     "tag": "À",
+     "example": "Il a réussi à dormir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.hesiter",
+     "head": "hésiter",
+     "gloss": "hesitate to",
+     "group": "à",
+     "tag": "À",
+     "example": "N'hésite pas à demander.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.s-habituer",
+     "head": "s'habituer",
+     "gloss": "get used to",
+     "group": "à",
+     "tag": "À",
+     "example": "Je m'habitue à vivre seul.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.penser",
+     "head": "penser",
+     "gloss": "think about",
+     "group": "à",
+     "tag": "À",
+     "example": "Je pense à toi.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.inviter",
+     "head": "inviter",
+     "gloss": "invite to",
+     "group": "à",
+     "tag": "À",
+     "example": "Il m'a invité à dîner.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.se-mettre",
+     "head": "se mettre",
+     "gloss": "start to",
+     "group": "à",
+     "tag": "À",
+     "example": "Elle s'est mise à rire.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.repondre",
+     "head": "répondre",
+     "gloss": "answer",
+     "group": "à",
+     "tag": "À",
+     "example": "Réponds à sa question.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.telephoner",
+     "head": "téléphoner",
+     "gloss": "call",
+     "group": "à",
+     "tag": "À",
+     "example": "J'ai téléphoné à Marie.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.ressembler",
+     "head": "ressembler",
+     "gloss": "look like",
+     "group": "à",
+     "tag": "À",
+     "example": "Il ressemble à son père.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.finir",
+     "head": "finir",
+     "gloss": "finish",
+     "group": "de",
+     "tag": "DE",
+     "example": "J'ai fini de manger.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.essayer",
+     "head": "essayer",
+     "gloss": "try to",
+     "group": "de",
+     "tag": "DE",
+     "example": "J'essaie de comprendre.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.decider",
+     "head": "décider",
+     "gloss": "decide to",
+     "group": "de",
+     "tag": "DE",
+     "example": "On a décidé de partir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.arreter",
+     "head": "arrêter",
+     "gloss": "stop",
+     "group": "de",
+     "tag": "DE",
+     "example": "Arrête de crier !",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.oublier",
+     "head": "oublier",
+     "gloss": "forget to",
+     "group": "de",
+     "tag": "DE",
+     "example": "J'ai oublié de fermer la porte.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.refuser",
+     "head": "refuser",
+     "gloss": "refuse to",
+     "group": "de",
+     "tag": "DE",
+     "example": "Il refuse de payer.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.accepter",
+     "head": "accepter",
+     "gloss": "agree to",
+     "group": "de",
+     "tag": "DE",
+     "example": "Elle a accepté de venir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.choisir",
+     "head": "choisir",
+     "gloss": "choose to",
+     "group": "de",
+     "tag": "DE",
+     "example": "Nous avons choisi de rester.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.eviter",
+     "head": "éviter",
+     "gloss": "avoid",
+     "group": "de",
+     "tag": "DE",
+     "example": "Évite de sortir seul.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.se-souvenir",
+     "head": "se souvenir",
+     "gloss": "remember",
+     "group": "de",
+     "tag": "DE",
+     "example": "Je me souviens de ce jour.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.s-occuper",
+     "head": "s'occuper",
+     "gloss": "take care of",
+     "group": "de",
+     "tag": "DE",
+     "example": "Je m'occupe de la réservation.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.rever",
+     "head": "rêver",
+     "gloss": "dream of",
+     "group": "de",
+     "tag": "DE",
+     "example": "Je rêve de partir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.regarder",
+     "head": "regarder",
+     "gloss": "look at",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je regarde la télé.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.ecouter",
+     "head": "écouter",
+     "gloss": "listen to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "J'écoute la radio.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.attendre",
+     "head": "attendre",
+     "gloss": "wait for",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "J'attends le bus.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.chercher",
+     "head": "chercher",
+     "gloss": "look for",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je cherche mes clés.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.vouloir",
+     "head": "vouloir",
+     "gloss": "want to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je veux partir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.pouvoir",
+     "head": "pouvoir",
+     "gloss": "can",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Tu peux venir ?",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.devoir",
+     "head": "devoir",
+     "gloss": "must",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je dois travailler.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.aimer",
+     "head": "aimer",
+     "gloss": "like to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "J'aime lire.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.esperer",
+     "head": "espérer",
+     "gloss": "hope to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "J'espère venir.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.preferer",
+     "head": "préférer",
+     "gloss": "prefer to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je préfère marcher.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.savoir",
+     "head": "savoir",
+     "gloss": "know how to",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "Je sais nager.",
+     "point": "preposition-government"
+    },
+    {
+     "id": "fr.verb-prep.payer",
+     "head": "payer",
+     "gloss": "pay for",
+     "group": "Ø",
+     "tag": "Ø",
+     "example": "J'ai payé le repas.",
+     "point": "preposition-government"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip"
+   ]
+  },
+  {
+   "id": "fr.places",
+   "name": "Places",
+   "sub": "à Paris · en France · au Japon",
+   "layout": "pairs",
+   "entries": [
+    {
+     "id": "fr.places.a-city",
+     "head": "à + city",
+     "reading": "à Lyon",
+     "gloss": "cities",
+     "group": "to · in",
+     "tag": "À",
+     "example": "J'habite à Lyon.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.a-island",
+     "head": "à + small island",
+     "reading": "à Cuba",
+     "gloss": "Cuba, Madagascar, Malte",
+     "group": "to · in",
+     "tag": "À",
+     "example": "Ils vont à Cuba.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.en-f",
+     "head": "en + feminine country",
+     "reading": "en France",
+     "gloss": "most countries in -e",
+     "group": "to · in",
+     "tag": "EN",
+     "example": "Elle vit en Italie.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.en-vowel",
+     "head": "en + vowel",
+     "reading": "en Iran",
+     "gloss": "masculine, vowel first",
+     "group": "to · in",
+     "tag": "EN",
+     "example": "Il travaille en Irak.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.en-continent",
+     "head": "en + continent",
+     "reading": "en Asie",
+     "gloss": "continents",
+     "group": "to · in",
+     "tag": "EN",
+     "example": "On voyage en Europe.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.au",
+     "head": "au + masculine country",
+     "reading": "au Japon",
+     "gloss": "le Japon, le Mexique",
+     "group": "to · in",
+     "tag": "AU",
+     "example": "Il part au Canada.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.aux",
+     "head": "aux + plural country",
+     "reading": "aux États-Unis",
+     "gloss": "les États-Unis, les Pays-Bas",
+     "group": "to · in",
+     "tag": "AUX",
+     "example": "On va aux Pays-Bas.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.de-city",
+     "head": "de + city",
+     "reading": "de Paris",
+     "gloss": "cities",
+     "group": "from",
+     "tag": "DE",
+     "example": "Je viens de Lyon.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.de-f",
+     "head": "de + feminine or vowel",
+     "reading": "de France · d'Iran",
+     "gloss": "no article",
+     "group": "from",
+     "tag": "DE",
+     "example": "Ce vin vient d'Italie.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.du",
+     "head": "du + masculine country",
+     "reading": "du Japon",
+     "gloss": "le → du",
+     "group": "from",
+     "tag": "DU",
+     "example": "Il rentre du Canada.",
+     "point": "place-prepositions"
+    },
+    {
+     "id": "fr.places.des",
+     "head": "des + plural country",
+     "reading": "des États-Unis",
+     "gloss": "les → des",
+     "group": "from",
+     "tag": "DES",
+     "example": "Elle revient des Pays-Bas.",
+     "point": "place-prepositions"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.articles",
+   "name": "Articles",
+   "sub": "du pain · de l'eau · pas de sucre",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.articles.du",
+     "head": "du",
+     "reading": "du pain",
+     "gloss": "some, masculine",
+     "example": "Je voudrais du pain.",
+     "point": "partitive"
+    },
+    {
+     "id": "fr.articles.de-la",
+     "head": "de la",
+     "reading": "de la soupe",
+     "gloss": "some, feminine",
+     "example": "Il faut de la patience.",
+     "point": "partitive"
+    },
+    {
+     "id": "fr.articles.de-l",
+     "head": "de l'",
+     "reading": "de l'eau",
+     "gloss": "some, before a vowel",
+     "example": "Je bois de l'eau.",
+     "point": "partitive"
+    },
+    {
+     "id": "fr.articles.des",
+     "head": "des",
+     "reading": "des pommes",
+     "gloss": "some, plural",
+     "example": "J'ai des amis à Lyon.",
+     "point": "partitive"
+    },
+    {
+     "id": "fr.articles.pas-de",
+     "head": "pas de",
+     "reading": "pas de sucre",
+     "gloss": "after a negation",
+     "example": "Je n'ai pas d'enfants.",
+     "point": "pas-de"
+    },
+    {
+     "id": "fr.articles.quantity",
+     "head": "beaucoup de",
+     "reading": "un kilo de tomates",
+     "gloss": "after a quantity",
+     "example": "Il y a trop de bruit.",
+     "point": "quantity-de"
+    },
+    {
+     "id": "fr.articles.generic",
+     "head": "le, la, les in general",
+     "reading": "j'aime le chocolat",
+     "gloss": "aimer, adorer, détester, préférer",
+     "example": "Il déteste les légumes.",
+     "point": "definite-generic"
+    },
+    {
+     "id": "fr.articles.contractions",
+     "head": "au, aux, du",
+     "reading": "au marché",
+     "gloss": "à le → au, de le → du",
+     "example": "C'est la voiture du voisin.",
+     "point": "contractions"
+    },
+    {
+     "id": "fr.articles.faire",
+     "head": "faire du, de la",
+     "reading": "faire du yoga",
+     "gloss": "activities",
+     "example": "Tu fais de la natation ?",
+     "point": "faire-activities"
+    },
+    {
+     "id": "fr.articles.jouer",
+     "head": "jouer au, jouer du",
+     "reading": "jouer au foot · du piano",
+     "gloss": "sport · instrument",
+     "example": "Il joue du piano.",
+     "point": "jouer-a-de"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.past",
+   "name": "Imparfait or passé composé",
+   "sub": "il pleuvait · j'ai vu · je dormais quand…",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.past.description",
+     "head": "setting the scene",
+     "reading": "il faisait froid",
+     "gloss": "imparfait",
+     "example": "La maison était grande.",
+     "point": "imparfait-description"
+    },
+    {
+     "id": "fr.past.state",
+     "head": "feelings, age, states",
+     "reading": "j'avais faim",
+     "gloss": "imparfait",
+     "example": "Il était fatigué.",
+     "point": "imparfait-description"
+    },
+    {
+     "id": "fr.past.habit",
+     "head": "what used to happen",
+     "reading": "je jouais tous les samedis",
+     "gloss": "imparfait",
+     "example": "Avant, il fumait.",
+     "point": "imparfait-description"
+    },
+    {
+     "id": "fr.past.ongoing",
+     "head": "was doing when…",
+     "reading": "je dormais quand…",
+     "gloss": "imparfait",
+     "example": "Je dormais quand tu as appelé.",
+     "point": "pc-imparfait"
+    },
+    {
+     "id": "fr.past.event",
+     "head": "one finished event",
+     "reading": "j'ai rencontré Paul",
+     "gloss": "passé composé",
+     "example": "Hier, j'ai raté le bus.",
+     "point": "pc-imparfait"
+    },
+    {
+     "id": "fr.past.interruption",
+     "head": "what cut in",
+     "reading": "…quand le téléphone a sonné",
+     "gloss": "passé composé",
+     "example": "Il marchait quand il est tombé.",
+     "point": "pc-imparfait"
+    },
+    {
+     "id": "fr.past.sequence",
+     "head": "one thing after another",
+     "reading": "il s'est levé, il est parti",
+     "gloss": "passé composé",
+     "example": "Elle est arrivée et elle s'est assise.",
+     "point": "pc-imparfait"
+    },
+    {
+     "id": "fr.past.duration",
+     "head": "a closed length of time",
+     "reading": "j'ai habité deux ans à Berlin",
+     "gloss": "passé composé",
+     "example": "Nous avons travaillé ensemble de 2015 à 2020.",
+     "point": "pc-imparfait"
+    },
+    {
+     "id": "fr.past.sudden",
+     "head": "soudain, tout à coup",
+     "reading": "tout à coup, on a entendu…",
+     "gloss": "passé composé",
+     "example": "Soudain, la lumière s'est éteinte.",
+     "point": "pc-imparfait"
+    }
+   ],
+   "formats": [
+    "flip",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.relatives",
+   "name": "Relative pronouns",
+   "sub": "qui · que · dont · où",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.relatives.qui",
+     "head": "qui",
+     "reading": "l'homme qui parle",
+     "gloss": "subject",
+     "example": "J'ai un ami qui parle cinq langues.",
+     "point": "relative-qui-que"
+    },
+    {
+     "id": "fr.relatives.que",
+     "head": "que",
+     "reading": "le film que j'ai vu",
+     "gloss": "object",
+     "example": "La femme que tu as vue.",
+     "point": "relative-qui-que"
+    },
+    {
+     "id": "fr.relatives.ou",
+     "head": "où",
+     "reading": "la ville où je suis né",
+     "gloss": "place",
+     "example": "Le café où on se retrouve.",
+     "point": "relative-qui-que"
+    },
+    {
+     "id": "fr.relatives.ou-time",
+     "head": "où (time)",
+     "reading": "le jour où on s'est rencontrés",
+     "gloss": "moment",
+     "example": "L'année où il est né.",
+     "point": "relative-ou-time"
+    },
+    {
+     "id": "fr.relatives.dont",
+     "head": "dont",
+     "reading": "le livre dont je parle",
+     "gloss": "replaces de",
+     "example": "L'outil dont j'ai besoin.",
+     "point": "dont"
+    },
+    {
+     "id": "fr.relatives.lequel",
+     "head": "lequel, laquelle",
+     "reading": "le stylo avec lequel j'écris",
+     "gloss": "after a preposition, things",
+     "example": "La raison pour laquelle il est parti.",
+     "point": "relative-composed"
+    },
+    {
+     "id": "fr.relatives.auquel",
+     "head": "auquel, à laquelle",
+     "reading": "le concert auquel j'ai assisté",
+     "gloss": "à + lequel",
+     "example": "La réunion à laquelle j'ai participé.",
+     "point": "relative-composed"
+    },
+    {
+     "id": "fr.relatives.ce-qui",
+     "head": "ce qui · ce que · ce dont",
+     "reading": "ce qui me plaît",
+     "gloss": "no noun before",
+     "example": "Ce que je préfère, c'est le soir.",
+     "point": "ce-qui-ce-que-clefting"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.subjunctive",
+   "name": "Subjunctive",
+   "sub": "il faut que tu sois · bien qu'il pleuve · je pense que c'est",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.subjunctive.il-faut",
+     "head": "il faut que",
+     "reading": "il faut que tu viennes",
+     "gloss": "subjonctif",
+     "example": "Il faut que je parte.",
+     "point": "subjunctive"
+    },
+    {
+     "id": "fr.subjunctive.vouloir",
+     "head": "vouloir que",
+     "reading": "je veux que tu saches",
+     "gloss": "subjonctif · same subject → infinitive",
+     "example": "Je veux que tu viennes.",
+     "point": "subjunctive"
+    },
+    {
+     "id": "fr.subjunctive.il-est",
+     "head": "il est important que",
+     "reading": "il est nécessaire que…",
+     "gloss": "subjonctif",
+     "example": "Il est important que vous lisiez ça.",
+     "point": "subjunctive"
+    },
+    {
+     "id": "fr.subjunctive.emotion",
+     "head": "content que, peur que",
+     "reading": "je suis content que tu sois là",
+     "gloss": "subjonctif",
+     "example": "J'ai peur qu'il soit en retard.",
+     "point": "subjunctive-emotion"
+    },
+    {
+     "id": "fr.subjunctive.doubt",
+     "head": "douter que, ne pas penser que",
+     "reading": "je doute qu'il puisse",
+     "gloss": "subjonctif",
+     "example": "Je ne pense pas qu'il ait raison.",
+     "point": "subjunctive-doubt"
+    },
+    {
+     "id": "fr.subjunctive.pour-que",
+     "head": "pour que",
+     "reading": "pour que tu comprennes",
+     "gloss": "subjonctif",
+     "example": "Je répète pour que tu comprennes.",
+     "point": "pour-que-subjunctive"
+    },
+    {
+     "id": "fr.subjunctive.bien-que",
+     "head": "bien que",
+     "reading": "bien qu'il fasse froid",
+     "gloss": "subjonctif",
+     "example": "Bien qu'il pleuve, on sort.",
+     "point": "subjunctive-concession"
+    },
+    {
+     "id": "fr.subjunctive.avant-que",
+     "head": "avant que, jusqu'à ce que, sans que",
+     "reading": "avant qu'il fasse nuit",
+     "gloss": "subjonctif",
+     "example": "Attends jusqu'à ce que je revienne.",
+     "point": "subjunctive-conjunctions"
+    },
+    {
+     "id": "fr.subjunctive.penser",
+     "head": "penser que, croire que, être sûr que",
+     "reading": "je pense qu'il a raison",
+     "gloss": "indicatif",
+     "example": "Je crois qu'elle est malade.",
+     "point": "subjunctive-doubt"
+    },
+    {
+     "id": "fr.subjunctive.esperer",
+     "head": "espérer que",
+     "reading": "j'espère que tu vas bien",
+     "gloss": "indicatif",
+     "example": "J'espère qu'il fera beau.",
+     "point": "subjunctive"
+    }
+   ],
+   "formats": [
+    "flip",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.liaison",
+   "name": "Liaison",
+   "sub": "les‿amis · ils‿ont · et | elle",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.liaison.det",
+     "head": "article + noun",
+     "reading": "les‿enfants",
+     "gloss": "obligatoire",
+     "example": "mes‿amis, un‿oiseau",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.pronoun",
+     "head": "pronoun + verb",
+     "reading": "ils‿ont",
+     "gloss": "obligatoire",
+     "example": "nous‿avons, on‿arrive",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.adjective",
+     "head": "adjective + noun",
+     "reading": "petit‿ami",
+     "gloss": "obligatoire",
+     "example": "un grand‿homme",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.preposition",
+     "head": "short word after",
+     "reading": "chez‿eux",
+     "gloss": "obligatoire",
+     "example": "dans‿un, en‿avance",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.fixed",
+     "head": "fixed phrases",
+     "reading": "tout‿à fait",
+     "gloss": "obligatoire",
+     "example": "de temps‿en temps, quand‿il",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.et",
+     "head": "after et",
+     "reading": "et | elle",
+     "gloss": "interdite",
+     "example": "Paul et | Anne",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.h",
+     "head": "before h aspiré",
+     "reading": "les | héros",
+     "gloss": "interdite",
+     "example": "les | haricots, un | hamster",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.noun",
+     "head": "after a singular noun",
+     "reading": "un étudiant | anglais",
+     "gloss": "interdite",
+     "example": "Le train | arrive.",
+     "point": "liaison"
+    },
+    {
+     "id": "fr.liaison.onze",
+     "head": "before onze",
+     "reading": "les | onze",
+     "gloss": "interdite",
+     "example": "les | onze joueurs",
+     "point": "liaison"
+    }
+   ],
+   "formats": [
+    "flip"
+   ]
+  },
+  {
+   "id": "fr.time",
+   "name": "Time words",
+   "sub": "depuis 2020 · il y a deux ans · dans une heure",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.time.depuis",
+     "head": "depuis",
+     "reading": "j'habite ici depuis 2020",
+     "gloss": "since, for · with the present",
+     "example": "Il travaille ici depuis 2018.",
+     "point": "depuis-present"
+    },
+    {
+     "id": "fr.time.ca-fait",
+     "head": "ça fait … que",
+     "reading": "ça fait deux ans que…",
+     "gloss": "for · with the present",
+     "example": "Ça fait une heure que je t'attends.",
+     "point": "depuis-present"
+    },
+    {
+     "id": "fr.time.il-y-a",
+     "head": "il y a",
+     "reading": "il y a trois ans",
+     "gloss": "ago",
+     "example": "On s'est rencontrés il y a dix ans.",
+     "point": "time-markers"
+    },
+    {
+     "id": "fr.time.pendant",
+     "head": "pendant",
+     "reading": "pendant deux ans",
+     "gloss": "for, closed",
+     "example": "Il a plu pendant tout le week-end.",
+     "point": "time-markers"
+    },
+    {
+     "id": "fr.time.dans",
+     "head": "dans",
+     "reading": "dans dix minutes",
+     "gloss": "in, from now",
+     "example": "Le film commence dans un quart d'heure.",
+     "point": "time-markers"
+    },
+    {
+     "id": "fr.time.en",
+     "head": "en",
+     "reading": "en deux heures",
+     "gloss": "time it takes",
+     "example": "J'ai lu ce livre en deux jours.",
+     "point": "time-markers"
+    },
+    {
+     "id": "fr.time.pour",
+     "head": "pour",
+     "reading": "pour une semaine",
+     "gloss": "planned length",
+     "example": "Je pars pour une semaine.",
+     "point": "time-markers"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  },
+  {
+   "id": "fr.cest",
+   "name": "C'est or il est",
+   "sub": "c'est un médecin · il est médecin · c'est facile",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "fr.cest.cest-noun",
+     "head": "c'est + un, le, mon…",
+     "reading": "c'est un bon médecin",
+     "gloss": "noun with a determiner",
+     "example": "C'est ma prof.",
+     "point": "c-est-il-est"
+    },
+    {
+     "id": "fr.cest.il-job",
+     "head": "il est + job, nationality",
+     "reading": "il est médecin",
+     "gloss": "no article",
+     "example": "Elle est infirmière.",
+     "point": "c-est-il-est"
+    },
+    {
+     "id": "fr.cest.il-adj",
+     "head": "il est + adjective, person",
+     "reading": "il est sympa",
+     "gloss": "about someone",
+     "example": "Ta sœur ? Elle est grande.",
+     "point": "c-est-il-est"
+    },
+    {
+     "id": "fr.cest.cest-adj",
+     "head": "c'est + adjective, general",
+     "reading": "c'est facile",
+     "gloss": "about an idea or situation",
+     "example": "Voyager seul, c'est génial.",
+     "point": "c-est-il-est"
+    },
+    {
+     "id": "fr.cest.cest-name",
+     "head": "c'est + name, pronoun",
+     "reading": "c'est Julie · c'est moi",
+     "gloss": "who it is",
+     "example": "Allô ? C'est Marc.",
+     "point": "c-est-il-est"
+    },
+    {
+     "id": "fr.cest.il-heure",
+     "head": "il est + time",
+     "reading": "il est huit heures",
+     "gloss": "the clock",
+     "example": "Il est huit heures.",
+     "point": "c-est-il-est"
+    }
+   ],
+   "formats": [
+    "flip"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "id": "fr.drill.speed",
+   "name": "SPEED"
+  },
+  {
+   "id": "fr.drill.etre-avoir",
+   "name": "ÊTRE / AVOIR",
+   "chapters": [
+    "fr.etre-avoir"
+   ]
+  },
+  {
+   "id": "fr.drill.agreement",
+   "name": "AGREEMENT",
+   "chapters": [
+    "fr.agreement"
+   ]
+  },
+  {
+   "id": "fr.drill.le-la",
+   "name": "LE / LA",
+   "chapters": [
+    "fr.gender"
+   ]
+  }
+ ]
+}
