@@ -339,6 +339,71 @@
     ]
   },
   {
+    "id": "yinwei-suoyi",
+    "name": "因为…所以… for cause and effect",
+    "level": 1,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A reason and what came of it, both said out loud.",
+    "examples": [
+      "因为下雨，所以我们没出门",
+      "因为他病了，所以今天不来"
+    ]
+  },
+  {
+    "id": "danshi-keshi",
+    "name": "但是 and 可是 for but",
+    "level": 1,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A second clause that goes against what the first set up.",
+    "examples": [
+      "菜很好吃，但是太贵了",
+      "我想去，可是没时间"
+    ]
+  },
+  {
+    "id": "he-nouns-only",
+    "name": "和 joins nouns, not clauses",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two things or people linked by and — never two actions or sentences.",
+    "examples": [
+      "我和妹妹都喜欢猫",
+      "他买了苹果和香蕉"
+    ]
+  },
+  {
+    "id": "tai-le",
+    "name": "太…了 for too much, or very",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something past what is wanted, or simply striking.",
+    "examples": [
+      "这件衣服太大了",
+      "你来了，太好了"
+    ]
+  },
+  {
+    "id": "ba-guess",
+    "name": "吧 for a guess you want confirmed",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Fairly sure, asking only to be told yes.",
+    "examples": [
+      "你是新来的老师吧？",
+      "他已经走了吧"
+    ]
+  },
+  {
     "id": "guo-experience",
     "name": "过 for experience",
     "level": 2,
@@ -726,6 +791,123 @@
       "你好",
       "很好",
       "水果"
+    ]
+  },
+  {
+    "id": "huozhe-statement",
+    "name": "或者 for or in a statement",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Either option will do, said rather than asked — 还是 is for the question.",
+    "examples": [
+      "周六或者周日都可以",
+      "你可以坐地铁或者打车"
+    ]
+  },
+  {
+    "id": "youdian-yidian",
+    "name": "有点儿 against 一点儿",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A little too much of something unwelcome, against a little more or less by comparison.",
+    "examples": [
+      "今天有点儿冷",
+      "请说慢一点儿"
+    ]
+  },
+  {
+    "id": "haimei-ne",
+    "name": "还没…呢 for not yet",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something expected that has not happened so far.",
+    "examples": [
+      "我还没吃饭呢",
+      "电影还没开始呢"
+    ]
+  },
+  {
+    "id": "wang-direction",
+    "name": "往 + direction before the verb",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Heading somewhere, with the direction ahead of the movement.",
+    "examples": [
+      "一直往前走",
+      "到路口往左拐"
+    ]
+  },
+  {
+    "id": "li-distance",
+    "name": "离 for how far from",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Distance or time measured from a point — not 从.",
+    "examples": [
+      "我家离公司很近",
+      "离考试还有三天"
+    ]
+  },
+  {
+    "id": "dui-attitude",
+    "name": "对 + person for how someone treats them",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Kindness, interest or attitude aimed at someone.",
+    "examples": [
+      "她对我很好",
+      "他对音乐很感兴趣"
+    ]
+  },
+  {
+    "id": "dao-place-qu",
+    "name": "到 + place + 去 or 来",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going to a place, with the destination between 到 and the direction.",
+    "examples": [
+      "我们到公园去吧",
+      "你明天到我家来"
+    ]
+  },
+  {
+    "id": "zheme-name",
+    "name": "这么 and 那么 before an adjective",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "So much of a quality — near and present, against distant or imagined.",
+    "examples": [
+      "今天怎么这么热",
+      "没有你说的那么难"
+    ]
+  },
+  {
+    "id": "bi-hai-geng",
+    "name": "比…还 or 更… for even more",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Beyond what was already a lot — never 很 inside a 比 comparison.",
+    "examples": [
+      "他比我还高",
+      "今天比昨天更冷"
     ]
   },
   {
@@ -1125,6 +1307,58 @@
       "一点儿",
       "在哪儿",
       "我们出去玩儿吧"
+    ]
+  },
+  {
+    "id": "deng-zai",
+    "name": "等…再… for not until",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Holding off on one thing until another is done.",
+    "examples": [
+      "等你回来我们再吃饭",
+      "等雨停了再走吧"
+    ]
+  },
+  {
+    "id": "conglai-bu-mei",
+    "name": "从来不 against 从来没",
+    "level": 3,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Never as a habit or a choice, against never once having happened.",
+    "examples": [
+      "我从来不喝咖啡",
+      "我从来没去过上海"
+    ]
+  },
+  {
+    "id": "yidian-ye-bu",
+    "name": "一点儿也不 or 都不 for not at all",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A flat denial of any amount.",
+    "examples": [
+      "这个菜一点儿也不辣",
+      "我一点儿都不累"
+    ]
+  },
+  {
+    "id": "you-noun-adj",
+    "name": "有 + noun as a description",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Having a quality said as having the noun, graded with 很 or 没.",
+    "examples": [
+      "这本书很有意思",
+      "你说得有道理"
     ]
   },
   {
@@ -1543,6 +1777,58 @@
     ]
   },
   {
+    "id": "zai-xia",
+    "name": "在…下 for under what conditions",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The help, pressure or circumstances that made something possible.",
+    "examples": [
+      "在老师的帮助下，他进步很快",
+      "在这种情况下，只能等"
+    ]
+  },
+  {
+    "id": "daodi-question",
+    "name": "到底 for pressing a question",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Asking again, impatient for a real answer.",
+    "examples": [
+      "你到底去不去？",
+      "这到底是怎么回事？"
+    ]
+  },
+  {
+    "id": "nar-rhetorical",
+    "name": "哪儿 in a rhetorical question",
+    "level": 4,
+    "kind": "comprehension",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question that means the opposite: how could that be.",
+    "examples": [
+      "我哪儿知道他会来？",
+      "这哪儿是小事？"
+    ]
+  },
+  {
+    "id": "yi-m-yi-m",
+    "name": "一 + measure word, twice, for one by one",
+    "level": 4,
+    "kind": "measure-word",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going through things singly, in turn.",
+    "examples": [
+      "把问题一个一个地解决",
+      "一步一步来"
+    ]
+  },
+  {
     "id": "yidan-jiu",
     "name": "一旦…就…",
     "level": 5,
@@ -1937,6 +2223,32 @@
       "一朵花",
       "一颗星星",
       "一支笔"
+    ]
+  },
+  {
+    "id": "nanguai",
+    "name": "难怪 for no wonder",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something odd now explained by what was just learned.",
+    "examples": [
+      "难怪他今天没来，原来病了",
+      "下雪了，难怪这么冷"
+    ]
+  },
+  {
+    "id": "biqi",
+    "name": "比起… for compared with",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The thing measured against, set at the front of the sentence.",
+    "examples": [
+      "比起坐车，我更喜欢走路",
+      "比起去年，今年好多了"
     ]
   },
   {
