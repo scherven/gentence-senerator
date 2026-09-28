@@ -56,20 +56,13 @@ struct PassageScreen: View {
     @ViewBuilder
     private func gist(_ passage: Passage, _ run: PassageRun) -> some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: "Listen once")
-                Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(passage.title).font(Theme.F.target)
-                        Text(heard(passage, run))
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                    }
+            Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(passage.title).font(Theme.F.target)
+                    Text(heard(passage, run))
+                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                 }
             }
-            Text(run.played
-                 ? "Questions next."
-                 : "\(passage.quiz.count) questions after. One replay.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
 
             MainButton(title: run.played ? "Play again" : "Play",
                        enabled: !run.played || run.canReplay) { store.playGist() }
@@ -80,9 +73,9 @@ struct PassageScreen: View {
     private func heard(_ passage: Passage, _ run: PassageRun) -> String {
         let length = "\(Int(passage.length.rounded()))s"
         let voices = "\(passage.speakers.count) speakers"
-        guard run.played else { return "\(length) · \(voices) · no text" }
+        guard run.played else { return "\(length) · \(voices)" }
         let left = PassageRun.replayLimit - run.replays
-        return "\(length) · played · \(left) replay\(left == 1 ? "" : "s") left"
+        return "\(length) · \(left) replay\(left == 1 ? "" : "s") left"
     }
 
     // MARK: Quiz
@@ -110,13 +103,11 @@ struct PassageScreen: View {
                    let line = passage.line(from) {
                     Panel {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("That's from line \(from).")
+                            Text("Line \(from)")
                                 .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                             Text(line.text).font(Theme.F.targetSmall)
                         }
                     }
-                } else {
-                    Panel { Text("Right.").font(Theme.F.meta).foregroundStyle(Theme.C.good) }
                 }
                 MainButton(title: run.quizAt + 1 < passage.quiz.count
                            ? "Next question" : "Repair") { store.advanceQuiz() }
@@ -216,7 +207,6 @@ struct PassageScreen: View {
         let outcome = run.outcome(of: passage)
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: "Listening · day done")
                 Panel(fill: Theme.C.sunk) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(tally.first) of \(tally.asked)").font(Theme.F.number)
@@ -233,7 +223,6 @@ struct PassageScreen: View {
 
             if let review = store.current?.review, !review.problems.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "What you missed")
                     ForEach(review.problems) { atom in
                         Button { store.open(atom) } label: {
                             HStack(alignment: .top, spacing: 10) {

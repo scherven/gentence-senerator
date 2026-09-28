@@ -11,28 +11,23 @@ struct DayScreen: View {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 GradingPanel(store: store)
                 tally
-                section("To fix", store.todayFindings.filter(\.isProblem),
-                        empty: "Nothing to fix today.")
-                section("Got right", store.todayFindings.filter { !$0.isProblem },
-                        empty: nil)
+                section("To fix", store.todayFindings.filter(\.isProblem))
+                section("Got right", store.todayFindings.filter { !$0.isProblem })
             }
             .padding(Theme.M.gap)
         }
     }
 
     private var tally: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Day done")
-            Panel(fill: Theme.C.sunk) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(store.todayTally.attempts) attempts · average \(store.todayTally.average)")
-                        .font(Theme.F.body)
-                    Text(Mode.allCases
-                        .map { "\($0.name) \(store.tally($0).done)" }
-                        .joined(separator: " · "))
-                        .font(Theme.F.meta)
-                        .foregroundStyle(Theme.C.ink2)
-                }
+        Panel(fill: Theme.C.sunk) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(store.todayTally.attempts) attempts · average \(store.todayTally.average)")
+                    .font(Theme.F.body)
+                Text(Mode.allCases
+                    .map { "\($0.name) \(store.tally($0).done)" }
+                    .joined(separator: " · "))
+                    .font(Theme.F.meta)
+                    .foregroundStyle(Theme.C.ink2)
             }
         }
     }
@@ -40,16 +35,10 @@ struct DayScreen: View {
     /// Both halves render the same row: what held is worth keeping and worth
     /// seeing again just as much as what broke.
     @ViewBuilder
-    private func section(_ title: String, _ rows: [DayFinding],
-                         empty: String?) -> some View {
-        if !rows.isEmpty || empty != nil {
+    private func section(_ title: String, _ rows: [DayFinding]) -> some View {
+        if !rows.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 ModuleLabel(text: title)
-                if rows.isEmpty, let empty {
-                    Text(empty)
-                        .font(Theme.F.note)
-                        .foregroundStyle(Theme.C.ink3)
-                }
                 ForEach(rows) { finding in
                     DayFindingRow(
                         finding: finding,

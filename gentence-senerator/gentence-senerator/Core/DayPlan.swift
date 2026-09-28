@@ -14,12 +14,12 @@ struct DayPlan: Hashable {
         case structure, words, new, back
         var id: String { rawValue }
 
-        var label: String {
+        /// Nil where the items name themselves.
+        var label: String? {
             switch self {
-            case .structure: return "Structure"
-            case .words:     return "Known words"
-            case .new:       return "New"
-            case .back:      return "Back"
+            case .structure, .words: return nil
+            case .new:               return "New"
+            case .back:              return "Back"
             }
         }
     }

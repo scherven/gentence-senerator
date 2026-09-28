@@ -1289,8 +1289,8 @@ final class Store {
         switch job.state {
         case .unsent:
             if sendingNow.contains(job.id) { return "Sending…" }
-            if !online { return "Offline. Sends when online." }
-            return job.uploading ? "Sending…" : "Not sent. Will retry."
+            if !online { return "Offline" }
+            return job.uploading ? "Sending…" : "Not sent"
         case .grading:
             return "\(job.graded) of \(job.total) graded"
         case .done:

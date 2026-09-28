@@ -32,10 +32,10 @@ struct ReviewScreen: View {
                 if let review {
                     findings(review)
                     if let natural = review.natural {
-                        sentence(natural, label: "What a speaker would say", edge: Theme.C.accent)
+                        sentence(natural, label: "Natural", edge: Theme.C.accent)
                     }
                     if !review.respeaks.isEmpty {
-                        respeak(review.respeaks)
+                        RespeakView(items: review.respeaks)
                     }
                 }
 
@@ -135,7 +135,7 @@ struct ReviewScreen: View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             if !review.problems.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: label(for: review.problems.count))
+                    ModuleLabel(text: "\(review.problems.count) to fix")
                     VStack(spacing: 0) {
                         ForEach(review.problems) { atom in
                             StagedAtomRow(
@@ -151,7 +151,7 @@ struct ReviewScreen: View {
             }
             if !review.kept.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "What you got right")
+                    ModuleLabel(text: "Got right")
                     VStack(spacing: 0) {
                         ForEach(review.kept) { atom in
                             AtomRow(link: atom.link, tint: Theme.C.good) { onOpenAtom(atom) }
@@ -162,24 +162,12 @@ struct ReviewScreen: View {
         }
     }
 
-    private func label(for count: Int) -> String {
-        switch count {
-        case 0:  return "Nothing to fix"
-        case 1:  return "1 to fix"
-        default: return "\(count) to fix"
-        }
-    }
-
     /// The weakest sounds, worst first, each openable. Names are absent outside
     /// English and Mandarin, so a unit falls back to the word it sat in.
     private func pronunciation(_ result: PronunciationResult) -> some View {
         let weak = result.units.filter { $0.score < 70 }.sorted { $0.score < $1.score }.prefix(4)
         return VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Sounds · \(result.overall)")
-            if weak.isEmpty {
-                Text("No weak sounds.")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-            }
             VStack(spacing: 0) {
                 ForEach(Array(weak)) { unit in
                     Button {
@@ -232,13 +220,6 @@ struct ReviewScreen: View {
                     Rectangle().fill(edge).frame(width: Theme.M.edge)
                 }
                 .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-        }
-    }
-
-    private func respeak(_ items: [Respeak]) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Say it differently")
-            RespeakView(items: items)
         }
     }
 

@@ -73,15 +73,6 @@ struct Rung: Identifiable, Codable, Hashable {
         case transform  // change a given sentence
         case frame      // fill the gap
         case choice     // pick between two
-
-        var label: String {
-            switch self {
-            case .free:      return "No support"
-            case .transform: return "Change one thing"
-            case .frame:     return "With a frame"
-            case .choice:    return "Pick one"
-            }
-        }
     }
 
     let id: String

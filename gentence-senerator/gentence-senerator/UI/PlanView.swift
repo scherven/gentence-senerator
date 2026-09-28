@@ -19,7 +19,6 @@ struct PlanView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: "Today")
                 ForEach(plan.rows) { row in SlotRow(row: row) }
             }
             if !plan.bands.isEmpty { record }
@@ -27,28 +26,25 @@ struct PlanView: View {
     }
 
     private var record: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Grammar")
-            Panel {
-                VStack(alignment: .leading, spacing: Theme.M.pad) {
-                    ForEach(plan.bands) { band in
-                        VStack(alignment: .leading, spacing: 5) {
-                            HStack {
-                                Text(band.name.uppercased())
-                                    .font(Theme.F.label).tracking(1.1)
-                                Spacer()
-                                Text("\(band.held) of \(band.cells.count)")
-                                    .font(Theme.F.label)
-                            }
-                            .foregroundStyle(Theme.C.ink3)
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 14), spacing: 3)],
-                                      alignment: .leading, spacing: 3) {
-                                ForEach(band.cells) { CellView(cell: $0) }
-                            }
+        Panel {
+            VStack(alignment: .leading, spacing: Theme.M.pad) {
+                ForEach(plan.bands) { band in
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack {
+                            Text(band.name.uppercased())
+                                .font(Theme.F.label).tracking(1.1)
+                            Spacer()
+                            Text("\(band.held) of \(band.cells.count)")
+                                .font(Theme.F.label)
+                        }
+                        .foregroundStyle(Theme.C.ink3)
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 14), spacing: 3)],
+                                  alignment: .leading, spacing: 3) {
+                            ForEach(band.cells) { CellView(cell: $0) }
                         }
                     }
-                    legend
                 }
+                legend
             }
         }
     }
@@ -80,29 +76,33 @@ private struct SlotRow: View {
     let row: DayPlan.Row
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(row.slot.label.uppercased())
-                    .font(Theme.F.label).tracking(1.1)
-                    .foregroundStyle(Theme.C.ink3)
-                Spacer()
-                Text("\(row.items.count)")
-                    .font(Theme.F.label)
-                    .foregroundStyle(row.items.isEmpty ? Theme.C.ink3 : Theme.C.accent)
+        if row.slot.label != nil || !row.items.isEmpty {
+            VStack(alignment: .leading, spacing: 3) {
+                if let label = row.slot.label {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(label.uppercased())
+                            .font(Theme.F.label).tracking(1.1)
+                            .foregroundStyle(Theme.C.ink3)
+                        Spacer()
+                        Text("\(row.items.count)")
+                            .font(Theme.F.label)
+                            .foregroundStyle(row.items.isEmpty ? Theme.C.ink3 : Theme.C.accent)
+                    }
+                }
+                if row.items.isEmpty {
+                    Text("—").font(Theme.F.body).foregroundStyle(Theme.C.ink3)
+                } else {
+                    Text(row.items.joined(separator: "  ·  "))
+                        .font(isTarget ? Theme.F.targetSmall : Theme.F.body)
+                        .foregroundStyle(Theme.C.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
-            if row.items.isEmpty {
-                Text("—").font(Theme.F.body).foregroundStyle(Theme.C.ink3)
-            } else {
-                Text(row.items.joined(separator: "  ·  "))
-                    .font(isTarget ? Theme.F.targetSmall : Theme.F.body)
-                    .foregroundStyle(Theme.C.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.M.padTight)
+            .background(Theme.C.surface)
+            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(Theme.M.padTight)
-        .background(Theme.C.surface)
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
     }
 
     /// Two of the rows hold words in the language being learned, and a learner

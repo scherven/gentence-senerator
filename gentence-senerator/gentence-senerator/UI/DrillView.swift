@@ -77,17 +77,11 @@ struct DrillView: View {
     }
 
     private var support: some View {
-        HStack(spacing: 7) {
-            Text(rung.support.label.uppercased())
-                .font(Theme.F.label)
-                .tracking(1.1)
-                .foregroundStyle(Theme.C.ink3)
-            HStack(spacing: 3) {
-                ForEach(Array(drill.rungs.enumerated()), id: \.offset) { index, _ in
-                    Rectangle()
-                        .fill(index <= rungIndex ? Theme.C.accent : Theme.C.seam2)
-                        .frame(width: 13, height: 3)
-                }
+        HStack(spacing: 3) {
+            ForEach(Array(drill.rungs.enumerated()), id: \.offset) { index, _ in
+                Rectangle()
+                    .fill(index <= rungIndex ? Theme.C.accent : Theme.C.seam2)
+                    .frame(width: 13, height: 3)
             }
         }
     }

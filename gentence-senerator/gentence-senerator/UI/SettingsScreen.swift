@@ -30,32 +30,28 @@ struct SettingsScreen: View {
     }
 
     private var language: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Language")
-            VStack(spacing: 0) {
-                ForEach(Language.allCases) { candidate in
-                    Button { store.switchLanguage(candidate) } label: {
-                        HStack {
-                            Text("\(candidate.flag)  \(candidate.name)")
-                                .font(Theme.F.body)
-                            Spacer()
-                            if candidate == store.settings.language {
-                                Text("ON").font(Theme.F.label).foregroundStyle(Theme.C.accent)
-                            }
+        VStack(spacing: 0) {
+            ForEach(Language.allCases) { candidate in
+                Button { store.switchLanguage(candidate) } label: {
+                    HStack {
+                        Text("\(candidate.flag)  \(candidate.name)")
+                            .font(Theme.F.body)
+                        Spacer()
+                        if candidate == store.settings.language {
+                            Text("ON").font(Theme.F.label).foregroundStyle(Theme.C.accent)
                         }
-                        .padding(Theme.M.pad)
-                        .background(candidate == store.settings.language ? Theme.C.sunk : Theme.C.surface)
-                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                     }
-                    .buttonStyle(.plain)
+                    .padding(Theme.M.pad)
+                    .background(candidate == store.settings.language ? Theme.C.sunk : Theme.C.surface)
+                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 }
+                .buttonStyle(.plain)
             }
         }
     }
 
     private var level: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Level · \(store.pack.level(store.settings.level))")
             Stepper(value: Binding(get: { store.settings.level },
                                    set: { store.setLevel($0) }),
                     in: 1...store.pack.levels) {
@@ -77,37 +73,27 @@ struct SettingsScreen: View {
                     }
                 }
             }
-
-            Text("Below B1 or HSK 4, errors that keep the meaning count less.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
         }
     }
 
     private var session: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Session")
-            VStack(spacing: 0) {
-                row {
-                    Stepper(value: Binding(get: { store.settings.dailyGoal },
-                                           set: { store.setGoal($0) }),
-                            in: 1...10) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(store.settings.dailyGoal) of each mode a day")
-                                .font(Theme.F.body)
-                            Text("The day ends when all three are done.")
-                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                        }
-                    }
+        VStack(spacing: 0) {
+            row {
+                Stepper(value: Binding(get: { store.settings.dailyGoal },
+                                       set: { store.setGoal($0) }),
+                        in: 1...10) {
+                    Text("\(store.settings.dailyGoal) of each mode a day")
+                        .font(Theme.F.body)
                 }
-                row {
-                    Toggle(isOn: $store.settings.prefersTyping) {
-                        Text("Type instead of speaking").font(Theme.F.body)
-                    }
+            }
+            row {
+                Toggle(isOn: $store.settings.prefersTyping) {
+                    Text("Type instead of speaking").font(Theme.F.body)
                 }
-                row {
-                    Toggle(isOn: $store.settings.offerStretch) {
-                        Text("Suggest structures I haven't used").font(Theme.F.body)
-                    }
+            }
+            row {
+                Toggle(isOn: $store.settings.offerStretch) {
+                    Text("Suggest structures I haven't used").font(Theme.F.body)
                 }
             }
         }

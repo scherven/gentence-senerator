@@ -109,7 +109,7 @@ struct StagedAtomRow: View {
     private var opened: some View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
             if !atom.isDeep {
-                Text("No fix available.")
+                Text("No fix.")
                     .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
             } else {
                 Text(atom.stages.fix)
@@ -132,17 +132,6 @@ struct StagedAtomRow: View {
                     TinyButton(title: "New to me",
                                selected: knowledge == .gap) { onClassify(.gap) }
                     TinyButton(title: "Lesson", action: onOpen)
-                }
-
-                switch knowledge {
-                case .slip:
-                    Text("Slip. Comes back as a speed round.")
-                        .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                case .gap:
-                    Text("Gap. Back in a sentence within days.")
-                        .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                case .unclassified:
-                    EmptyView()
                 }
             }
         }

@@ -112,7 +112,6 @@ struct ModeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 GradingPanel(store: store)
-                ModuleLabel(text: "Practice · \(store.pack.level(store.settings.level))")
                 ForEach(Mode.allCases) { mode in
                     let tally = store.tally(mode)
                     let spent = store.isDone(mode)
@@ -128,8 +127,10 @@ struct ModeScreen: View {
                                         .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.accent)
                                 }
                             }
-                            Text(blurb(mode, spent: spent, started: tally.done > 0))
-                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                            if mode == .listen, !spent, let held = store.heldPassage {
+                                Text(held.passage.title)
+                                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(Theme.M.pad)
@@ -143,17 +144,6 @@ struct ModeScreen: View {
             }
             .padding(Theme.M.gap)
         }
-    }
-
-    private func blurb(_ mode: Mode, spent: Bool, started: Bool) -> String {
-        if spent { return "Done for today." }
-        if mode == .listen, let held = store.heldPassage {
-            return held.run.stage == .gist
-                ? "\(held.passage.title). One listen, then questions."
-                : "Resume \(held.passage.title)."
-        }
-        if started { return "In progress." }
-        return mode.blurb
     }
 
     private var attempt: some View {
@@ -176,14 +166,13 @@ struct ModeScreen: View {
 
                 if store.phase == .recording {
                     VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-                        ModuleLabel(text: "Listening")
                         Panel { Text(store.draft.isEmpty ? "…" : store.draft).font(Theme.F.target) }
                         MainButton(title: "Done") { store.stopRecording() }
                     }
                 } else if store.settings.prefersTyping || store.speechTrouble != nil {
                     VStack(alignment: .leading, spacing: Theme.M.gapTight) {
                         if let trouble = store.speechTrouble {
-                            Text(trouble + " Type it instead.")
+                            Text(trouble)
                                 .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                         }
                         TextField("Type it…", text: $typing, axis: .vertical)
@@ -212,38 +201,32 @@ struct ModeScreen: View {
     @ViewBuilder
     private var prompt: some View {
         if let turn = store.current {
-            VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: label(for: turn))
-                Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        if store.settings.mode == .translate {
-                            Text(turn.prompt.english ?? "").font(Theme.F.target)
-                        } else {
-                            if let target = turn.prompt.target {
-                                HStack(alignment: .firstTextBaseline, spacing: Theme.M.pad) {
-                                    if store.settings.mode == .listen {
-                                        Text("Play it, then write what you heard.")
-                                            .font(Theme.F.body)
-                                    } else {
-                                        Text(target).font(Theme.F.target)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
+            Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+                VStack(alignment: .leading, spacing: 6) {
+                    if store.settings.mode == .translate {
+                        Text(turn.prompt.english ?? "").font(Theme.F.target)
+                    } else {
+                        if let target = turn.prompt.target {
+                            HStack(alignment: .firstTextBaseline, spacing: Theme.M.pad) {
+                                if store.settings.mode != .listen {
+                                    Text(target).font(Theme.F.target)
+                                        .fixedSize(horizontal: false, vertical: true)
                                     Spacer()
-                                    TinyButton(title: "Hear") { store.say(target) }
                                 }
+                                TinyButton(title: "Hear") { store.say(target) }
                             }
-                            if let english = turn.prompt.english, turn.mode != .listen {
-                                if showGloss {
-                                    Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                                    TinyButton(title: "Hide translation") { showGloss = false }
-                                } else {
-                                    TinyButton(title: "Show translation") { showGloss = true }
-                                }
+                        }
+                        if let english = turn.prompt.english, turn.mode != .listen {
+                            if showGloss {
+                                Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                                TinyButton(title: "Hide translation") { showGloss = false }
+                            } else {
+                                TinyButton(title: "Show translation") { showGloss = true }
                             }
-                            if turn.mode == .listen {
-                                Text(store.hearingRealVoice ? "Human recording" : "Synthesised")
-                                    .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
-                            }
+                        }
+                        if turn.mode == .listen {
+                            Text(store.hearingRealVoice ? "Human recording" : "Synthesised")
+                                .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                         }
                     }
                 }
@@ -251,18 +234,8 @@ struct ModeScreen: View {
         }
     }
 
-    private func label(for turn: Turn) -> String {
-        switch turn.mode {
-        case .translate: return "Say this in \(store.settings.language.name)"
-        case .listen:    return "What was said?"
-        case .produce:   return "Answer this"
-        }
-    }
-
     private var confirm: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: store.current?.attempt.wasTyped == true
-                        ? "Ready?" : "Is this what you said?")
             TextField("", text: $store.draft, axis: .vertical)
                 .font(Theme.F.target)
                 .textFieldStyle(.plain)
@@ -271,10 +244,6 @@ struct ModeScreen: View {
                 .padding(Theme.M.pad)
                 .background(Theme.C.sunk)
                 .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-            if store.current?.attempt.wasTyped != true {
-                Text("Fix any recognition errors. Only this text is graded.")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-            }
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
             }
@@ -320,12 +289,11 @@ struct ModeScreen: View {
     private var reference: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             if let turn = store.current {
-                ModuleLabel(text: "Asked")
                 Text(turn.prompt.english ?? "").font(Theme.F.body)
                 ModuleLabel(text: "You said")
                 Text(turn.attempt.confirmed).font(Theme.F.target)
                 if let reference = turn.prompt.reference {
-                    ModuleLabel(text: "One way to say it")
+                    ModuleLabel(text: "Ref")
                     Panel(fill: Theme.C.sunk, edge: Theme.C.seam2) {
                         HStack(alignment: .firstTextBaseline) {
                             Text(reference).font(Theme.F.target)
@@ -334,8 +302,6 @@ struct ModeScreen: View {
                             TinyButton(title: "Hear") { store.say(reference) }
                         }
                     }
-                    Text("Graded later with the rest.")
-                        .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
                 }
             }
             MainButton(title: "Next") { Task { await store.advance() } }
@@ -346,7 +312,6 @@ struct ModeScreen: View {
 
     private var done: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "\(store.settings.mode.name) done")
             if let session = store.session {
                 if session.mode == .listen {
                     Text("\(session.completedCount) attempts · average \(session.averageScore)")
@@ -354,9 +319,7 @@ struct ModeScreen: View {
                 } else {
                     let sent = session.open.filter { !$0.attempt.confirmed.isEmpty }.count
                     let count = "\(sent) answer\(sent == 1 ? "" : "s") sent for grading."
-                    Text(store.notificationsOn
-                         ? "\(count) You'll get a notification."
-                         : "\(count) Notifications are off. Check back here.")
+                    Text(store.notificationsOn ? count : "\(count) Notifications off.")
                         .font(Theme.F.body)
                 }
             }
@@ -424,7 +387,6 @@ struct Trouble: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            ModuleLabel(text: "Error")
             Text(message).font(Theme.F.body).foregroundStyle(Theme.C.ink)
             MainButton(title: "Try again", action: retry)
             Spacer()

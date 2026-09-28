@@ -80,9 +80,8 @@ struct HistoryScreen: View {
     /// One block per day, newest first.
     private var sessions: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            if store.archive.isEmpty {
-                ModuleLabel(text: "Sessions")
-                Text("Nothing from before today.")
+            if store.archive.isEmpty && weakest.isEmpty {
+                Text("Nothing yet.")
                     .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
             }
             ForEach(store.archive) { day in

@@ -16,14 +16,6 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
         }
     }
 
-    var blurb: String {
-        switch self {
-        case .translate: return "Read English, say it in the language."
-        case .listen:    return "Hear it, write what was said."
-        case .produce:   return "Conversation. Corrections at the end."
-        }
-    }
-
     /// False for produce: turns run uninterrupted, review comes after.
     var reviewsEachAttempt: Bool { self != .produce }
 }

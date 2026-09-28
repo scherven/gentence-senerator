@@ -123,8 +123,6 @@ struct AskView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Ask about this")
-
             ForEach(answers) { item in
                 VStack(alignment: .leading, spacing: Theme.M.gapTight) {
                     Text(item.question)

@@ -32,7 +32,6 @@ struct LessonScreen: View {
                 header
 
                 if showingPatterns {
-                    revisitBanner("Third visit. Patterns only.")
                     BlockView(block: patternBlock,
                               onOpenLink: onOpenLink,
                               onOpenSeed: onOpenSeed,
@@ -41,8 +40,6 @@ struct LessonScreen: View {
                     if !showRuleAnyway {
                         TinyButton(title: "Show the rule") { showRuleAnyway = true }
                     }
-                } else if priorVisits == 1 {
-                    revisitBanner("Second visit. Skip to the drills.")
                 }
 
                 ForEach(blocks) { block in
@@ -76,30 +73,14 @@ struct LessonScreen: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Lesson")
-            Text(lesson.title)
-                .font(Theme.F.title)
-                .foregroundStyle(Theme.C.ink)
-                .fixedSize(horizontal: false, vertical: true)
-        }
+        Text(lesson.title)
+            .font(Theme.F.title)
+            .foregroundStyle(Theme.C.ink)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var patternBlock: Block {
         Block(id: "\(lesson.id)-patterns", kind: .examples,
               label: "Patterns", examples: lesson.patterns)
-    }
-
-    private func revisitBanner(_ text: String) -> some View {
-        Text(text)
-            .font(Theme.F.bodyTight)
-            .foregroundStyle(Theme.C.ink2)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.M.padTight)
-            .background(Theme.C.surface)
-            .overlay(alignment: .leading) {
-                Rectangle().fill(Theme.C.warn).frame(width: Theme.M.edge)
-            }
-            .overlay(Rectangle().stroke(Theme.C.warn, lineWidth: Theme.M.hair))
     }
 }
