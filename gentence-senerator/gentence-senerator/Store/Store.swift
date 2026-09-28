@@ -1028,7 +1028,7 @@ final class Store {
                 }
                 guard let batchID = job.batchID else { continue }
 
-                if !job.watched, await watch(batchID, label: label(of: job)) {
+                if !job.watched, await watch(batchID, job: job.id, label: label(of: job)) {
                     job.watched = true
                 }
 
@@ -1209,7 +1209,7 @@ final class Store {
     /// Tells the push worker to notify this device when the batch ends — for
     /// a job submitted before the device had a token. False when it could
     /// not, so the next pump tries again.
-    private func watch(_ batchID: String, label: String) async -> Bool {
+    private func watch(_ batchID: String, job: UUID, label: String) async -> Bool {
         guard let token = UserDefaults.standard.string(forKey: Vault.pushToken),
               let url = URL(string: Key.graderURL + "/watch") else { return false }
         var request = URLRequest(url: url)
@@ -1217,7 +1217,7 @@ final class Store {
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
         request.httpBody = try? JSONSerialization.data(
-            withJSONObject: ["batch": batchID, "token": token, "label": label,
+            withJSONObject: ["batch": batchID, "job": job.uuidString, "token": token, "label": label,
                              "sandbox": Sender.sandbox])
         guard let (_, response) = try? await URLSession.shared.data(for: request) else { return false }
         return (response as? HTTPURLResponse)?.statusCode == 200
