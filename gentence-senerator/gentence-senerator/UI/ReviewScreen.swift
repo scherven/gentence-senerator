@@ -3,8 +3,8 @@ import SwiftUI
 /// What the learner sees after an attempt, in every mode.
 struct ReviewScreen: View {
     let turn: Turn
-    /// Every turn this review covers, in order, ending with `turn`. One in
-    /// translate and listen; a whole held exchange in produce.
+    /// Every turn this review covers, in order, ending with `turn`. One,
+    /// except a produce exchange graded whole before answers were graded alone.
     let exchange: [Turn]
     let knowledge: [String: Progress.Encounter.Knowledge]
     let onOpenAtom: (Atom) -> Void

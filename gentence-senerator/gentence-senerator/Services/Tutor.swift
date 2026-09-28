@@ -134,10 +134,11 @@ actor Tutor {
 
     // MARK: Assessment
     //
-    // One call per exchange. It used to be two — a score and `locate` first,
+    // One call per answer. It used to be two — a score and `locate` first,
     // the rest streamed in behind — because the learner was waiting. Graded in
     // a batch, nobody is, so every stage and a lesson per problem come back
-    // together and the model reasons about the exchange once.
+    // together. `history` is only for produce jobs filed before each answer
+    // was graded alone.
 
     struct Graded: Codable {
         struct Finding: Codable {
@@ -168,7 +169,7 @@ actor Tutor {
         var used: [String]
     }
 
-    /// The whole request for one exchange, for a batch.
+    /// The whole request for one answer, for a batch.
     nonisolated func reviewParams(turn: Turn, history: [Turn], level: Int) -> [String: Any] {
         let pack = LanguagePacks.pack(for: turn.language)
         return api.params(
@@ -205,9 +206,14 @@ actor Tutor {
     nonisolated static func read(_ reply: Anthropic.Reply, turn: Turn, history: [Turn])
     throws -> (Review, [Lesson]) {
         let graded = try Anthropic.decode(Graded.self, from: reply)
+        // Valid JSON, and nonsense: nothing found, yet a failing score. Seen
+        // as score 0, readOfScore "x". Failed, so it is graded again.
+        if graded.findings.isEmpty && graded.score < 50 {
+            throw Anthropic.Failure.malformed("score \(graded.score) with no findings")
+        }
         let pack = LanguagePacks.pack(for: turn.language)
-        // A finding can sit in any answer of a held exchange, so the seed
-        // carries all of them rather than only the last.
+        // A finding can sit in any answer of a legacy held exchange, so the
+        // seed carries all of them rather than only the last.
         let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
 
         let atoms = graded.findings.map { f in
@@ -291,7 +297,7 @@ actor Tutor {
         Level: \(pack.level(level))
         Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
         """
-        // A held produce exchange is assessed whole. Framing the earlier turns
+        // A legacy held produce exchange is assessed whole. Framing the earlier turns
         // as background and only the last as the attempt got them read as
         // context, and their errors went unreported — two thirds of a produce
         // session came back unmarked.
@@ -742,12 +748,10 @@ actor Tutor {
         over each problem and drop any you could not defend to a native
         speaker.
 
-        In produce the corrections were held back and the exchange is reviewed
-        as one thing. Every answer in it is being assessed, not only the last:
-        a problem in the first answer counts as much as one in the third, and
-        `locate` must say which answer it is in. The same mistake in two
-        answers is one finding and outranks two separate one-offs — say that it
-        recurred. The score is for the exchange, not for the last sentence.
+        In produce, when several numbered answers are given, every one is being
+        assessed, not only the last: `locate` must say which answer it is in.
+        The same mistake in two answers is one finding and outranks two
+        separate one-offs — say that it recurred. The score is for all of them.
 
         In listen the sentence is the speaker's and the learner is writing down
         what reached them, so nothing in it is a production error. Every finding

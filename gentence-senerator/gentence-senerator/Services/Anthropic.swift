@@ -90,7 +90,7 @@ actor Anthropic {
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         request.setValue("server-side-fallback-2026-07-01", forHTTPHeaderField: "anthropic-beta")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        if let body { request.httpBody = try JSONSerialization.data(withJSONObject: body) }
+        if let body { request.httpBody = try Schemas.data(body) }
         // Long enough for a high-effort reply that sends nothing until it is done.
         request.timeoutInterval = 600
         return request

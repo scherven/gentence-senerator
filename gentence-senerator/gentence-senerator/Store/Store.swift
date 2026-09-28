@@ -248,19 +248,22 @@ final class Store {
     /// Three of each and the day is over. The main screen becomes the summary.
     var dayComplete: Bool { Mode.allCases.allSatisfy(isDone) }
 
-    /// The turns one review covers. In produce the review is held until the
-    /// end of an exchange, so a reviewed turn stands for several, not one.
+    /// The turns one review covers. One, except in produce graded before each
+    /// answer was graded alone: there the review landed on the last answer of
+    /// a held exchange and stands for the unreviewed ones before it.
     func exchange(endingAt turn: Turn) -> [Turn] {
         let live = session?.turns ?? []
         let turns = live.contains { $0.id == turn.id }
             ? live
             : past.first { $0.turns.contains { $0.id == turn.id } }?.turns ?? []
+        return Store.exchange(endingAt: turn, in: turns)
+    }
+
+    nonisolated static func exchange(endingAt turn: Turn, in turns: [Turn]) -> [Turn] {
         guard let end = turns.firstIndex(where: { $0.id == turn.id }) else { return [turn] }
-        if let id = turn.exchangeID {
-            return turns[...end].filter { $0.exchangeID == id }
-        }
         var start = end
-        while start > 0, turns[start - 1].review == nil { start -= 1 }
+        while start > 0, turns[start - 1].review == nil,
+              turns[start - 1].exchangeID == turn.exchangeID { start -= 1 }
         return Array(turns[start...end])
     }
 
@@ -759,8 +762,8 @@ final class Store {
         turn.attempt.confirmed = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !turn.attempt.confirmed.isEmpty else { return }
 
-        turn.exchangeID = Store.exchangeID(after: live.turns, mode: live.mode,
-                                           size: settings.turnsBeforeReview)
+        // Every answer is its own review, produce included.
+        turn.exchangeID = UUID()
         current = turn
 
         // Scored against what they should have said: the played sentence in
@@ -792,17 +795,6 @@ final class Store {
         } else {
             await advance()
         }
-    }
-
-    /// Produce holds corrections until an exchange of `size` answers is done;
-    /// a session that ends part-way through one grades it short rather than
-    /// dropping it. Each translate and listen answer is its own exchange.
-    nonisolated static func exchangeID(after turns: [Turn], mode: Mode, size: Int) -> UUID {
-        if mode == .produce, let id = turns.last?.exchangeID,
-           turns.filter({ $0.exchangeID == id }).count < size {
-            return id
-        }
-        return UUID()
     }
 
     /// Listen's path: one call, waited on.
@@ -954,7 +946,7 @@ final class Store {
                                                  level: level)]
         }
         guard !requests.isEmpty else { return nil }
-        return try JSONSerialization.data(withJSONObject: ["requests": requests])
+        return try Schemas.data(["requests": requests])
     }
 
     /// Sends a job from the app, now, beside whatever iOS is holding for it.
