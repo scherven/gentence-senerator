@@ -118,6 +118,9 @@ enum Vault {
     static let passages = "passages.v1"
     /// Sessions sent for grading, until their results are read in.
     static let grading = "grading.v1"
+    /// The day each grading job came back, so its feedback leaves the main
+    /// screen the day after.
+    static let landed = "landed.v1"
     /// Lessons written with a review, by `LessonRequest.cacheKey`.
     static let lessons = "lessons.v1"
     /// This device's APNs token, as hex.

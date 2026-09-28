@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Past attempts, and what keeps coming back. Sessions were being written and
-/// never read in the previous build; this is the reader.
+/// Past days' feedback, and what keeps coming back. Today's stays on the main
+/// screen until the day is over.
 struct HistoryScreen: View {
     @Bindable var store: Store
     @Environment(\.dismiss) private var dismiss
@@ -10,7 +10,6 @@ struct HistoryScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
-                    if !kept.isEmpty { saved }
                     if !weakest.isEmpty { recurring }
                     sessions
                 }
@@ -24,50 +23,8 @@ struct HistoryScreen: View {
                     TinyButton(title: "Done") { dismiss() }
                 }
             }
-            .navigationDestination(for: Turn.self) { turn in
-                PastReview(store: store, turn: turn)
-            }
         }
         .tint(Theme.C.accent)
-    }
-
-    /// Kept by hand off a day's summary, newest first. Not scheduling — this
-    /// is the shelf, and nothing on it comes back unless it was also asked for.
-    private var kept: [BankEntry] {
-        store.bank.filter { $0.language == store.settings.language }.reversed()
-    }
-
-    private var saved: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Saved")
-            ForEach(kept) { entry in
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text(entry.kind.label.uppercased())
-                            .font(Theme.F.label)
-                            .foregroundStyle(Theme.C.accent)
-                            .frame(width: 84, alignment: .leading)
-                        Text(entry.subject)
-                            .font(Theme.F.bodyTight)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        TinyButton(title: "Forget") { store.unkeep(entry.atomID) }
-                    }
-                    if !entry.fix.isEmpty {
-                        Text(entry.fix).font(Theme.F.targetSmall)
-                    }
-                    Text(entry.note).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                    Text(entry.sentence)
-                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink3).lineLimit(1)
-                }
-                .padding(Theme.M.padTight)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.C.surface)
-                .overlay(alignment: .leading) {
-                    Rectangle().fill(Theme.C.accent).frame(width: Theme.M.edge)
-                }
-                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-            }
-        }
     }
 
     /// Everything scheduled to return, plus anything opened more than once.
@@ -120,79 +77,48 @@ struct HistoryScreen: View {
         }
     }
 
+    /// One block per day, newest first.
     private var sessions: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Sessions")
-            if store.past.isEmpty {
-                Text("Nothing finished yet.")
+        VStack(alignment: .leading, spacing: Theme.M.gap) {
+            if store.archive.isEmpty {
+                ModuleLabel(text: "Sessions")
+                Text("Nothing from before today.")
                     .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
             }
-            ForEach(store.past.reversed()) { session in
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("\(session.mode.name) · \(session.language.name)")
-                            .font(Theme.F.bodyTight)
-                        Spacer()
-                        Text("\(session.completedCount) · avg \(session.averageScore)")
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                    }
-                    .padding(Theme.M.padTight)
-                    .background(Theme.C.sunk)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-
-                    ForEach(session.turns) { turn in
-                        NavigationLink(value: turn) {
-                            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                                Text(turn.attempt.confirmed)
-                                    .font(Theme.F.bodyTight)
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                if let score = turn.review?.score {
-                                    Text("\(score)")
-                                        .font(Theme.F.meta)
-                                        .foregroundStyle(Theme.C.ink2)
-                                }
-                                Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
-                            }
-                            .padding(Theme.M.padTight)
-                            .background(Theme.C.surface)
-                            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-                        }
-                        .buttonStyle(.plain)
+            ForEach(store.archive) { day in
+                VStack(alignment: .leading, spacing: 6) {
+                    ModuleLabel(text: day.day)
+                    VStack(spacing: 0) {
+                        ForEach(day.sessions) { session in row(session) }
                     }
                 }
             }
         }
     }
-}
 
-/// A past attempt, read with the same screen that showed it live. Findings are
-/// still openable — the atoms were persisted with their seeds.
-struct PastReview: View {
-    @Bindable var store: Store
-    let turn: Turn
-
-    var body: some View {
-        ReviewScreen(
-            turn: turn,
-            exchange: store.exchange(endingAt: turn),
-            knowledge: store.knowledge,
-            onOpenAtom: { store.open($0) },
-            onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
-            onClassify: { store.classify($0, as: $1) },
-            onAsk: { question in
-                Task {
-                    await store.ask(question,
-                                    about: .init(subject: turn.attempt.confirmed,
-                                                 context: turn.attempt.confirmed,
-                                                 pointID: turn.prompt.pointID),
-                                    context: turn.id.uuidString)
+    /// Read opens on the main screen, the way today's feedback does.
+    private func row(_ session: Session) -> some View {
+        let graded = session.turns.contains { $0.review != nil }
+        return HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text(session.mode.name.uppercased())
+                .font(Theme.F.label).tracking(1)
+                .foregroundStyle(graded ? Theme.C.accent : Theme.C.ink3)
+                .frame(width: 84, alignment: .leading)
+            Text(session.language.name)
+                .font(Theme.F.bodyTight)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(graded ? "\(session.completedCount) · avg \(session.averageScore)"
+                        : "\(session.completedCount) · ungraded")
+                .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+            if graded {
+                TinyButton(title: "Read") {
+                    dismiss()
+                    store.read(session)
                 }
-            },
-            answers: store.asked[turn.id.uuidString] ?? [],
-            isAsking: store.asking.contains(turn.id.uuidString)
-        )
-        .navigationTitle(turn.mode.name)
-        .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+        .padding(Theme.M.padTight)
+        .background(Theme.C.surface)
+        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
     }
 }

@@ -88,7 +88,9 @@ struct SettingsScreen: View {
             ModuleLabel(text: "Session")
             VStack(spacing: 0) {
                 row {
-                    Stepper(value: $store.settings.dailyGoal, in: 1...10) {
+                    Stepper(value: Binding(get: { store.settings.dailyGoal },
+                                           set: { store.setGoal($0) }),
+                            in: 1...10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(store.settings.dailyGoal) of each mode a day")
                                 .font(Theme.F.body)

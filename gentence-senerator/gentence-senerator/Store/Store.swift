@@ -40,7 +40,9 @@ final class Store {
 
     /// Finished sessions out for grading, oldest first, until their reviews
     /// are in the archive.
-    private(set) var jobs: [GradingJob] = []
+    private(set) var jobs: [GradingJob] = [] { didSet { noteLanded(since: oldValue) } }
+    /// The day each job came back, by job id, for jobs seen to come back.
+    private var landed: [String: String] = [:]
     /// Reviews being read, as the turns they landed on. Empty outside reading.
     private(set) var reading: [UUID] = []
     /// The day's prompt sets being written, by hold key, so starting a
@@ -153,6 +155,7 @@ final class Store {
         passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
         draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
         jobs = Vault.load([GradingJob].self, Vault.grading) ?? []
+        landed = Vault.load([String: String].self, Vault.landed) ?? [:]
         if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
             lessons = shelf.lessons
             lessonOrder = shelf.order
@@ -187,7 +190,7 @@ final class Store {
         let stale = holds.filter { String($0.value.session.id.prefix(10)) < today }
         guard !stale.isEmpty else { return }
         let unfinished = stale.values.map(\.session).filter { $0.completedCount > 0 }
-        past.append(contentsOf: unfinished)
+        for session in unfinished { file(session) }
         past.sort { $0.startedAt < $1.startedAt }
         for key in stale.keys { holds[key] = nil }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
@@ -271,6 +274,55 @@ final class Store {
         return held
     }
 
+    /// The stepper. Today's translate and produce in this language follow the
+    /// goal: raised, a finished one is held again so the mode resumes and the
+    /// rest of its set is written; what was already sent stays sent. Listen is
+    /// left alone — a dialogue is not counted in turns.
+    func setGoal(_ n: Int) {
+        guard n != settings.dailyGoal else { return }
+        settings.dailyGoal = n
+        for mode in [Mode.translate, .produce] {
+            let key = Store.holdKey(settings.language, mode)
+            if var live = session, live.id == sessionID(for: mode), !live.isComplete {
+                live.regoal(n)
+                session = live
+                hold()
+                continue
+            }
+            // Tomorrow's set, written ahead: nothing answered, so it just
+            // takes the goal.
+            if var ahead = holds[key], ahead.session.id != sessionID(for: mode) {
+                ahead.session.regoal(n)
+                holds[key] = ahead
+            }
+            guard var today = today(mode), today.regoal(n) else { continue }
+            let held = holds[key]?.session.id == today.id ? holds[key] : nil
+            if today.isComplete {
+                // Lowered back over a reopened one: it was already filed.
+                if held != nil { holds[key] = nil }
+                file(today)
+            } else {
+                // Over tomorrow's set, if one was written; that is written
+                // again once this one is done.
+                holds[key] = Unfinished(session: today, turn: held?.turn)
+            }
+        }
+        Vault.save(holds, Vault.holds)
+        refreshPlan()
+        Task { await prepareDay() }
+    }
+
+    /// Into the archive, over any earlier copy of the same session — a
+    /// reopened one is archived twice.
+    private func file(_ finished: Session) {
+        if let index = past.firstIndex(where: { $0.id == finished.id }) {
+            past[index] = finished
+        } else {
+            past.append(finished)
+        }
+        Vault.save(Array(past.suffix(120)), Vault.sessions)
+    }
+
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
 
     /// The session does not carry over — the sentences and the level mean
@@ -288,6 +340,51 @@ final class Store {
         path = []
         knowledge = [:]
         refreshPlan()
+    }
+
+    // MARK: Feedback by day
+
+    /// Feedback belongs to the day. The main screen shows today's sessions'
+    /// jobs, anything still out, and anything that came back today — a job
+    /// from yesterday that lands today stays until tomorrow, read or not.
+    var todaysJobs: [GradingJob] {
+        let today = Spend.key(.now)
+        return jobs.filter { Store.showsToday($0, landed: landed[$0.id.uuidString], today: today) }
+    }
+
+    nonisolated static func showsToday(_ job: GradingJob, landed: String?, today: String) -> Bool {
+        job.state != .done || String(job.sessionID.prefix(10)) >= today || landed == today
+    }
+
+    private func noteLanded(since old: [GradingJob]) {
+        let out = Set(old.filter { $0.state != .done }.map(\.id))
+        let now = jobs.filter { $0.state == .done && out.contains($0.id) }
+            .map(\.id.uuidString).filter { landed[$0] == nil }
+        guard !now.isEmpty else { return }
+        let ids = Set(jobs.map(\.id.uuidString))
+        landed = landed.filter { ids.contains($0.key) }
+        for id in now { landed[id] = Spend.key(.now) }
+        Vault.save(landed, Vault.landed)
+    }
+
+    /// Everything off the main screen, by day, newest first.
+    var archive: [ArchiveDay] {
+        Store.archive(past, showing: Set(todaysJobs.map(\.sessionID)), today: Spend.key(.now))
+    }
+
+    nonisolated static func archive(_ past: [Session], showing: Set<String>,
+                                    today: String) -> [ArchiveDay] {
+        let old = past.filter { String($0.id.prefix(10)) < today && !showing.contains($0.id) }
+        return Dictionary(grouping: old) { String($0.id.prefix(10)) }
+            .map { ArchiveDay(day: $0.key, sessions: $0.value.sorted { $0.startedAt > $1.startedAt }) }
+            .sorted { $0.day > $1.day }
+    }
+
+    /// An archived session's reviews, read the way a job's are.
+    func read(_ session: Session) {
+        read(GradingJob(id: UUID(), sessionID: session.id, language: session.language,
+                        mode: session.mode, createdAt: session.startedAt, level: session.level,
+                        exchanges: GradingJob.exchanges(of: session)))
     }
 
     // MARK: Level
@@ -341,6 +438,16 @@ final class Store {
     }
 
     // MARK: Session
+
+    /// A session's exchanges no job holds yet: after what was filed when it
+    /// first ended, and not already sent.
+    nonisolated static func unfiled(_ session: Session, jobs: [GradingJob]) -> [GradingJob.Exchange] {
+        let sent = Set(jobs.filter { $0.sessionID == session.id }
+            .flatMap { $0.exchanges.flatMap(\.turnIDs) })
+        var rest = session
+        rest.turns = session.open.filter { !sent.contains($0.id) }
+        return GradingJob.exchanges(of: rest)
+    }
 
     func begin(_ mode: Mode) async {
         guard !isDone(mode) else { return }
@@ -410,7 +517,11 @@ final class Store {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
         for mode in [Mode.translate, .produce] {
             let key = Store.holdKey(settings.language, mode)
-            guard writing[key] == nil, holds[key] == nil else { continue }
+            guard writing[key] == nil else { continue }
+            if let held = holds[key]?.session {
+                if held.id == sessionID(for: mode) { await writeRest(of: held, key: key) }
+                continue
+            }
 
             let day: Date
             let stretch: GrammarPoint?
@@ -440,6 +551,8 @@ final class Store {
                 guard self.holds[key] == nil, self.session?.id != draft.id else { return }
                 var planned = draft
                 planned.planned = prompts
+                // The goal may have moved while this was being written.
+                planned.goal = self.settings.dailyGoal
                 self.holds[key] = Unfinished(session: planned, turn: nil)
                 Vault.save(self.holds, Vault.holds)
             }
@@ -447,6 +560,34 @@ final class Store {
             await task.value
             writing[key] = nil
         }
+    }
+
+    /// Today's held session asks more than its set holds — the goal was
+    /// raised — so the rest is written now, while there is signal. `begin`
+    /// joins it; `plannedTurn` would otherwise write it on the spot.
+    private func writeRest(of held: Session, key: String) async {
+        let have = held.planned ?? held.turns.map(\.prompt)
+        guard have.count < held.goal else { return }
+        let task = Task { [weak self] in
+            guard let self else { return }
+            guard let written = try? await self.writeSet(for: held, from: have.count,
+                                                         stretch: self.plan.stretch,
+                                                         words: self.plan.words)
+            else { return }
+            let full = have + written
+            if var now = self.holds[key], now.session.id == held.id,
+               (now.session.planned ?? []).count <= have.count {
+                now.session.planned = full
+                self.holds[key] = now
+                Vault.save(self.holds, Vault.holds)
+            }
+            if self.session?.id == held.id, (self.session?.planned ?? []).count <= have.count {
+                self.session?.planned = full
+            }
+        }
+        writing[key] = task
+        await task.value
+        writing[key] = nil
     }
 
     /// Every job for that session has come back. No job — nothing was
@@ -759,7 +900,7 @@ final class Store {
         turn.attempt.confirmed = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !turn.attempt.confirmed.isEmpty else { return }
 
-        turn.exchangeID = Store.exchangeID(after: live.turns, mode: live.mode,
+        turn.exchangeID = Store.exchangeID(after: live.open, mode: live.mode,
                                            size: settings.turnsBeforeReview)
         current = turn
 
@@ -842,6 +983,13 @@ final class Store {
                 Vault.save(Array(past.suffix(120)), Vault.sessions)
             }
         }
+        // A reopened session is held and archived at once.
+        for key in holds.keys where session?.id != holds[key]?.session.id {
+            if let t = holds[key]?.session.turns.firstIndex(where: { $0.id == id }) {
+                change(&holds[key]!.session.turns[t])
+                Vault.save(holds, Vault.holds)
+            }
+        }
     }
 
     private func archived(_ id: UUID) -> Turn? {
@@ -856,8 +1004,7 @@ final class Store {
     /// Files a finished session for grading. Nothing is sent here, so this is
     /// safe offline and at launch; `pump` does the sending.
     private func enqueue(_ session: Session) {
-        guard !jobs.contains(where: { $0.sessionID == session.id }) else { return }
-        let exchanges = GradingJob.exchanges(of: session)
+        let exchanges = Store.unfiled(session, jobs: jobs)
         guard !exchanges.isEmpty else { return }
         // A session from before sessions carried a level, retired after a
         // language switch, can only take the setting — which is shared.
@@ -1246,8 +1393,7 @@ final class Store {
         guard let live = session else { return }
         if live.isComplete {
             phase = .complete
-            past.append(live)
-            Vault.save(Array(past.suffix(120)), Vault.sessions)
+            file(live)
             holds[Store.holdKey(live.language, live.mode)] = nil
             Vault.save(holds, Vault.holds)
             dropPending()
