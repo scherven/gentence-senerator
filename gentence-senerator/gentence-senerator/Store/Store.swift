@@ -1821,8 +1821,16 @@ final class Store {
     }
 
     // MARK: Keeping things
+    //
+    // Keeping is pinning: the bank is the textbook's pinned section.
 
     func isKept(_ atomID: String) -> Bool { bank.contains { $0.atomID == atomID } }
+
+    func keep(_ entry: Textbook.Entry) {
+        bank.removeAll { $0.atomID == entry.id }
+        bank.append(BankEntry(entry: entry, language: settings.language))
+        Vault.save(bank, Vault.bank)
+    }
 
     /// Keeping the same point twice replaces it — the newer wording is the one
     /// the learner just decided was worth holding onto.
@@ -1862,11 +1870,13 @@ final class Store {
         guard !question.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         asking.insert(context)
         do {
-            let (item, usage) = try await tutor.answer(
+            let (reply, usage) = try await tutor.answer(
                 question: question, about: seed, in: language
             )
             note(usage)
-            asked[context, default: []].append(item)
+            asked[context, default: []].append(reply.item)
+            file(reply.suggestions(language: language, validPoints: LanguagePacks.pack(for: language).pointIDs,
+                                   question: question, context: seed.context))
         } catch {
             asked[context, default: []].append(
                 AskItem(id: UUID().uuidString, question: question,
@@ -2001,6 +2011,45 @@ final class Store {
         guard interruptible,
               let job = Store.target(of: tap, in: jobs, readable: canRead) else { return }
         read(job)
+    }
+
+    // MARK: Textbook
+
+    /// Links out of ask answers. The answers themselves live only for the
+    /// launch; what they pointed at is kept.
+    private(set) var suggestions: [Textbook.Suggestion] =
+        Vault.load([Textbook.Suggestion].self, Vault.suggestions) ?? []
+
+    private func file(_ new: [Textbook.Suggestion]) {
+        guard !new.isEmpty else { return }
+        suggestions = Textbook.Suggestion.adding(new, to: suggestions)
+        Vault.save(suggestions, Vault.suggestions)
+    }
+
+    func textbook(scope: Textbook.Scope, search: String = "") -> [Textbook.Section] {
+        let language = settings.language
+        let pack = LanguagePacks.pack(for: language)
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.assemble(
+            language: language, kinds: pack.kinds, points: pack.points,
+            noted: Textbook.noted(in: sessions, language: language),
+            progress: progress, suggestions: suggestions, bank: bank,
+            scope: scope, search: search
+        )
+    }
+
+    /// Onto the same lesson path as everything else. A finding counts as a
+    /// visit; a point or a suggestion has no atom to record.
+    func open(_ entry: Textbook.Entry) {
+        if let atom = entry.atom {
+            open(atom)
+        } else {
+            open(seed: entry.seed, kind: entry.kind)
+        }
+    }
+
+    func togglePin(_ entry: Textbook.Entry) {
+        if isKept(entry.id) { unkeep(entry.id) } else { keep(entry) }
     }
 }
 

@@ -62,6 +62,7 @@ struct ModeScreen: View {
                 ToolbarItem(placement: .topBarLeading) {
                     TinyButton(title: "History") { showingHistory = true }
                 }
+                ToolbarItem(placement: .topBarLeading) { TextbookButton(store: store) }
                 ToolbarItem(placement: .topBarTrailing) {
                     TinyButton(title: store.settings.language.flag) { showingSettings = true }
                 }

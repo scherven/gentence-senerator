@@ -576,10 +576,10 @@ actor Tutor {
     }
 
     func answer(question: String, about seed: Atom.Seed, in language: Language)
-    async throws -> (AskItem, Anthropic.Usage) {
+    async throws -> (AskReply, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: language)
         return try await api.send(
-            AskItem.self,
+            AskReply.self,
             cachedSystem: Self.askSystem(pack),
             user: """
             Topic: \(seed.subject)
@@ -848,8 +848,12 @@ actor Tutor {
         Answer the learner's question about one point in one or two sentences,
         then attach links for anything in your answer worth opening: `subject`
         is what a lesson about it would be about, `headline` one line on what it
-        teaches.
+        teaches. Anything you tell them to use gets a link.
         Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+
+        When a link is one of these points, set `point` to its id; otherwise
+        null.
+        \(pack.points.map { "\($0.id) — \($0.name)" }.joined(separator: "\n"))
         """
     }
 }

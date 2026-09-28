@@ -75,13 +75,20 @@ enum Schemas {
         ], required: ["kind", "headline", "subject"])
     }
 
-    /// One answer to one typed question.
+    /// One answer to one typed question. Its links also name the curriculum
+    /// point they are, so the textbook can file a recommendation under it.
     static func freeAnswer(for language: Language) -> [String: Any] {
-        object([
+        var link = atomLink(for: language)
+        var properties = link["properties"] as? [String: Any] ?? [:]
+        properties["point"] = ["type": ["string", "null"],
+                               "description": "Id of the listed grammar point this is, or null."]
+        link["properties"] = properties
+        link["required"] = ["kind", "headline", "subject", "point"]
+        return object([
             "id": string,
             "question": string,
             "answer": ["type": "string", "description": "One or two sentences."],
-            "atoms": array(atomLink(for: language))
+            "atoms": array(link)
         ], required: ["id", "question", "answer", "atoms"])
     }
 
