@@ -154,6 +154,12 @@ struct QuizTests {
                           accept: ["J'en ai mangé."])
         #expect(QuizRound.score(fr, typed: "j’en ai mangé").right)
         #expect(!QuizRound.score(fr, typed: "jen ai mangé").right)
+        let zh = QuizItem(id: "zh", entry: "e", format: .transform, task: "→ 即使",
+                          accept: ["即使下雨，我也去。"])
+        #expect(QuizRound.score(zh, typed: "即使下雨我也去").right)
+        let de2 = QuizItem(id: "de2", entry: "e", format: .transform, task: "→ weil",
+                           accept: ["Ich bleibe, weil es regnet."])
+        #expect(QuizRound.score(de2, typed: "ich bleibe weil es regnet").right)
     }
 
     @Test func elidedAndHyphenatedTilesJoinTight() {

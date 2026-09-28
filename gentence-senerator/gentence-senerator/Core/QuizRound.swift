@@ -84,7 +84,7 @@ extension QuizRound {
     }
 
     /// Transform: typed, compared to `accept` ignoring case, spacing and
-    /// trailing punctuation.
+    /// punctuation.
     static func score(_ item: QuizItem, typed: String) -> Answer {
         let said = normalise(typed)
         let ok = !said.isEmpty && item.accept.map(normalise).contains(said)
@@ -92,9 +92,13 @@ extension QuizRound {
     }
 
     /// Lowercased, curly apostrophes straightened, runs of whitespace one
-    /// space (none next to CJK), trailing punctuation off.
+    /// space (none next to CJK), punctuation off. Apostrophes and hyphens stay:
+    /// they are part of "j'en" and "donne-le-moi".
     static func normalise(_ s: String) -> String {
         var t = s.lowercased().replacingOccurrences(of: "’", with: "'")
+        t = String(String.UnicodeScalarView(t.unicodeScalars.map {
+            $0 == "'" || $0 == "-" || !CharacterSet.punctuationCharacters.contains($0) ? $0 : " "
+        }))
         let words = t.split(whereSeparator: \.isWhitespace).map(String.init)
         t = ""
         for w in words {
