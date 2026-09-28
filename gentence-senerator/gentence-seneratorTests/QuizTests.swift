@@ -154,6 +154,11 @@ struct QuizTests {
                           accept: ["J'en ai mangé."])
         #expect(QuizRound.score(fr, typed: "j’en ai mangé").right)
         #expect(!QuizRound.score(fr, typed: "jen ai mangé").right)
+        let spaced = QuizItem(id: "sp", entry: "e", format: .build,
+                              tiles: ["ich", "arbeite", "heute", "im Büro"],
+                              accept: ["heute arbeite ich im Büro"])
+        #expect(QuizRound.score(spaced, tiles: ["heute", "arbeite", "ich", "im Büro"]).right)
+        #expect(!QuizRound.score(spaced, tiles: ["im Büro", "ich", "arbeite", "heute"]).right)
         let zh = QuizItem(id: "zh", entry: "e", format: .transform, task: "→ 即使",
                           accept: ["即使下雨，我也去。"])
         #expect(QuizRound.score(zh, typed: "即使下雨我也去").right)

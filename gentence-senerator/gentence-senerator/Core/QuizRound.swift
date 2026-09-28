@@ -76,11 +76,16 @@ extension QuizRound {
         return Answer(steps: steps, given: given)
     }
 
-    /// Build: compared as a tile sequence against `tiles` and each `accept`
-    /// (tiles joined by single spaces), never as rendered text.
+    /// Build: the placed tiles, as text, against `tiles` and each `accept`.
+    /// Text rather than tile sequences, because a tile can hold a space
+    /// ("im Büro") and `accept` joins tiles with spaces.
     static func score(_ item: QuizItem, tiles placed: [String]) -> Answer {
-        let orders = [item.tiles] + item.accept.map { $0.split(separator: " ").map(String.init) }
-        return Answer(steps: [orders.contains(placed)], given: [join(placed)])
+        let key = { (s: String) in
+            normalise(s).replacingOccurrences(of: "' ", with: "'")
+                .replacingOccurrences(of: "- ", with: "-")
+        }
+        let orders = Set([key(join(item.tiles))] + item.accept.map(key))
+        return Answer(steps: [orders.contains(key(join(placed)))], given: [join(placed)])
     }
 
     /// Transform: typed, compared to `accept` ignoring case, spacing and
