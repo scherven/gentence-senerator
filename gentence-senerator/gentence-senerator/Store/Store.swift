@@ -2051,6 +2051,66 @@ final class Store {
     func togglePin(_ entry: Textbook.Entry) {
         if isKept(entry.id) { unkeep(entry.id) } else { keep(entry) }
     }
+
+    // MARK: Quizzes
+
+    private let books = BookLibrary()
+    private(set) var quizLog: QuizLog = Vault.load(QuizLog.self, Vault.quizLog) ?? QuizLog()
+
+    /// The current language's book.
+    var book: Book { books.book(for: settings.language) }
+    var quizItems: [QuizItem] { books.items(for: settings.language) }
+
+    /// Quizzes take an entry to holding; solid is its point's production
+    /// standing, as the day plan reads it.
+    func state(of entry: Chapter.Entry) -> EntryState {
+        let solid = entry.point.map { DayPlan.standing(of: $0, in: progress) == .solid } ?? false
+        return quizLog.state(of: entry.id, pointSolid: solid)
+    }
+
+    /// Drill ids are not language-scoped, so the log key is.
+    private func planKey(_ plan: QuizPlan) -> String { "\(settings.language.rawValue)|\(plan.id)" }
+
+    func roundsDone(_ plan: QuizPlan) -> Int { quizLog.plans[planKey(plan)]?.rounds ?? 0 }
+
+    func record(of plan: QuizPlan) -> QuizLog.PlanRecord { quizLog.plans[planKey(plan)] ?? .init() }
+
+    func round(for plan: QuizPlan) -> QuizRound {
+        let book = book
+        let entries = Dictionary(book.chapters.flatMap(\.entries).map { ($0.id, $0) },
+                                 uniquingKeysWith: { a, _ in a })
+        return QuizRound.assemble(plan: plan, book: book, bank: quizItems) { id in
+            entries[id].map(self.state(of:)) ?? self.quizLog.state(of: id)
+        }
+    }
+
+    /// Answered items move their entries; a finished round counts to its plan.
+    func finish(_ round: QuizRound) {
+        quizLog.record(round, planKey: planKey(round.plan))
+        Vault.save(quizLog, Vault.quizLog)
+    }
+
+    /// Entries holding or better.
+    func held(in chapter: Chapter) -> Int {
+        chapter.entries.filter {
+            let s = state(of: $0).standing
+            return s == .holding || s == .solid
+        }.count
+    }
+
+    func recommended() -> (plan: QuizPlan, reason: String)? {
+        QuizLog.recommend(book: book, bank: quizItems, state: state(of:))
+            .map { (Store.speedRound(for: $0.chapter), $0.reason) }
+    }
+
+    nonisolated static func speedRound(for chapter: Chapter) -> QuizPlan {
+        QuizPlan(id: chapter.id, name: chapter.name, chapters: [chapter.id], formats: chapter.formats)
+    }
+
+    /// Synthesised, always: `say` would play the current turn's recording.
+    func speakQuiz(_ text: String) {
+        speech?.speak(text, locale: settings.language.localeID)
+    }
 }
 
 // MARK: - Moving the level
