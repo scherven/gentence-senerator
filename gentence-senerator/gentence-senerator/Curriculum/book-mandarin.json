@@ -14,7 +14,8 @@
      "gloss": "paper, tables, beds, tickets",
      "group": "FLAT",
      "example": "两张票",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.pian",
@@ -23,7 +24,8 @@
      "gloss": "slices, tablets, leaves",
      "group": "FLAT",
      "example": "一片药",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.tiao",
@@ -32,7 +34,8 @@
      "gloss": "roads, rivers, fish, trousers",
      "group": "LONG",
      "example": "一条路",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.gen",
@@ -41,7 +44,8 @@
      "gloss": "bananas, hairs, sticks",
      "group": "LONG",
      "example": "一根香蕉",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.zhi-pen",
@@ -50,7 +54,8 @@
      "gloss": "pens",
      "group": "LONG",
      "example": "一支笔",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.ben",
@@ -59,7 +64,8 @@
      "gloss": "books, dictionaries",
      "group": "BOUND",
      "example": "两本书",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.feng",
@@ -68,7 +74,8 @@
      "gloss": "letters, emails",
      "group": "BOUND",
      "example": "一封信",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.fen",
@@ -77,7 +84,8 @@
      "gloss": "newspapers, jobs, portions",
      "group": "BOUND",
      "example": "一份工作",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.tai",
@@ -86,7 +94,8 @@
      "gloss": "computers, TVs, machines",
      "group": "MACHINES · VEHICLES",
      "example": "三台电脑",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.liang",
@@ -95,7 +104,8 @@
      "gloss": "cars, bikes, buses",
      "group": "MACHINES · VEHICLES",
      "example": "一辆车",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.jia-plane",
@@ -104,7 +114,8 @@
      "gloss": "planes, pianos",
      "group": "MACHINES · VEHICLES",
      "example": "一架飞机",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.bu",
@@ -113,7 +124,8 @@
      "gloss": "phones, films",
      "group": "MACHINES · VEHICLES",
      "example": "一部电影",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.wei",
@@ -122,7 +134,8 @@
      "gloss": "people, politely",
      "group": "PEOPLE",
      "example": "两位老师",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.kou",
@@ -131,7 +144,8 @@
      "gloss": "members of a household",
      "group": "PEOPLE",
      "example": "四口人",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.ming",
@@ -140,7 +154,8 @@
      "gloss": "students, staff",
      "group": "PEOPLE",
      "example": "三十名学生",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.zhi-animal",
@@ -149,7 +164,8 @@
      "gloss": "cats, birds, one of a pair",
      "group": "ANIMALS",
      "example": "两只猫",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.tou",
@@ -158,7 +174,8 @@
      "gloss": "cows, pigs",
      "group": "ANIMALS",
      "example": "一头牛",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.pi",
@@ -167,7 +184,8 @@
      "gloss": "horses",
      "group": "ANIMALS",
      "example": "一匹马",
-     "point": "measure-words"
+     "point": "vivid-classifiers",
+     "level": 5
     },
     {
      "id": "zh.measure.ci",
@@ -176,7 +194,8 @@
      "gloss": "times, occurrences",
      "group": "TIMES · ACTIONS",
      "example": "去过三次",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.bian",
@@ -185,7 +204,8 @@
      "gloss": "times through, start to finish",
      "group": "TIMES · ACTIONS",
      "example": "再说一遍",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.tang",
@@ -194,7 +214,8 @@
      "gloss": "trips there and back",
      "group": "TIMES · ACTIONS",
      "example": "去一趟",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.xia",
@@ -203,7 +224,8 @@
      "gloss": "a quick go, a knock",
      "group": "TIMES · ACTIONS",
      "example": "等一下",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.jian-clothes",
@@ -212,7 +234,8 @@
      "gloss": "tops, coats, matters",
      "group": "CLOTHES",
      "example": "一件衬衫",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.shuang",
@@ -221,7 +244,8 @@
      "gloss": "pairs: shoes, chopsticks",
      "group": "CLOTHES",
      "example": "一双鞋",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.zuo",
@@ -230,7 +254,8 @@
      "gloss": "mountains, bridges, buildings",
      "group": "BUILDINGS",
      "example": "一座山",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.jia-shop",
@@ -239,7 +264,8 @@
      "gloss": "shops, companies, restaurants",
      "group": "BUILDINGS",
      "example": "一家饭馆",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.jian-room",
@@ -248,7 +274,8 @@
      "gloss": "rooms",
      "group": "BUILDINGS",
      "example": "一间卧室",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.suo",
@@ -257,7 +284,8 @@
      "gloss": "schools, universities",
      "group": "BUILDINGS",
      "example": "一所大学",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.bei",
@@ -266,7 +294,8 @@
      "gloss": "a cup or glass of",
      "group": "CONTAINERS",
      "example": "一杯茶",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.ping",
@@ -275,7 +304,8 @@
      "gloss": "a bottle of",
      "group": "CONTAINERS",
      "example": "两瓶啤酒",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.wan",
@@ -284,7 +314,8 @@
      "gloss": "a bowl of",
      "group": "CONTAINERS",
      "example": "一碗面条",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.ba",
@@ -293,7 +324,8 @@
      "gloss": "chairs, umbrellas, keys",
      "group": "HANDLES · PLANTS",
      "example": "一把伞",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.ke",
@@ -302,7 +334,8 @@
      "gloss": "trees",
      "group": "HANDLES · PLANTS",
      "example": "一棵树",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.duo",
@@ -311,7 +344,8 @@
      "gloss": "flowers, clouds",
      "group": "HANDLES · PLANTS",
      "example": "一朵花",
-     "point": "measure-words"
+     "point": "vivid-classifiers",
+     "level": 4
     },
     {
      "id": "zh.measure.shou",
@@ -320,7 +354,8 @@
      "gloss": "songs, poems",
      "group": "EVENTS · WORKS",
      "example": "一首歌",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.jie",
@@ -329,7 +364,8 @@
      "gloss": "class periods",
      "group": "EVENTS · WORKS",
      "example": "两节课",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.chang",
@@ -338,7 +374,8 @@
      "gloss": "matches, showings, rain",
      "group": "EVENTS · WORKS",
      "example": "一场比赛",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 3
     },
     {
      "id": "zh.measure.dao",
@@ -347,7 +384,8 @@
      "gloss": "dishes, exam questions",
      "group": "EVENTS · WORKS",
      "example": "一道菜",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 4
     },
     {
      "id": "zh.measure.kuai",
@@ -356,7 +394,8 @@
      "gloss": "chunks, cake, watches, yuan",
      "group": "GENERAL",
      "example": "一块蛋糕",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
     },
     {
      "id": "zh.measure.zhong",
@@ -365,7 +404,8 @@
      "gloss": "kinds",
      "group": "GENERAL",
      "example": "三种水果",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 2
     },
     {
      "id": "zh.measure.ge",
@@ -374,7 +414,28 @@
      "gloss": "the fallback: people, questions, months",
      "group": "GENERAL",
      "example": "一个问题",
-     "point": "measure-words"
+     "point": "measure-words",
+     "level": 1
+    },
+    {
+     "id": "zh.measure.er-liang",
+     "head": "两 · 二",
+     "reading": "liǎng · èr",
+     "gloss": "a count of two · the number two",
+     "group": "NUMBERS",
+     "example": "两本书 · 二号楼",
+     "point": "er-liang",
+     "level": 1
+    },
+    {
+     "id": "zh.measure.ke-round",
+     "head": "颗",
+     "reading": "kē",
+     "gloss": "stars, teeth, sweets, small round things",
+     "group": "SMALL · ROUND",
+     "example": "一颗星星",
+     "point": "vivid-classifiers",
+     "level": 4
     }
    ],
    "formats": [
@@ -395,7 +456,8 @@
      "reading": "děng… zài…",
      "gloss": "not until …, then",
      "example": "等你下班，我们再吃饭。",
-     "point": "deng-zai"
+     "point": "deng-zai",
+     "level": 3
     },
     {
      "id": "zh.structures.yi-jiu",
@@ -403,7 +465,8 @@
      "reading": "yī… jiù…",
      "gloss": "as soon as",
      "example": "他一回家就睡觉。",
-     "point": "yi-jiu"
+     "point": "yi-jiu",
+     "level": 2
     },
     {
      "id": "zh.structures.lian-dou",
@@ -411,7 +474,8 @@
      "reading": "lián… dōu…",
      "gloss": "even",
      "example": "他连饭都没吃。",
-     "point": "lian-dou"
+     "point": "lian-dou",
+     "level": 4
     },
     {
      "id": "zh.structures.suiran-danshi",
@@ -419,7 +483,8 @@
      "reading": "suīrán… dànshì…",
      "gloss": "although … still",
      "example": "虽然很贵，但是很好吃。",
-     "point": "suiran-danshi"
+     "point": "suiran-danshi",
+     "level": 2
     },
     {
      "id": "zh.structures.shi-de",
@@ -427,7 +492,8 @@
      "reading": "shì… de",
      "gloss": "stress when, where, how",
      "example": "我是坐飞机来的。",
-     "point": "shi-de"
+     "point": "shi-de",
+     "level": 2
     },
     {
      "id": "zh.structures.budan-erqie",
@@ -435,7 +501,8 @@
      "reading": "búdàn… érqiě…",
      "gloss": "not only … but also",
      "example": "她不但会唱歌，而且唱得很好。",
-     "point": "budan-erqie"
+     "point": "budan-erqie",
+     "level": 3
     },
     {
      "id": "zh.structures.yue-yue",
@@ -443,7 +510,8 @@
      "reading": "yuè… yuè…",
      "gloss": "the more … the more",
      "example": "雨越下越大。",
-     "point": "yue-yue"
+     "point": "yue-yue",
+     "level": 3
     },
     {
      "id": "zh.structures.yuelaiyue",
@@ -451,7 +519,8 @@
      "reading": "yuèláiyuè…",
      "gloss": "more and more",
      "example": "天气越来越冷了。",
-     "point": "yuelaiyue"
+     "point": "yuelaiyue",
+     "level": 3
     },
     {
      "id": "zh.structures.zhiyao-jiu",
@@ -459,7 +528,8 @@
      "reading": "zhǐyào… jiù…",
      "gloss": "as long as",
      "example": "只要你来，我就高兴。",
-     "point": "zhiyao-jiu"
+     "point": "zhiyao-jiu",
+     "level": 3
     },
     {
      "id": "zh.structures.zhiyou-cai",
@@ -467,7 +537,8 @@
      "reading": "zhǐyǒu… cái…",
      "gloss": "only if",
      "example": "只有多练习，才能说好。",
-     "point": "zhiyou-cai"
+     "point": "zhiyou-cai",
+     "level": 3
     },
     {
      "id": "zh.structures.chule-yiwai",
@@ -475,7 +546,8 @@
      "reading": "chúle… yǐwài",
      "gloss": "besides (还) · except (都)",
      "example": "除了汉语以外，他还会说日语。",
-     "point": "chule-yiwai"
+     "point": "chule-yiwai",
+     "level": 3
     },
     {
      "id": "zh.structures.xian-zai",
@@ -483,7 +555,8 @@
      "reading": "xiān… zài…",
      "gloss": "first … then",
      "example": "先洗手，再吃饭。",
-     "point": "xian-ranhou"
+     "point": "xian-ranhou",
+     "level": 2
     },
     {
      "id": "zh.structures.yinwei-suoyi",
@@ -491,7 +564,8 @@
      "reading": "yīnwèi… suǒyǐ…",
      "gloss": "because … so",
      "example": "因为下雨，所以比赛取消了。",
-     "point": "yinwei-suoyi"
+     "point": "yinwei-suoyi",
+     "level": 1
     },
     {
      "id": "zh.structures.ruguo-jiu",
@@ -499,7 +573,8 @@
      "reading": "rúguǒ… jiù…",
      "gloss": "if … then",
      "example": "如果明天下雨，我们就不去了。",
-     "point": "ruguo-jiu"
+     "point": "ruguo-jiu",
+     "level": 3
     },
     {
      "id": "zh.structures.yibian",
@@ -507,7 +582,8 @@
      "reading": "yìbiān… yìbiān…",
      "gloss": "while",
      "example": "他一边吃饭，一边看手机。",
-     "point": "yibian-yibian"
+     "point": "yibian-yibian",
+     "level": 3
     },
     {
      "id": "zh.structures.you-you",
@@ -515,7 +591,8 @@
      "reading": "yòu… yòu…",
      "gloss": "both … and",
      "example": "这个苹果又大又甜。",
-     "point": "you-you"
+     "point": "you-you",
+     "level": 3
     },
     {
      "id": "zh.structures.kuaiyao-le",
@@ -523,7 +600,8 @@
      "reading": "kuàiyào… le",
      "gloss": "about to",
      "example": "火车快要开了。",
-     "point": "kuaiyao-le"
+     "point": "kuaiyao-le",
+     "level": 2
     },
     {
      "id": "zh.structures.cong-dao",
@@ -531,7 +609,8 @@
      "reading": "cóng… dào…",
      "gloss": "from … to",
      "example": "从我家到学校要二十分钟。",
-     "point": "cong-dao"
+     "point": "cong-dao",
+     "level": 2
     },
     {
      "id": "zh.structures.tai-le",
@@ -539,7 +618,8 @@
      "reading": "tài… le",
      "gloss": "too, so",
      "example": "今天太热了！",
-     "point": "tai-le"
+     "point": "tai-le",
+     "level": 1
     },
     {
      "id": "zh.structures.haishi-ba",
@@ -547,7 +627,8 @@
      "reading": "háishi… ba",
      "gloss": "had better",
      "example": "太晚了，我们还是打车吧。",
-     "point": "haishi-ba"
+     "point": "haishi-ba",
+     "level": 2
     },
     {
      "id": "zh.structures.bushi-ma",
@@ -555,7 +636,8 @@
      "reading": "búshì… ma",
      "gloss": "isn't it …?",
      "example": "你不是说要来吗？",
-     "point": "bushi-ma"
+     "point": "bushi-ma",
+     "level": 3
     },
     {
      "id": "zh.structures.dui-laishuo",
@@ -563,7 +645,8 @@
      "reading": "duì… láishuō",
      "gloss": "for someone",
      "example": "对我来说，汉字最难。",
-     "point": "duiyu-laishuo"
+     "point": "duiyu-laishuo",
+     "level": 3
     },
     {
      "id": "zh.structures.weile",
@@ -571,7 +654,8 @@
      "reading": "wèile…",
      "gloss": "in order to",
      "example": "为了学好汉语，他去了中国。",
-     "point": "weile-purpose"
+     "point": "weile-purpose",
+     "level": 3
     },
     {
      "id": "zh.structures.buguan-dou",
@@ -579,7 +663,8 @@
      "reading": "bùguǎn… dōu…",
      "gloss": "no matter",
      "example": "不管多忙，他都去跑步。",
-     "point": "buguan-dou"
+     "point": "buguan-dou",
+     "level": 4
     }
    ],
    "formats": [
@@ -587,6 +672,230 @@
     "pick-one",
     "spot-it",
     "transform"
+   ]
+  },
+  {
+   "id": "zh.linked",
+   "name": "Conditions & concessions",
+   "sub": "既然…就… · 即使…也… · 一旦…就…",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "zh.linked.jiran-jiu",
+     "head": "既然…就…",
+     "reading": "jìrán … jiù",
+     "gloss": "since (as we both know) …, then",
+     "example": "既然你不舒服，就早点儿休息吧。",
+     "point": "jiran-jiu",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.jishi-ye",
+     "head": "即使…也…",
+     "reading": "jíshǐ … yě",
+     "gloss": "even if",
+     "example": "即使失败了，也值得试一试。",
+     "point": "jishi-ye",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.jiushi-ye",
+     "head": "就是…也…",
+     "reading": "jiùshì … yě",
+     "gloss": "even if, as it's said aloud",
+     "example": "就是下雨我也去。",
+     "point": "jiushi-ye",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.jinguan",
+     "head": "尽管…但是…",
+     "reading": "jǐnguǎn … dànshì",
+     "gloss": "even though",
+     "example": "尽管条件很差，但是他们坚持下来了。",
+     "point": "jinguan-danshi",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.bushi-ershi",
+     "head": "不是…而是…",
+     "reading": "búshì … érshì",
+     "gloss": "not A but B",
+     "example": "这不是钱的问题，而是态度问题。",
+     "point": "bushi-ershi",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.bushi-jiushi",
+     "head": "不是…就是…",
+     "reading": "búshì … jiùshì",
+     "gloss": "either … or",
+     "example": "他不是在看书，就是在打球。",
+     "point": "bushi-jiushi",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.ji-you",
+     "head": "既…又…",
+     "reading": "jì … yòu",
+     "gloss": "both … and",
+     "example": "这个方法既省时间，又省钱。",
+     "point": "ji-you",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.yifangmian",
+     "head": "一方面…另一方面…",
+     "reading": "yì fāngmiàn … lìng yì fāngmiàn",
+     "gloss": "on the one hand … on the other",
+     "example": "一方面工资高，另一方面压力也大。",
+     "point": "yifangmian",
+     "level": 4
+    },
+    {
+     "id": "zh.linked.yidan-jiu",
+     "head": "一旦…就…",
+     "reading": "yídàn … jiù",
+     "gloss": "once (it happens), then",
+     "example": "一旦决定了，就不要后悔。",
+     "point": "yidan-jiu",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.wanyi",
+     "head": "万一…",
+     "reading": "wànyī",
+     "gloss": "in case, what if",
+     "example": "万一他不来，我们怎么办？",
+     "point": "wanyi",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.jiaru",
+     "head": "假如…",
+     "reading": "jiǎrú",
+     "gloss": "if, supposing: formal 如果",
+     "example": "假如没有这次机会，结果会完全不同。",
+     "point": "jiaru",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.napa-ye",
+     "head": "哪怕…也…",
+     "reading": "nǎpà … yě",
+     "gloss": "even if (the most extreme case)",
+     "example": "哪怕只有一点儿希望，也要试试。",
+     "point": "napa-ye",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.budan-faner",
+     "head": "不但不…反而…",
+     "reading": "búdàn bù … fǎn'ér",
+     "gloss": "not only not …, but the opposite",
+     "example": "他不但不感谢我，反而怪我。",
+     "point": "budan-fan-er",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.zai-ye",
+     "head": "再…也…",
+     "reading": "zài … yě",
+     "gloss": "however …, still",
+     "example": "再忙也要吃饭。",
+     "point": "zai-ye",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.meiyou-jiu-meiyou",
+     "head": "没有…就没有…",
+     "reading": "méiyǒu … jiù méiyǒu",
+     "gloss": "without A, no B",
+     "example": "没有大家的帮助，就没有今天的成绩。",
+     "point": "meiyou-jiu-meiyou",
+     "level": 5
+    },
+    {
+     "id": "zh.linked.zicong-yilai",
+     "head": "自从…以来",
+     "reading": "zìcóng … yǐlái",
+     "gloss": "ever since",
+     "example": "自从来到这里以来，他变了很多。",
+     "point": "zicong-yilai",
+     "level": 5
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "zh.patterns",
+   "name": "Set frames",
+   "sub": "干干净净 · 想来想去 · 一个一个",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "zh.patterns.aabb",
+     "head": "AABB",
+     "reading": "gāngān jìngjìng",
+     "gloss": "an adjective doubled, vivid",
+     "example": "房间收拾得干干净净。",
+     "point": "adj-reduplication",
+     "level": 2
+    },
+    {
+     "id": "zh.patterns.yi-m-yi-m",
+     "head": "一M一M",
+     "reading": "yí gè yí gè",
+     "gloss": "one by one",
+     "example": "把问题一个一个地解决。",
+     "point": "yi-m-yi-m",
+     "level": 4
+    },
+    {
+     "id": "zh.patterns.sizige",
+     "head": "有A有B · 一A一B · 无A无B",
+     "reading": "yǒu … yǒu · yī … yī · wú … wú",
+     "gloss": "four-character pairs",
+     "example": "大家有说有笑。",
+     "point": "sizige-parallel",
+     "level": 4
+    },
+    {
+     "id": "zh.patterns.a-lai-a-qu",
+     "head": "A来A去",
+     "reading": "lái … qù",
+     "gloss": "over and over, back and forth",
+     "example": "想来想去还是决定不去。",
+     "point": "a-lai-a-qu",
+     "level": 5
+    },
+    {
+     "id": "zh.patterns.a-zhe-a-zhe",
+     "head": "A着A着",
+     "reading": "zhe … zhe",
+     "gloss": "partway through, suddenly",
+     "example": "说着说着就哭了。",
+     "point": "a-zhe-a-zhe",
+     "level": 5
+    },
+    {
+     "id": "zh.patterns.mei-a-mei-b",
+     "head": "没A没B",
+     "reading": "méi … méi",
+     "gloss": "no end, no limits: a complaint",
+     "example": "他说起来没完没了。",
+     "point": "mei-a-mei-b",
+     "level": 5
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build"
    ]
   },
   {
@@ -600,112 +909,189 @@
      "head": "时间 + V",
      "gloss": "when, before the verb",
      "example": "我明天去上海。",
-     "point": "time-before-verb"
+     "point": "time-before-verb",
+     "level": 1
     },
     {
      "id": "zh.word-order.place",
      "head": "在 + 地方 + V",
      "gloss": "where, before the verb",
      "example": "我们在公园跑步。",
-     "point": "zai-location"
+     "point": "zai-location",
+     "level": 1
     },
     {
      "id": "zh.word-order.time-place",
      "head": "时间 + 地方 + V",
      "gloss": "when, then where",
      "example": "我下午在图书馆看书。",
-     "point": "adverbial-order"
+     "point": "adverbial-order",
+     "level": 2
     },
     {
      "id": "zh.word-order.manner",
      "head": "怎么 + V",
      "gloss": "how, before the verb",
      "example": "他慢慢地走过来了。",
-     "point": "manner-before-verb"
+     "point": "manner-before-verb",
+     "level": 2
     },
     {
      "id": "zh.word-order.adverb",
      "head": "也 · 都 · 常 + V",
      "gloss": "adverbs before the verb",
      "example": "我们也都是学生。",
-     "point": "adverb-placement"
+     "point": "adverb-placement",
+     "level": 1
     },
     {
      "id": "zh.word-order.duration",
      "head": "V + 多久",
      "gloss": "how long, after the verb",
      "example": "我学了两年汉语。",
-     "point": "duration-after-verb"
+     "point": "duration-after-verb",
+     "level": 2
     },
     {
      "id": "zh.word-order.frequency",
      "head": "V + 几次",
      "gloss": "how many times, after the verb",
      "example": "我去过三次长城。",
-     "point": "frequency-after-verb"
+     "point": "frequency-after-verb",
+     "level": 2
     },
     {
      "id": "zh.word-order.big-small",
      "head": "大 → 小",
      "gloss": "dates and addresses, largest first",
      "example": "2026年9月28号",
-     "point": "big-to-small"
+     "point": "big-to-small",
+     "level": 1
     },
     {
      "id": "zh.word-order.question-word",
      "head": "疑问词不动",
      "gloss": "question words stay put",
      "example": "你在哪儿工作？",
-     "point": "question-word-in-situ"
+     "point": "question-word-in-situ",
+     "level": 1
     },
     {
      "id": "zh.word-order.topic",
      "head": "宾语在前",
      "gloss": "the object first, as topic",
      "example": "这本书我已经看完了。",
-     "point": "topic-fronting"
+     "point": "topic-fronting",
+     "level": 2
     },
     {
      "id": "zh.word-order.serial",
      "head": "V₁ + V₂",
      "gloss": "go somewhere to do something",
      "example": "我去超市买水果。",
-     "point": "serial-verb-purpose"
+     "point": "serial-verb-purpose",
+     "level": 1
     },
     {
      "id": "zh.word-order.dao-qu",
      "head": "到 + 地方 + 去",
      "gloss": "going somewhere",
      "example": "他明天到上海去。",
-     "point": "dao-place-qu"
+     "point": "dao-place-qu",
+     "level": 2
     },
     {
      "id": "zh.word-order.existential",
      "head": "地方 + 有 + 东西",
      "gloss": "there is",
      "example": "桌子上有一本书。",
-     "point": "existential-you"
+     "point": "existential-you",
+     "level": 1
     },
     {
      "id": "zh.word-order.time-clause",
      "head": "…以前 · …以后",
      "gloss": "before and after, at the end of the clause",
      "example": "下班以后我去健身房。",
-     "point": "time-clause-order"
+     "point": "time-clause-order",
+     "level": 3
     },
     {
      "id": "zh.word-order.verb-copy",
      "head": "V + O + V得",
      "gloss": "say the verb twice",
      "example": "他开车开得很快。",
-     "point": "verb-copying"
+     "point": "verb-copying",
+     "level": 3
     },
     {
      "id": "zh.word-order.separable",
      "head": "见面 → 见过两次面",
      "gloss": "verbs that split",
      "example": "我跟他见过两次面。",
-     "point": "separable-verbs"
+     "point": "separable-verbs",
+     "level": 3
+    },
+    {
+     "id": "zh.word-order.shi",
+     "head": "A 是 B",
+     "reading": "shì",
+     "gloss": "is, between two nouns",
+     "example": "他是医生。",
+     "point": "shi-identity",
+     "level": 1
+    },
+    {
+     "id": "zh.word-order.adj",
+     "head": "很 + adj",
+     "reading": "hěn",
+     "gloss": "no 是 before an adjective",
+     "example": "今天很热。",
+     "point": "adjective-predicate",
+     "level": 1
+    },
+    {
+     "id": "zh.word-order.localizer",
+     "head": "东西 + 上 · 里 · 下",
+     "reading": "shang · li · xia",
+     "gloss": "on, in, under: after the noun",
+     "example": "书在桌子上。",
+     "point": "localizer-suffix",
+     "level": 1
+    },
+    {
+     "id": "zh.word-order.no-it",
+     "head": "no 它",
+     "gloss": "a thing already named needs no 'it'",
+     "example": "这本书我已经看完了。",
+     "point": "object-pronoun-drop",
+     "level": 2
+    },
+    {
+     "id": "zh.word-order.wh-dou",
+     "head": "谁 · 什么 · 哪儿 + 都",
+     "reading": "dōu",
+     "gloss": "everyone, nothing, nowhere",
+     "example": "我什么都不想吃。",
+     "point": "wh-universal",
+     "level": 3
+    },
+    {
+     "id": "zh.word-order.wh-some",
+     "head": "什么 · 谁 = some-",
+     "gloss": "something, someone, inside a statement",
+     "example": "我想吃点儿什么。",
+     "point": "wh-indefinite",
+     "level": 3
+    },
+    {
+     "id": "zh.word-order.you-noun",
+     "head": "很有 + noun",
+     "reading": "hěn yǒu",
+     "gloss": "a quality said as a noun you have",
+     "example": "这本书很有意思。",
+     "point": "you-noun-adj",
+     "level": 3
     }
    ],
    "formats": [
@@ -725,7 +1111,8 @@
      "reading": "le",
      "gloss": "done, happened",
      "example": "我昨天买了一件衣服。",
-     "point": "le-completion"
+     "point": "le-completion",
+     "level": 1
     },
     {
      "id": "zh.aspect.le-change",
@@ -733,7 +1120,8 @@
      "reading": "le",
      "gloss": "new situation",
      "example": "下雨了。",
-     "point": "le-change"
+     "point": "le-change",
+     "level": 1
     },
     {
      "id": "zh.aspect.le-ongoing",
@@ -741,7 +1129,8 @@
      "reading": "le … le",
      "gloss": "and still going",
      "example": "我学汉语学了两年了。",
-     "point": "le-change"
+     "point": "le-change",
+     "level": 3
     },
     {
      "id": "zh.aspect.guo",
@@ -749,7 +1138,8 @@
      "reading": "guo",
      "gloss": "ever, at some point",
      "example": "我去过长城。",
-     "point": "guo-experience"
+     "point": "guo-experience",
+     "level": 2
     },
     {
      "id": "zh.aspect.zhe",
@@ -757,7 +1147,8 @@
      "reading": "zhe",
      "gloss": "state that holds",
      "example": "门开着。",
-     "point": "zhe-durative"
+     "point": "zhe-durative",
+     "level": 2
     },
     {
      "id": "zh.aspect.zhe-place",
@@ -765,7 +1156,8 @@
      "reading": "zhe",
      "gloss": "something placed there",
      "example": "墙上挂着一张地图。",
-     "point": "existential-zhe"
+     "point": "existential-zhe",
+     "level": 2
     },
     {
      "id": "zh.aspect.zai",
@@ -773,7 +1165,8 @@
      "reading": "zài · zhèngzài",
      "gloss": "in progress",
      "example": "他在写作业。",
-     "point": "zai-progressive"
+     "point": "zai-progressive",
+     "level": 1
     },
     {
      "id": "zh.aspect.mei-no-le",
@@ -781,21 +1174,33 @@
      "reading": "méi",
      "gloss": "no 了 after 没",
      "example": "我昨天没去。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.aspect.habit",
      "head": "habit, no 了",
      "gloss": "used to, every day",
      "example": "我以前常常去他家。",
-     "point": "le-completion"
+     "point": "le-completion",
+     "level": 2
     },
     {
      "id": "zh.aspect.redup",
      "head": "VV · V一下",
      "gloss": "a quick try",
      "example": "你尝尝这个菜。",
-     "point": "verb-reduplication"
+     "point": "verb-reduplication",
+     "level": 2
+    },
+    {
+     "id": "zh.aspect.youzhe",
+     "head": "有着",
+     "reading": "yǒuzhe",
+     "gloss": "has (a history, a quality), written",
+     "example": "这座城市有着悠久的历史。",
+     "point": "you-zhe",
+     "level": 5
     }
    ],
    "formats": [
@@ -817,7 +1222,8 @@
      "group": "ACTIONS",
      "gloss": "won't, doesn't",
      "example": "我明天不去。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.mei-action",
@@ -826,7 +1232,8 @@
      "group": "ACTIONS",
      "gloss": "didn't",
      "example": "我昨天没去。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.mei-you",
@@ -835,7 +1242,8 @@
      "group": "有",
      "gloss": "don't have, there isn't",
      "example": "我没有时间。",
-     "point": "you-possession"
+     "point": "you-possession",
+     "level": 1
     },
     {
      "id": "zh.negation.bu-shi",
@@ -844,7 +1252,8 @@
      "group": "是",
      "gloss": "isn't",
      "example": "他不是老师。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.bu-state",
@@ -853,7 +1262,8 @@
      "group": "STATES",
      "gloss": "knowing, liking",
      "example": "我不知道。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.bu-adj",
@@ -862,7 +1272,8 @@
      "group": "ADJECTIVES",
      "gloss": "even about the past",
      "example": "昨天不冷。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.bu-modal",
@@ -871,7 +1282,8 @@
      "group": "MODALS",
      "gloss": "can't, won't, don't want",
      "example": "我不会游泳。",
-     "point": "bu-mei"
+     "point": "bu-mei",
+     "level": 1
     },
     {
      "id": "zh.negation.mei-guo",
@@ -880,7 +1292,8 @@
      "group": "EXPERIENCE",
      "gloss": "never have",
      "example": "我没去过日本。",
-     "point": "guo-experience"
+     "point": "guo-experience",
+     "level": 2
     },
     {
      "id": "zh.negation.haimei",
@@ -889,7 +1302,8 @@
      "group": "NOT YET",
      "gloss": "not yet",
      "example": "我还没吃饭呢。",
-     "point": "haimei-ne"
+     "point": "haimei-ne",
+     "level": 2
     },
     {
      "id": "zh.negation.bu-never",
@@ -898,7 +1312,8 @@
      "group": "NEVER",
      "gloss": "never does",
      "example": "他从来不喝酒。",
-     "point": "conglai-bu-mei"
+     "point": "conglai-bu-mei",
+     "level": 3
     },
     {
      "id": "zh.negation.mei-never",
@@ -907,7 +1322,8 @@
      "group": "NEVER",
      "gloss": "never has",
      "example": "我从来没见过他。",
-     "point": "conglai-bu-mei"
+     "point": "conglai-bu-mei",
+     "level": 3
     },
     {
      "id": "zh.negation.bu-result",
@@ -916,7 +1332,8 @@
      "group": "RESULTS",
      "gloss": "can't",
      "example": "他说得太快，我听不懂。",
-     "point": "potential-complement"
+     "point": "potential-complement",
+     "level": 3
     },
     {
      "id": "zh.negation.mei-result",
@@ -925,7 +1342,8 @@
      "group": "RESULTS",
      "gloss": "didn't",
      "example": "对不起，我没听懂。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.negation.bu-atall",
@@ -934,7 +1352,8 @@
      "group": "NOT AT ALL",
      "gloss": "not at all",
      "example": "我一点儿也不累。",
-     "point": "yidian-ye-bu"
+     "point": "yidian-ye-bu",
+     "level": 3
     },
     {
      "id": "zh.negation.mei-atall",
@@ -943,7 +1362,30 @@
      "group": "NOT AT ALL",
      "gloss": "not at all, so far",
      "example": "他一点儿也没变。",
-     "point": "yidian-ye-bu"
+     "point": "yidian-ye-bu",
+     "level": 3
+    },
+    {
+     "id": "zh.negation.budebu",
+     "head": "不得不",
+     "reading": "bùdébù",
+     "gloss": "have no choice but to",
+     "group": "TWICE",
+     "tag": "不",
+     "example": "我不得不同意。",
+     "point": "double-negative",
+     "level": 4
+    },
+    {
+     "id": "zh.negation.meiyou-bu",
+     "head": "没有…不",
+     "reading": "méiyǒu … bù",
+     "gloss": "every single one",
+     "group": "TWICE",
+     "tag": "没",
+     "example": "没有人不喜欢他。",
+     "point": "double-negative",
+     "level": 4
     }
    ],
    "formats": [
@@ -963,7 +1405,8 @@
      "reading": "ma",
      "gloss": "yes-no question",
      "example": "你是学生吗？",
-     "point": "ma-question"
+     "point": "ma-question",
+     "level": 1
     },
     {
      "id": "zh.particles.ne-back",
@@ -971,7 +1414,8 @@
      "reading": "ne",
      "gloss": "and you? · where is?",
      "example": "我很好，你呢？",
-     "point": "ne-and-you"
+     "point": "ne-and-you",
+     "level": 1
     },
     {
      "id": "zh.particles.ne-wh",
@@ -979,7 +1423,8 @@
      "reading": "ne",
      "gloss": "softens a real question",
      "example": "你去哪儿呢？",
-     "point": "ne-and-you"
+     "point": "ne-and-you",
+     "level": 2
     },
     {
      "id": "zh.particles.ne-ongoing",
@@ -987,7 +1432,8 @@
      "reading": "ne",
      "gloss": "going on right now",
      "example": "他在打电话呢。",
-     "point": "zai-progressive"
+     "point": "zai-progressive",
+     "level": 2
     },
     {
      "id": "zh.particles.ba-suggest",
@@ -995,7 +1441,8 @@
      "reading": "ba",
      "gloss": "let's, suggestion",
      "example": "我们走吧。",
-     "point": "ba-suggestion"
+     "point": "ba-suggestion",
+     "level": 1
     },
     {
      "id": "zh.particles.ba-guess",
@@ -1003,7 +1450,8 @@
      "reading": "ba",
      "gloss": "I suppose, right?",
      "example": "你是新来的吧？",
-     "point": "ba-guess"
+     "point": "ba-guess",
+     "level": 1
     },
     {
      "id": "zh.particles.de",
@@ -1011,7 +1459,8 @@
      "reading": "de",
      "gloss": "whose, which",
      "example": "这是我妈妈做的菜。",
-     "point": "de-possessive"
+     "point": "de-possessive",
+     "level": 1
     },
     {
      "id": "zh.particles.de-adv",
@@ -1019,7 +1468,8 @@
      "reading": "de",
      "gloss": "how, before the verb",
      "example": "他高兴地说……",
-     "point": "de-three-ways"
+     "point": "de-three-ways",
+     "level": 2
     },
     {
      "id": "zh.particles.de-comp",
@@ -1027,7 +1477,8 @@
      "reading": "de",
      "gloss": "how well, after the verb",
      "example": "她唱得真好听。",
-     "point": "de-three-ways"
+     "point": "de-three-ways",
+     "level": 2
     },
     {
      "id": "zh.particles.dehua",
@@ -1035,13 +1486,33 @@
      "reading": "dehuà",
      "gloss": "if, supposing",
      "example": "明天下雨的话，我们就不去了。",
-     "point": "dehua"
+     "point": "dehua",
+     "level": 3
+    },
+    {
+     "id": "zh.particles.a-not-a",
+     "head": "V不V",
+     "reading": "bu",
+     "gloss": "yes-no question, no 吗",
+     "example": "你去不去？",
+     "point": "a-not-a",
+     "level": 1
+    },
+    {
+     "id": "zh.particles.stacked",
+     "head": "我新买的那本中文书",
+     "reading": "de",
+     "gloss": "several modifiers, one 的",
+     "example": "一位很有经验的中国老师",
+     "point": "stacked-modifiers",
+     "level": 4
     }
    ],
    "formats": [
     "pick-one",
     "flip",
-    "transform"
+    "transform",
+    "build"
    ]
   },
   {
@@ -1056,7 +1527,8 @@
      "reading": "bǎ",
      "gloss": "object first, then what happened to it",
      "example": "请把门关上。",
-     "point": "ba-construction"
+     "point": "ba-construction",
+     "level": 3
     },
     {
      "id": "zh.coverbs.bei",
@@ -1064,7 +1536,8 @@
      "reading": "bèi",
      "gloss": "done to it",
      "example": "我的钱包被偷了。",
-     "point": "bei-passive"
+     "point": "bei-passive",
+     "level": 3
     },
     {
      "id": "zh.coverbs.jiao-rang",
@@ -1072,7 +1545,8 @@
      "reading": "jiào · ràng",
      "gloss": "spoken 被",
      "example": "蛋糕叫弟弟吃了。",
-     "point": "bei-jiao-rang"
+     "point": "bei-jiao-rang",
+     "level": 4
     },
     {
      "id": "zh.coverbs.gei",
@@ -1080,7 +1554,8 @@
      "reading": "gěi",
      "gloss": "to, for someone",
      "example": "我给你打电话。",
-     "point": "gei-recipient"
+     "point": "gei-recipient",
+     "level": 2
     },
     {
      "id": "zh.coverbs.gen",
@@ -1088,7 +1563,8 @@
      "reading": "gēn",
      "gloss": "with someone",
      "example": "我跟朋友一起去。",
-     "point": "gen-together"
+     "point": "gen-together",
+     "level": 2
     },
     {
      "id": "zh.coverbs.li",
@@ -1096,7 +1572,8 @@
      "reading": "lí",
      "gloss": "distance from",
      "example": "我家离学校很近。",
-     "point": "li-distance"
+     "point": "li-distance",
+     "level": 2
     },
     {
      "id": "zh.coverbs.dui",
@@ -1104,7 +1581,8 @@
      "reading": "duì",
      "gloss": "towards, for",
      "example": "他对我很好。",
-     "point": "dui-attitude"
+     "point": "dui-attitude",
+     "level": 2
     },
     {
      "id": "zh.coverbs.wang",
@@ -1112,7 +1590,8 @@
      "reading": "wǎng",
      "gloss": "heading towards",
      "example": "一直往前走。",
-     "point": "wang-direction"
+     "point": "wang-direction",
+     "level": 2
     },
     {
      "id": "zh.coverbs.cong",
@@ -1120,7 +1599,8 @@
      "reading": "cóng",
      "gloss": "from, starting at",
      "example": "他是从上海来的。",
-     "point": "cong-dao"
+     "point": "cong-dao",
+     "level": 2
     },
     {
      "id": "zh.coverbs.zai",
@@ -1128,7 +1608,107 @@
      "reading": "zài",
      "gloss": "at, in",
      "example": "我们在咖啡馆见吧。",
-     "point": "zai-location"
+     "point": "zai-location",
+     "level": 1
+    },
+    {
+     "id": "zh.coverbs.pivot",
+     "head": "请 · 让 · 叫 + 人 + V",
+     "reading": "qǐng · ràng · jiào",
+     "gloss": "get someone to do it",
+     "example": "老师让我们写作文。",
+     "point": "pivot-request",
+     "level": 2
+    },
+    {
+     "id": "zh.coverbs.ba-once",
+     "head": "把 + O + V + 一遍",
+     "reading": "bǎ",
+     "gloss": "go over it once, or for a while",
+     "example": "把这本书看一遍。",
+     "point": "ba-thorough",
+     "level": 4
+    },
+    {
+     "id": "zh.coverbs.ba-dang",
+     "head": "把…当作 · 看成",
+     "reading": "dàngzuò · kànchéng",
+     "gloss": "treat A as B",
+     "example": "我一直把他当作朋友。",
+     "point": "ba-treat-as",
+     "level": 5
+    },
+    {
+     "id": "zh.coverbs.bei-gei",
+     "head": "被…给…",
+     "reading": "bèi … gěi",
+     "gloss": "spoken passive, extra 给",
+     "example": "杯子被他给打破了。",
+     "point": "bei-gei",
+     "level": 5
+    },
+    {
+     "id": "zh.coverbs.shi",
+     "head": "使",
+     "reading": "shǐ",
+     "gloss": "makes someone feel, written",
+     "example": "这个消息使大家很高兴。",
+     "point": "shi-causative",
+     "level": 4
+    },
+    {
+     "id": "zh.coverbs.ti",
+     "head": "替",
+     "reading": "tì",
+     "gloss": "in someone's place",
+     "example": "我替他去开会。",
+     "point": "ti-behalf",
+     "level": 5
+    },
+    {
+     "id": "zh.coverbs.ping-ju",
+     "head": "凭 · 据",
+     "reading": "píng · jù",
+     "gloss": "on the strength of · according to",
+     "example": "据我所知，他已经离职了。",
+     "point": "ping-ju",
+     "level": 5
+    },
+    {
+     "id": "zh.coverbs.duiyu-guanyu",
+     "head": "对于 · 关于",
+     "reading": "duìyú · guānyú",
+     "gloss": "as for · about",
+     "example": "关于明天的会议，我想说几句。",
+     "point": "duiyu-guanyu",
+     "level": 4
+    },
+    {
+     "id": "zh.coverbs.zai-xia",
+     "head": "在…下",
+     "reading": "zài … xià",
+     "gloss": "with (help), under (conditions)",
+     "example": "在老师的帮助下，他进步很快。",
+     "point": "zai-xia",
+     "level": 4
+    },
+    {
+     "id": "zh.coverbs.fangmian",
+     "head": "在…方面",
+     "reading": "fāngmiàn",
+     "gloss": "in terms of",
+     "example": "他在语言方面很有天赋。",
+     "point": "zai-fangmian",
+     "level": 4
+    },
+    {
+     "id": "zh.coverbs.suizhe",
+     "head": "随着",
+     "reading": "suízhe",
+     "gloss": "as … develops, along with",
+     "example": "随着年龄的增长，他越来越安静了。",
+     "point": "suizhe",
+     "level": 4
     }
    ],
    "formats": [
@@ -1149,7 +1729,8 @@
      "reading": "bǐ",
      "gloss": "A is more … than B",
      "example": "他比我高。",
-     "point": "bi-comparison"
+     "point": "bi-comparison",
+     "level": 2
     },
     {
      "id": "zh.comparison.bi-gap",
@@ -1157,7 +1738,8 @@
      "reading": "bǐ",
      "gloss": "by how much",
      "example": "他比我大两岁。",
-     "point": "bi-degree-gap"
+     "point": "bi-degree-gap",
+     "level": 2
     },
     {
      "id": "zh.comparison.bi-geng",
@@ -1165,7 +1747,8 @@
      "reading": "bǐ … gèng · hái",
      "gloss": "even more",
      "example": "今天比昨天还冷。",
-     "point": "bi-hai-geng"
+     "point": "bi-hai-geng",
+     "level": 2
     },
     {
      "id": "zh.comparison.bi-verb",
@@ -1173,7 +1756,8 @@
      "reading": "bǐ",
      "gloss": "does it better than B",
      "example": "他跑得比我快。",
-     "point": "bi-comparison"
+     "point": "bi-comparison",
+     "level": 3
     },
     {
      "id": "zh.comparison.meiyou",
@@ -1181,7 +1765,8 @@
      "reading": "méiyǒu … nàme",
      "gloss": "not as … as B",
      "example": "我没有他那么高。",
-     "point": "meiyou-comparison"
+     "point": "meiyou-comparison",
+     "level": 2
     },
     {
      "id": "zh.comparison.yiyang",
@@ -1189,7 +1774,8 @@
      "reading": "gēn … yíyàng",
      "gloss": "same as",
      "example": "我的手机跟你的一样。",
-     "point": "yiyang-comparison"
+     "point": "yiyang-comparison",
+     "level": 3
     },
     {
      "id": "zh.comparison.buyiyang",
@@ -1197,7 +1783,8 @@
      "reading": "gēn … bù yíyàng",
      "gloss": "different from",
      "example": "这件跟那件不一样。",
-     "point": "yiyang-comparison"
+     "point": "yiyang-comparison",
+     "level": 3
     },
     {
      "id": "zh.comparison.buru",
@@ -1205,7 +1792,17 @@
      "reading": "bùrú",
      "gloss": "A isn't as good as B",
      "example": "坐公交不如骑车快。",
-     "point": "buru-comparison"
+     "point": "buru-comparison",
+     "level": 4
+    },
+    {
+     "id": "zh.comparison.biqi",
+     "head": "比起 B，A 更…",
+     "reading": "bǐqǐ",
+     "gloss": "compared with B",
+     "example": "比起坐车，我更喜欢走路。",
+     "point": "biqi",
+     "level": 5
     }
    ],
    "formats": [
@@ -1226,7 +1823,8 @@
      "reading": "de",
      "gloss": "how it goes",
      "example": "他跑得很快。",
-     "point": "de-complement"
+     "point": "de-complement",
+     "level": 2
     },
     {
      "id": "zh.complements.de-neg",
@@ -1234,7 +1832,8 @@
      "reading": "de bù",
      "gloss": "doesn't go well",
      "example": "我昨晚睡得不好。",
-     "point": "de-complement"
+     "point": "de-complement",
+     "level": 2
     },
     {
      "id": "zh.complements.de-copy",
@@ -1242,7 +1841,8 @@
      "reading": "de",
      "gloss": "with an object, say the verb twice",
      "example": "他写字写得很漂亮。",
-     "point": "verb-copying"
+     "point": "verb-copying",
+     "level": 3
     },
     {
      "id": "zh.complements.potential",
@@ -1250,7 +1850,8 @@
      "reading": "de · bu",
      "gloss": "can, can't",
      "example": "听得懂 · 听不懂",
-     "point": "potential-complement"
+     "point": "potential-complement",
+     "level": 3
     },
     {
      "id": "zh.complements.buliao",
@@ -1258,7 +1859,8 @@
      "reading": "bu liǎo",
      "gloss": "can't manage",
      "example": "我吃不了这么多。",
-     "point": "keneng-buliao"
+     "point": "keneng-buliao",
+     "level": 4
     },
     {
      "id": "zh.complements.laibuji",
@@ -1266,7 +1868,8 @@
      "reading": "lái de jí · lái bu jí",
      "gloss": "time enough, too late",
      "example": "现在走还来得及。",
-     "point": "laibuji"
+     "point": "laibuji",
+     "level": 4
     },
     {
      "id": "zh.complements.jile",
@@ -1274,7 +1877,8 @@
      "reading": "jí le · de hěn",
      "gloss": "extremely",
      "example": "好极了",
-     "point": "degree-complement-jile"
+     "point": "degree-complement-jile",
+     "level": 3
     },
     {
      "id": "zh.complements.sile",
@@ -1282,7 +1886,8 @@
      "reading": "sǐ le",
      "gloss": "unbearably",
      "example": "热死了",
-     "point": "degree-si-le"
+     "point": "degree-si-le",
+     "level": 4
     },
     {
      "id": "zh.complements.clause",
@@ -1290,7 +1895,17 @@
      "reading": "de",
      "gloss": "so … that",
      "example": "他累得不想说话。",
-     "point": "state-complement-clause"
+     "point": "state-complement-clause",
+     "level": 5
+    },
+    {
+     "id": "zh.complements.buliaode",
+     "head": "adj得不得了",
+     "reading": "de bùdéliǎo",
+     "gloss": "beyond words",
+     "example": "他高兴得不得了。",
+     "point": "de-buliaode",
+     "level": 5
     }
    ],
    "formats": [
@@ -1311,7 +1926,8 @@
      "reading": "wán",
      "gloss": "finished",
      "example": "我做完作业了。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.hao",
@@ -1319,7 +1935,8 @@
      "reading": "hǎo",
      "gloss": "done, ready",
      "example": "饭做好了。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.dong",
@@ -1327,7 +1944,8 @@
      "reading": "dǒng",
      "gloss": "understood",
      "example": "我没听懂。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.jian",
@@ -1335,7 +1953,8 @@
      "reading": "jiàn",
      "gloss": "perceived",
      "example": "我看见他了。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.dao",
@@ -1343,7 +1962,8 @@
      "reading": "dào",
      "gloss": "reached, got it",
      "example": "我找到钥匙了。",
-     "point": "resultative-dao-zhu"
+     "point": "resultative-dao-zhu",
+     "level": 3
     },
     {
      "id": "zh.results.cuo",
@@ -1351,7 +1971,8 @@
      "reading": "cuò",
      "gloss": "wrongly",
      "example": "我打错电话了。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.zhu",
@@ -1359,7 +1980,8 @@
      "reading": "zhù",
      "gloss": "fixed in place",
      "example": "请记住我的号码。",
-     "point": "resultative-dao-zhu"
+     "point": "resultative-dao-zhu",
+     "level": 3
     },
     {
      "id": "zh.results.zou",
@@ -1367,7 +1989,8 @@
      "reading": "zǒu",
      "gloss": "away, gone",
      "example": "谁拿走了我的杯子？",
-     "point": "resultative-dao-zhu"
+     "point": "resultative-dao-zhu",
+     "level": 3
     },
     {
      "id": "zh.results.kai",
@@ -1375,7 +1998,8 @@
      "reading": "kāi",
      "gloss": "open, apart",
      "example": "请打开窗户。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.clean-clear",
@@ -1383,7 +2007,8 @@
      "reading": "gānjìng · qīngchu",
      "gloss": "clean, clear",
      "example": "我没看清楚。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 3
     },
     {
      "id": "zh.results.hui",
@@ -1391,7 +2016,8 @@
      "reading": "huì",
      "gloss": "learned to",
      "example": "他学会开车了。",
-     "point": "resultative"
+     "point": "resultative",
+     "level": 2
     },
     {
      "id": "zh.results.lai-qu",
@@ -1399,7 +2025,8 @@
      "reading": "lái · qù",
      "gloss": "towards me, away from me",
      "example": "快上来吃饭！",
-     "point": "directional-complement"
+     "point": "directional-complement",
+     "level": 2
     },
     {
      "id": "zh.results.jin-chu",
@@ -1407,7 +2034,8 @@
      "reading": "jìn · chū",
      "gloss": "in, out",
      "example": "他从包里拿出一本书。",
-     "point": "directional-complement"
+     "point": "directional-complement",
+     "level": 3
     },
     {
      "id": "zh.results.shang-xia",
@@ -1415,7 +2043,8 @@
      "reading": "shàng · xià",
      "gloss": "up, down",
      "example": "我们爬上山顶了。",
-     "point": "directional-complement"
+     "point": "directional-complement",
+     "level": 3
     },
     {
      "id": "zh.results.qilai",
@@ -1423,7 +2052,8 @@
      "reading": "qǐlai",
      "gloss": "starts, comes back to mind",
      "example": "大家都笑了起来。",
-     "point": "directional-extended"
+     "point": "directional-extended",
+     "level": 3
     },
     {
      "id": "zh.results.xiaqu",
@@ -1431,7 +2061,8 @@
      "reading": "xiàqu",
      "gloss": "keeps going",
      "example": "你继续说下去。",
-     "point": "directional-extended"
+     "point": "directional-extended",
+     "level": 3
     },
     {
      "id": "zh.results.chulai",
@@ -1439,7 +2070,17 @@
      "reading": "chūlai",
      "gloss": "can tell, figure out",
      "example": "我听得出来是他。",
-     "point": "directional-extended"
+     "point": "directional-extended",
+     "level": 3
+    },
+    {
+     "id": "zh.results.state",
+     "head": "V下来 · V起来 · V下去",
+     "reading": "xiàlai · qǐlai · xiàqu",
+     "gloss": "settling, setting in, keeping on",
+     "example": "天黑下来了。",
+     "point": "directional-state",
+     "level": 5
     }
    ],
    "formats": [
@@ -1460,7 +2101,8 @@
      "reading": "hé",
      "gloss": "and, between nouns only",
      "example": "我和他是同学。",
-     "point": "he-nouns-only"
+     "point": "he-nouns-only",
+     "level": 1
     },
     {
      "id": "zh.connectors.haishi",
@@ -1468,7 +2110,8 @@
      "reading": "háishi",
      "gloss": "or, in a question",
      "example": "你喝茶还是咖啡？",
-     "point": "haishi-choice"
+     "point": "haishi-choice",
+     "level": 1
     },
     {
      "id": "zh.connectors.huozhe",
@@ -1476,7 +2119,8 @@
      "reading": "huòzhě",
      "gloss": "or, in a statement",
      "example": "周六或者周日都可以。",
-     "point": "huozhe-statement"
+     "point": "huozhe-statement",
+     "level": 2
     },
     {
      "id": "zh.connectors.keshi",
@@ -1484,7 +2128,8 @@
      "reading": "dànshì · kěshì",
      "gloss": "but",
      "example": "我想去，可是没时间。",
-     "point": "danshi-keshi"
+     "point": "danshi-keshi",
+     "level": 1
     },
     {
      "id": "zh.connectors.buguo",
@@ -1492,7 +2137,8 @@
      "reading": "búguò",
      "gloss": "but, softer",
      "example": "东西不错，不过有点儿贵。",
-     "point": "danshi-keshi"
+     "point": "danshi-keshi",
+     "level": 3
     },
     {
      "id": "zh.connectors.erqie",
@@ -1500,7 +2146,8 @@
      "reading": "érqiě",
      "gloss": "and also, between clauses",
      "example": "她很漂亮，而且很聪明。",
-     "point": "budan-erqie"
+     "point": "budan-erqie",
+     "level": 3
     },
     {
      "id": "zh.connectors.suoyi",
@@ -1508,7 +2155,8 @@
      "reading": "suǒyǐ",
      "gloss": "so",
      "example": "下雨了，所以我们没去。",
-     "point": "yinwei-suoyi"
+     "point": "yinwei-suoyi",
+     "level": 1
     },
     {
      "id": "zh.connectors.yinwei",
@@ -1516,7 +2164,8 @@
      "reading": "yīnwèi",
      "gloss": "because",
      "example": "我不去了，因为明天有考试。",
-     "point": "yinwei-suoyi"
+     "point": "yinwei-suoyi",
+     "level": 1
     },
     {
      "id": "zh.connectors.ranhou",
@@ -1524,14 +2173,16 @@
      "reading": "ránhòu",
      "gloss": "and then",
      "example": "我们先吃饭，然后去看电影。",
-     "point": "xian-ranhou"
+     "point": "xian-ranhou",
+     "level": 3
     },
     {
      "id": "zh.connectors.lingwai",
      "head": "另外",
      "reading": "lìngwài",
      "gloss": "besides, also",
-     "example": "另外，再买一瓶酒。"
+     "example": "另外，再买一瓶酒。",
+     "level": 4
     },
     {
      "id": "zh.connectors.yaoburan",
@@ -1539,7 +2190,8 @@
      "reading": "yàobùrán",
      "gloss": "otherwise",
      "example": "快走吧，要不然就晚了。",
-     "point": "yaoburan"
+     "point": "yaoburan",
+     "level": 5
     },
     {
      "id": "zh.connectors.jiu",
@@ -1547,7 +2199,8 @@
      "reading": "jiù",
      "gloss": "already, sooner than expected",
      "example": "他八点就到了。",
-     "point": "cai-jiu"
+     "point": "cai-jiu",
+     "level": 3
     },
     {
      "id": "zh.connectors.cai",
@@ -1555,7 +2208,79 @@
      "reading": "cái",
      "gloss": "not until, later than expected",
      "example": "他十点才来。",
-     "point": "cai-jiu"
+     "point": "cai-jiu",
+     "level": 3
+    },
+    {
+     "id": "zh.connectors.subject",
+     "head": "因为 + 主语",
+     "gloss": "each clause keeps its subject",
+     "example": "因为那里很安静，所以我常去。",
+     "point": "subject-in-clause",
+     "level": 2
+    },
+    {
+     "id": "zh.connectors.que",
+     "head": "却",
+     "reading": "què",
+     "gloss": "but, after the subject",
+     "example": "我请了他，他却没来。",
+     "point": "que-contrast",
+     "level": 4
+    },
+    {
+     "id": "zh.connectors.fouze",
+     "head": "否则",
+     "reading": "fǒuzé",
+     "gloss": "otherwise",
+     "example": "快点儿走，否则会迟到。",
+     "point": "fouze",
+     "level": 4
+    },
+    {
+     "id": "zh.connectors.youyu",
+     "head": "由于…因此…",
+     "reading": "yóuyú … yīncǐ",
+     "gloss": "because, in writing",
+     "example": "由于天气原因，航班取消了。",
+     "point": "youyu-yinci",
+     "level": 4
+    },
+    {
+     "id": "zh.connectors.hao",
+     "head": "…，好 + V",
+     "reading": "hǎo",
+     "gloss": "so that",
+     "example": "你把地址写下来，我好去找你。",
+     "point": "hao-purpose",
+     "level": 4
+    },
+    {
+     "id": "zh.connectors.conger",
+     "head": "从而",
+     "reading": "cóng'ér",
+     "gloss": "thereby",
+     "example": "公司改进了流程，从而降低了成本。",
+     "point": "conger",
+     "level": 5
+    },
+    {
+     "id": "zh.connectors.kejian",
+     "head": "可见",
+     "reading": "kějiàn",
+     "gloss": "which shows",
+     "example": "他连夜赶来，可见这件事有多重要。",
+     "point": "kejian",
+     "level": 5
+    },
+    {
+     "id": "zh.connectors.zongzhi",
+     "head": "总之",
+     "reading": "zǒngzhī",
+     "gloss": "in short, to sum up",
+     "example": "总之，这件事还需要再考虑。",
+     "point": "zongzhi",
+     "level": 5
     }
    ],
    "formats": [
@@ -1576,7 +2301,8 @@
      "reading": "huì",
      "gloss": "know how to, learned",
      "example": "我会游泳。",
-     "point": "hui-neng"
+     "point": "hui-neng",
+     "level": 1
     },
     {
      "id": "zh.modals.hui-likely",
@@ -1584,7 +2310,8 @@
      "reading": "huì … de",
      "gloss": "will, likely",
      "example": "他会来的。",
-     "point": "hui-neng"
+     "point": "hui-neng",
+     "level": 2
     },
     {
      "id": "zh.modals.neng",
@@ -1592,7 +2319,8 @@
      "reading": "néng",
      "gloss": "can, able right now",
      "example": "我的腿好了，能走路了。",
-     "point": "hui-neng"
+     "point": "hui-neng",
+     "level": 1
     },
     {
      "id": "zh.modals.keyi",
@@ -1600,7 +2328,8 @@
      "reading": "kěyǐ",
      "gloss": "may, allowed",
      "example": "这儿可以抽烟吗？",
-     "point": "hui-neng"
+     "point": "hui-neng",
+     "level": 1
     },
     {
      "id": "zh.modals.dei",
@@ -1608,7 +2337,8 @@
      "reading": "děi",
      "gloss": "have to",
      "example": "太晚了，我得走了。",
-     "point": "dei-necessity"
+     "point": "dei-necessity",
+     "level": 3
     },
     {
      "id": "zh.modals.yinggai",
@@ -1616,7 +2346,8 @@
      "reading": "yīnggāi",
      "gloss": "should",
      "example": "你应该多休息。",
-     "point": "dei-necessity"
+     "point": "dei-necessity",
+     "level": 2
     },
     {
      "id": "zh.modals.bixu",
@@ -1624,7 +2355,8 @@
      "reading": "bìxū",
      "gloss": "must",
      "example": "你们必须按时交作业。",
-     "point": "dei-necessity"
+     "point": "dei-necessity",
+     "level": 3
     },
     {
      "id": "zh.modals.keneng",
@@ -1632,7 +2364,8 @@
      "reading": "kěnéng",
      "gloss": "might",
      "example": "他可能不来了。",
-     "point": "hui-neng"
+     "point": "hui-neng",
+     "level": 2
     },
     {
      "id": "zh.modals.buyong",
@@ -1640,7 +2373,8 @@
      "reading": "búyòng",
      "gloss": "no need",
      "example": "你不用来了。",
-     "point": "buyong-bubi"
+     "point": "buyong-bubi",
+     "level": 2
     },
     {
      "id": "zh.modals.bie",
@@ -1648,12 +2382,197 @@
      "reading": "bié",
      "gloss": "don't",
      "example": "别哭了。",
-     "point": "bie-imperative"
+     "point": "bie-imperative",
+     "level": 2
     }
    ],
    "formats": [
     "pick-one",
     "flip"
+   ]
+  },
+  {
+   "id": "zh.adverbs",
+   "name": "Attitude",
+   "sub": "居然 · 根本 · 难怪",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "zh.adverbs.dou-le",
+     "head": "都…了",
+     "reading": "dōu … le",
+     "gloss": "already, and that's a lot",
+     "example": "都十点了，他还没起床。",
+     "point": "dou-le-already",
+     "level": 2
+    },
+    {
+     "id": "zh.adverbs.youdian",
+     "head": "有点儿 · 一点儿",
+     "reading": "yǒudiǎnr · yìdiǎnr",
+     "gloss": "a bit (too), before · a bit more, after",
+     "example": "今天有点儿冷。",
+     "point": "youdian-yidian",
+     "level": 2
+    },
+    {
+     "id": "zh.adverbs.zheme",
+     "head": "这么 · 那么",
+     "reading": "zhème · nàme",
+     "gloss": "so (this much, that much)",
+     "example": "今天怎么这么热？",
+     "point": "zheme-name",
+     "level": 2
+    },
+    {
+     "id": "zh.adverbs.you-zai",
+     "head": "又 · 再",
+     "reading": "yòu · zài",
+     "gloss": "again, already done · again, still to come",
+     "example": "他又迟到了。 · 请再说一遍。",
+     "point": "you-zai",
+     "level": 3
+    },
+    {
+     "id": "zh.adverbs.nandao",
+     "head": "难道…吗",
+     "reading": "nándào … ma",
+     "gloss": "surely not …?",
+     "example": "难道你不知道吗？",
+     "point": "nandao-ma",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.daodi",
+     "head": "到底",
+     "reading": "dàodǐ",
+     "gloss": "on earth, pressing for an answer",
+     "example": "你到底去不去？",
+     "point": "daodi-question",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.nar",
+     "head": "哪儿…？",
+     "reading": "nǎr",
+     "gloss": "how could …? (rhetorical)",
+     "example": "我哪儿知道他会来？",
+     "point": "nar-rhetorical",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.chadianr",
+     "head": "差点儿",
+     "reading": "chàdiǎnr",
+     "gloss": "almost (but didn't)",
+     "example": "我差点儿迟到。",
+     "point": "chadianr",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.shuobuding",
+     "head": "说不定",
+     "reading": "shuōbudìng",
+     "gloss": "maybe, you never know",
+     "example": "说不定他已经到了。",
+     "point": "shuobuding",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.zaiyebu",
+     "head": "再也不…了",
+     "reading": "zài yě bù … le",
+     "gloss": "never again",
+     "example": "我再也不相信他了。",
+     "point": "zaiyebu",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.zenme-ye",
+     "head": "怎么也 · 都 + 不",
+     "reading": "zěnme yě bù",
+     "gloss": "no matter what I try",
+     "example": "我怎么也想不起来他的名字。",
+     "point": "zenme-ye-bu",
+     "level": 4
+    },
+    {
+     "id": "zh.adverbs.faner",
+     "head": "反而",
+     "reading": "fǎn'ér",
+     "gloss": "instead, the opposite of what you'd expect",
+     "example": "药吃多了反而不好。",
+     "point": "fan-er",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.juran",
+     "head": "居然",
+     "reading": "jūrán",
+     "gloss": "actually, to my surprise",
+     "example": "他居然一句话也没说就走了。",
+     "point": "juran",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.genben",
+     "head": "根本",
+     "reading": "gēnběn",
+     "gloss": "not at all, not in the first place",
+     "example": "我根本不知道这件事。",
+     "point": "genben",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.jianzhi",
+     "head": "简直",
+     "reading": "jiǎnzhí",
+     "gloss": "simply, practically",
+     "example": "这简直太不可思议了。",
+     "point": "jianzhi",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.fanzheng",
+     "head": "反正",
+     "reading": "fǎnzhèng",
+     "gloss": "anyway, either way",
+     "example": "反正我也没事，就陪你去吧。",
+     "point": "fanzheng",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.guoran",
+     "head": "果然",
+     "reading": "guǒrán",
+     "gloss": "sure enough",
+     "example": "果然跟他说的一样。",
+     "point": "guoran",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.sihu",
+     "head": "似乎 · 仿佛",
+     "reading": "sìhū · fǎngfú",
+     "gloss": "seems, as if: 好像 in writing",
+     "example": "他似乎并不在意。",
+     "point": "sihu-fangfu",
+     "level": 5
+    },
+    {
+     "id": "zh.adverbs.nanguai",
+     "head": "难怪",
+     "reading": "nánguài",
+     "gloss": "no wonder",
+     "example": "下雪了，难怪这么冷。",
+     "point": "nanguai",
+     "level": 5
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "spot-it"
    ]
   },
   {
@@ -1666,60 +2585,69 @@
      "id": "zh.tones.t1",
      "head": "一声",
      "reading": "mā",
-     "gloss": "high and level"
+     "gloss": "high and level",
+     "level": 1
     },
     {
      "id": "zh.tones.t2",
      "head": "二声",
      "reading": "má",
-     "gloss": "rising"
+     "gloss": "rising",
+     "level": 1
     },
     {
      "id": "zh.tones.t3",
      "head": "三声",
      "reading": "mǎ",
-     "gloss": "low, dipping"
+     "gloss": "low, dipping",
+     "level": 1
     },
     {
      "id": "zh.tones.t4",
      "head": "四声",
      "reading": "mà",
-     "gloss": "falling"
+     "gloss": "falling",
+     "level": 1
     },
     {
      "id": "zh.tones.t0",
      "head": "轻声",
      "reading": "ma",
      "gloss": "light and short",
-     "point": "neutral-tone-words"
+     "point": "neutral-tone-words",
+     "level": 1
     },
     {
      "id": "zh.tones.c11",
      "head": "1 + 1",
      "reading": "fēijī",
      "gloss": "飞机 · 今天 · 咖啡",
-     "example": "飞机"
+     "example": "飞机",
+     "level": 1
     },
     {
      "id": "zh.tones.c12",
      "head": "1 + 2",
      "reading": "zhōngguó",
      "gloss": "中国 · 欢迎 · 公园",
-     "example": "中国"
+     "example": "中国",
+     "level": 1
     },
     {
      "id": "zh.tones.c13",
      "head": "1 + 3",
      "reading": "qiānbǐ",
      "gloss": "铅笔 · 身体 · 开始",
-     "example": "铅笔"
+     "example": "铅笔",
+     "level": 1
     },
     {
      "id": "zh.tones.c14",
      "head": "1 + 4",
      "reading": "shāngdiàn",
      "gloss": "商店 · 音乐 · 生日",
-     "example": "商店"
+     "example": "商店",
+     "level": 1
     },
     {
      "id": "zh.tones.c10",
@@ -1727,35 +2655,40 @@
      "reading": "zhuōzi",
      "gloss": "桌子 · 东西 · 衣服",
      "example": "桌子",
-     "point": "neutral-tone-words"
+     "point": "neutral-tone-words",
+     "level": 1
     },
     {
      "id": "zh.tones.c21",
      "head": "2 + 1",
      "reading": "míngtiān",
      "gloss": "明天 · 房间 · 昨天",
-     "example": "明天"
+     "example": "明天",
+     "level": 1
     },
     {
      "id": "zh.tones.c22",
      "head": "2 + 2",
      "reading": "xuéxí",
      "gloss": "学习 · 银行 · 同学",
-     "example": "学习"
+     "example": "学习",
+     "level": 1
     },
     {
      "id": "zh.tones.c23",
      "head": "2 + 3",
      "reading": "píngguǒ",
      "gloss": "苹果 · 词典 · 牛奶",
-     "example": "苹果"
+     "example": "苹果",
+     "level": 1
     },
     {
      "id": "zh.tones.c24",
      "head": "2 + 4",
      "reading": "xuéxiào",
      "gloss": "学校 · 同事 · 颜色",
-     "example": "学校"
+     "example": "学校",
+     "level": 1
     },
     {
      "id": "zh.tones.c20",
@@ -1763,21 +2696,24 @@
      "reading": "háizi",
      "gloss": "孩子 · 朋友 · 名字",
      "example": "孩子",
-     "point": "neutral-tone-words"
+     "point": "neutral-tone-words",
+     "level": 1
     },
     {
      "id": "zh.tones.c31",
      "head": "3 + 1",
      "reading": "lǎoshī",
      "gloss": "老师 · 北京 · 手机",
-     "example": "老师"
+     "example": "老师",
+     "level": 1
     },
     {
      "id": "zh.tones.c32",
      "head": "3 + 2",
      "reading": "lǚxíng",
      "gloss": "旅行 · 小时 · 可能",
-     "example": "旅行"
+     "example": "旅行",
+     "level": 1
     },
     {
      "id": "zh.tones.c33",
@@ -1785,14 +2721,16 @@
      "reading": "nǐ hǎo → ní hǎo",
      "gloss": "said 2 + 3",
      "example": "你好",
-     "point": "third-tone-sandhi"
+     "point": "third-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.tones.c34",
      "head": "3 + 4",
      "reading": "kǎoshì",
      "gloss": "考试 · 米饭 · 比赛",
-     "example": "考试"
+     "example": "考试",
+     "level": 1
     },
     {
      "id": "zh.tones.c30",
@@ -1800,35 +2738,40 @@
      "reading": "jiějie",
      "gloss": "姐姐 · 喜欢 · 椅子",
      "example": "姐姐",
-     "point": "neutral-tone-words"
+     "point": "neutral-tone-words",
+     "level": 1
     },
     {
      "id": "zh.tones.c41",
      "head": "4 + 1",
      "reading": "qìchē",
      "gloss": "汽车 · 面包 · 上班",
-     "example": "汽车"
+     "example": "汽车",
+     "level": 1
     },
     {
      "id": "zh.tones.c42",
      "head": "4 + 2",
      "reading": "wèntí",
      "gloss": "问题 · 练习 · 复习",
-     "example": "问题"
+     "example": "问题",
+     "level": 1
     },
     {
      "id": "zh.tones.c43",
      "head": "4 + 3",
      "reading": "diànnǎo",
      "gloss": "电脑 · 汉语 · 跳舞",
-     "example": "电脑"
+     "example": "电脑",
+     "level": 1
     },
     {
      "id": "zh.tones.c44",
      "head": "4 + 4",
      "reading": "diànshì",
      "gloss": "电视 · 再见 · 饭店",
-     "example": "电视"
+     "example": "电视",
+     "level": 1
     },
     {
      "id": "zh.tones.c40",
@@ -1836,7 +2779,17 @@
      "reading": "bàba",
      "gloss": "爸爸 · 谢谢 · 意思",
      "example": "爸爸",
-     "point": "neutral-tone-words"
+     "point": "neutral-tone-words",
+     "level": 1
+    },
+    {
+     "id": "zh.tones.erhua",
+     "head": "儿化",
+     "reading": "-r",
+     "gloss": "儿 joins the syllable before it",
+     "example": "一点儿",
+     "point": "erhua",
+     "level": 3
     }
    ],
    "formats": [
@@ -1855,7 +2808,8 @@
      "reading": "nǐ hǎo → ní hǎo",
      "gloss": "first third tone rises",
      "example": "你好",
-     "point": "third-tone-sandhi"
+     "point": "third-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.3-3-3",
@@ -1863,7 +2817,8 @@
      "reading": "zhǎnlǎn guǎn → zhánlán guǎn",
      "gloss": "grouped by meaning",
      "example": "展览馆",
-     "point": "third-tone-sandhi"
+     "point": "third-tone-sandhi",
+     "level": 3
     },
     {
      "id": "zh.sandhi.yi-4",
@@ -1871,7 +2826,8 @@
      "reading": "yíyàng",
      "gloss": "before a fourth tone",
      "example": "一样",
-     "point": "yi-tone-sandhi"
+     "point": "yi-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.yi-123",
@@ -1879,7 +2835,8 @@
      "reading": "yìqǐ",
      "gloss": "before other tones",
      "example": "一起",
-     "point": "yi-tone-sandhi"
+     "point": "yi-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.yi-alone",
@@ -1887,7 +2844,8 @@
      "reading": "dì yī",
      "gloss": "counting, ordinals, at the end",
      "example": "第一",
-     "point": "yi-tone-sandhi"
+     "point": "yi-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.yi-redup",
@@ -1895,7 +2853,8 @@
      "reading": "kàn yi kàn",
      "gloss": "light between doubled verbs",
      "example": "看一看",
-     "point": "yi-tone-sandhi"
+     "point": "yi-tone-sandhi",
+     "level": 2
     },
     {
      "id": "zh.sandhi.bu-4",
@@ -1903,7 +2862,8 @@
      "reading": "bú shì",
      "gloss": "before a fourth tone",
      "example": "不是",
-     "point": "bu-tone-sandhi"
+     "point": "bu-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.bu-123",
@@ -1911,7 +2871,8 @@
      "reading": "bù máng",
      "gloss": "before other tones",
      "example": "不忙",
-     "point": "bu-tone-sandhi"
+     "point": "bu-tone-sandhi",
+     "level": 1
     },
     {
      "id": "zh.sandhi.bu-mid",
@@ -1919,7 +2880,8 @@
      "reading": "hǎo bu hǎo",
      "gloss": "light in the middle",
      "example": "好不好",
-     "point": "bu-tone-sandhi"
+     "point": "bu-tone-sandhi",
+     "level": 2
     }
    ],
    "formats": [
