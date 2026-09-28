@@ -1,0 +1,2361 @@
+{
+ "language": "german",
+ "chapters": [
+  {
+   "id": "de.verb-prep",
+   "name": "Verb + preposition",
+   "sub": "warten auf · denken an · halten von",
+   "layout": "pairs",
+   "entries": [
+    {
+     "head": "warten",
+     "gloss": "wait for",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Wir warten seit zehn Minuten auf den Bus.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-warten"
+    },
+    {
+     "head": "sich freuen",
+     "gloss": "look forward to",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Ich freue mich schon auf den Urlaub im Sommer.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-sich-freuen"
+    },
+    {
+     "head": "achten",
+     "gloss": "pay attention to",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Achte beim Fahren immer auf den Verkehr.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-achten"
+    },
+    {
+     "head": "aufpassen",
+     "gloss": "look after",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Kannst du heute Abend auf das Kind aufpassen?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-aufpassen"
+    },
+    {
+     "head": "sich vorbereiten",
+     "gloss": "prepare for",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Sie bereitet sich auf die Prüfung vor.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-sich-vorbereiten"
+    },
+    {
+     "head": "sich verlassen",
+     "gloss": "rely on",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Man kann sich nicht auf den Wetterbericht verlassen.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-sich-verlassen"
+    },
+    {
+     "head": "antworten",
+     "gloss": "reply to",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Er hat noch nicht auf die E-Mail geantwortet.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-antworten"
+    },
+    {
+     "head": "bestehen",
+     "gloss": "insist on",
+     "group": "auf",
+     "tag": "DAT",
+     "example": "Sie besteht auf dem Termin am Montag.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.auf-bestehen"
+    },
+    {
+     "head": "denken",
+     "gloss": "think of",
+     "group": "an",
+     "tag": "AKK",
+     "example": "Ich denke oft an die Zeit in Wien.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-denken"
+    },
+    {
+     "head": "sich erinnern",
+     "gloss": "remember",
+     "group": "an",
+     "tag": "AKK",
+     "example": "Erinnerst du dich an den Abend im Park?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-sich-erinnern"
+    },
+    {
+     "head": "glauben",
+     "gloss": "believe in",
+     "group": "an",
+     "tag": "AKK",
+     "example": "Sie glaubt an die Zukunft des Projekts.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-glauben"
+    },
+    {
+     "head": "sich gewöhnen",
+     "gloss": "get used to",
+     "group": "an",
+     "tag": "AKK",
+     "example": "Ich habe mich schnell an das Klima gewöhnt.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-sich-gewoehnen"
+    },
+    {
+     "head": "teilnehmen",
+     "gloss": "take part in",
+     "group": "an",
+     "tag": "DAT",
+     "example": "Nimmst du morgen an der Besprechung teil?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-teilnehmen"
+    },
+    {
+     "head": "arbeiten",
+     "gloss": "work on",
+     "group": "an",
+     "tag": "DAT",
+     "example": "Er arbeitet seit Monaten an einem Buch über Berlin.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-arbeiten"
+    },
+    {
+     "head": "zweifeln",
+     "gloss": "doubt",
+     "group": "an",
+     "tag": "DAT",
+     "example": "Niemand zweifelt an ihrer Ehrlichkeit.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.an-zweifeln"
+    },
+    {
+     "head": "sprechen",
+     "gloss": "talk about",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Wir müssen über das Problem sprechen.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.ueber-sprechen"
+    },
+    {
+     "head": "sich freuen",
+     "gloss": "be glad about",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Sie hat sich sehr über das Geschenk gefreut.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.ueber-sich-freuen"
+    },
+    {
+     "head": "sich ärgern",
+     "gloss": "be annoyed about",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Er ärgert sich über die Verspätung.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.ueber-sich-aergern"
+    },
+    {
+     "head": "nachdenken",
+     "gloss": "think about",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Ich muss noch über das Angebot nachdenken.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.ueber-nachdenken"
+    },
+    {
+     "head": "sich beschweren",
+     "gloss": "complain about",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Die Gäste beschweren sich über den Lärm.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.ueber-sich-beschweren"
+    },
+    {
+     "head": "sich interessieren",
+     "gloss": "be interested in",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Interessierst du dich für die Geschichte?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-sich-interessieren"
+    },
+    {
+     "head": "danken",
+     "gloss": "thank for",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Ich danke dir für die Hilfe.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-danken"
+    },
+    {
+     "head": "sich entscheiden",
+     "gloss": "decide on",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Wir haben uns für die Wohnung in der Altstadt entschieden.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-sich-entscheiden"
+    },
+    {
+     "head": "sich entschuldigen",
+     "gloss": "apologise for",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Er entschuldigt sich für den Fehler.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-sich-entschuldigen"
+    },
+    {
+     "head": "sorgen",
+     "gloss": "take care of",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Wer sorgt am Wochenende für den Hund?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-sorgen"
+    },
+    {
+     "head": "halten",
+     "gloss": "take for",
+     "group": "für",
+     "tag": "AKK",
+     "example": "Ich halte ihn für den besten Spieler im Team.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.fuer-halten"
+    },
+    {
+     "head": "halten",
+     "gloss": "think of",
+     "group": "von",
+     "tag": "DAT",
+     "example": "Was hältst du von der Idee?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.von-halten"
+    },
+    {
+     "head": "träumen",
+     "gloss": "dream of",
+     "group": "von",
+     "tag": "DAT",
+     "example": "Er träumt von einem Haus am Meer.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.von-traeumen"
+    },
+    {
+     "head": "abhängen",
+     "gloss": "depend on",
+     "group": "von",
+     "tag": "DAT",
+     "example": "Das hängt von der Situation ab.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.von-abhaengen"
+    },
+    {
+     "head": "erzählen",
+     "gloss": "tell about",
+     "group": "von",
+     "tag": "DAT",
+     "example": "Erzähl mir von der Reise!",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.von-erzaehlen"
+    },
+    {
+     "head": "anfangen",
+     "gloss": "start on",
+     "group": "mit",
+     "tag": "DAT",
+     "example": "Wann fängst du mit der Arbeit an?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.mit-anfangen"
+    },
+    {
+     "head": "aufhören",
+     "gloss": "stop",
+     "group": "mit",
+     "tag": "DAT",
+     "example": "Er hat mit dem Rauchen aufgehört.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.mit-aufhoeren"
+    },
+    {
+     "head": "telefonieren",
+     "gloss": "be on the phone with",
+     "group": "mit",
+     "tag": "DAT",
+     "example": "Ich habe gestern mit der Vermieterin telefoniert.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.mit-telefonieren"
+    },
+    {
+     "head": "sich beschäftigen",
+     "gloss": "deal with",
+     "group": "mit",
+     "tag": "DAT",
+     "example": "Sie beschäftigt sich schon lange mit der Frage.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.mit-sich-beschaeftigen"
+    },
+    {
+     "head": "rechnen",
+     "gloss": "expect",
+     "group": "mit",
+     "tag": "DAT",
+     "example": "Wir hatten nicht mit dem Regen gerechnet.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.mit-rechnen"
+    },
+    {
+     "head": "halten",
+     "gloss": "stand by",
+     "group": "zu",
+     "tag": "DAT",
+     "example": "Egal, was passiert, sie hält immer zu ihrem Bruder.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.zu-halten"
+    },
+    {
+     "head": "gehören",
+     "gloss": "be part of",
+     "group": "zu",
+     "tag": "DAT",
+     "example": "Er gehört zu unserer Familie.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.zu-gehoeren"
+    },
+    {
+     "head": "einladen",
+     "gloss": "invite to",
+     "group": "zu",
+     "tag": "DAT",
+     "example": "Sie hat uns zu ihrem Geburtstag eingeladen.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.zu-einladen"
+    },
+    {
+     "head": "passen",
+     "gloss": "go with",
+     "group": "zu",
+     "tag": "DAT",
+     "example": "Die Schuhe passen gut zu deinem Kleid.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.zu-passen"
+    },
+    {
+     "head": "gratulieren",
+     "gloss": "congratulate on",
+     "group": "zu",
+     "tag": "DAT",
+     "example": "Wir gratulieren dir zu deinem Erfolg!",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.zu-gratulieren"
+    },
+    {
+     "head": "fragen",
+     "gloss": "ask about",
+     "group": "nach",
+     "tag": "DAT",
+     "example": "Der Tourist fragt nach dem Weg zum Bahnhof.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.nach-fragen"
+    },
+    {
+     "head": "suchen",
+     "gloss": "look for",
+     "group": "nach",
+     "tag": "DAT",
+     "example": "Die Polizei sucht nach dem Täter.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.nach-suchen"
+    },
+    {
+     "head": "riechen",
+     "gloss": "smell of",
+     "group": "nach",
+     "tag": "DAT",
+     "example": "Die Küche riecht nach frischem Brot.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.nach-riechen"
+    },
+    {
+     "head": "Angst haben",
+     "gloss": "be afraid of",
+     "group": "vor",
+     "tag": "DAT",
+     "example": "Das Kind hat Angst vor dem Hund.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.vor-angst-haben"
+    },
+    {
+     "head": "warnen",
+     "gloss": "warn about",
+     "group": "vor",
+     "tag": "DAT",
+     "example": "Die Polizei warnt vor der Glätte auf den Straßen.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.vor-warnen"
+    },
+    {
+     "head": "sich kümmern",
+     "gloss": "look after",
+     "group": "um",
+     "tag": "AKK",
+     "example": "Wer kümmert sich um den Garten?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.um-sich-kuemmern"
+    },
+    {
+     "head": "bitten",
+     "gloss": "ask for",
+     "group": "um",
+     "tag": "AKK",
+     "example": "Darf ich Sie um einen Gefallen bitten?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.um-bitten"
+    },
+    {
+     "head": "sich bewerben",
+     "gloss": "apply for",
+     "group": "um",
+     "tag": "AKK",
+     "example": "Sie bewirbt sich um die Stelle als Ärztin.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.um-sich-bewerben"
+    },
+    {
+     "head": "sich bedanken",
+     "gloss": "thank (someone)",
+     "group": "bei",
+     "tag": "DAT",
+     "example": "Hast du dich schon bei der Nachbarin bedankt?",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.bei-sich-bedanken"
+    },
+    {
+     "head": "leiden",
+     "gloss": "suffer from",
+     "group": "unter",
+     "tag": "DAT",
+     "example": "Viele Menschen leiden unter der Hitze.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.unter-leiden"
+    },
+    {
+     "head": "bestehen",
+     "gloss": "consist of",
+     "group": "aus",
+     "tag": "DAT",
+     "example": "Die Wohnung besteht aus einer Küche und zwei Zimmern.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.aus-bestehen"
+    },
+    {
+     "head": "sich verlieben",
+     "gloss": "fall in love with",
+     "group": "in",
+     "tag": "AKK",
+     "example": "Er hat sich in eine Kollegin verliebt.",
+     "point": "verb-preposition",
+     "id": "de.verb-prep.in-sich-verlieben"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "two-step"
+   ]
+  },
+  {
+   "id": "de.two-way",
+   "name": "Two-way prepositions",
+   "sub": "im Büro · ins Büro · an die Wand",
+   "layout": "split",
+   "entries": [
+    {
+     "head": "im Büro",
+     "gloss": "wo?",
+     "group": "in",
+     "tag": "DAT",
+     "example": "Sie arbeitet heute im Büro.",
+     "point": "two-way-prep",
+     "id": "de.two-way.in-dat"
+    },
+    {
+     "head": "ins Büro",
+     "gloss": "wohin?",
+     "group": "in",
+     "tag": "AKK",
+     "example": "Nach der Arbeit gehen wir ins Kino.",
+     "point": "two-way-prep",
+     "id": "de.two-way.in-akk"
+    },
+    {
+     "head": "auf dem Tisch",
+     "gloss": "wo?",
+     "group": "auf",
+     "tag": "DAT",
+     "example": "Das Handy liegt auf dem Tisch.",
+     "point": "two-way-prep",
+     "id": "de.two-way.auf-dat"
+    },
+    {
+     "head": "auf den Tisch",
+     "gloss": "wohin?",
+     "group": "auf",
+     "tag": "AKK",
+     "example": "Leg das Handy bitte auf den Tisch.",
+     "point": "two-way-prep",
+     "id": "de.two-way.auf-akk"
+    },
+    {
+     "head": "an der Wand",
+     "gloss": "wo?",
+     "group": "an",
+     "tag": "DAT",
+     "example": "Das Bild hängt an der Wand.",
+     "point": "two-way-prep",
+     "id": "de.two-way.an-dat"
+    },
+    {
+     "head": "an die Wand",
+     "gloss": "wohin?",
+     "group": "an",
+     "tag": "AKK",
+     "example": "Ich hänge das Bild an die Wand.",
+     "point": "two-way-prep",
+     "id": "de.two-way.an-akk"
+    },
+    {
+     "head": "über der Stadt",
+     "gloss": "wo?",
+     "group": "über",
+     "tag": "DAT",
+     "example": "Die Lampe hängt über dem Esstisch.",
+     "point": "two-way-prep",
+     "id": "de.two-way.ueber-dat"
+    },
+    {
+     "head": "über die Straße",
+     "gloss": "wohin?",
+     "group": "über",
+     "tag": "AKK",
+     "example": "Geh nicht bei Rot über die Straße!",
+     "point": "two-way-prep",
+     "id": "de.two-way.ueber-akk"
+    },
+    {
+     "head": "unter dem Bett",
+     "gloss": "wo?",
+     "group": "unter",
+     "tag": "DAT",
+     "example": "Der Koffer liegt unter dem Bett.",
+     "point": "two-way-prep",
+     "id": "de.two-way.unter-dat"
+    },
+    {
+     "head": "unters Bett",
+     "gloss": "wohin?",
+     "group": "unter",
+     "tag": "AKK",
+     "example": "Schieb den Koffer unter das Bett.",
+     "point": "two-way-prep",
+     "id": "de.two-way.unter-akk"
+    },
+    {
+     "head": "vor dem Haus",
+     "gloss": "wo?",
+     "group": "vor",
+     "tag": "DAT",
+     "example": "Er wartet vor dem Haus.",
+     "point": "two-way-prep",
+     "id": "de.two-way.vor-dat"
+    },
+    {
+     "head": "vors Haus",
+     "gloss": "wohin?",
+     "group": "vor",
+     "tag": "AKK",
+     "example": "Stell die Fahrräder bitte vor das Haus.",
+     "point": "two-way-prep",
+     "id": "de.two-way.vor-akk"
+    },
+    {
+     "head": "hinter der Tür",
+     "gloss": "wo?",
+     "group": "hinter",
+     "tag": "DAT",
+     "example": "Der Besen steht hinter der Tür.",
+     "point": "two-way-prep",
+     "id": "de.two-way.hinter-dat"
+    },
+    {
+     "head": "hinter die Tür",
+     "gloss": "wohin?",
+     "group": "hinter",
+     "tag": "AKK",
+     "example": "Stell den Besen hinter die Tür.",
+     "point": "two-way-prep",
+     "id": "de.two-way.hinter-akk"
+    },
+    {
+     "head": "neben mir",
+     "gloss": "wo?",
+     "group": "neben",
+     "tag": "DAT",
+     "example": "Wer sitzt neben dir?",
+     "point": "two-way-prep",
+     "id": "de.two-way.neben-dat"
+    },
+    {
+     "head": "neben mich",
+     "gloss": "wohin?",
+     "group": "neben",
+     "tag": "AKK",
+     "example": "Komm, setz dich neben mich!",
+     "point": "two-way-prep",
+     "id": "de.two-way.neben-akk"
+    },
+    {
+     "head": "zwischen den Bergen",
+     "gloss": "wo?",
+     "group": "zwischen",
+     "tag": "DAT",
+     "example": "Das Dorf liegt zwischen den Bergen.",
+     "point": "two-way-prep",
+     "id": "de.two-way.zwischen-dat"
+    },
+    {
+     "head": "zwischen die Ordner",
+     "gloss": "wohin?",
+     "group": "zwischen",
+     "tag": "AKK",
+     "example": "Ich stelle das Buch zwischen die Ordner.",
+     "point": "two-way-prep",
+     "id": "de.two-way.zwischen-akk"
+    }
+   ],
+   "formats": [
+    "flip"
+   ]
+  },
+  {
+   "id": "de.fixed-preps",
+   "name": "Dative and accusative prepositions",
+   "sub": "mit dem · für den · ohne mich",
+   "layout": "cards",
+   "entries": [
+    {
+     "head": "aus",
+     "gloss": "from, out of",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Sie kommt aus der Schweiz.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.aus"
+    },
+    {
+     "head": "bei",
+     "gloss": "at, near",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Ich wohne noch bei meinen Eltern.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.bei"
+    },
+    {
+     "head": "mit",
+     "gloss": "with, by",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Wir fahren mit der U-Bahn.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.mit"
+    },
+    {
+     "head": "nach",
+     "gloss": "after, to",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Nach dem Unterricht gehen wir essen.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.nach"
+    },
+    {
+     "head": "seit",
+     "gloss": "since, for",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Seit einer Woche regnet es.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.seit"
+    },
+    {
+     "head": "von",
+     "gloss": "from, of",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Das ist ein Geschenk von meiner Oma.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.von"
+    },
+    {
+     "head": "zu",
+     "gloss": "to",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Ich gehe zu meiner Freundin.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.zu"
+    },
+    {
+     "head": "gegenüber",
+     "gloss": "opposite",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Die Bank ist gegenüber der Post.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.gegenueber"
+    },
+    {
+     "head": "außer",
+     "gloss": "except",
+     "group": "DAT",
+     "tag": "DAT",
+     "example": "Außer dem Chef waren alle da.",
+     "point": "dative-prepositions",
+     "id": "de.fixed-preps.ausser"
+    },
+    {
+     "head": "durch",
+     "gloss": "through",
+     "group": "AKK",
+     "tag": "AKK",
+     "example": "Wir laufen durch den Park.",
+     "id": "de.fixed-preps.durch"
+    },
+    {
+     "head": "für",
+     "gloss": "for",
+     "group": "AKK",
+     "tag": "AKK",
+     "example": "Das ist ein Brief für deinen Bruder.",
+     "id": "de.fixed-preps.fuer"
+    },
+    {
+     "head": "gegen",
+     "gloss": "against",
+     "group": "AKK",
+     "tag": "AKK",
+     "example": "Er ist gegen den Baum gefahren.",
+     "id": "de.fixed-preps.gegen"
+    },
+    {
+     "head": "ohne",
+     "gloss": "without",
+     "group": "AKK",
+     "tag": "AKK",
+     "example": "Ohne meine Brille sehe ich nichts.",
+     "id": "de.fixed-preps.ohne"
+    },
+    {
+     "head": "um",
+     "gloss": "around, at",
+     "group": "AKK",
+     "tag": "AKK",
+     "example": "Wir gehen um den See herum.",
+     "id": "de.fixed-preps.um"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip"
+   ]
+  },
+  {
+   "id": "de.verb-position",
+   "name": "Verb position",
+   "sub": "Heute gehe ich · …, weil es regnet",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "Verb second",
+     "gloss": "one element, then the verb",
+     "example": "Heute arbeite ich im Büro.",
+     "point": "v2-fronting",
+     "id": "de.verb-position.v2"
+    },
+    {
+     "head": "W-question",
+     "gloss": "question word, then the verb",
+     "example": "Wo wohnst du jetzt?",
+     "point": "w-question",
+     "id": "de.verb-position.w-question"
+    },
+    {
+     "head": "Yes/no question",
+     "gloss": "verb first",
+     "example": "Kommst du heute Abend mit?",
+     "point": "yes-no-question",
+     "id": "de.verb-position.yes-no"
+    },
+    {
+     "head": "Modal + infinitive",
+     "gloss": "infinitive at the end",
+     "example": "Ich muss morgen früh aufstehen.",
+     "point": "bracket",
+     "id": "de.verb-position.modal"
+    },
+    {
+     "head": "Participle at the end",
+     "gloss": "haben/sein second, participle last",
+     "example": "Ich habe gestern einen Film gesehen.",
+     "point": "bracket",
+     "id": "de.verb-position.perfekt"
+    },
+    {
+     "head": "Verb last",
+     "gloss": "after weil, dass, wenn …",
+     "example": "Ich bleibe zu Hause, weil ich krank bin.",
+     "point": "verb-final",
+     "id": "de.verb-position.verb-last"
+    },
+    {
+     "head": "Auxiliary last",
+     "gloss": "modal or haben/sein after the infinitive or participle",
+     "example": "Sie sagt, dass sie nicht mitkommen kann.",
+     "point": "verb-final",
+     "id": "de.verb-position.verb-last-aux"
+    },
+    {
+     "head": "Clause first, then verb",
+     "gloss": "the subordinate clause fills position 1",
+     "example": "Wenn es regnet, bleiben wir zu Hause.",
+     "point": "v2-fronting",
+     "id": "de.verb-position.clause-first"
+    },
+    {
+     "head": "Time before place",
+     "gloss": "wann? before wo(hin)?",
+     "example": "Ich fahre morgen mit dem Zug nach Köln.",
+     "point": "time-before-place",
+     "id": "de.verb-position.time-place"
+    },
+    {
+     "head": "und, aber, denn, oder",
+     "gloss": "position 0: word order unchanged",
+     "example": "Ich komme nicht mit, denn ich habe keine Zeit.",
+     "point": "denn-coordinating",
+     "id": "de.verb-position.coordinating"
+    },
+    {
+     "head": "Indirect question",
+     "gloss": "ob, wann, wo … verb last",
+     "example": "Weißt du, wann der Zug ankommt?",
+     "point": "indirect-question",
+     "id": "de.verb-position.indirect-question"
+    }
+   ],
+   "formats": [
+    "build",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "de.case",
+   "name": "Case endings",
+   "sub": "den · dem · des",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "der · den · dem · des",
+     "gloss": "masculine: nom · akk · dat · gen",
+     "group": "articles",
+     "example": "Ich sehe den Mann.",
+     "point": "accusative-object",
+     "id": "de.case.der"
+    },
+    {
+     "head": "die · die · der · der",
+     "gloss": "feminine",
+     "group": "articles",
+     "example": "Ich helfe der Nachbarin.",
+     "id": "de.case.die"
+    },
+    {
+     "head": "das · das · dem · des",
+     "gloss": "neuter",
+     "group": "articles",
+     "example": "Mit dem Fahrrad bin ich schneller.",
+     "id": "de.case.das"
+    },
+    {
+     "head": "die · die · den …n · der",
+     "gloss": "plural",
+     "group": "articles",
+     "example": "Ich helfe den Kindern.",
+     "id": "de.case.plural"
+    },
+    {
+     "head": "ein · einen · einem · eines",
+     "gloss": "ein, masculine",
+     "group": "articles",
+     "example": "Ich suche einen Parkplatz.",
+     "id": "de.case.ein"
+    },
+    {
+     "head": "eine · eine · einer · einer",
+     "gloss": "eine, feminine",
+     "group": "articles",
+     "example": "Sie schreibt einer Freundin.",
+     "id": "de.case.eine"
+    },
+    {
+     "head": "mein · meinen · meinem",
+     "gloss": "possessives and kein take the ein endings",
+     "group": "articles",
+     "example": "Ich fahre mit meiner Schwester.",
+     "point": "possessive-articles",
+     "id": "de.case.possessive"
+    },
+    {
+     "head": "ich · mich · mir",
+     "group": "pronouns",
+     "example": "Kannst du mir helfen?",
+     "point": "pronoun-case",
+     "id": "de.case.ich"
+    },
+    {
+     "head": "du · dich · dir",
+     "group": "pronouns",
+     "example": "Ich danke dir.",
+     "point": "pronoun-case",
+     "id": "de.case.du"
+    },
+    {
+     "head": "er · ihn · ihm",
+     "group": "pronouns",
+     "example": "Ich treffe ihn heute.",
+     "point": "pronoun-case",
+     "id": "de.case.er"
+    },
+    {
+     "head": "sie · sie · ihr",
+     "gloss": "she",
+     "group": "pronouns",
+     "example": "Ich schenke ihr Blumen.",
+     "point": "pronoun-case",
+     "id": "de.case.sie"
+    },
+    {
+     "head": "uns · euch",
+     "gloss": "wir, ihr: akk = dat",
+     "group": "pronouns",
+     "example": "Ich rufe euch an.",
+     "point": "pronoun-case",
+     "id": "de.case.wir-ihr"
+    },
+    {
+     "head": "sie · sie · ihnen",
+     "gloss": "they, you (formal)",
+     "group": "pronouns",
+     "example": "Wie geht es Ihnen?",
+     "point": "pronoun-case",
+     "id": "de.case.sie-plural"
+    },
+    {
+     "head": "helfen · danken · gefallen",
+     "gloss": "verbs with a dative object",
+     "group": "verbs",
+     "example": "Die Jacke gefällt meinem Freund.",
+     "point": "verb-government",
+     "id": "de.case.dative-verbs"
+    },
+    {
+     "head": "Mir ist kalt.",
+     "gloss": "the person in the dative",
+     "group": "verbs",
+     "example": "Mir ist kalt.",
+     "point": "dative-experiencer",
+     "id": "de.case.experiencer"
+    },
+    {
+     "head": "dem Gast das Zimmer",
+     "gloss": "person DAT, thing AKK",
+     "group": "verbs",
+     "example": "Ich zeige dem Gast das Zimmer.",
+     "point": "object-order",
+     "id": "de.case.two-objects"
+    },
+    {
+     "head": "den Kollegen · dem Studenten",
+     "gloss": "weak masculines add -n",
+     "group": "nouns",
+     "example": "Kennst du den neuen Studenten?",
+     "point": "n-declension",
+     "id": "de.case.n-declension"
+    },
+    {
+     "head": "des Mannes · der Frau",
+     "gloss": "whose?",
+     "group": "nouns",
+     "example": "Das ist das Auto der Chefin.",
+     "point": "genitive",
+     "id": "de.case.genitive"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.adjective-endings",
+   "name": "Adjective endings",
+   "sub": "ein alter · den alten · kaltes",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "der alte · die alte · das alte",
+     "gloss": "after der/die/das in the nominative, and die/das in the accusative: -e",
+     "example": "Der neue Kollege kommt aus Graz.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.weak-e"
+    },
+    {
+     "head": "den alten · dem alten · die alten",
+     "gloss": "after der-words everywhere else: -en",
+     "example": "Kennst du den neuen Kollegen?",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.weak-en"
+    },
+    {
+     "head": "ein alter Mann",
+     "gloss": "ein + masculine nominative: -er",
+     "example": "Das ist ein guter Film.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.mixed-er"
+    },
+    {
+     "head": "ein altes Haus",
+     "gloss": "ein + neuter nominative/accusative: -es",
+     "example": "Sie hat ein neues Fahrrad.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.mixed-es"
+    },
+    {
+     "head": "eine alte Stadt",
+     "gloss": "eine + feminine nominative/accusative: -e",
+     "example": "Wir suchen eine günstige Wohnung.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.mixed-e"
+    },
+    {
+     "head": "einen alten · einem alten",
+     "gloss": "ein-words everywhere else: -en",
+     "example": "Er wohnt in einem kleinen Dorf.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.mixed-en"
+    },
+    {
+     "head": "heißer Kaffee",
+     "gloss": "no article, masculine nominative: -er",
+     "example": "Heißer Kaffee schmeckt mir am besten.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.strong-er"
+    },
+    {
+     "head": "kaltes Wasser",
+     "gloss": "no article, neuter nominative/accusative: -es",
+     "example": "Ich trinke gern kaltes Wasser.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.strong-es"
+    },
+    {
+     "head": "frische Milch · billige Bücher",
+     "gloss": "no article, feminine and plural, nominative/accusative: -e",
+     "example": "Hier gibt es billige Bücher.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.strong-e"
+    },
+    {
+     "head": "mit kaltem Wasser",
+     "gloss": "no article, dative singular: -em",
+     "example": "Bei schönem Wetter gehen wir baden.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.strong-em"
+    },
+    {
+     "head": "schwarzen Tee · mit guten Freunden",
+     "gloss": "no article, masculine accusative and dative plural: -en",
+     "example": "Ich trinke morgens schwarzen Tee.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.strong-en"
+    },
+    {
+     "head": "die neuen · keine neuen · meine neuen",
+     "gloss": "plural after any article: -en",
+     "example": "Meine neuen Schuhe sind bequem.",
+     "point": "adjective-endings",
+     "id": "de.adjective-endings.plural-en"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "two-step"
+   ]
+  },
+  {
+   "id": "de.gender",
+   "name": "Gender",
+   "sub": "die Zeitung · das Mädchen · der Frühling",
+   "layout": "cards",
+   "entries": [
+    {
+     "head": "-ung",
+     "gloss": "always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Zeitung",
+     "point": "gender",
+     "id": "de.gender.ung"
+    },
+    {
+     "head": "-heit · -keit",
+     "gloss": "always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Gesundheit",
+     "point": "gender",
+     "id": "de.gender.heit-keit"
+    },
+    {
+     "head": "-schaft",
+     "gloss": "always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Mannschaft",
+     "point": "gender",
+     "id": "de.gender.schaft"
+    },
+    {
+     "head": "-ion",
+     "gloss": "almost always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Information",
+     "point": "gender",
+     "id": "de.gender.ion"
+    },
+    {
+     "head": "-tät",
+     "gloss": "always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Universität",
+     "point": "gender",
+     "id": "de.gender.taet"
+    },
+    {
+     "head": "-ie",
+     "gloss": "almost always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Energie",
+     "point": "gender",
+     "id": "de.gender.ie"
+    },
+    {
+     "head": "-ei",
+     "gloss": "almost always",
+     "group": "die",
+     "tag": "die",
+     "example": "die Bäckerei",
+     "point": "gender",
+     "id": "de.gender.ei"
+    },
+    {
+     "head": "-ik",
+     "gloss": "mostly",
+     "group": "die",
+     "tag": "die",
+     "example": "die Musik",
+     "point": "gender",
+     "id": "de.gender.ik"
+    },
+    {
+     "head": "-ur",
+     "gloss": "mostly",
+     "group": "die",
+     "tag": "die",
+     "example": "die Temperatur",
+     "point": "gender",
+     "id": "de.gender.ur"
+    },
+    {
+     "head": "-e",
+     "gloss": "mostly; der Name, das Auge",
+     "group": "die",
+     "tag": "die",
+     "example": "die Lampe",
+     "point": "gender",
+     "id": "de.gender.e"
+    },
+    {
+     "head": "-ling",
+     "gloss": "always",
+     "group": "der",
+     "tag": "der",
+     "example": "der Frühling",
+     "point": "gender",
+     "id": "de.gender.ling"
+    },
+    {
+     "head": "-ismus",
+     "gloss": "always",
+     "group": "der",
+     "tag": "der",
+     "example": "der Tourismus",
+     "point": "gender",
+     "id": "de.gender.ismus"
+    },
+    {
+     "head": "-ist",
+     "gloss": "always",
+     "group": "der",
+     "tag": "der",
+     "example": "der Journalist",
+     "point": "gender",
+     "id": "de.gender.ist"
+    },
+    {
+     "head": "-ig",
+     "gloss": "always",
+     "group": "der",
+     "tag": "der",
+     "example": "der Honig",
+     "point": "gender",
+     "id": "de.gender.ig"
+    },
+    {
+     "head": "-er (person)",
+     "gloss": "someone who does it",
+     "group": "der",
+     "tag": "der",
+     "example": "der Fahrer",
+     "point": "gender",
+     "id": "de.gender.er-person"
+    },
+    {
+     "head": "days · months · seasons",
+     "gloss": "always",
+     "group": "der",
+     "tag": "der",
+     "example": "der Montag",
+     "point": "gender",
+     "id": "de.gender.time"
+    },
+    {
+     "head": "-chen · -lein",
+     "gloss": "always, even das Mädchen",
+     "group": "das",
+     "tag": "das",
+     "example": "das Mädchen",
+     "point": "gender",
+     "id": "de.gender.chen-lein"
+    },
+    {
+     "head": "-ment",
+     "gloss": "mostly; der Moment",
+     "group": "das",
+     "tag": "das",
+     "example": "das Dokument",
+     "point": "gender",
+     "id": "de.gender.ment"
+    },
+    {
+     "head": "-um",
+     "gloss": "mostly",
+     "group": "das",
+     "tag": "das",
+     "example": "das Museum",
+     "point": "gender",
+     "id": "de.gender.um"
+    },
+    {
+     "head": "Ge-",
+     "gloss": "mostly",
+     "group": "das",
+     "tag": "das",
+     "example": "das Gemüse",
+     "point": "gender",
+     "id": "de.gender.ge"
+    },
+    {
+     "head": "infinitive as noun",
+     "gloss": "always",
+     "group": "das",
+     "tag": "das",
+     "example": "das Essen",
+     "point": "gender",
+     "id": "de.gender.infinitive"
+    }
+   ],
+   "formats": [
+    "sort",
+    "flip"
+   ]
+  },
+  {
+   "id": "de.separable",
+   "name": "Separable verbs",
+   "sub": "ruft … an · ist aufgestanden",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "anrufen",
+     "reading": "ruft … an · hat angerufen",
+     "gloss": "call",
+     "point": "bracket",
+     "id": "de.separable.anrufen",
+     "example": "Ich rufe meine Mutter an."
+    },
+    {
+     "head": "aufstehen",
+     "reading": "steht … auf · ist aufgestanden",
+     "gloss": "get up",
+     "point": "bracket",
+     "id": "de.separable.aufstehen",
+     "example": "Er steht um sieben auf."
+    },
+    {
+     "head": "einkaufen",
+     "reading": "kauft … ein · hat eingekauft",
+     "gloss": "shop",
+     "point": "bracket",
+     "id": "de.separable.einkaufen",
+     "example": "Wir kaufen im Supermarkt ein."
+    },
+    {
+     "head": "mitkommen",
+     "reading": "kommt … mit · ist mitgekommen",
+     "gloss": "come along",
+     "point": "bracket",
+     "id": "de.separable.mitkommen",
+     "example": "Sie kommt nicht mit."
+    },
+    {
+     "head": "fernsehen",
+     "reading": "sieht … fern · hat ferngesehen",
+     "gloss": "watch TV",
+     "point": "bracket",
+     "id": "de.separable.fernsehen",
+     "example": "Die Kinder sehen fern."
+    },
+    {
+     "head": "abholen",
+     "reading": "holt … ab · hat abgeholt",
+     "gloss": "pick up",
+     "point": "bracket",
+     "id": "de.separable.abholen",
+     "example": "Ich hole dich ab."
+    },
+    {
+     "head": "anfangen",
+     "reading": "fängt … an · hat angefangen",
+     "gloss": "begin",
+     "point": "bracket",
+     "id": "de.separable.anfangen",
+     "example": "Der Film fängt an."
+    },
+    {
+     "head": "aufhören",
+     "reading": "hört … auf · hat aufgehört",
+     "gloss": "stop",
+     "point": "bracket",
+     "id": "de.separable.aufhoeren",
+     "example": "Es hört auf zu regnen."
+    },
+    {
+     "head": "aufmachen",
+     "reading": "macht … auf · hat aufgemacht",
+     "gloss": "open",
+     "point": "bracket",
+     "id": "de.separable.aufmachen",
+     "example": "Machst du das Fenster auf?"
+    },
+    {
+     "head": "zumachen",
+     "reading": "macht … zu · hat zugemacht",
+     "gloss": "close",
+     "point": "bracket",
+     "id": "de.separable.zumachen",
+     "example": "Wer macht die Tür zu?"
+    },
+    {
+     "head": "einsteigen",
+     "reading": "steigt … ein · ist eingestiegen",
+     "gloss": "get on",
+     "point": "bracket",
+     "id": "de.separable.einsteigen",
+     "example": "Sie steigt in den Bus ein."
+    },
+    {
+     "head": "aussteigen",
+     "reading": "steigt … aus · ist ausgestiegen",
+     "gloss": "get off",
+     "point": "bracket",
+     "id": "de.separable.aussteigen",
+     "example": "Steigst du hier aus?"
+    },
+    {
+     "head": "umsteigen",
+     "reading": "steigt … um · ist umgestiegen",
+     "gloss": "change (trains)",
+     "point": "bracket",
+     "id": "de.separable.umsteigen",
+     "example": "Wir steigen in Mannheim um."
+    },
+    {
+     "head": "vorhaben",
+     "reading": "hat … vor · hat vorgehabt",
+     "gloss": "plan",
+     "point": "bracket",
+     "id": "de.separable.vorhaben",
+     "example": "Was hast du am Wochenende vor?"
+    },
+    {
+     "head": "stattfinden",
+     "reading": "findet … statt · hat stattgefunden",
+     "gloss": "take place",
+     "point": "bracket",
+     "id": "de.separable.stattfinden",
+     "example": "Das Treffen findet online statt."
+    },
+    {
+     "head": "einladen",
+     "reading": "lädt … ein · hat eingeladen",
+     "gloss": "invite",
+     "point": "bracket",
+     "id": "de.separable.einladen",
+     "example": "Du lädst viele Leute ein."
+    },
+    {
+     "head": "ankommen",
+     "reading": "kommt … an · ist angekommen",
+     "gloss": "arrive",
+     "point": "bracket",
+     "id": "de.separable.ankommen",
+     "example": "Der Bus kommt pünktlich an."
+    },
+    {
+     "head": "kennenlernen",
+     "reading": "lernt … kennen · hat kennengelernt",
+     "gloss": "get to know",
+     "point": "bracket",
+     "id": "de.separable.kennenlernen",
+     "example": "Ich lerne viele Leute kennen."
+    },
+    {
+     "head": "aufräumen",
+     "reading": "räumt … auf · hat aufgeräumt",
+     "gloss": "tidy up",
+     "point": "bracket",
+     "id": "de.separable.aufraeumen",
+     "example": "Er räumt sein Zimmer auf."
+    },
+    {
+     "head": "be- · ver- · er- · ent-",
+     "reading": "versteht · hat verstanden",
+     "gloss": "never separate, no ge-",
+     "example": "Ich habe die Frage nicht verstanden.",
+     "point": "perfekt-participle",
+     "id": "de.separable.inseparable"
+    }
+   ],
+   "formats": [
+    "build",
+    "transform"
+   ]
+  },
+  {
+   "id": "de.perfekt-aux",
+   "name": "Perfekt: haben or sein",
+   "sub": "ist gefahren · hat gearbeitet",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "gehen",
+     "reading": "ist gegangen",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.gehen",
+     "example": "Wir sind gestern früh nach Hause gegangen."
+    },
+    {
+     "head": "fahren",
+     "reading": "ist gefahren",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.fahren",
+     "example": "Sie ist mit dem Zug nach Wien gefahren."
+    },
+    {
+     "head": "fahren + object",
+     "reading": "hat … gefahren",
+     "group": "with an object",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.fahren-object",
+     "example": "Mein Bruder hat das Auto in die Werkstatt gefahren."
+    },
+    {
+     "head": "fliegen",
+     "reading": "ist geflogen",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.fliegen",
+     "example": "Ich bin noch nie nach Amerika geflogen."
+    },
+    {
+     "head": "kommen",
+     "reading": "ist gekommen",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.kommen",
+     "example": "Bist du pünktlich gekommen?"
+    },
+    {
+     "head": "reisen",
+     "reading": "ist gereist",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.reisen",
+     "example": "Wir sind viel durch Europa gereist."
+    },
+    {
+     "head": "umziehen",
+     "reading": "ist umgezogen",
+     "group": "motion",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.umziehen",
+     "example": "Letzten Monat sind wir nach Leipzig umgezogen."
+    },
+    {
+     "head": "aufstehen",
+     "reading": "ist aufgestanden",
+     "group": "change of state",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.aufstehen",
+     "example": "Heute bin ich sehr früh aufgestanden."
+    },
+    {
+     "head": "einschlafen",
+     "reading": "ist eingeschlafen",
+     "group": "change of state",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.einschlafen",
+     "example": "Das Baby ist endlich eingeschlafen."
+    },
+    {
+     "head": "aufwachen",
+     "reading": "ist aufgewacht",
+     "group": "change of state",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.aufwachen",
+     "example": "Um drei Uhr bin ich plötzlich aufgewacht."
+    },
+    {
+     "head": "sterben",
+     "reading": "ist gestorben",
+     "group": "change of state",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.sterben",
+     "example": "Ihr Großvater ist letztes Jahr gestorben."
+    },
+    {
+     "head": "werden",
+     "reading": "ist geworden",
+     "group": "change of state",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.werden",
+     "example": "Sie ist Ärztin geworden."
+    },
+    {
+     "head": "sein",
+     "reading": "ist gewesen",
+     "group": "sein · bleiben",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.sein",
+     "example": "Seid ihr schon mal in Rom gewesen?"
+    },
+    {
+     "head": "bleiben",
+     "reading": "ist geblieben",
+     "group": "sein · bleiben",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.bleiben",
+     "example": "Wir sind den ganzen Tag zu Hause geblieben."
+    },
+    {
+     "head": "passieren",
+     "reading": "ist passiert",
+     "group": "happen",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.passieren",
+     "example": "Was ist denn passiert?"
+    },
+    {
+     "head": "begegnen",
+     "reading": "ist begegnet",
+     "group": "meet by chance",
+     "tag": "SEIN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.begegnen",
+     "example": "Ich bin ihm im Supermarkt begegnet."
+    },
+    {
+     "head": "arbeiten",
+     "reading": "hat gearbeitet",
+     "group": "most verbs",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.arbeiten",
+     "example": "Er hat bis zehn Uhr gearbeitet."
+    },
+    {
+     "head": "schlafen",
+     "reading": "hat geschlafen",
+     "group": "no change of place",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.schlafen",
+     "example": "Hast du gut geschlafen?"
+    },
+    {
+     "head": "anfangen",
+     "reading": "hat angefangen",
+     "group": "most verbs",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.anfangen",
+     "example": "Der Unterricht hat schon angefangen."
+    },
+    {
+     "head": "aufhören",
+     "reading": "hat aufgehört",
+     "group": "most verbs",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.aufhoeren",
+     "example": "Es hat endlich aufgehört zu regnen."
+    },
+    {
+     "head": "sich beeilen",
+     "reading": "hat sich beeilt",
+     "group": "reflexive",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.sich-beeilen",
+     "example": "Wir haben uns sehr beeilt."
+    },
+    {
+     "head": "treffen",
+     "reading": "hat getroffen",
+     "group": "with an object",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.treffen",
+     "example": "Ich habe gestern Lisa getroffen."
+    },
+    {
+     "head": "vergessen",
+     "reading": "hat vergessen",
+     "group": "with an object",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.vergessen",
+     "example": "Ich habe meinen Schirm vergessen."
+    },
+    {
+     "head": "regnen",
+     "reading": "hat geregnet",
+     "group": "weather",
+     "tag": "HABEN",
+     "point": "perfekt-aux",
+     "id": "de.perfekt-aux.regnen",
+     "example": "Gestern hat es den ganzen Tag geregnet."
+    }
+   ],
+   "formats": [
+    "flip",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.connectors",
+   "name": "Connectors",
+   "sub": "weil · deshalb · obwohl",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "weil",
+     "gloss": "because",
+     "group": "verb last",
+     "example": "Ich komme später, weil der Bus Verspätung hat.",
+     "point": "verb-final",
+     "id": "de.connectors.weil"
+    },
+    {
+     "head": "dass",
+     "gloss": "that",
+     "group": "verb last",
+     "example": "Ich hoffe, dass du bald gesund wirst.",
+     "point": "verb-final",
+     "id": "de.connectors.dass"
+    },
+    {
+     "head": "obwohl",
+     "gloss": "although",
+     "group": "verb last",
+     "example": "Obwohl er müde war, hat er weitergearbeitet.",
+     "point": "obwohl",
+     "id": "de.connectors.obwohl"
+    },
+    {
+     "head": "wenn",
+     "gloss": "if; whenever",
+     "group": "verb last",
+     "example": "Wenn ich Zeit habe, rufe ich dich an.",
+     "point": "als-wenn-wann",
+     "id": "de.connectors.wenn"
+    },
+    {
+     "head": "als",
+     "gloss": "when (once, in the past)",
+     "group": "verb last",
+     "example": "Als ich ein Kind war, wohnten wir auf dem Land.",
+     "point": "als-wenn-wann",
+     "id": "de.connectors.als"
+    },
+    {
+     "head": "ob",
+     "gloss": "whether",
+     "group": "verb last",
+     "example": "Ich weiß nicht, ob er heute kommt.",
+     "point": "indirect-question",
+     "id": "de.connectors.ob"
+    },
+    {
+     "head": "damit",
+     "gloss": "so that",
+     "group": "verb last",
+     "example": "Ich spreche langsam, damit alle mich verstehen.",
+     "point": "um-zu-damit",
+     "id": "de.connectors.damit"
+    },
+    {
+     "head": "um … zu",
+     "gloss": "in order to",
+     "group": "infinitive",
+     "example": "Sie spart Geld, um ein Auto zu kaufen.",
+     "point": "um-zu-damit",
+     "id": "de.connectors.um-zu"
+    },
+    {
+     "head": "bevor",
+     "gloss": "before",
+     "group": "verb last",
+     "example": "Bevor du gehst, mach bitte das Licht aus.",
+     "point": "temporal-clauses",
+     "id": "de.connectors.bevor"
+    },
+    {
+     "head": "nachdem",
+     "gloss": "after",
+     "group": "verb last",
+     "example": "Nachdem wir gegessen hatten, gingen wir spazieren.",
+     "point": "plusquamperfekt",
+     "id": "de.connectors.nachdem"
+    },
+    {
+     "head": "während",
+     "gloss": "while",
+     "group": "verb last",
+     "example": "Während ich koche, deckst du den Tisch.",
+     "point": "temporal-clauses",
+     "id": "de.connectors.waehrend"
+    },
+    {
+     "head": "deshalb",
+     "gloss": "that's why",
+     "group": "verb second",
+     "example": "Der Zug war voll, deshalb musste ich stehen.",
+     "point": "deshalb-v2",
+     "id": "de.connectors.deshalb"
+    },
+    {
+     "head": "trotzdem",
+     "gloss": "anyway",
+     "group": "verb second",
+     "example": "Es war kalt, trotzdem sind wir schwimmen gegangen.",
+     "point": "trotzdem",
+     "id": "de.connectors.trotzdem"
+    },
+    {
+     "head": "sonst",
+     "gloss": "otherwise",
+     "group": "verb second",
+     "example": "Beeil dich, sonst verpassen wir den Zug.",
+     "id": "de.connectors.sonst"
+    },
+    {
+     "head": "denn",
+     "gloss": "because",
+     "group": "no change",
+     "example": "Wir bleiben zu Hause, denn das Wetter ist schlecht.",
+     "point": "denn-coordinating",
+     "id": "de.connectors.denn"
+    },
+    {
+     "head": "aber",
+     "gloss": "but",
+     "group": "no change",
+     "example": "Das Hotel ist teuer, aber sehr schön.",
+     "point": "denn-coordinating",
+     "id": "de.connectors.aber"
+    },
+    {
+     "head": "sondern",
+     "gloss": "but rather (after nicht)",
+     "group": "no change",
+     "example": "Das ist nicht mein Handy, sondern deins.",
+     "id": "de.connectors.sondern"
+    }
+   ],
+   "formats": [
+    "build",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.reflexive",
+   "name": "Reflexive verbs",
+   "sub": "ich freue mich · ich merke mir",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "sich freuen",
+     "reading": "mich",
+     "gloss": "be glad",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-freuen",
+     "example": "Ich freue mich auf das Wochenende."
+    },
+    {
+     "head": "sich waschen",
+     "reading": "mich",
+     "gloss": "wash",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-waschen",
+     "example": "Ich wasche mich jeden Morgen kalt."
+    },
+    {
+     "head": "sich die Hände waschen",
+     "reading": "mir",
+     "gloss": "wash one's hands",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-die-haende-waschen",
+     "example": "Ich wasche mir die Hände."
+    },
+    {
+     "head": "sich erinnern",
+     "reading": "mich",
+     "gloss": "remember",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-erinnern",
+     "example": "Erinnerst du dich an mich?"
+    },
+    {
+     "head": "sich beeilen",
+     "reading": "mich",
+     "gloss": "hurry",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-beeilen",
+     "example": "Ich muss mich beeilen."
+    },
+    {
+     "head": "sich setzen",
+     "reading": "mich",
+     "gloss": "sit down",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-setzen",
+     "example": "Setz dich doch!"
+    },
+    {
+     "head": "sich treffen",
+     "reading": "mich",
+     "gloss": "meet",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-treffen",
+     "example": "Wir treffen uns um acht vor dem Kino."
+    },
+    {
+     "head": "sich vorstellen",
+     "reading": "mich",
+     "gloss": "introduce oneself",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-vorstellen",
+     "example": "Darf ich mich kurz vorstellen?"
+    },
+    {
+     "head": "sich etwas vorstellen",
+     "reading": "mir",
+     "gloss": "imagine",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-etwas-vorstellen",
+     "example": "Das kann ich mir gut vorstellen."
+    },
+    {
+     "head": "sich anziehen",
+     "reading": "mich",
+     "gloss": "get dressed",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-anziehen",
+     "example": "Zieh dich schnell an, wir gehen!"
+    },
+    {
+     "head": "sich etwas anziehen",
+     "reading": "mir",
+     "gloss": "put something on",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-etwas-anziehen",
+     "example": "Zieh dir eine Jacke an, es ist kalt."
+    },
+    {
+     "head": "sich ärgern",
+     "reading": "mich",
+     "gloss": "be annoyed",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-aergern",
+     "example": "Ärgerst du dich über den Fehler?"
+    },
+    {
+     "head": "sich fühlen",
+     "reading": "mich",
+     "gloss": "feel",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-fuehlen",
+     "example": "Ich fühle mich heute nicht gut."
+    },
+    {
+     "head": "sich kümmern",
+     "reading": "mich",
+     "gloss": "look after",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-kuemmern",
+     "example": "Er kümmert sich um seine Mutter."
+    },
+    {
+     "head": "sich entscheiden",
+     "reading": "mich",
+     "gloss": "decide",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-entscheiden",
+     "example": "Habt ihr euch schon entschieden?"
+    },
+    {
+     "head": "sich verlieben",
+     "reading": "mich",
+     "gloss": "fall in love",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-verlieben",
+     "example": "Ich habe mich in Paris verliebt."
+    },
+    {
+     "head": "sich ausruhen",
+     "reading": "mich",
+     "gloss": "rest",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-ausruhen",
+     "example": "Ruh dich ein bisschen aus."
+    },
+    {
+     "head": "sich langweilen",
+     "reading": "mich",
+     "gloss": "be bored",
+     "tag": "AKK",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-langweilen",
+     "example": "Langweilst du dich?"
+    },
+    {
+     "head": "sich etwas wünschen",
+     "reading": "mir",
+     "gloss": "wish for",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-etwas-wuenschen",
+     "example": "Was wünschst du dir zum Geburtstag?"
+    },
+    {
+     "head": "sich etwas leisten",
+     "reading": "mir",
+     "gloss": "afford",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-etwas-leisten",
+     "example": "So ein teures Auto kann ich mir nicht leisten."
+    },
+    {
+     "head": "sich etwas merken",
+     "reading": "mir",
+     "gloss": "remember, note",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-etwas-merken",
+     "example": "Ich kann mir keine Namen merken."
+    },
+    {
+     "head": "sich die Zähne putzen",
+     "reading": "mir",
+     "gloss": "brush one's teeth",
+     "tag": "DAT",
+     "point": "reflexive-verbs",
+     "id": "de.reflexive.sich-die-zaehne-putzen",
+     "example": "Hast du dir die Zähne geputzt?"
+    }
+   ],
+   "formats": [
+    "flip",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.particles",
+   "name": "Modal particles",
+   "sub": "doch · mal · ja",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "doch",
+     "gloss": "urging, reminding, wishing",
+     "example": "Komm doch mit ins Kino!",
+     "point": "modal-particles",
+     "id": "de.particles.doch"
+    },
+    {
+     "head": "mal",
+     "gloss": "softens a request",
+     "example": "Kannst du mir mal das Salz geben?",
+     "point": "modal-particles",
+     "id": "de.particles.mal"
+    },
+    {
+     "head": "ja",
+     "gloss": "as we both know; surprise",
+     "example": "Wir kennen uns ja schon lange.",
+     "point": "modal-particles",
+     "id": "de.particles.ja"
+    },
+    {
+     "head": "halt",
+     "gloss": "that's how it is",
+     "example": "So ist das halt im Leben.",
+     "point": "modal-particles",
+     "id": "de.particles.halt"
+    },
+    {
+     "head": "eben",
+     "gloss": "that's how it is",
+     "example": "Das ist eben so.",
+     "point": "modal-particles",
+     "id": "de.particles.eben"
+    },
+    {
+     "head": "schon",
+     "gloss": "reassurance; impatience",
+     "example": "Keine Sorge, das klappt schon.",
+     "point": "modal-particles",
+     "id": "de.particles.schon"
+    },
+    {
+     "head": "denn",
+     "gloss": "interest, in questions",
+     "example": "Wie spät ist es denn?",
+     "point": "particle-denn-eigentlich",
+     "id": "de.particles.denn"
+    },
+    {
+     "head": "eigentlich",
+     "gloss": "by the way, in questions",
+     "example": "Woher kommst du eigentlich?",
+     "point": "particle-denn-eigentlich",
+     "id": "de.particles.eigentlich"
+    },
+    {
+     "head": "ruhig",
+     "gloss": "go ahead",
+     "example": "Nimm dir ruhig noch ein Stück.",
+     "point": "particle-bloss-ruhig",
+     "id": "de.particles.ruhig"
+    },
+    {
+     "head": "bloß",
+     "gloss": "warning; on earth",
+     "example": "Fass das bloß nicht an!",
+     "point": "particle-bloss-ruhig",
+     "id": "de.particles.bloss"
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip"
+   ]
+  },
+  {
+   "id": "de.konjunktiv-ii",
+   "name": "Konjunktiv II",
+   "sub": "hätte · wäre · würde",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "hätte",
+     "gloss": "would have",
+     "example": "Ich hätte gern mehr Zeit.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.haette"
+    },
+    {
+     "head": "wäre",
+     "gloss": "would be",
+     "example": "Wir wären gern am Meer.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.waere"
+    },
+    {
+     "head": "würde + infinitive",
+     "gloss": "would do",
+     "example": "Er würde gern mitkommen.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.wuerde"
+    },
+    {
+     "head": "könnte",
+     "gloss": "could",
+     "example": "Wir könnten uns morgen treffen.",
+     "point": "konjunktiv-ii-polite",
+     "id": "de.konjunktiv-ii.koennte"
+    },
+    {
+     "head": "sollte",
+     "gloss": "should",
+     "example": "Du solltest mehr schlafen.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.sollte"
+    },
+    {
+     "head": "müsste",
+     "gloss": "ought to",
+     "example": "Ich müsste eigentlich arbeiten.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.muesste"
+    },
+    {
+     "head": "wüsste",
+     "gloss": "would know",
+     "example": "Wüsstest du eine Lösung?",
+     "point": "strong-konjunktiv-ii",
+     "id": "de.konjunktiv-ii.wuesste"
+    },
+    {
+     "head": "Könnten Sie …? · Hätten Sie …?",
+     "gloss": "polite requests",
+     "example": "Hätten Sie einen Moment Zeit?",
+     "point": "konjunktiv-ii-polite",
+     "id": "de.konjunktiv-ii.polite"
+    },
+    {
+     "head": "Wenn ich doch … hätte!",
+     "gloss": "wishes",
+     "example": "Wenn ich doch mehr Zeit hätte!",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.wish"
+    },
+    {
+     "head": "Wenn …, würde …",
+     "gloss": "unreal conditions",
+     "example": "Wenn ich Geld hätte, würde ich reisen.",
+     "point": "konjunktiv-ii",
+     "id": "de.konjunktiv-ii.condition"
+    },
+    {
+     "head": "hätte … gemacht",
+     "gloss": "would have done",
+     "example": "Ich hätte dir gern geholfen.",
+     "point": "konjunktiv-ii-past",
+     "id": "de.konjunktiv-ii.past-haette"
+    },
+    {
+     "head": "wäre … gegangen",
+     "gloss": "would have gone",
+     "example": "Wir wären gern mitgekommen.",
+     "point": "konjunktiv-ii-past",
+     "id": "de.konjunktiv-ii.past-waere"
+    },
+    {
+     "head": "als ob … wäre",
+     "gloss": "as if",
+     "example": "Er tut so, als ob er alles wüsste.",
+     "point": "als-ob",
+     "id": "de.konjunktiv-ii.als-ob"
+    }
+   ],
+   "formats": [
+    "transform",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.relative",
+   "name": "Relative pronouns",
+   "sub": "der Mann, den · die Frau, deren",
+   "layout": "list",
+   "entries": [
+    {
+     "head": "der · die · das",
+     "gloss": "subject of the clause",
+     "example": "Der Mann, der neben mir wohnt, ist Arzt.",
+     "point": "relative-clause",
+     "id": "de.relative.nominative"
+    },
+    {
+     "head": "den",
+     "gloss": "masculine object",
+     "example": "Der Film, den wir gesehen haben, war lang.",
+     "point": "relative-pronoun-case",
+     "id": "de.relative.accusative"
+    },
+    {
+     "head": "dem · der",
+     "gloss": "dative object",
+     "example": "Der Freund, dem ich geholfen habe, hat sich bedankt.",
+     "point": "relative-pronoun-case",
+     "id": "de.relative.dative"
+    },
+    {
+     "head": "denen",
+     "gloss": "dative plural",
+     "example": "Die Nachbarn, denen wir oft helfen, sind alt.",
+     "point": "relative-pronoun-case",
+     "id": "de.relative.denen"
+    },
+    {
+     "head": "dessen · deren",
+     "gloss": "whose",
+     "example": "Der Mann, dessen Auto vor der Tür steht, ist mein Onkel.",
+     "point": "relative-genitive",
+     "id": "de.relative.genitive"
+    },
+    {
+     "head": "mit dem · in der · auf die",
+     "gloss": "preposition first, then the case it needs",
+     "example": "Das ist die Stadt, in der ich geboren bin.",
+     "point": "relative-preposition",
+     "id": "de.relative.preposition"
+    },
+    {
+     "head": "was",
+     "gloss": "after alles, nichts, das Beste, or a whole clause",
+     "example": "Das ist alles, was ich weiß.",
+     "id": "de.relative.was"
+    }
+   ],
+   "formats": [
+    "pick-one"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "id": "de.drill.speed",
+   "name": "SPEED"
+  },
+  {
+   "id": "de.drill.case",
+   "name": "CASE",
+   "chapters": [
+    "de.two-way",
+    "de.verb-prep",
+    "de.case"
+   ],
+   "formats": [
+    "flip",
+    "pick-one"
+   ]
+  },
+  {
+   "id": "de.drill.gender",
+   "name": "DER DIE DAS",
+   "chapters": [
+    "de.gender"
+   ]
+  },
+  {
+   "id": "de.drill.order",
+   "name": "ORDER",
+   "chapters": [
+    "de.verb-position"
+   ],
+   "formats": [
+    "build"
+   ]
+  }
+ ]
+}
