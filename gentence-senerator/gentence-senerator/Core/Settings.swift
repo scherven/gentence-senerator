@@ -113,6 +113,7 @@ enum Vault {
     static let inProgress = "inProgress.v2"
     /// What the learner kept out of a day's summary.
     static let bank = "bank.v1"
+    static let suggestions = "textbook.suggestions.v1" // what ask answers pointed at
     /// The dialogue in progress, per language. Kept off `holds` on purpose:
     /// holds are retired at the end of the day and a passage is not.
     static let passages = "passages.v1"
