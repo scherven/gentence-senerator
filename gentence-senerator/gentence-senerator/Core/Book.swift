@@ -75,3 +75,24 @@ struct EntryState: Hashable {
     /// Most recent last, at most 8.
     var recent: [Bool]
 }
+
+extension Chapter.Entry {
+    /// Its own level, else its point's, else 1.
+    func effectiveLevel(pointLevel: (String) -> Int?) -> Int {
+        level ?? point.flatMap(pointLevel) ?? 1
+    }
+}
+
+extension Book {
+    /// What a learner at `level` sees: entries up to `level + 1`. Chapters
+    /// left empty go.
+    func visible(at level: Int, levelOf: (Chapter.Entry) -> Int) -> Book {
+        var out = self
+        out.chapters = chapters.compactMap { chapter in
+            var c = chapter
+            c.entries = chapter.entries.filter { levelOf($0) <= level + 1 }
+            return c.entries.isEmpty ? nil : c
+        }
+        return out
+    }
+}

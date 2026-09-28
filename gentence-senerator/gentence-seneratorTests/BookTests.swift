@@ -148,6 +148,49 @@ struct BookTests {
         #expect(state.standing == .tried)
     }
 
+    // MARK: Level
+
+    static let leveledBook = Book(language: .mandarin, chapters: [
+        Chapter(id: "zh.a", name: "A", sub: "", layout: .list, entries: [
+            Chapter.Entry(id: "zh.a.own", head: "个", point: "p5", level: 2),
+            Chapter.Entry(id: "zh.a.point", head: "条", point: "p3"),
+            Chapter.Entry(id: "zh.a.none", head: "张"),
+            Chapter.Entry(id: "zh.a.high", head: "匹", point: "p1", level: 5),
+        ], formats: []),
+        Chapter(id: "zh.b", name: "B", sub: "", layout: .list, entries: [
+            Chapter.Entry(id: "zh.b.high", head: "把", level: 6),
+        ], formats: []),
+    ], drills: [])
+
+    static let pointLevels = ["p1": 1, "p3": 3, "p5": 5]
+
+    @Test func entryLevelFallsBackToItsPointThenOne() {
+        let levels = Self.leveledBook.chapters[0].entries.map {
+            $0.effectiveLevel { Self.pointLevels[$0] }
+        }
+        #expect(levels == [2, 3, 1, 5])
+    }
+
+    @Test func theBookShowsUpToOneLevelAbove() {
+        let levelOf = { (e: Chapter.Entry) in e.effectiveLevel { Self.pointLevels[$0] } }
+        let at2 = Self.leveledBook.visible(at: 2, levelOf: levelOf)
+        #expect(at2.chapters.map(\.id) == ["zh.a"])
+        #expect(at2.chapters[0].entries.map(\.id) == ["zh.a.own", "zh.a.point", "zh.a.none"])
+        let at1 = Self.leveledBook.visible(at: 1, levelOf: levelOf)
+        #expect(at1.chapters[0].entries.map(\.id) == ["zh.a.own", "zh.a.none"])
+        let at5 = Self.leveledBook.visible(at: 5, levelOf: levelOf)
+        #expect(at5.chapters.map(\.id) == ["zh.a", "zh.b"])
+        #expect(at5.chapters[0].entries.count == 4)
+    }
+
+    @Test func aChapterWithNothingVisibleIsHidden() {
+        let at0 = Self.leveledBook.visible(at: 0, levelOf: { $0.effectiveLevel { Self.pointLevels[$0] } })
+        #expect(at0.chapters.map(\.id) == ["zh.a"])
+        #expect(at0.chapters[0].entries.map(\.id) == ["zh.a.none"])
+        let none = Self.leveledBook.visible(at: 0, levelOf: { _ in 9 })
+        #expect(none.chapters.isEmpty)
+    }
+
     // MARK: Formulas
 
     @Test func formulaSlotsFillFromTheExample() {

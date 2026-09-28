@@ -2075,14 +2075,41 @@ final class Store {
 
     func record(of plan: QuizPlan) -> QuizLog.PlanRecord { quizLog.plans[planKey(plan)] ?? .init() }
 
+    /// The entry's level, falling back to its point's.
+    func level(of entry: Chapter.Entry) -> Int {
+        let points = pointLevels
+        return entry.effectiveLevel { points[$0] }
+    }
+
+    private var pointLevels: [String: Int] {
+        Dictionary(pack.points.map { ($0.id, $0.level) }, uniquingKeysWith: { a, _ in a })
+    }
+
+    /// The book cut to what the learner sees: up to their level + 1.
+    var visibleBook: Book {
+        let points = pointLevels
+        return book.visible(at: settings.level) { $0.effectiveLevel { points[$0] } }
+    }
+
+    /// The level shown on entries a step above the learner's; nil otherwise.
+    func stretchTag(_ entry: Chapter.Entry) -> String? {
+        let n = level(of: entry)
+        return n > settings.level ? pack.level(n) : nil
+    }
+
     func round(for plan: QuizPlan) -> QuizRound {
         let book = book
+        let points = pointLevels
         let entries = Dictionary(book.chapters.flatMap(\.entries).map { ($0.id, $0) },
                                  uniquingKeysWith: { a, _ in a })
-        return QuizRound.assemble(plan: plan, book: book, bank: quizItems) { id in
+        return QuizRound.assemble(
+            plan: plan, book: book, bank: quizItems, maxLevel: settings.level + 1,
+            levelOf: { id in entries[id]?.effectiveLevel { points[$0] } ?? 1 }
+        ) { id in
             entries[id].map(self.state(of:)) ?? self.quizLog.state(of: id)
         }
     }
+
 
     /// Answered items move their entries; a finished round counts to its plan.
     func finish(_ round: QuizRound) {
@@ -2099,7 +2126,7 @@ final class Store {
     }
 
     func recommended() -> (plan: QuizPlan, reason: String)? {
-        QuizLog.recommend(book: book, bank: quizItems, state: state(of:))
+        QuizLog.recommend(book: visibleBook, bank: quizItems, state: state(of:))
             .map { (Store.speedRound(for: $0.chapter), $0.reason) }
     }
 
@@ -2114,7 +2141,8 @@ final class Store {
 
     // MARK: Book
 
-    /// The book as the tab shows it: the shipped chapters, then Noted.
+    /// The book as the tab shows it: the shipped chapters cut to the
+    /// learner's level, then Noted, which is never cut.
     struct BookIndex {
         var book: Book
         var chapters: [Chapter]
@@ -2125,7 +2153,11 @@ final class Store {
     }
 
     var bookIndex: BookIndex {
-        let book = self.book
+        let shown = visibleBook
+        let bank = quizItems
+        var book = shown
+        // A drill with nothing at this level goes with its chapters.
+        book.drills = shown.drills.filter { !QuizRound.candidates(plan: $0, book: shown, bank: bank).isEmpty }
         var chapters = book.chapters
         var noted: [String: Textbook.Entry] = [:]
         if let extra = Textbook.notedChapter(

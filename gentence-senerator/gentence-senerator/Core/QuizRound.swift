@@ -147,12 +147,17 @@ extension QuizRound {
     /// never quizzed and away from ones answered right recently. Each entry
     /// carries the same total weight however many items it has, and the same
     /// entry never comes twice running unless nothing else is left.
+    ///
+    /// Entries above `maxLevel` are left out. Entries at `maxLevel` (the
+    /// learner's level + 1) make at most one item in `stretchOneIn`, unless
+    /// there is too little below it to fill the round.
     static func assemble<R: RandomNumberGenerator>(
         plan: QuizPlan, book: Book, bank: [QuizItem],
+        maxLevel: Int = .max, levelOf: (String) -> Int = { _ in 1 },
         state: (String) -> EntryState, now: Date = .now,
         using rng: inout R
     ) -> QuizRound {
-        let pool = candidates(plan: plan, book: book, bank: bank)
+        let pool = candidates(plan: plan, book: book, bank: bank, maxLevel: maxLevel, levelOf: levelOf)
         let perEntry = Dictionary(grouping: pool, by: \.entry).mapValues(\.count)
         let keyed = pool.map { item -> (QuizItem, Double) in
             let w = weight(state(item.entry), now: now) / Double(perEntry[item.entry] ?? 1)
@@ -161,23 +166,43 @@ extension QuizRound {
             let u = Double.random(in: Double.ulpOfOne..<1, using: &rng)
             return (item, pow(u, 1 / w))
         }
-        let picked = keyed.sorted { $0.1 > $1.1 }.prefix(max(0, plan.count)).map(\.0)
+        let ranked = keyed.sorted { $0.1 > $1.1 }.map(\.0)
+        let count = max(0, plan.count)
+        let cap = count / stretchOneIn
+        var picked: [QuizItem] = []
+        var rest: [QuizItem] = []
+        var stretch = 0
+        for item in ranked where picked.count < count {
+            if levelOf(item.entry) >= maxLevel {
+                guard stretch < cap else { rest.append(item); continue }
+                stretch += 1
+            }
+            picked.append(item)
+        }
+        picked += rest.prefix(count - picked.count)
         return QuizRound(plan: plan, items: arrange(picked), started: now)
     }
 
     static func assemble(plan: QuizPlan, book: Book, bank: [QuizItem],
+                         maxLevel: Int = .max, levelOf: (String) -> Int = { _ in 1 },
                          state: (String) -> EntryState, now: Date = .now) -> QuizRound {
         var rng = SystemRandomNumberGenerator()
-        return assemble(plan: plan, book: book, bank: bank, state: state, now: now, using: &rng)
+        return assemble(plan: plan, book: book, bank: bank, maxLevel: maxLevel, levelOf: levelOf,
+                        state: state, now: now, using: &rng)
     }
 
-    static func candidates(plan: QuizPlan, book: Book, bank: [QuizItem]) -> [QuizItem] {
+    /// Level + 1 gets at most one item in this many, rounded down.
+    static let stretchOneIn = 10
+
+    static func candidates(plan: QuizPlan, book: Book, bank: [QuizItem],
+                           maxLevel: Int = .max, levelOf: (String) -> Int = { _ in 1 }) -> [QuizItem] {
         let chapters = plan.chapters.isEmpty ? book.chapters
             : book.chapters.filter { plan.chapters.contains($0.id) }
         let entries = Set(chapters.flatMap { $0.entries.map(\.id) })
         let formats = Set(plan.formats)
         return bank.filter {
             entries.contains($0.entry) && (formats.isEmpty || formats.contains($0.format))
+                && levelOf($0.entry) <= maxLevel
         }
     }
 

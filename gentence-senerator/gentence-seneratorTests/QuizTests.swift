@@ -249,6 +249,50 @@ struct QuizTests {
         }
     }
 
+    // MARK: Level
+
+    /// 30 entries at level 3 ("lo…") and 30 at level 4 ("hi…"), one item each.
+    static func leveled(low: Int = 30, high: Int = 30) -> (Book, [QuizItem], (String) -> Int) {
+        let ids = (0..<low).map { "lo\($0)" } + (0..<high).map { "hi\($0)" }
+        let book = Book(language: .mandarin, chapters: [
+            Chapter(id: "c", name: "C", sub: "", layout: .list,
+                    entries: ids.map { Chapter.Entry(id: $0, head: $0) }, formats: [])], drills: [])
+        let bank = ids.map { pick("i-\($0)", entry: $0) }
+        return (book, bank, { $0.hasPrefix("hi") ? 4 : 3 })
+    }
+
+    @Test func entriesAboveTheCapAreLeftOut() {
+        let (book, bank, levelOf) = Self.leveled()
+        let all = QuizPlan(id: "c", name: "C")
+        let at3 = QuizRound.candidates(plan: all, book: book, bank: bank, maxLevel: 3, levelOf: levelOf)
+        #expect(at3.count == 30 && at3.allSatisfy { $0.entry.hasPrefix("lo") })
+        #expect(QuizRound.candidates(plan: all, book: book, bank: bank, maxLevel: 4, levelOf: levelOf).count == 60)
+    }
+
+    @Test func levelPlusOneIsAtMostATenth() {
+        let (book, bank, levelOf) = Self.leveled()
+        var rng = Seeded(state: 11)
+        for count in [5, 9, 10, 20, 25] {
+            for _ in 0..<20 {
+                let r = QuizRound.assemble(plan: QuizPlan(id: "c", name: "C", count: count), book: book,
+                                           bank: bank, maxLevel: 4, levelOf: levelOf,
+                                           state: { _ in QuizLog().state(of: "") }, using: &rng)
+                #expect(r.items.count == count)
+                #expect(r.items.filter { levelOf($0.entry) == 4 }.count <= count / 10)
+            }
+        }
+    }
+
+    @Test func levelPlusOneFillsAThinBank() {
+        let (book, bank, levelOf) = Self.leveled(low: 6, high: 30)
+        var rng = Seeded(state: 5)
+        let r = QuizRound.assemble(plan: QuizPlan(id: "c", name: "C", count: 20), book: book,
+                                   bank: bank, maxLevel: 4, levelOf: levelOf,
+                                   state: { _ in QuizLog().state(of: "") }, using: &rng)
+        #expect(r.items.count == 20)
+        #expect(r.items.filter { levelOf($0.entry) == 3 }.count == 6)
+    }
+
     // MARK: Log
 
     @Test func entryStateFollowsResults() {

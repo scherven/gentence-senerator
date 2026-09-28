@@ -86,7 +86,7 @@ struct EntryScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Flow(spacing: 8, lineSpacing: 6) {
-                if let point { BookTag(text: store.pack.level(point.level)) }
+                if source == nil || point != nil { BookTag(text: store.pack.level(store.level(of: entry))) }
                 BookTag(text: state.label, colour: state.slipping ? Theme.C.bad : Theme.C.ink)
                 if let at = asked.first?.at ?? source?.suggestedAt {
                     BookTag(text: "FROM ASK · \(day(at))", colour: Theme.C.accent)

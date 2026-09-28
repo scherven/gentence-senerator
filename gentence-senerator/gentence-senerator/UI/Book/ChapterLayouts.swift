@@ -96,6 +96,9 @@ struct CardsLayout: View {
                     Text(gloss).font(.system(size: 12)).lineLimit(3)
                         .multilineTextAlignment(.leading)
                 }
+                if let level = rows.levels[entry.id] {
+                    Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
+                }
                 Spacer(minLength: 4)
                 Rectangle().fill(BookColour.fill(state) ?? .clear).frame(height: 3)
             }
@@ -208,6 +211,10 @@ struct PairsLayout: View {
             HStack(spacing: 0) {
                 Text(entry.head).font(.system(size: 13))
                     .padding(.horizontal, 8).padding(.vertical, 6)
+                if let level = rows.levels[entry.id] {
+                    Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
+                        .padding(.trailing, 6)
+                }
                 if let tag = entry.tag {
                     Text(tag).font(Theme.F.label)
                         .padding(.horizontal, 5)
@@ -268,16 +275,20 @@ struct SplitLayout: View {
             let state = rows.state(entry)
             let fill = BookColour.fill(state)
             NavigationLink(value: rows.route(entry)) {
-                Text(entry.head)
-                    .font(.system(size: 12.5))
-                    .multilineTextAlignment(edge == .leading ? .leading : .trailing)
-                    .foregroundStyle(Theme.C.ink)
-                    .padding(.horizontal, 10).padding(.vertical, 8)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity,
-                           alignment: edge == .leading ? .leading : .trailing)
-                    .overlay(alignment: edge == .leading ? .leading : .trailing) {
-                        if let fill { Rectangle().fill(fill).frame(width: 3) }
+                VStack(alignment: edge, spacing: 2) {
+                    Text(entry.head).font(.system(size: 12.5))
+                    if let level = rows.levels[entry.id] {
+                        Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                     }
+                }
+                .multilineTextAlignment(edge == .leading ? .leading : .trailing)
+                .foregroundStyle(Theme.C.ink)
+                .padding(.horizontal, 10).padding(.vertical, 8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity,
+                       alignment: edge == .leading ? .leading : .trailing)
+                .overlay(alignment: edge == .leading ? .leading : .trailing) {
+                    if let fill { Rectangle().fill(fill).frame(width: 3) }
+                }
             }
             .buttonStyle(BookKeyStyle(unseen: fill == nil,
                                       edge: state.slipping ? Theme.C.bad : Theme.C.seam2))

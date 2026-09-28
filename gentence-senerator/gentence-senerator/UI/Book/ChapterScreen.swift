@@ -25,8 +25,8 @@ struct ChapterScreen: View {
         })
         let met = states.values.filter { $0.standing != .never || $0.slipping }.count
         var levels: [String: String] = [:]
-        for entry in chapter.entries {
-            if let point = store.point(entry.point) { levels[entry.id] = store.pack.level(point.level) }
+        for entry in chapter.entries where index.noted[entry.id] == nil {
+            levels[entry.id] = store.stretchTag(entry)
         }
         let rows = ChapterRows(chapter: chapter, states: states, levels: levels)
         return ScrollView {
@@ -57,7 +57,7 @@ struct ChapterScreen: View {
 struct ChapterRows {
     let chapter: Chapter
     let states: [String: EntryState]
-    /// "HSK 3", for entries linked to a point.
+    /// "HSK 4", for entries a level above the learner's.
     var levels: [String: String] = [:]
 
     func state(_ entry: Chapter.Entry) -> EntryState {
