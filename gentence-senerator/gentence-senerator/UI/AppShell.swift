@@ -428,13 +428,30 @@ struct ModeScreen: View {
         }
     }
 
+    /// The prompt, set back, above an answer being checked.
+    @ViewBuilder
+    private var dimmedPrompt: some View {
+        if let turn = store.current {
+            let english = turn.mode == .translate || turn.prompt.target == nil
+            if let text = english ? turn.prompt.english : turn.prompt.target {
+                Panel(fill: Theme.C.raised) {
+                    Text(text)
+                        .font(english ? Theme.F.body : Theme.F.targetSmall)
+                        .foregroundStyle(Theme.C.ink2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
     private var confirm: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
+            dimmedPrompt
             TextField("", text: $store.draft, axis: .vertical)
                 .font(Theme.F.target)
                 .textFieldStyle(.plain)
                 .targetLanguageInput()
-                .lineLimit(2...6)
+                .lineLimit(store.current?.mode == .produce ? 4...10 : 2...6)
                 .inset()
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
