@@ -502,15 +502,19 @@ struct ModeScreen: View {
     private var reference: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             if let turn = store.current {
+                let said = turn.attempt.confirmed
+                let reference = turn.prompt.reference ?? ""
+                // Where the two part ways. Not a verdict.
+                let apart = Store.divergence(said, reference, language: turn.language)
                 Text(turn.prompt.english ?? "").font(Theme.F.body)
                 ModuleLabel(text: "You said")
-                Text(turn.attempt.confirmed).font(Theme.F.target)
-                if let reference = turn.prompt.reference {
+                SpanMark(said, marks: apart.said.map { .init($0, colour: Theme.C.ink3) })
+                if !reference.isEmpty {
                     ModuleLabel(text: "Ref")
                     Panel(fill: Theme.C.sunk, edge: Theme.C.seam2) {
                         HStack(alignment: .firstTextBaseline) {
-                            Text(reference).font(Theme.F.target)
-                                .fixedSize(horizontal: false, vertical: true)
+                            SpanMark(reference, marks: apart.ref.map { .init($0, colour: Theme.C.carbon) },
+                                     colour: Theme.C.carbon)
                             Spacer()
                             TinyButton(title: "Hear") { store.say(reference) }
                         }
