@@ -35,7 +35,7 @@ enum Theme {
         static let onAccent   = dyn(0xFBF6F1, 0x191008)
 
         static let good     = dyn(0x3E5D39, 0x8FAE72)
-        static let warn     = dyn(0x946A1C, 0xCFA048)
+        static let warn     = dyn(0x7F5A12, 0xCFA048)
         static let bad      = dyn(0x9C2E21, 0xD0664F)
         /// Carbon-copy blue: reference text only.
         static let carbon   = dyn(0x4A4E7C, 0x9DA2D6)
