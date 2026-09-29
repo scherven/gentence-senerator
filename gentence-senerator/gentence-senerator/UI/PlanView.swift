@@ -49,25 +49,8 @@ struct PlanView: View {
         }
     }
 
-    /// Named in the same words the rows are written in. Two columns, because
-    /// four of these across a phone is four truncated labels.
     private var legend: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), alignment: .leading),
-                                 count: 2),
-                  alignment: .leading, spacing: 5) {
-            ForEach(DayPlan.Standing.allCases, id: \.self) { standing in
-                HStack(spacing: 5) {
-                    Rectangle()
-                        .fill(Theme.colour(for: standing))
-                        .frame(width: 10, height: 10)
-                        .overlay(Rectangle().strokeBorder(Theme.C.seam,
-                                                          lineWidth: Theme.M.hair))
-                    Text(standing.name)
-                        .font(Theme.F.label)
-                        .foregroundStyle(Theme.C.ink3)
-                }
-            }
-        }
+        StateLegend(states: [.never, .tried, .holding, .solid])
     }
 }
 
@@ -117,12 +100,10 @@ private struct CellView: View {
     let cell: DayPlan.Cell
 
     var body: some View {
-        Rectangle()
-            .fill(cell.today ? Color.clear : Theme.colour(for: cell.standing))
-            .frame(height: 14)
-            .overlay(
-                Rectangle().strokeBorder(cell.today ? Theme.C.accent : Theme.C.seam,
-                                         lineWidth: cell.today ? 2 : Theme.M.hair)
-            )
+        if cell.today {
+            Rectangle().strokeBorder(Theme.C.accent, lineWidth: 2).frame(width: 14, height: 14)
+        } else {
+            StateCell(LedgerState(cell.standing), size: 14)
+        }
     }
 }

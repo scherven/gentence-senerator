@@ -36,30 +36,21 @@ struct QuizFormatContext {
 
 // MARK: - Shared pieces
 
-/// A key: hairline border and a hard 3pt shadow underneath.
+/// A quiz option: `KeyStyle` filling its frame, keeping the quiz looks.
 struct QuizKey: ButtonStyle {
     enum Look { case plain, right, wrong, chosen, dim }
     var look: Look = .plain
 
     func makeBody(configuration: Configuration) -> some View {
-        let (fill, ink, edge): (Color, Color, Color) = {
-            switch look {
-            case .plain:  return (Theme.C.surface, Theme.C.ink, Theme.C.seam2)
-            case .right:  return (Theme.C.good, Theme.C.onAccent, Theme.C.good)
-            case .wrong:  return (Theme.C.surface, Theme.C.bad, Theme.C.bad)
-            case .chosen: return (Theme.C.accent, Theme.C.onAccent, Theme.C.accent)
-            case .dim:    return (Theme.C.surface, Theme.C.ink3, Theme.C.seam)
-            }
-        }()
-        let down = configuration.isPressed
-        return configuration.label
-            .strikethrough(look == .wrong, color: Theme.C.bad)
-            .foregroundStyle(ink)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(fill)
-            .overlay(Rectangle().stroke(edge, lineWidth: Theme.M.hair))
-            .offset(y: down ? 3 : 0)
-            .background(Rectangle().fill(edge).offset(y: 3))
+        let variant: KeyStyle.Variant = switch look {
+        case .plain:  .neutral
+        case .right:  .right
+        case .wrong:  .wrong
+        case .chosen: .chosen
+        case .dim:    .dim
+        }
+        return KeyStyle(variant, expand: true, dimsWhenDisabled: false)
+            .makeBody(configuration: configuration)
     }
 }
 
@@ -89,7 +80,7 @@ struct QuizOptions: View {
             ForEach(Array(options.enumerated()), id: \.offset) { i, option in
                 Button { pick(i) } label: {
                     Text(option)
-                        .font(.system(size: big ? 40 : 22))
+                        .font(Theme.F.target(size: big ? 38 : 22, bold: big))
                         .minimumScaleFactor(0.5)
                         .lineLimit(2)
                         .padding(.horizontal, 6)

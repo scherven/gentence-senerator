@@ -45,11 +45,11 @@ struct ListLayout: View {
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .leading) {
-                if let fill = BookColour.fill(state) { Rectangle().fill(fill).frame(width: 3) }
+                if let fill = LedgerState(state).fill { Rectangle().fill(fill).frame(width: 3) }
             }
         }
         .buttonStyle(BookKeyStyle(unseen: state.standing == .never && !state.slipping,
-                                  edge: state.slipping ? Theme.C.bad : Theme.C.seam2))
+                                  edge: state.slipping ? Theme.C.bad : nil))
     }
 
     private func meta(_ entry: Chapter.Entry, _ state: EntryState) -> String? {
@@ -83,7 +83,7 @@ struct CardsLayout: View {
         return NavigationLink(value: rows.route(entry)) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .top) {
-                    Text(entry.head).font(.system(size: 30)).lineLimit(1).minimumScaleFactor(0.5)
+                    Text(entry.head).font(Theme.F.target(size: 30)).lineLimit(1).minimumScaleFactor(0.5)
                     Spacer(minLength: 2)
                     Text(state.slipping ? "MISSED" : state.right > 0 ? "×\(state.right)" : "")
                         .font(Theme.F.label)
@@ -93,21 +93,21 @@ struct CardsLayout: View {
                     Text(reading).font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                 }
                 if let gloss = entry.gloss {
-                    Text(gloss).font(.system(size: 12)).lineLimit(3)
+                    Text(gloss).font(Theme.F.serif(12)).lineLimit(3)
                         .multilineTextAlignment(.leading)
                 }
                 if let level = rows.levels[entry.id] {
                     Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                 }
                 Spacer(minLength: 4)
-                Rectangle().fill(BookColour.fill(state) ?? .clear).frame(height: 3)
+                Rectangle().fill(LedgerState(state).fill ?? .clear).frame(height: 3)
             }
             .foregroundStyle(Theme.C.ink)
             .padding(8)
             .frame(maxWidth: .infinity, minHeight: 112, alignment: .topLeading)
         }
         .buttonStyle(BookKeyStyle(unseen: unseen,
-                                  edge: state.slipping ? Theme.C.bad : Theme.C.seam2))
+                                  edge: state.slipping ? Theme.C.bad : nil))
     }
 }
 
@@ -137,7 +137,7 @@ struct FormulasLayout: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(BookKeyStyle(unseen: state.standing == .never && !state.slipping,
-                                  edge: state.slipping ? Theme.C.bad : Theme.C.seam2))
+                                  edge: state.slipping ? Theme.C.bad : nil))
     }
 
     private func meta(_ entry: Chapter.Entry, _ state: EntryState) -> String {
@@ -159,7 +159,7 @@ struct FormulaView: View {
             ForEach(Array(parts.enumerated()), id: \.offset) { _, part in
                 switch part {
                 case .word(let w):
-                    Text(w).font(.system(size: size, weight: .medium))
+                    Text(w).font(Theme.F.target(size: size, bold: true))
                 case .slot(let label):
                     Text(label).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
                         .frame(minWidth: 34, minHeight: size + 6)
@@ -167,12 +167,12 @@ struct FormulaView: View {
                         .overlay(Rectangle().strokeBorder(Theme.C.seam2,
                                                           style: StrokeStyle(lineWidth: 1, dash: [3, 2])))
                 case .filled(let text):
-                    Text(text).font(.system(size: size * 0.5))
+                    Text(text).font(Theme.F.target(size: size * 0.5))
                         .padding(.horizontal, 8).padding(.vertical, 6)
                         .background(Theme.C.surface)
                         .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 case .plain(let text):
-                    Text(text).font(.system(size: size * 0.5)).foregroundStyle(Theme.C.ink2)
+                    Text(text).font(Theme.F.serif(size * 0.5)).foregroundStyle(Theme.C.ink2)
                 }
             }
         }
@@ -188,7 +188,7 @@ struct PairsLayout: View {
         VStack(spacing: 0) {
             ForEach(rows.groups, id: \.name) { group in
                 HStack(alignment: .top, spacing: 10) {
-                    Text(group.name).font(.system(size: 15, weight: .medium, design: .monospaced))
+                    Text(group.name).font(Theme.F.mono(15, bold: true))
                         .frame(width: 52, alignment: .leading)
                         .padding(.top, 5)
                     Flow(spacing: 5, lineSpacing: 5) {
@@ -209,7 +209,7 @@ struct PairsLayout: View {
         let colour = BookColour.tag(entry.tag, among: tags)
         return NavigationLink(value: rows.route(entry)) {
             HStack(spacing: 0) {
-                Text(entry.head).font(.system(size: 13))
+                Text(entry.head).font(Theme.F.target(size: 14))
                     .padding(.horizontal, 8).padding(.vertical, 6)
                 if let level = rows.levels[entry.id] {
                     Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
@@ -227,7 +227,7 @@ struct PairsLayout: View {
             .foregroundStyle(Theme.C.ink)
         }
         .buttonStyle(BookKeyStyle(unseen: unseen,
-                                  edge: state.slipping ? Theme.C.bad : Theme.C.seam2))
+                                  edge: state.slipping ? Theme.C.bad : nil))
     }
 }
 
@@ -247,7 +247,7 @@ struct SplitLayout: View {
             ForEach(rows.groups, id: \.name) { group in
                 HStack(spacing: 6) {
                     cell(group.entries.first { $0.tag == tags.first }, .leading)
-                    Text(group.name).font(.system(size: 13, weight: .medium, design: .monospaced))
+                    Text(group.name).font(Theme.F.mono(13, bold: true))
                         .lineLimit(2).minimumScaleFactor(0.7)
                         .multilineTextAlignment(.center)
                         .frame(width: 64)
@@ -273,10 +273,10 @@ struct SplitLayout: View {
     private func cell(_ entry: Chapter.Entry?, _ edge: HorizontalAlignment) -> some View {
         if let entry {
             let state = rows.state(entry)
-            let fill = BookColour.fill(state)
+            let fill = LedgerState(state).fill
             NavigationLink(value: rows.route(entry)) {
                 VStack(alignment: edge, spacing: 2) {
-                    Text(entry.head).font(.system(size: 12.5))
+                    Text(entry.head).font(Theme.F.target(size: 13))
                     if let level = rows.levels[entry.id] {
                         Text(level).font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                     }
@@ -291,7 +291,7 @@ struct SplitLayout: View {
                 }
             }
             .buttonStyle(BookKeyStyle(unseen: fill == nil,
-                                      edge: state.slipping ? Theme.C.bad : Theme.C.seam2))
+                                      edge: state.slipping ? Theme.C.bad : nil))
         } else {
             Color.clear.frame(maxWidth: .infinity)
         }
@@ -301,7 +301,7 @@ struct SplitLayout: View {
 struct GroupLabel: View {
     let text: String
     var body: some View {
-        Text(text.uppercased()).font(Theme.F.label).tracking(0.8).foregroundStyle(Theme.C.ink2)
+        Text(text.uppercased()).font(Theme.F.label).tracking(Theme.M.caps).foregroundStyle(Theme.C.ink2)
     }
 }
 

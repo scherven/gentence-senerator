@@ -13,6 +13,8 @@ struct GentenceApp: App {
     )
     @State private var store = GentenceApp.store
 
+    init() { Theme.install() }
+
     var body: some Scene {
         WindowGroup {
             AppShell(store: store)

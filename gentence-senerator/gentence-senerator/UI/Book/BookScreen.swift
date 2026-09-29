@@ -24,7 +24,7 @@ struct BookScreen: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text("Book").font(.system(size: 22, weight: .semibold)).foregroundStyle(Theme.C.ink)
+            Text("Book").font(Theme.F.title).foregroundStyle(Theme.C.ink)
             Spacer()
             Menu {
                 ForEach(Language.allCases) { language in
@@ -68,15 +68,15 @@ struct BookScreen: View {
     private func tally(_ index: Store.BookIndex) -> some View {
         let c = counts(index)
         let parts: [(String, Int, Color)] = [
-            ("SOLID", c.solid, Theme.colour(for: .solid)),
-            ("HOLDING", c.holding, Theme.colour(for: .holding)),
-            ("TRIED", c.tried, Theme.colour(for: .tried)),
-            ("SLIPPING", c.slipping, Theme.C.bad),
+            ("SOLID", c.solid, LedgerState.solid.fill ?? .clear),
+            ("HOLDING", c.holding, LedgerState.holding.fill ?? .clear),
+            ("TRIED", c.tried, LedgerState.tried.fill ?? .clear),
+            ("SLIPPING", c.slipping, LedgerState.slipping.fill ?? .clear),
         ]
         return VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text("\(c.met)").font(.system(size: 30, design: .monospaced))
-                Text("/ \(c.total)").font(.system(size: 13, design: .monospaced))
+                Text("\(c.met)").font(Theme.F.display)
+                Text("/ \(c.total)").font(Theme.F.mono(15))
                     .foregroundStyle(Theme.C.ink2)
             }
             .foregroundStyle(Theme.C.ink)
@@ -91,20 +91,10 @@ struct BookScreen: View {
                 }
             }
             .frame(height: 8)
-            .background(Theme.C.sunk)
-            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-            HStack(spacing: 12) {
-                ForEach(parts, id: \.0) { part in
-                    HStack(spacing: 4) {
-                        Rectangle().fill(part.2).frame(width: 7, height: 7)
-                        Text("\(part.0) \(part.1)")
-                    }
-                }
-            }
-            .font(Theme.F.label)
-            .foregroundStyle(Theme.C.ink2)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
+            .background(Theme.C.raised)
+            .overlay(Rectangle().stroke(Theme.C.ink, lineWidth: Theme.M.hair))
+            StateLegend(states: [.solid, .holding, .tried, .slipping],
+                        counts: [.solid: c.solid, .holding: c.holding, .tried: c.tried, .slipping: c.slipping])
         }
     }
 
@@ -120,7 +110,7 @@ struct BookScreen: View {
                     Button { startQuiz(plan) } label: {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(plan.name.uppercased())
-                                .font(.system(size: 9.5, weight: .medium, design: .monospaced))
+                                .font(Theme.F.mono(10.5, bold: true))
                                 .tracking(0.6)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
@@ -132,7 +122,7 @@ struct BookScreen: View {
                         .frame(maxWidth: .infinity, minHeight: 64, alignment: .topLeading)
                         .padding(8)
                     }
-                    .buttonStyle(BookKeyStyle())
+                    .buttonStyle(KeyStyle())
                 }
             }
         }
@@ -165,13 +155,13 @@ struct BookScreen: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     // Shrinks rather than breaking a long compound mid-word.
-                    Text(chapter.name).font(.system(size: 14, weight: .semibold))
+                    Text(chapter.name).font(Theme.F.serif(15, bold: true))
                         .lineLimit(1).minimumScaleFactor(0.6)
                     Spacer(minLength: 0)
                     Text("\(met)/\(chapter.entries.count)").font(Theme.F.meta)
                         .foregroundStyle(Theme.C.ink2)
                 }
-                Text(chapter.sub).font(.system(size: 12)).foregroundStyle(Theme.C.ink2)
+                Text(chapter.sub).font(Theme.F.target(size: 13)).foregroundStyle(Theme.C.ink2)
                     .lineLimit(2).multilineTextAlignment(.leading)
                 cells(states).padding(.top, 4)
             }

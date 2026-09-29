@@ -19,15 +19,15 @@ struct QuizResultView: View {
                     Spacer()
                     Text(Self.clock(round.seconds())).foregroundStyle(Theme.C.ink2)
                 }
-                .font(.system(size: 12, design: .monospaced))
+                .font(Theme.F.mono(12))
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text("\(round.right)").font(.system(size: 56, design: .monospaced))
-                    Text("/ \(round.items.count)").font(.system(size: 18, design: .monospaced))
+                    Text("\(round.right)").font(Theme.F.mono(56, bold: true))
+                    Text("/ \(round.items.count)").font(Theme.F.mono(18))
                         .foregroundStyle(Theme.C.ink2)
                     Spacer()
                     if let best = record.best, let avg = record.average {
-                        Text("BEST \(best) · AVG \(avg)").font(.system(size: 12, design: .monospaced))
+                        Text("BEST \(best) · AVG \(avg)").font(Theme.F.mono(12))
                             .foregroundStyle(Theme.C.good)
                     }
                 }
@@ -57,24 +57,16 @@ struct QuizResultView: View {
                                                                  : c.after < c.before ? Theme.C.bad : Theme.C.ink)
                             + Text(" / \(c.chapter.entries.count)")
                     }
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(Theme.F.mono(12))
                     .padding(.vertical, 10).padding(.horizontal, 12)
                     .background(Theme.C.surface)
                     .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 }
 
                 HStack(spacing: 8) {
-                    Button(action: again) {
-                        Text("AGAIN").frame(maxWidth: .infinity).frame(height: 48)
-                            .foregroundStyle(Theme.C.surface).background(Theme.C.ink)
-                            .background(Rectangle().fill(Color.black).offset(y: 3))
-                    }
-                    Button(action: done) { Text("DONE").frame(height: 48) }
-                        .buttonStyle(QuizKey())
-                        .frame(height: 48)
+                    ActionKey("Again", action: again)
+                    ActionKey("Done", variant: .neutral, action: done)
                 }
-                .buttonStyle(.plain)
-                .font(.system(size: 12, design: .monospaced))
             }
             .padding(.horizontal, Theme.M.gap)
             .padding(.top, 24)
@@ -85,7 +77,7 @@ struct QuizResultView: View {
     private func row(_ item: QuizItem, _ answer: QuizRound.Answer) -> some View {
         let chapter = book.chapter(of: item.entry)
         return HStack(alignment: .firstTextBaseline) {
-            Self.miss(item, answer).font(.system(size: 17))
+            Self.miss(item, answer).font(Theme.F.target(size: 17))
             Spacer(minLength: 8)
             if let chapter, let openChapter {
                 Button { openChapter(chapter) } label: {

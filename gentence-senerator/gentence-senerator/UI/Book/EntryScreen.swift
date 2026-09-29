@@ -68,7 +68,7 @@ struct EntryScreen: View {
                 }
             } else {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    Text(entry.head).font(.system(size: entry.head.count > 10 ? 24 : 34, weight: .medium))
+                    Text(entry.head).font(Theme.F.target(size: entry.head.count > 10 ? 24 : 34, bold: true))
                         .fixedSize(horizontal: false, vertical: true)
                     if let tag = entry.tag {
                         BookTag(text: tag, colour: BookColour.tag(tag, among: BookColour.order(chapter.entries.map(\.tag))))
@@ -82,7 +82,7 @@ struct EntryScreen: View {
                 }
             }
             if let gloss = entry.gloss {
-                Text(gloss).font(.system(size: 14)).foregroundStyle(Theme.C.ink2)
+                Text(gloss).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Flow(spacing: 8, lineSpacing: 6) {
@@ -114,10 +114,7 @@ struct EntryScreen: View {
                                   grade: { await store.grade($0, against: $1) })
                     }
                     HStack {
-                        Button { store.open(seed: request.seed, kind: request.kind) } label: {
-                            Text("LESSON ›").font(Theme.F.meta).foregroundStyle(Theme.C.accent)
-                        }
-                        .buttonStyle(.plain)
+                        TypedLink("Lesson") { store.open(seed: request.seed, kind: request.kind) }
                         Spacer()
                         Text(store.ruleSaved[request.cacheKey].map { "SAVED \(day($0))" } ?? "SAVED")
                             .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
@@ -125,12 +122,9 @@ struct EntryScreen: View {
                     .padding(.top, 8)
                     .overlay(alignment: .top) { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
                 } else if loading || store.isLoading(request) {
-                    HStack(spacing: Theme.M.gapTight) {
-                        ProgressView().tint(Theme.C.accent)
-                        Text("Writing…").font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                    }
+                    Ticker(text: "Writing")
                 } else {
-                    Text(point.instruction).font(.system(size: 14))
+                    Text(point.instruction).font(Theme.F.bodyTight)
                         .fixedSize(horizontal: false, vertical: true)
                     TinyButton(title: "Write the rule") {
                         loading = true
@@ -177,7 +171,7 @@ struct EntryScreen: View {
     private func mark(_ label: String, _ text: String, _ colour: Color) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(label).font(Theme.F.label).foregroundStyle(colour).frame(width: 26, alignment: .leading)
-            Text(text).font(.system(size: 14)).fixedSize(horizontal: false, vertical: true)
+            Text(text).font(Theme.F.target(size: 15)).fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -188,32 +182,17 @@ struct EntryScreen: View {
                          point: GrammarPoint?, source: Textbook.Entry?) -> some View {
         HStack(spacing: 8) {
             if !chapter.formats.isEmpty {
-                Button { startQuiz(Store.speedRound(for: chapter)) } label: {
-                    label("PRACTICE", fill: true)
-                }
-                .buttonStyle(BookKeyStyle(edge: Theme.C.ink, fill: Theme.C.accent))
+                ActionKey("Practice") { startQuiz(Store.speedRound(for: chapter)) }
             } else if let source {
                 // Noted: nothing to quiz, so the lesson it came from.
-                Button { store.open(source) } label: { label("LESSON", fill: true) }
-                    .buttonStyle(BookKeyStyle(edge: Theme.C.ink, fill: Theme.C.accent))
+                ActionKey("Lesson") { store.open(source) }
             }
             if let point {
                 let asked = store.isRequested(point: point.id)
-                Button { store.requestTomorrow(point: point.id) } label: {
-                    label(asked ? "TOMORROW ✓" : "ASK FOR IT TOMORROW", fill: false)
-                }
-                .buttonStyle(BookKeyStyle(unseen: false, edge: Theme.C.ink, fill: Theme.C.ground))
-                .disabled(asked)
+                ActionKey(asked ? "Tomorrow ✓" : "Ask for it tomorrow", variant: .neutral,
+                          enabled: !asked) { store.requestTomorrow(point: point.id) }
             }
         }
-    }
-
-    private func label(_ text: String, fill: Bool) -> some View {
-        Text(text)
-            .font(Theme.F.meta.weight(.medium)).tracking(1)
-            .foregroundStyle(fill ? Theme.C.onAccent : Theme.C.ink)
-            .lineLimit(1).minimumScaleFactor(0.8)
-            .frame(maxWidth: .infinity).frame(height: 48)
     }
 
     private func day(_ date: Date) -> String {

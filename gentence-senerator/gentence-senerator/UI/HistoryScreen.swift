@@ -14,7 +14,7 @@ struct HistoryScreen: View {
             }
             .padding(Theme.M.gap)
         }
-        .background(Theme.C.surface)
+        .background(Theme.C.ground)
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
     }

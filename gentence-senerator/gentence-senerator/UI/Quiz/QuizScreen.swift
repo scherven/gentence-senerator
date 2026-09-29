@@ -42,7 +42,7 @@ struct QuizScreen: View {
                 runner
             }
         }
-        .background(Theme.C.ground.ignoresSafeArea())
+        .paper()
     }
 
     // MARK: Runner
@@ -54,14 +54,14 @@ struct QuizScreen: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Button { quit() } label: {
-                    Text("✕").font(.system(size: 18, design: .monospaced)).foregroundStyle(Theme.C.ink)
+                    Text("✕").font(Theme.F.mono(18)).foregroundStyle(Theme.C.ink)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Quit")
                 Spacer()
-                Text("\(index + 1) / \(round.items.count)").font(.system(size: 13, design: .monospaced))
+                Text("\(index + 1) / \(round.items.count)").font(Theme.F.mono(13))
                 Spacer()
-                Text("×\(round.streak)").font(.system(size: 13, design: .monospaced))
+                Text("×\(round.streak)").font(Theme.F.mono(13))
                     .foregroundStyle(Theme.C.accent)
             }
             ticks

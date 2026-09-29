@@ -54,9 +54,7 @@ struct LessonScreen: View {
                 // reads as though it simply has none.
                 if !lesson.hasPractice {
                     HStack(spacing: Theme.M.gapTight) {
-                        ProgressView().tint(Theme.C.accent)
-                        Text("Writing practice…")
-                            .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+                        Ticker(text: "Writing practice")
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(Theme.M.pad)
@@ -69,7 +67,7 @@ struct LessonScreen: View {
             }
             .padding(Theme.M.gap)
         }
-        .background(Theme.C.surface)
+        .background(Theme.C.ground)
     }
 
     private var header: some View {

@@ -16,6 +16,11 @@ struct AppShell: View {
             if showsTabs { TabBar(tab: tabBinding) }
         }
         .tint(Theme.C.accent)
+        .paper()
+        // Scrolling content never shows through the status bar.
+        .overlay(alignment: .top) {
+            Theme.C.ground.frame(height: 0).ignoresSafeArea(edges: .top)
+        }
         .environment(\.startQuiz) { quiz = $0 }
         .fullScreenCover(item: $quiz) { plan in
             QuizScreen(store: store, plan: plan)
@@ -28,6 +33,9 @@ struct AppShell: View {
             }
         }
         .onChange(of: store.settings.language) { bookRoutes = [] }
+        .onChange(of: store.settings.language, initial: true) { _, language in
+            ThemeState.shared.language = language
+        }
     }
 
     @ViewBuilder
@@ -108,30 +116,39 @@ enum RootTab: Hashable, CaseIterable {
     }
 }
 
-/// Mono labels; the active one carries an accent rule on top.
+/// Three typed words. The active one is underlined in the accent with an
+/// I-beam caret after it.
 struct TabBar: View {
     @Binding var tab: RootTab
 
     var body: some View {
         HStack(spacing: 0) {
             ForEach(RootTab.allCases, id: \.self) { item in
+                let on = item == tab
                 Button { tab = item } label: {
-                    Text(item.title)
-                        .font(.system(size: 11, weight: .medium, design: .monospaced))
-                        .tracking(1.1)
-                        .foregroundStyle(item == tab ? Theme.C.ink : Theme.C.ink3)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .overlay(alignment: .top) {
-                            Rectangle().fill(item == tab ? Theme.C.accent : .clear).frame(height: 2)
-                        }
-                        .contentShape(Rectangle())
+                    HStack(spacing: 4) {
+                        Text(item.title)
+                            .font(Theme.F.mono(12, bold: on))
+                            .tracking(1.2)
+                            .foregroundStyle(on ? Theme.C.ink : Theme.C.ink3)
+                            .overlay(alignment: .bottom) {
+                                if on {
+                                    Rectangle().fill(Theme.C.accent).frame(height: 2).offset(y: 5)
+                                }
+                            }
+                        Rectangle().fill(on ? Theme.C.accent : .clear).frame(width: 3, height: 11)
+                    }
+                    .padding(.leading, 7)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
-        .background(Theme.C.surface.ignoresSafeArea(edges: .bottom))
-        .overlay(alignment: .top) { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
+        .background(Theme.C.ground.ignoresSafeArea(edges: .bottom))
+        .overlay(alignment: .top) { Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair) }
     }
 }
 
@@ -172,7 +189,7 @@ struct ModeScreen: View {
                 Trouble(message: why) { Task { await store.nextPrompt() } }
             }
         }
-        .background(Theme.C.surface)
+        .background(Theme.C.ground)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -247,10 +264,8 @@ struct ModeScreen: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(Theme.M.pad)
-                        .background(spent ? Theme.C.raised : Theme.C.surface)
-                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(KeyStyle())
                     .disabled(spent)
                 }
                 RecommendedRound(store: store)
@@ -294,9 +309,7 @@ struct ModeScreen: View {
                             .textFieldStyle(.plain)
                             .targetLanguageInput()
                             .lineLimit(2...5)
-                            .padding(Theme.M.pad)
-                            .background(Theme.C.sunk)
-                            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+                            .inset()
                         MainButton(title: "Continue", enabled: !typing.isEmpty) {
                             store.typed(typing); typing = ""
                         }
@@ -355,9 +368,7 @@ struct ModeScreen: View {
                 .textFieldStyle(.plain)
                 .targetLanguageInput()
                 .lineLimit(2...6)
-                .padding(Theme.M.pad)
-                .background(Theme.C.sunk)
-                .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+                .inset()
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
             }
@@ -394,6 +405,10 @@ struct ModeScreen: View {
                 MainButton(title: store.reading.count == 1 ? "Done" : "Next") {
                     Task { await store.advance() }
                 }
+                .padding(.horizontal, Theme.M.gap)
+                .padding(.vertical, Theme.M.gapTight)
+                .background(Theme.C.ground)
+                .overlay(alignment: .top) { Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair) }
             }
         }
     }
@@ -478,7 +493,7 @@ struct LessonHost: View {
         }
         .navigationTitle(store.lesson(for: request)?.title ?? request.seed.subject)
         .navigationBarTitleDisplayMode(.inline)
-        .background(Theme.C.surface)
+        .background(Theme.C.ground)
     }
 }
 
@@ -488,8 +503,7 @@ struct Busy: View {
     let text: String
     var body: some View {
         VStack(spacing: Theme.M.pad) {
-            ProgressView().tint(Theme.C.accent)
-            Text(text).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
+            Ticker(text: text.trimmingCharacters(in: CharacterSet(charactersIn: "…")))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -552,8 +566,7 @@ struct GradingPanel: View {
             if ready {
                 TinyButton(title: "Read") { store.read(job) }
             } else if job.state == .grading {
-                ProgressView(value: Double(job.graded), total: Double(max(job.total, 1)))
-                    .tint(Theme.C.accent)
+                SquareProgress(value: Double(job.graded), total: Double(max(job.total, 1)))
                     .frame(width: 60)
             }
         }
@@ -577,19 +590,18 @@ struct RecommendedRound: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("SPEED ROUND · \(pick.plan.name.uppercased())")
-                            .foregroundStyle(Theme.C.surface)
                             .lineLimit(1)
                         Spacer()
-                        Text("\(pick.plan.count) ›").foregroundStyle(BookColour.onInk)
+                        Text("\(pick.plan.count) ›").foregroundStyle(Theme.C.accentOnInverse)
                     }
-                    .font(Theme.F.meta.weight(.medium)).tracking(1)
-                    Text(pick.reason).font(.system(size: 15)).foregroundStyle(Theme.C.seam)
+                    .font(Theme.F.label).tracking(1)
+                    Text(pick.reason).font(Theme.F.meta).opacity(0.7)
                         .multilineTextAlignment(.leading)
                 }
                 .padding(.horizontal, Theme.M.pad).padding(.vertical, 14)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonStyle(BookKeyStyle(edge: .black, fill: Theme.C.ink, drop: 3))
+            .buttonStyle(KeyStyle(.inverse, perforated: true))
         }
     }
 }

@@ -17,7 +17,7 @@ struct SettingsScreen: View {
                 }
                 .padding(Theme.M.gap)
             }
-            .background(Theme.C.surface)
+            .background(Theme.C.ground)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -27,6 +27,7 @@ struct SettingsScreen: View {
             }
         }
         .tint(Theme.C.accent)
+        .overlay { Grain() }
     }
 
     private var language: some View {
@@ -52,9 +53,9 @@ struct SettingsScreen: View {
 
     private var level: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Stepper(value: Binding(get: { store.settings.level },
-                                   set: { store.setLevel($0) }),
-                    in: 1...store.pack.levels) {
+            SquareStepper(value: Binding(get: { store.settings.level },
+                                         set: { store.setLevel($0) }),
+                          in: 1...store.pack.levels) {
                 Text(store.pack.level(store.settings.level)).font(Theme.F.body)
             }
             .padding(Theme.M.pad)
@@ -79,20 +80,20 @@ struct SettingsScreen: View {
     private var session: some View {
         VStack(spacing: 0) {
             row {
-                Stepper(value: Binding(get: { store.settings.dailyGoal },
-                                       set: { store.setGoal($0) }),
-                        in: 1...10) {
+                SquareStepper(value: Binding(get: { store.settings.dailyGoal },
+                                             set: { store.setGoal($0) }),
+                              in: 1...10) {
                     Text("\(store.settings.dailyGoal) of each mode a day")
                         .font(Theme.F.body)
                 }
             }
             row {
-                Toggle(isOn: $store.settings.prefersTyping) {
+                SquareToggle(isOn: $store.settings.prefersTyping) {
                     Text("Type instead of speaking").font(Theme.F.body)
                 }
             }
             row {
-                Toggle(isOn: $store.settings.offerStretch) {
+                SquareToggle(isOn: $store.settings.offerStretch) {
                     Text("Suggest structures I haven't used").font(Theme.F.body)
                 }
             }

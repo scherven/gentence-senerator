@@ -2,11 +2,11 @@ import SwiftUI
 
 // One view per `QuizFormat`, registered in `QuizFormatView`.
 
-private let promptFont = Font.system(size: 26)
+private var promptFont: Font { Theme.F.target(size: 26) }
 
 private func gloss(_ s: String?) -> some View {
     Text(s ?? "")
-        .font(Theme.F.bodyTight)
+        .font(Theme.F.serif(14.5, italic: true))
         .foregroundStyle(Theme.C.ink2)
         .opacity(s == nil ? 0 : 1)
 }
@@ -22,7 +22,7 @@ struct PickOneQuiz: View {
     var body: some View {
         VStack(spacing: 10) {
             quizGapText(c.item.prompt ?? "", [fill])
-                .font(.system(size: 36))
+                .font(Theme.F.target(size: 36))
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
             gloss(c.item.gloss)
@@ -71,7 +71,7 @@ struct FlipQuiz: View {
         VStack(alignment: .leading, spacing: 10) {
             quizGapText(c.item.prompt ?? "", [fill]).font(Theme.F.target)
             if let g = c.item.gloss {
-                Text(g).font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                Text(g).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,7 +92,7 @@ struct FlipQuiz: View {
         }()
         return Button { choose(i) } label: {
             Text(label)
-                .font(.system(size: 30, weight: .semibold))
+                .font(Theme.F.target(size: 30, bold: true))
                 .minimumScaleFactor(0.4)
                 .strikethrough(look == .wrong, color: Theme.C.bad)
                 .foregroundStyle(look == .wrong ? Theme.C.bad : look == .dim ? Theme.C.ink3 : Theme.C.onAccent)
@@ -137,7 +137,7 @@ struct TwoStepQuiz: View {
         let steps = c.item.steps
         let at = min(picks.count, steps.count - 1)
         VStack(alignment: .leading, spacing: 18) {
-            quizGapText(c.item.prompt ?? "", fills).font(.system(size: 24))
+            quizGapText(c.item.prompt ?? "", fills).font(Theme.F.target(size: 24))
             gloss(c.item.gloss)
             QuizStepLine(steps: steps, results: results)
             Spacer()
@@ -182,7 +182,7 @@ struct SpotItQuiz: View {
                         guard picks.isEmpty else { return }
                         picks = [i]
                     } label: {
-                        Text(token).font(.system(size: 24)).padding(.horizontal, 8).padding(.vertical, 6)
+                        Text(token).font(Theme.F.target(size: 24)).padding(.horizontal, 8).padding(.vertical, 6)
                     }
                     .buttonStyle(QuizKey(look: tokenLook(i, answer: tokens.answer)))
                     .fixedSize()
@@ -223,7 +223,7 @@ struct ToneTapQuiz: View {
         VStack(spacing: 22) {
             Button { play() } label: {
                 Text("▶ " + (c.item.prompt ?? "PLAY"))
-                    .font(.system(size: 30))
+                    .font(Theme.F.target(size: 30))
                     .padding(.vertical, 18)
             }
             .buttonStyle(QuizKey())
@@ -233,10 +233,10 @@ struct ToneTapQuiz: View {
             ForEach(Array(c.item.steps.enumerated()), id: \.offset) { s, step in
                 HStack(spacing: 8) {
                     Text(step.prompt ?? "")
-                        .font(.system(size: 26))
+                        .font(Theme.F.target(size: 26))
                         .frame(width: 44, alignment: .leading)
                     ForEach(Array(step.options.enumerated()), id: \.offset) { i, mark in
-                        Button { pick(s, i) } label: { Text(mark).font(.system(size: 22)) }
+                        Button { pick(s, i) } label: { Text(mark).font(Theme.F.target(size: 22)) }
                             .buttonStyle(QuizKey(look: .of(i, picked: picks[ifAny: s] ?? nil,
                                                           answer: step.answer, done: c.done)))
                             .frame(height: 52)
@@ -303,7 +303,7 @@ struct SortQuiz: View {
             } else {
                 Spacer()
                 Text(steps[min(picks.count, steps.count - 1)].prompt ?? "")
-                    .font(.system(size: 40))
+                    .font(Theme.F.target(size: 40))
                     .minimumScaleFactor(0.4)
                     .id(picks.count)
                     .transition(.push(from: .trailing))
@@ -312,7 +312,7 @@ struct SortQuiz: View {
                 Spacer()
                 HStack(spacing: 10) {
                     ForEach(Array(buckets.enumerated()), id: \.offset) { i, b in
-                        Button { pick(i) } label: { Text(b).font(.system(size: 24)) }
+                        Button { pick(i) } label: { Text(b).font(Theme.F.target(size: 24)) }
                             .buttonStyle(QuizKey())
                             .frame(height: 96)
                     }
@@ -341,7 +341,7 @@ struct BuildQuiz: View {
         let bank = bank
         VStack(alignment: .leading, spacing: 22) {
             if let p = c.item.gloss ?? c.item.prompt {
-                Text(p).font(.system(size: 18))
+                Text(p).font(Theme.F.target(size: 18))
             }
             QuizFlow(spacing: 8) {
                 ForEach(placed, id: \.self) { i in
@@ -391,7 +391,7 @@ struct BuildQuiz: View {
     }
 
     private func tile(_ s: String) -> some View {
-        Text(s).font(.system(size: 20)).padding(.horizontal, 12).padding(.vertical, 10)
+        Text(s).font(Theme.F.target(size: 20)).padding(.horizontal, 12).padding(.vertical, 10)
     }
 }
 
@@ -404,9 +404,9 @@ struct TransformQuiz: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text(c.item.prompt ?? "").font(.system(size: 24))
+            Text(c.item.prompt ?? "").font(Theme.F.target(size: 24))
             gloss(c.item.gloss)
-            Text(c.item.task ?? "").font(Theme.F.meta.weight(.medium)).foregroundStyle(Theme.C.accent)
+            Text(c.item.task ?? "").font(Theme.F.label).foregroundStyle(Theme.C.accent)
             TextField("", text: $typed, axis: .vertical)
                 .font(Theme.F.target)
                 .textFieldStyle(.plain)
@@ -441,19 +441,12 @@ struct TransformQuiz: View {
 
 // MARK: -
 
+/// CHECK: `ActionKey` under the quiz's name.
 struct QuizCheckButton: View {
     var enabled = true
     let action: () -> Void
     var body: some View {
-        Button(action: action) {
-            Text("CHECK").font(Theme.F.meta.weight(.medium)).tracking(1)
-                .frame(maxWidth: .infinity).frame(height: 52)
-                .foregroundStyle(enabled ? Theme.C.onAccent : Theme.C.ink3)
-                .background(enabled ? Theme.C.accent : Theme.C.raised)
-                .background(Rectangle().fill(enabled ? Theme.C.accent.opacity(0.6) : Theme.C.seam).offset(y: 3))
-        }
-        .buttonStyle(.plain)
-        .disabled(!enabled)
+        ActionKey("Check", enabled: enabled, action: action)
     }
 }
 

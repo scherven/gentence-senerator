@@ -45,7 +45,7 @@ struct ReviewScreen: View {
             .padding(Theme.M.gap)
             .padding(.bottom, Theme.M.gap)
         }
-        .background(Theme.C.surface)
+        .background(Theme.C.ground)
     }
 
     // MARK: Pieces
