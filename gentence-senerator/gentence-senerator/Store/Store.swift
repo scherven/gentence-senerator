@@ -2327,10 +2327,10 @@ final class Store {
         var right: String?
     }
 
-    /// Finds a finding in the sentence. In order: a quoted fragment of any
-    /// stage that occurs verbatim (one that occurs once beats one that
-    /// repeats); the part a whole-sentence fix changed; the window a fragment
-    /// fix rewrites. Nil when none of these land.
+    /// Finds a finding in the sentence from two sources: quoted fragments of
+    /// its stages that occur verbatim, and where the fix places it (the part a
+    /// whole-sentence fix changed, or the window a fragment fix rewrites).
+    /// Nil when neither lands.
     nonisolated static func span(of atom: Atom, in said: String) -> Span? {
         let chars = Array(said)
         guard !chars.isEmpty else { return nil }
@@ -2350,8 +2350,12 @@ final class Store {
             // A repeat is settled by the fix where it can be.
             return (found.first(where: near) ?? first, found.count)
         }
-        // A quote the fix agrees with, then one that occurs once, then any.
-        if let r = (hits.first { near($0.range) } ?? hits.first { $0.count == 1 } ?? hits.first)?.range {
+        // A quote the fix agrees with. Where the fix places it elsewhere, the
+        // quote was context ("after „Gestern“"): the fix wins. With no fix,
+        // a quote that occurs once, then any.
+        let agreed = hits.first { near($0.range) }
+        if agreed == nil, let fromFix { return fromFix }
+        if let r = (agreed ?? hits.first { $0.count == 1 } ?? hits.first)?.range {
             let right: String? = !problem ? nil
                 : (fromFix.flatMap { $0.range == r ? $0.right : nil } ?? fix)
             return Span(range: r, wrong: String(chars[r]), right: right)

@@ -94,6 +94,26 @@ struct SpanTests {
         #expect(span.wrong == "der Katze")
     }
 
+    @Test func aQuotedContextWordLosesToTheFix() throws {
+        let said = "Gestern ich habe meinem Bruder das Buch gegeben."
+        let a = Self.atom(name: "After „Gestern“ the verb has to come next.",
+                          fix: "Gestern habe ich meinem Bruder das Buch gegeben.")
+        let span = try #require(Store.span(of: a, in: said))
+        #expect(span.wrong == "ich habe")
+    }
+
+    @Test func aBareWordFixWithNothingToMatchIsNil() {
+        let a = Self.atom(fix: "ist")
+        #expect(Store.span(of: a, in: "Sie hat nie in Berlin gewesen.") == nil)
+    }
+
+    @Test func missingWordTakesItsNeighbour() throws {
+        let said = "Sie hat nie in Berlin gewesen."
+        let span = try #require(Store.span(of: Self.atom(fix: "Sie hat noch nie in Berlin gewesen."), in: said))
+        #expect(span.wrong == "nie")
+        #expect(span.right == "noch nie")
+    }
+
     @Test func keptUsesTheWordsThatWereRight() throws {
         let said = "Gestern ich habe meinem Bruder das Buch gegeben."
         let span = try #require(Store.span(of: Self.atom(.kept, fix: "meinem Bruder"), in: said))
