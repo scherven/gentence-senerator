@@ -53,13 +53,7 @@ struct LessonScreen: View {
                 // Practice arrives in a second call. Without this the lesson
                 // reads as though it simply has none.
                 if !lesson.hasPractice {
-                    HStack(spacing: Theme.M.gapTight) {
-                        Ticker(text: "Writing practice")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(Theme.M.pad)
-                    .background(Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                    Panel { Ticker(text: "Writing practice") }
                 }
 
                 AskView(answers: answers, isAsking: isAsking,
@@ -67,6 +61,7 @@ struct LessonScreen: View {
             }
             .padding(Theme.M.gap)
         }
+        .scrollDismissesKeyboard(.interactively)
         .background(Theme.C.ground)
     }
 
