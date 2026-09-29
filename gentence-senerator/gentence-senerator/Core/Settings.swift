@@ -119,6 +119,8 @@ enum Vault {
     static let passages = "passages.v1"
     /// Sessions sent for grading, until their results are read in.
     static let grading = "grading.v1"
+    /// Seconds each recent batch took to come back.
+    static let gradingTimes = "grading.times.v1"
     /// The day each grading job came back, so its feedback leaves the main
     /// screen the day after.
     static let landed = "landed.v1"

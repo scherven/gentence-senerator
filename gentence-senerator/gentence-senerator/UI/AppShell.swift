@@ -450,6 +450,12 @@ struct ModeScreen: View {
                                 TinyButton(title: "Hear") { store.say(target) }
                             }
                         }
+                        if turn.mode == .produce, store.draft.isEmpty, store.phase == .ready {
+                            TinyButton(title: store.rerolling ? "Writing…" : "Another question") {
+                                Task { await store.reroll() }
+                            }
+                            .disabled(store.rerolling)
+                        }
                         if let english = turn.prompt.english, turn.mode != .listen {
                             if showGloss {
                                 Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
@@ -686,8 +692,12 @@ struct GradingPanel: View {
                 if ready {
                     TypedLink("Read") { store.read(job) }
                 } else if job.state == .grading {
-                    SquareProgress(value: Double(job.graded), total: Double(max(job.total, 1)))
-                        .frame(width: 60)
+                    // Fills against the expected return time, so it moves
+                    // without anything coming back.
+                    TimelineView(.periodic(from: .now, by: 30)) { _ in
+                        SquareProgress(value: store.gradingProgress(job), total: 1)
+                    }
+                    .frame(width: 60)
                 }
             }
             .padding(.trailing, 10)

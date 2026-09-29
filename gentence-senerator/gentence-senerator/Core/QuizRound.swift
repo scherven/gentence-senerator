@@ -88,6 +88,30 @@ extension QuizRound {
         return Answer(steps: [orders.contains(key(join(placed)))], given: [join(placed)])
     }
 
+    /// The fixed words of an entry's head: 等…再… → 等, 再; "warten auf" →
+    /// warten, auf. Placeholders (A, B, X, V, …) are dropped.
+    static func structure(of head: String?) -> [String] {
+        guard let head else { return [] }
+        let separators = CharacterSet(charactersIn: "…+/·()[]").union(.whitespaces)
+        let parts = head.replacingOccurrences(of: "...", with: "…")
+            .components(separatedBy: separators)
+            .map { $0.trimmingCharacters(in: .punctuationCharacters) }
+            .filter { !$0.isEmpty }
+        let placeholders: Set<String> = ["A", "B", "X", "Y", "V", "N", "S", "O", "ADJ", "sb", "sth", "etw", "jdn", "jdm"]
+        return parts.filter { !placeholders.contains($0) }
+    }
+
+    /// Whether a tile carries one of the structure's words: a substring for
+    /// Mandarin, a whole word elsewhere.
+    static func isStructure(_ tile: String, _ structure: [String]) -> Bool {
+        let words = Set(tile.lowercased().split(whereSeparator: { $0.isWhitespace || $0 == "," }).map(String.init))
+        return structure.contains { part in
+            part.unicodeScalars.contains { (0x3000...0x9FFF).contains($0.value) }
+                ? tile.contains(part)
+                : words.contains(part.lowercased())
+        }
+    }
+
     /// Transform: typed, compared to `accept` ignoring case, spacing and
     /// punctuation.
     static func score(_ item: QuizItem, typed: String) -> Answer {

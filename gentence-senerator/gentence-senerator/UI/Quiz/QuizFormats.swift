@@ -356,8 +356,18 @@ struct BuildQuiz: View {
             .overlay(alignment: .bottom) { Rectangle().fill(Theme.C.ink).frame(height: 1) }
 
             if c.done, c.revealed?.right == false {
-                Text(QuizRound.expected(c.item).first ?? "")
-                    .font(Theme.F.target).foregroundStyle(Theme.C.good)
+                // The right order as tiles, the structure's own words filled
+                // so the pattern stands out from the rest of the sentence.
+                QuizFlow(spacing: 6) {
+                    ForEach(Array(c.item.tiles.enumerated()), id: \.offset) { _, t in
+                        let key = QuizRound.isStructure(t, c.structure)
+                        tile(t)
+                            .foregroundStyle(key ? Theme.C.onAccent : Theme.C.good)
+                            .background(key ? Theme.C.good : Color.clear)
+                            .overlay(Rectangle().strokeBorder(Theme.C.good, lineWidth: 1))
+                            .fixedSize()
+                    }
+                }
             }
 
             QuizFlow(spacing: 8) {

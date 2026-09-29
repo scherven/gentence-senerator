@@ -32,6 +32,8 @@ struct QuizFormatContext {
     let speak: (String) -> Void
     /// The entry's gloss, for items that carry none.
     var entryGloss: String? = nil
+    /// The entry's fixed words (等…再… → 等, 再), highlighted in a correction.
+    var structure: [String] = []
 
     var done: Bool { revealed != nil }
 }

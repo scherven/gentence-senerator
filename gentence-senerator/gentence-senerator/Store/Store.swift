@@ -1040,6 +1040,13 @@ final class Store {
                 if batch.ended {
                     ingest(try await tutor.api.batchResults(batch), into: job)
                     job.state = .done
+                    if job.returnedAt == nil {
+                        job.returnedAt = .now
+                        if let sent = job.sentAt {
+                            gradingTimes = GradingClock.adding(Date.now.timeIntervalSince(sent), to: gradingTimes)
+                            Vault.save(gradingTimes, Vault.gradingTimes)
+                        }
+                    }
                 }
             } catch {
                 job.error = error.localizedDescription
@@ -1133,6 +1140,7 @@ final class Store {
         case .success(let batch):
             job.batchID = batch
             job.state = .grading
+            job.sentAt = .now
             job.watched = UserDefaults.standard.string(forKey: Vault.pushToken) != nil
             job.error = nil
         case .failure(let error):
@@ -1286,6 +1294,21 @@ final class Store {
         phase = .reviewing
     }
 
+    private var gradingTimes: [TimeInterval] = Vault.load([TimeInterval].self, Vault.gradingTimes) ?? []
+
+    /// When a batch should be back. Jobs sent before this was recorded count
+    /// from their creation.
+    func expectedBack(_ job: GradingJob) -> Date? {
+        guard job.state == .grading else { return nil }
+        return (job.sentAt ?? job.createdAt).addingTimeInterval(GradingClock.expected(gradingTimes))
+    }
+
+    /// How far along the expected wait a job is, 0–0.95.
+    func gradingProgress(_ job: GradingJob) -> Double {
+        GradingClock.progress(sentAt: job.sentAt ?? job.createdAt,
+                              expected: GradingClock.expected(gradingTimes))
+    }
+
     /// Where a job stands, in the learner's words.
     func status(of job: GradingJob) -> String {
         switch job.state {
@@ -1294,7 +1317,8 @@ final class Store {
             if !online { return "Offline" }
             return job.uploading ? "Sending…" : "Not sent"
         case .grading:
-            return "\(job.graded) of \(job.total) graded"
+            guard let back = expectedBack(job) else { return "Grading" }
+            return back > .now ? "Back ~\(back.formatted(date: .omitted, time: .shortened))" : "Any minute"
         case .done:
             let missing = job.exchanges.filter {
                 $0.turnIDs.last.flatMap(archived)?.review == nil
@@ -2729,6 +2753,39 @@ final class Store {
             previous = i
         }
         return out
+    }
+
+    // MARK: Reroll
+
+    private(set) var rerolling = false
+
+    /// A different produce question in place of the one on screen, before any
+    /// answer. Keeps the point it was asked to reach for, if it had one.
+    func reroll() async {
+        guard var turn = current, turn.mode == .produce, draft.isEmpty, !rerolling else { return }
+        rerolling = true
+        defer { rerolling = false }
+        let point = turn.prompt.pointID.flatMap { id in pack.points.first { $0.id == id } }
+        let asked = (session?.planned ?? []) + (session?.turns.map(\.prompt) ?? []) + [turn.prompt]
+        let avoid = asked.compactMap { $0.english ?? $0.target }
+        do {
+            let (made, usage) = try await tutor.nextPrompt(
+                mode: .produce, language: settings.language, level: settings.level,
+                revisit: turn.prompt.revisited, stretch: point,
+                seed: DayPlan.seed(from: plan.words, turn: session?.turns.count ?? 0),
+                domain: nil, avoid: avoid)
+            note(usage)
+            turn.prompt.english = made.english
+            turn.prompt.target = made.target
+            guard current?.id == turn.id else { return }
+            current = turn
+            if let index = session?.turns.count, session?.planned?.indices.contains(index) == true {
+                session?.planned?[index] = turn.prompt
+            }
+            hold()
+        } catch {
+            speechTrouble = "Couldn't write another question."
+        }
     }
 }
 

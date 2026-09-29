@@ -203,3 +203,26 @@ struct GradingTests {
 not json
 """#
 }
+
+struct GradingClockTests {
+    @Test func noHistoryFallsBackToTenMinutes() {
+        #expect(GradingClock.expected([]) == 600)
+    }
+
+    @Test func expectedIsTheMedianOfRecentWaits() {
+        #expect(GradingClock.expected([120, 900, 300]) == 300)
+        #expect(GradingClock.expected([0, -5, 240]) == 240)
+    }
+
+    @Test func progressNeverReadsFullBeforeItIsBack() {
+        let sent = Date(timeIntervalSince1970: 0)
+        #expect(GradingClock.progress(sentAt: sent, expected: 600, now: sent.addingTimeInterval(300)) == 0.5)
+        #expect(GradingClock.progress(sentAt: sent, expected: 600, now: sent.addingTimeInterval(9_000)) == 0.95)
+    }
+
+    @Test func keepsOnlyTheLastTwenty() {
+        let past = (1...25).map(Double.init).reduce([TimeInterval]()) { GradingClock.adding($1, to: $0) }
+        #expect(past.count == 20)
+        #expect(past.first == 6)
+    }
+}

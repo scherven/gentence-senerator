@@ -50,6 +50,10 @@ struct QuizScreen: View {
 
     // MARK: Runner
 
+    private func entry(of item: QuizItem) -> Chapter.Entry? {
+        store.book.chapter(of: item.entry)?.entries.first { $0.id == item.entry }
+    }
+
     private var item: QuizItem { round.items[index] }
     private var revealed: QuizRound.Answer? { round.answers[index] }
 
@@ -77,8 +81,8 @@ struct QuizScreen: View {
                 item: item, revealed: revealed,
                 answer: { answer($0) },
                 speak: { store.speakQuiz($0) },
-                entryGloss: store.book.chapter(of: item.entry)?
-                    .entries.first { $0.id == item.entry }?.gloss))
+                entryGloss: entry(of: item)?.gloss,
+                structure: QuizRound.structure(of: entry(of: item)?.head)))
                 .id(item.id)
                 .padding(.top, 36)
                 .frame(maxHeight: .infinity, alignment: .top)

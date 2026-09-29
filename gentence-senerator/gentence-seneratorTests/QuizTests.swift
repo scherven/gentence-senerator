@@ -418,3 +418,21 @@ struct QuizTests {
         #expect(plan.id == ch.id && plan.chapters == [ch.id] && plan.formats == ch.formats)
     }
 }
+
+struct StructureHighlightTests {
+    @Test func headsBreakIntoTheirFixedWords() {
+        #expect(QuizRound.structure(of: "等…再…") == ["等", "再"])
+        #expect(QuizRound.structure(of: "一…就…") == ["一", "就"])
+        #expect(QuizRound.structure(of: "warten auf") == ["warten", "auf"])
+        #expect(QuizRound.structure(of: "是 X 的") == ["是", "的"])
+        #expect(QuizRound.structure(of: nil).isEmpty)
+    }
+
+    @Test func tilesMatchByCharacterOrWholeWord() {
+        #expect(QuizRound.isStructure("再", ["等", "再"]))
+        #expect(QuizRound.isStructure("等你下班", ["等", "再"]))
+        #expect(!QuizRound.isStructure("吃饭", ["等", "再"]))
+        #expect(QuizRound.isStructure("auf den Bus", ["warten", "auf"]))
+        #expect(!QuizRound.isStructure("Aufgabe", ["auf"]))
+    }
+}
