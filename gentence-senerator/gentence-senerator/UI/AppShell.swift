@@ -169,6 +169,8 @@ struct TabBar: View {
 /// attempt is made or how the review is read.
 struct ModeScreen: View {
     @Bindable var store: Store
+    /// Opens a book entry on the Book tab: chapter id, entry id.
+    var openEntry: (String, String) -> Void = { _, _ in }
     @State private var typing = ""
     @State private var showingSettings = false
     /// The English is a fallback, not the prompt. Reading it first turns
@@ -254,37 +256,88 @@ struct ModeScreen: View {
     private var start: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
-                GradingPanel(store: store)
-                ForEach(Mode.allCases) { mode in
-                    let tally = store.tally(mode)
-                    let spent = store.isDone(mode)
-                    Button { Task { await store.begin(mode) } } label: {
-                        VStack(alignment: .leading, spacing: 3) {
-                            HStack(alignment: .firstTextBaseline) {
-                                Text(mode.name).font(Theme.F.title)
-                                    .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.ink)
-                                Spacer()
-                                if tally.done > 0 {
-                                    Text("\(tally.done)/\(tally.goal)")
-                                        .font(Theme.F.label)
-                                        .foregroundStyle(spent ? Theme.C.ink3 : Theme.C.accent)
-                                }
-                            }
-                            if mode == .listen, !spent, let held = store.heldPassage {
-                                Text(held.passage.title)
-                                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(Theme.M.pad)
-                    }
-                    .buttonStyle(KeyStyle())
-                    .disabled(spent)
+                produceKey
+                HStack(alignment: .top, spacing: 10) {
+                    modeKey(.translate)
+                    modeKey(.listen)
                 }
+                WrittenToday(store: store)
+                GradingPanel(store: store)
                 RecommendedRound(store: store)
                 PlanView(plan: store.plan)
             }
             .padding(Theme.M.gap)
+        }
+    }
+
+    /// Next undone: accent. Done: flush. Otherwise a plain key.
+    private func variant(_ mode: Mode) -> KeyStyle.Variant {
+        store.isDone(mode) ? .spent : store.nextMode == mode ? .primary : .neutral
+    }
+
+    private func spentStamp(_ mode: Mode) -> some View {
+        Stamp(mode == .listen ? "Done" : "Sent", colour: Theme.C.good, size: 10)
+    }
+
+    /// Produce carries the day: first, larger, with what it is made of.
+    private var produceKey: some View {
+        let tally = store.tally(.produce)
+        let spent = store.isDone(.produce)
+        let words = store.plan.words.have + store.plan.words.new
+        return Button { Task { await store.begin(.produce) } } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(Mode.produce.name).font(Theme.F.serif(22, bold: true))
+                    Spacer()
+                    if spent { spentStamp(.produce) }
+                    else { Text("\(tally.done)/\(tally.goal) ›").font(Theme.F.meta) }
+                }
+                if !spent, store.plan.stretch != nil || !words.isEmpty {
+                    Flow(spacing: 6, lineSpacing: 6) {
+                        if let stretch = store.plan.stretch {
+                            Ingredient(text: stretch.name, caps: true)
+                                .onTapGesture { openStretch(stretch) }
+                                .accessibilityAddTraits(.isButton)
+                        }
+                        ForEach(words, id: \.self) { Ingredient(text: $0) }
+                    }
+                }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(KeyStyle(variant(.produce)))
+        .disabled(spent)
+    }
+
+    private func modeKey(_ mode: Mode) -> some View {
+        let tally = store.tally(mode)
+        let spent = store.isDone(mode)
+        return Button { Task { await store.begin(mode) } } label: {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(alignment: .center) {
+                    Text(mode.name).font(Theme.F.cardTitle).lineLimit(1)
+                    Spacer(minLength: 4)
+                    if spent { spentStamp(mode) }
+                    else { Text("\(tally.done)/\(tally.goal)").font(Theme.F.meta).opacity(0.75) }
+                }
+                if mode == .listen, !spent, let held = store.heldPassage {
+                    Text(held.passage.title).font(Theme.F.note).opacity(0.75).lineLimit(1)
+                }
+            }
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(KeyStyle(variant(mode)))
+        .disabled(spent)
+    }
+
+    /// The stretch's book entry; its lesson if the book has none.
+    private func openStretch(_ point: GrammarPoint) {
+        if let at = store.bookEntry(for: point.id) {
+            openEntry(at.chapter, at.entry)
+        } else {
+            store.openLesson(for: point)
         }
     }
 
@@ -589,6 +642,78 @@ struct GradingPanel: View {
             Rectangle().fill(ready ? Theme.C.accent : Theme.C.seam2).frame(width: Theme.M.edge)
         }
         .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+    }
+}
+
+/// One thing a produce answer is made of: the stretch (CAPS mono) or a word
+/// in the language (target face, its own case, which `Tag` would lose). Ticked
+/// once used. Takes the ink of the key it sits on.
+struct Ingredient: View {
+    let text: String
+    var caps = false
+    var used = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            if used {
+                Text("✓").font(Theme.F.mono(11, bold: true)).foregroundStyle(Theme.C.good)
+            }
+            Text(caps ? text.uppercased() : text)
+                .font(caps ? Theme.F.label : Theme.F.target(size: 14))
+                .tracking(caps ? Theme.M.caps : 0)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 6).padding(.vertical, 2)
+        .overlay {
+            Rectangle().strokeBorder(used ? AnyShapeStyle(Theme.C.good)
+                                          : AnyShapeStyle(.foreground.opacity(0.6)),
+                                     lineWidth: Theme.M.hair)
+        }
+    }
+}
+
+/// The learner's own sentences today, one ledger row each.
+struct WrittenToday: View {
+    let store: Store
+
+    var body: some View {
+        let rows = store.writtenToday
+        if !rows.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                ModuleLabel(text: "Written today")
+                WrittenRows(rows: rows)
+            }
+        }
+    }
+}
+
+/// Sentences as ledger rows: mode and number, the sentence, the time and, once
+/// graded, the score.
+struct WrittenRows: View {
+    let rows: [Store.Written]
+
+    var body: some View {
+        LedgerSheet {
+            ForEach(rows) { row in
+                LedgerRow(account: "\(row.mode == .produce ? "Prod" : "Trans") \(row.number)",
+                          accountWidth: 76, ruled: row.id != rows.last?.id) {
+                    Text(row.turn.attempt.confirmed)
+                        .font(Theme.F.target(size: 15, for: row.turn.language))
+                        .foregroundStyle(Theme.C.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                } trailing: {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(row.turn.createdAt.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))
+                            .minute(.twoDigits)))
+                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                        if let score = row.turn.review?.score {
+                            Text("\(score)").font(Theme.F.label).foregroundStyle(Theme.band(score))
+                        }
+                    }
+                    .padding(.trailing, 10).padding(.vertical, 12)
+                }
+            }
+        }
     }
 }
 
