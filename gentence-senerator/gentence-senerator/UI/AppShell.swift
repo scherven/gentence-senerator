@@ -770,7 +770,9 @@ struct RecommendedRound: View {
     @Environment(\.startQuiz) private var startQuiz
 
     var body: some View {
-        if let pick = store.recommended() {
+        // Gated on a mode done today; the reason is the single worst item.
+        // `quizLog` is read inside, so a finished round moves it on.
+        if let pick = store.todaysRound() {
             Button { startQuiz(pick.plan) } label: {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .firstTextBaseline) {
