@@ -633,9 +633,10 @@ struct GradingPanel: View {
         if !store.todaysJobs.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 ModuleLabel(text: "Feedback")
-                VStack(spacing: 0) {
-                    ForEach(store.todaysJobs.reversed()) { job in
-                        row(job)
+                let jobs = Array(store.todaysJobs.reversed())
+                LedgerSheet {
+                    ForEach(jobs) { job in
+                        row(job, ruled: job.id != jobs.last?.id)
                     }
                 }
             }
@@ -648,36 +649,31 @@ struct GradingPanel: View {
         return (mixed ? "\(job.language.flag) " : "") + store.status(of: job)
     }
 
-    private func row(_ job: GradingJob) -> some View {
+    private func row(_ job: GradingJob, ruled: Bool) -> some View {
         let ready = store.canRead(job) && job.state == .done
-        return HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text(job.mode.name.uppercased())
-                .font(Theme.F.label).tracking(1)
-                .foregroundStyle(ready ? Theme.C.accent : Theme.C.ink3)
-                .frame(width: 84, alignment: .leading)
+        return LedgerRow(account: job.mode.name, colour: ready ? Theme.C.accent : Theme.C.ink3,
+                         edge: ready ? Theme.C.accent : nil, accountWidth: 84, ruled: ruled) {
             Text(status(job))
                 .font(Theme.F.bodyTight)
                 .foregroundStyle(Theme.C.ink)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            if store.hasFailures(job) {
-                TinyButton(title: "Retry") { store.regrade(job) }
+        } trailing: {
+            HStack(spacing: 6) {
+                if store.hasFailures(job) {
+                    TinyButton(title: "Retry") { store.regrade(job) }
+                }
+                if Store.showsSendNow(job, sending: store.sendingNow.contains(job.id)) {
+                    TinyButton(title: "Send now") { Task { await store.sendNow(job) } }
+                }
+                if ready {
+                    TypedLink("Read") { store.read(job) }
+                } else if job.state == .grading {
+                    SquareProgress(value: Double(job.graded), total: Double(max(job.total, 1)))
+                        .frame(width: 60)
+                }
             }
-            if job.batchID == nil, !store.sendingNow.contains(job.id) {
-                TinyButton(title: "Send now") { Task { await store.sendNow(job) } }
-            }
-            if ready {
-                TinyButton(title: "Read") { store.read(job) }
-            } else if job.state == .grading {
-                SquareProgress(value: Double(job.graded), total: Double(max(job.total, 1)))
-                    .frame(width: 60)
-            }
+            .padding(.trailing, 10)
+            .frame(maxHeight: .infinity)
         }
-        .padding(Theme.M.padTight)
-        .background(Theme.C.surface)
-        .overlay(alignment: .leading) {
-            Rectangle().fill(ready ? Theme.C.accent : Theme.C.seam2).frame(width: Theme.M.edge)
-        }
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
     }
 }
 
