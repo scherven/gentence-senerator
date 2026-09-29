@@ -31,9 +31,6 @@ struct ReviewScreen: View {
 
                 if let review {
                     findings(review)
-                    if let natural = review.natural {
-                        sentence(natural, label: "Natural", edge: Theme.C.accent)
-                    }
                     if !review.respeaks.isEmpty {
                         RespeakView(items: review.respeaks)
                     }
@@ -50,83 +47,113 @@ struct ReviewScreen: View {
 
     // MARK: Pieces
 
+    /// Problems, numbered in order. The number ties the underline to the row.
+    private func number(of atom: Atom) -> Int? {
+        review?.problems.firstIndex { $0.id == atom.id }.map { $0 + 1 }
+    }
+
+    /// Each problem found in an answer on screen: which answer, and where.
+    private var located: [String: (answer: Int, span: Store.Span)] {
+        var out: [String: (answer: Int, span: Store.Span)] = [:]
+        let said = exchange.count > 1 ? exchange.map(\.attempt.confirmed) : [turn.attempt.confirmed]
+        for atom in review?.problems ?? [] {
+            for (i, text) in said.enumerated() {
+                if let span = Store.span(of: atom, in: text) { out[atom.id] = (i, span); break }
+            }
+        }
+        return out
+    }
+
+    private func marks(for answer: Int) -> [SpanMark.Mark] {
+        (review?.problems ?? []).compactMap { atom in
+            guard let hit = located[atom.id], hit.answer == answer else { return nil }
+            return SpanMark.Mark(hit.span.range, colour: Theme.colour(for: atom.verdict),
+                                 number: number(of: atom))
+        }
+    }
+
     private var specimen: some View {
-        VStack(spacing: 0) {
+        IndexCard(headRule: nil, pitch: nil) {
             if exchange.count > 1 {
                 // A finding can point at any answer here, so all of them are on
                 // screen and numbered to match.
                 ForEach(Array(exchange.enumerated()), id: \.element.id) { index, past in
-                    specimenRow("\(index + 1)") {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(past.prompt.target ?? past.prompt.english ?? "")
-                                .font(Theme.F.note)
-                                .foregroundStyle(Theme.C.ink2)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(past.attempt.confirmed)
-                                .font(Theme.F.target)
-                                .foregroundStyle(Theme.C.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+                    specimenRow("\(index + 1)", first: index == 0) {
+                        Text(past.prompt.target ?? past.prompt.english ?? "")
+                            .font(Theme.F.gloss)
+                            .foregroundStyle(Theme.C.ink2)
+                        SpanMark(past.attempt.confirmed, marks: marks(for: index),
+                                 font: Theme.F.target(size: 19, for: past.language))
                     }
                 }
             } else {
-                // The target-language side carries the English as a gloss beneath
-                // it rather than as a second row, which read as two questions.
                 if let target = turn.prompt.target {
-                    specimenRow(turn.mode == .listen ? "Played" : "Asked") {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(target).font(Theme.F.target).foregroundStyle(Theme.C.ink)
-                            if let english = turn.prompt.english {
-                                Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                            }
+                    specimenRow(turn.mode == .listen ? "Played" : "Asked", first: true) {
+                        Text(target).font(Theme.F.target(size: 19, for: turn.language))
+                        if let english = turn.prompt.english {
+                            Text(english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
                         }
                     }
                 } else if let english = turn.prompt.english {
-                    specimenRow("Asked") {
-                        Text(english).font(Theme.F.body).foregroundStyle(Theme.C.ink)
+                    specimenRow("Asked", first: true) {
+                        Text(english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
                     }
                 }
                 specimenRow("You said") {
-                    Text(turn.attempt.confirmed)
-                        .font(Theme.F.target)
-                        .foregroundStyle(review.map { $0.problems.isEmpty ? Theme.C.ink : Theme.C.bad } ?? Theme.C.ink)
+                    SpanMark(turn.attempt.confirmed, marks: marks(for: 0),
+                             font: Theme.F.target(size: 19, for: turn.language))
                 }
                 if let reference = turn.prompt.reference {
                     specimenRow("Ref") {
-                        Text(reference).font(Theme.F.targetSmall).foregroundStyle(Theme.C.ink2)
+                        Text(reference).font(Theme.F.targetSmall(for: turn.language))
+                            .foregroundStyle(Theme.C.carbon)
                     }
                 }
             }
-            if let review {
-                specimenRow("Score") {
-                    HStack(alignment: .firstTextBaseline, spacing: 9) {
-                        Text("\(review.score)")
-                            .font(Theme.F.number)
-                            .foregroundStyle(Theme.C.ink)
-                        Text(review.readOfScore)
-                            .font(Theme.F.note)
-                            .foregroundStyle(Theme.C.ink2)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+            if let natural = review?.natural {
+                specimenRow("Natural") {
+                    Text(natural).font(Theme.F.targetSmall(for: turn.language))
+                        .foregroundStyle(Theme.C.carbon)
+                }
+            }
+            if let review, !review.readOfScore.isEmpty {
+                specimenRow("Score", last: true) {
+                    Text(review.readOfScore).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                 }
             }
         }
-        .background(Theme.C.sunk)
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        .padding(.top, review == nil ? 0 : 10)
+        .overlay(alignment: .topTrailing) {
+            if let review {
+                Stamp(score: review.score).offset(x: 6, y: -4)
+            }
+        }
     }
 
-    private func specimenRow<Content: View>(_ tag: String,
+    /// Account | double red margin | entry. Rows abut, so the margin runs the
+    /// height of the card.
+    private func specimenRow<Content: View>(_ tag: String, first: Bool = false, last: Bool = false,
                                             @ViewBuilder content: () -> Content) -> some View {
-        HStack(alignment: .top, spacing: Theme.M.pad) {
+        HStack(alignment: .top, spacing: 0) {
             Text(tag.uppercased())
                 .font(Theme.F.label)
-                .tracking(1)
-                .foregroundStyle(Theme.C.ink3)
-                .frame(width: 58, alignment: .leading)
-                .padding(.top, 4)
-            content().frame(maxWidth: .infinity, alignment: .leading)
+                .tracking(0.6)
+                .foregroundStyle(Theme.C.ink2)
+                .frame(width: 62, alignment: .leading)
+                .padding(.top, 6)
+            HStack(spacing: 2.5) {
+                Rectangle().fill(Theme.C.margin).frame(width: 0.75)
+                Rectangle().fill(Theme.C.margin).frame(width: 0.75)
+            }
+            VStack(alignment: .leading, spacing: 3) { content() }
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 10)
+                // Clear of the stamp.
+                .padding(.trailing, first && review != nil ? 64 : 0)
+                .padding(.bottom, last ? 0 : 12)
         }
-        .padding(Theme.M.padTight)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     /// Problems and praise are listed apart, so the count in the header names
@@ -136,10 +163,13 @@ struct ReviewScreen: View {
             if !review.problems.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     ModuleLabel(text: "\(review.problems.count) to fix")
-                    VStack(spacing: 0) {
+                    LedgerSheet {
                         ForEach(review.problems) { atom in
                             StagedAtomRow(
                                 atom: atom,
+                                number: number(of: atom),
+                                span: located[atom.id]?.span,
+                                last: atom.id == review.problems.last?.id,
                                 open: binding(for: atom),
                                 knowledge: knowledge[atom.id] ?? .unclassified,
                                 onClassify: { onClassify(atom, $0) },
@@ -152,9 +182,11 @@ struct ReviewScreen: View {
             if !review.kept.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     ModuleLabel(text: "Got right")
-                    VStack(spacing: 0) {
+                    LedgerSheet {
                         ForEach(review.kept) { atom in
-                            AtomRow(link: atom.link, tint: Theme.C.good) { onOpenAtom(atom) }
+                            KeptRow(atom: atom, last: atom.id == review.kept.last?.id) {
+                                onOpenAtom(atom)
+                            }
                         }
                     }
                 }
@@ -205,21 +237,6 @@ struct ReviewScreen: View {
                     .buttonStyle(.plain)
                 }
             }
-        }
-    }
-
-    private func sentence(_ text: String, label: String, edge: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: label)
-            Text(text)
-                .font(Theme.F.target)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(Theme.M.pad)
-                .background(Theme.C.surface)
-                .overlay(alignment: .leading) {
-                    Rectangle().fill(edge).frame(width: Theme.M.edge)
-                }
-                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }
     }
 
