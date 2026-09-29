@@ -204,29 +204,12 @@ struct ModeScreen: View {
                 Trouble(message: why) { Task { await store.nextPrompt() } }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Theme.C.ground)
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if case .idle = store.phase {
-                ToolbarItem(placement: .topBarTrailing) {
-                    TinyButton(title: store.settings.language.flag) { showingSettings = true }
-                }
-            } else {
-                ToolbarItem(placement: .topBarLeading) {
-                    if store.phase == .passage {
-                        TinyButton(title: "Leave") { store.leavePassage() }
-                    } else if store.phase != .complete {
-                        TinyButton(title: "End") { store.endSession() }
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Text(progressLabel)
-                        .font(Theme.F.label)
-                        .foregroundStyle(Theme.C.ink3)
-                }
-            }
-        }
+        .toolbar(.hidden, for: .navigationBar)
+        .pageHeader(PageHeader(lead: lead, title: title, centred: !isIdle, onLead: onLead) {
+            isIdle ? AnyView(settingsLink) : AnyView(Text(progressLabel))
+        })
         .sheet(isPresented: $showingSettings) { SettingsScreen(store: store) }
         // A tapped push can start reading under an open sheet.
         .onChange(of: store.reading.isEmpty) { _, idle in
@@ -234,10 +217,41 @@ struct ModeScreen: View {
         }
     }
 
-    /// Before a mode is picked there is no mode to name, so the title carries
-    /// the language instead.
+    private var isIdle: Bool { store.phase == .idle }
+
+    /// ✕ END while a sitting runs, ✕ LEAVE in a dialogue; nothing at the
+    /// start or once a session is complete.
+    private var lead: PageHeader<AnyView>.Lead {
+        switch store.phase {
+        case .idle, .complete: return .none
+        case .passage: return .end("Leave")
+        default: return .end()
+        }
+    }
+
+    private var onLead: () -> Void {
+        store.phase == .passage ? { store.leavePassage() } : { store.endSession() }
+    }
+
+    /// Language and level; opens Settings.
+    private var settingsLink: some View {
+        Button { showingSettings = true } label: {
+            Text("\(store.settings.language.name) · \(store.pack.level(store.settings.level)) ▾"
+                .uppercased())
+                .font(Theme.F.meta).tracking(Theme.M.caps)
+                .foregroundStyle(Theme.C.ink)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair).offset(y: 3)
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(PressDim())
+        .accessibilityLabel("Settings")
+    }
+
     private var title: String {
-        if case .idle = store.phase { return store.settings.language.name }
+        if isIdle { return "Today" }
         // While reading, what is on screen may be another mode's review.
         return (store.current?.mode ?? store.settings.mode).name
     }
