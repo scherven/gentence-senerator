@@ -70,14 +70,16 @@ struct StagedAtomRow: View {
                 if open { opened }
             }
         } trailing: {
-            Text(open && atom.isDeep ? "LESSON ›" : open ? "" : "FIX +")
-                .font(Theme.F.label)
-                .tracking(Theme.M.caps)
-                .foregroundStyle(open ? Theme.C.accent : Theme.C.ink3)
-                .lineLimit(1)
-                .fixedSize()
-                .padding(.top, 12)
-                .padding(.trailing, 10)
+            // Open, the entry takes the width; LESSON › sits under the fix.
+            if !open {
+                Text("FIX +")
+                    .font(Theme.F.label)
+                    .tracking(Theme.M.caps)
+                    .foregroundStyle(Theme.C.ink3)
+                    .fixedSize()
+                    .padding(.top, 12)
+                    .padding(.trailing, 10)
+            }
         }
         .background(Theme.C.surface)
         .contentShape(Rectangle())
@@ -98,14 +100,34 @@ struct StagedAtomRow: View {
                 .foregroundStyle(Theme.C.ink2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 0) {
-                TinyButton(title: "I knew that",
-                           selected: knowledge == .slip) { onClassify(.slip) }
-                TinyButton(title: "New to me",
-                           selected: knowledge == .gap) { onClassify(.gap) }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 0) { classify; Spacer(minLength: Theme.M.gapTight); lesson }
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 0) { classify }
+                    lesson
+                }
             }
             .padding(.top, 4)
         }
+    }
+
+    private var lesson: some View {
+        Text("LESSON ›")
+            .font(Theme.F.label)
+            .tracking(Theme.M.caps)
+            .foregroundStyle(Theme.C.accent)
+            .fixedSize()
+            .padding(.vertical, 6)
+    }
+
+    @ViewBuilder
+    private var classify: some View {
+        TinyButton(title: "I knew that",
+                   selected: knowledge == .slip) { onClassify(.slip) }
+            .fixedSize()
+        TinyButton(title: "New to me",
+                   selected: knowledge == .gap) { onClassify(.gap) }
+            .fixedSize()
     }
 
     private func advance() {

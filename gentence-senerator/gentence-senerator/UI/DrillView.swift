@@ -94,7 +94,6 @@ struct DrillView: View {
     private func outcome(correct: Bool) -> some View {
         if extra == Store.uncheckable {
             Panel(fill: Theme.C.sunk, edge: Theme.C.warn, padding: Theme.M.padTight) {
-                Text("NOT CHECKED").monoCaps().foregroundStyle(Theme.C.warn)
                 Text(Store.uncheckable)
                     .font(Theme.F.bodyTight)
                     .foregroundStyle(Theme.C.ink)
