@@ -117,7 +117,7 @@ struct ActivityCalendar: View {
     private func fill(_ shade: ActivityLog.Shade) -> Color {
         switch shade {
         case .all:  return Theme.C.good.opacity(0.42)
-        case .some: return Theme.C.good.opacity(0.14)
+        case .some: return Theme.C.good.opacity(0.22)
         case .none: return .clear
         }
     }
