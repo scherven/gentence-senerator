@@ -29,27 +29,27 @@ struct ChapterScreen: View {
             levels[entry.id] = store.stretchTag(entry)
         }
         let rows = ChapterRows(chapter: chapter, states: states, levels: levels)
+        // Noted has no quiz items behind it.
+        let quizzed = !chapter.formats.isEmpty
         return ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                BookPageHeader(back: "Book", title: chapter.name,
-                               count: "\(met)/\(chapter.entries.count)")
-                ChapterLayoutView(rows: rows)
-            }
-            .padding(.horizontal, Theme.M.gap)
-            .padding(.top, Theme.M.gapTight)
-            .padding(.bottom, Theme.M.gap)
+            ChapterLayoutView(rows: rows)
+                .padding(.horizontal, Theme.M.gap)
+                .padding(.top, 14)
+                .padding(.bottom, Theme.M.gap + (quizzed ? SpeedRoundBar.footprint : 0))
         }
-        .safeAreaInset(edge: .bottom) {
-            // Noted has no quiz items behind it.
-            if !chapter.formats.isEmpty {
+        .overlay(alignment: .bottom) {
+            if quizzed {
                 let plan = Store.speedRound(for: chapter)
                 let done = store.roundsDone(plan)
                 SpeedRoundBar(title: "SPEED ROUND · \(plan.count)",
                               trailing: done == 0 ? "" : "×\(done) DONE") { startQuiz(plan) }
                     .padding(.horizontal, Theme.M.gap)
                     .padding(.vertical, Theme.M.gapTight)
+                    .background(Theme.C.ground)
             }
         }
+        .pageHeader(.back("Book"), title: chapter.name,
+                    meta: "\(met)/\(chapter.entries.count)")
     }
 }
 

@@ -11,7 +11,7 @@ struct ListLayout: View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             ForEach(groups, id: \.name) { group in
                 VStack(alignment: .leading, spacing: 6) {
-                    if groups.count > 1, !group.name.isEmpty { GroupLabel(text: group.name) }
+                    if groups.count > 1, !group.name.isEmpty { ModuleLabel(text: group.name) }
                     ForEach(group.entries) { row($0) }
                 }
             }
@@ -68,7 +68,7 @@ struct CardsLayout: View {
         VStack(alignment: .leading, spacing: 14) {
             ForEach(rows.groups, id: \.name) { group in
                 VStack(alignment: .leading, spacing: 6) {
-                    if !group.name.isEmpty { GroupLabel(text: group.name) }
+                    if !group.name.isEmpty { ModuleLabel(text: group.name) }
                     LazyVGrid(columns: columns, spacing: 6) {
                         ForEach(group.entries) { card($0) }
                     }
@@ -295,13 +295,6 @@ struct SplitLayout: View {
         } else {
             Color.clear.frame(maxWidth: .infinity)
         }
-    }
-}
-
-struct GroupLabel: View {
-    let text: String
-    var body: some View {
-        Text(text.uppercased()).font(Theme.F.label).tracking(Theme.M.caps).foregroundStyle(Theme.C.ink2)
     }
 }
 

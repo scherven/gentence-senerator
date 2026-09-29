@@ -189,13 +189,15 @@ extension QuizRound {
             picked.append(item)
         }
         picked += rest.prefix(count - picked.count)
-        let items = arrange(picked).map { shuffledOptions($0, using: &rng) }
+        let sides = sides(book)
+        let items = arrange(picked).map { fixingSides(shuffledOptions($0, using: &rng), sides) }
         return QuizRound(plan: plan, items: items, started: now)
     }
 
     /// Where an option's position carries no meaning, it moves each round,
     /// so the answer can't be learned by place. Flip halves, tone marks, sort
-    /// buckets and spot-it's tokens keep their order.
+    /// buckets and spot-it's tokens keep their order; `fixingSides` then sets
+    /// every two-option pair.
     static func shuffledOptions<R: RandomNumberGenerator>(_ item: QuizItem,
                                                           using rng: inout R) -> QuizItem {
         let free: [Int]
@@ -213,6 +215,49 @@ extension QuizRound {
                                          answer: order.firstIndex(of: step.answer) ?? step.answer)
         }
         return out
+    }
+
+    /// Two-option pairs, lowercased, to the order they are drawn in: a split
+    /// chapter's two tags (不 | 没) as the chapter page shows them.
+    static func sides(_ book: Book) -> [Set<String>: [String]] {
+        var out: [Set<String>: [String]] = [:]
+        for chapter in book.chapters where chapter.layout == .split {
+            var seen: Set<String> = []
+            let tags = chapter.entries.compactMap(\.tag).map { $0.lowercased() }
+                .filter { seen.insert($0).inserted }
+            guard tags.count >= 2 else { continue }
+            out[Set(tags.prefix(2))] = Array(tags.prefix(2))
+        }
+        return out
+    }
+
+    /// The side a pair's options take: the split order, else a stable sort.
+    static func pairOrder(_ options: [String], _ sides: [Set<String>: [String]]) -> [String] {
+        let lower = options.map { $0.lowercased() }
+        if let order = sides[Set(lower)], Set(lower).count == 2 {
+            return options.sorted { order.firstIndex(of: $0.lowercased())! < order.firstIndex(of: $1.lowercased())! }
+        }
+        return options.sorted { ($0.lowercased(), $0) < ($1.lowercased(), $1) }
+    }
+
+    /// A two-option step draws its pair on the same sides wherever it comes:
+    /// flip halves, sort buckets, a two-step's two keys.
+    static func fixingSides(_ item: QuizItem, _ sides: [Set<String>: [String]]) -> QuizItem {
+        guard [.flip, .sort, .twoStep].contains(item.format) else { return item }
+        var out = item
+        for (i, step) in item.steps.enumerated() where step.options.count == 2 {
+            let order = pairOrder(step.options, sides)
+            guard order != step.options else { continue }
+            let answer = step.options.indices.contains(step.answer)
+                ? order.firstIndex(of: step.options[step.answer]) ?? step.answer : step.answer
+            out.steps[i] = QuizItem.Step(prompt: step.prompt, options: order, answer: answer)
+        }
+        return out
+    }
+
+    /// Build: CHECK once every slot is filled.
+    static func canCheck(_ item: QuizItem, placed: Int) -> Bool {
+        !item.tiles.isEmpty && placed == item.tiles.count
     }
 
     static func assemble(plan: QuizPlan, book: Book, bank: [QuizItem],

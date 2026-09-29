@@ -308,6 +308,33 @@ enum Textbook {
         return out
     }
 
+    /// A sentence of the learner's that used a point, and how it went.
+    struct Use: Hashable {
+        var sentence: String
+        var clean: Bool
+        /// The correction, when it broke.
+        var fix: String
+        var at: Date
+    }
+
+    /// Reviewed sentences whose atoms name `point`, newest first. Broken if
+    /// any problem atom on the point, clean otherwise.
+    static func uses(of point: String, in sessions: [Session], language: Language) -> [Use] {
+        var seen: Set<UUID> = []
+        var out: [Use] = []
+        for session in sessions where session.language == language {
+            for turn in session.turns where seen.insert(turn.id).inserted {
+                guard let review = turn.review, !turn.attempt.confirmed.isEmpty else { continue }
+                let on = review.atoms.filter { $0.seed.pointID == point }
+                guard !on.isEmpty else { continue }
+                let problem = on.first { $0.verdict.isProblem }
+                out.append(Use(sentence: turn.attempt.confirmed, clean: problem == nil,
+                               fix: problem?.stages.fix ?? "", at: turn.createdAt))
+            }
+        }
+        return out.sorted { $0.at > $1.at }
+    }
+
     /// Session ids start `yyyy-MM-dd`.
     private static func date(of session: Session) -> Date {
         day.date(from: String(session.id.prefix(10))) ?? .distantPast

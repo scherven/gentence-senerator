@@ -30,6 +30,8 @@ struct QuizFormatContext {
     let revealed: QuizRound.Answer?
     let answer: (QuizRound.Answer) -> Void
     let speak: (String) -> Void
+    /// The entry's gloss, for items that carry none.
+    var entryGloss: String? = nil
 
     var done: Bool { revealed != nil }
 }
@@ -118,10 +120,23 @@ func quizGapText(_ prompt: String, _ fills: [QuizGapFill?]) -> Text {
                     .foregroundColor(f.right == true ? Theme.C.good : Theme.C.accent)
             }
         } else {
-            out = out + Text("\u{2002}\u{2002}\u{2002}").underline()
+            out = out + Text("\u{2009}") + Text(QuizBlank.image).foregroundColor(Theme.C.ink)
+                + Text("\u{2009}")
         }
     }
     return out
+}
+
+/// An empty gap: a 1.5pt rule on the baseline, 44pt long.
+enum QuizBlank {
+    static let image: Image = {
+        let size = CGSize(width: 44, height: 1.5)
+        let ui = UIGraphicsImageRenderer(size: size).image { ctx in
+            UIColor.black.setFill()
+            ctx.fill(CGRect(origin: .zero, size: size))
+        }
+        return Image(uiImage: ui.withRenderingMode(.alwaysTemplate))
+    }()
 }
 
 /// Wraps children onto lines. Tokens, tiles.
@@ -181,6 +196,29 @@ struct QuizStepLine: View {
             }
         }
         .font(Theme.F.meta)
+    }
+}
+
+/// One tick per step: marked when answered, outlined in ink when current.
+struct StepTicks: View {
+    let count: Int
+    let results: [Bool]
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<count, id: \.self) { i in
+                Group {
+                    if let ok = results[ifAny: i] {
+                        Rectangle().fill(ok ? Theme.C.good : Theme.C.bad)
+                    } else {
+                        Rectangle().strokeBorder(i == results.count ? Theme.C.ink : Theme.C.seam2,
+                                                 lineWidth: Theme.M.hair)
+                    }
+                }
+                .frame(width: 14, height: 6)
+            }
+        }
+        .accessibilityLabel("Step \(min(results.count + 1, count)) of \(count)")
     }
 }
 

@@ -58,12 +58,11 @@ struct FlipQuiz: View {
                 .rotationEffect(.degrees(-2 + Double(drag) / 30))
                 .gesture(swipe)
             Spacer()
-            HStack(spacing: 0) {
+            HStack(spacing: 10) {
                 half(0, label: "‹ " + step.options[0])
                 half(1, label: step.options[1] + " ›")
             }
-            .frame(height: 240)
-            .padding(.horizontal, -Theme.M.gap)
+            .frame(height: 200)
         }
     }
 
@@ -83,24 +82,20 @@ struct FlipQuiz: View {
 
     private func half(_ i: Int, label: String) -> some View {
         let look = QuizKey.Look.of(i, picked: picked, answer: step.answer, done: c.done)
-        let fill: Color = {
-            switch look {
-            case .right: return Theme.C.good
-            case .wrong, .dim: return Theme.C.raised
-            default: return i == 0 ? Theme.C.ink : Theme.C.accent
-            }
-        }()
+        // Left inverse, right accent, until marked.
+        let variant: KeyStyle.Variant = switch look {
+        case .right: .right
+        case .wrong: .wrong
+        case .dim:   .dim
+        default:     i == 0 ? .inverse : .primary
+        }
         return Button { choose(i) } label: {
             Text(label)
                 .font(Theme.F.target(size: 30, bold: true))
                 .minimumScaleFactor(0.4)
-                .strikethrough(look == .wrong, color: Theme.C.bad)
-                .foregroundStyle(look == .wrong ? Theme.C.bad : look == .dim ? Theme.C.ink3 : Theme.C.onAccent)
                 .padding(.horizontal, 10)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(fill)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(KeyStyle(variant, expand: true, dimsWhenDisabled: false))
         .disabled(picked != nil)
     }
 
@@ -138,7 +133,7 @@ struct TwoStepQuiz: View {
         let at = min(picks.count, steps.count - 1)
         VStack(alignment: .leading, spacing: 18) {
             quizGapText(c.item.prompt ?? "", fills).font(Theme.F.target(size: 24))
-            gloss(c.item.gloss)
+            gloss(c.item.gloss ?? c.entryGloss)
             QuizStepLine(steps: steps, results: results)
             Spacer()
             QuizOptions(options: steps[at].options,
@@ -174,7 +169,6 @@ struct SpotItQuiz: View {
         let tokens = c.item.steps[0]
         let fix = c.item.steps[1]
         VStack(alignment: .leading, spacing: 18) {
-            if let p = c.item.prompt, !p.isEmpty { gloss(p) }
             gloss(c.item.gloss)
             QuizFlow(spacing: 6) {
                 ForEach(Array(tokens.options.enumerated()), id: \.offset) { i, token in
@@ -189,7 +183,7 @@ struct SpotItQuiz: View {
                     .disabled(!picks.isEmpty)
                 }
             }
-            QuizStepLine(steps: c.item.steps, results: results)
+            StepTicks(count: c.item.steps.count, results: results)
             Spacer()
             if !picks.isEmpty {
                 QuizOptions(options: fix.options, picked: c.done ? picks[ifAny: 1] : nil,
@@ -350,8 +344,10 @@ struct BuildQuiz: View {
                         .fixedSize()
                 }
                 if !c.done {
-                    Rectangle().strokeBorder(Theme.C.seam2, style: StrokeStyle(lineWidth: 1, dash: [3]))
-                        .frame(width: 60, height: 46)
+                    ForEach(0..<max(0, c.item.tiles.count - placed.count), id: \.self) { _ in
+                        Rectangle().strokeBorder(Theme.C.seam2, style: StrokeStyle(lineWidth: 1, dash: [3]))
+                            .frame(width: 44, height: 46)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
@@ -370,7 +366,9 @@ struct BuildQuiz: View {
                         tile(bank[i]).foregroundStyle(.clear)
                             .overlay(Rectangle().strokeBorder(Theme.C.seam2, style: StrokeStyle(lineWidth: 1, dash: [3])))
                     } else {
-                        Button { if !c.done { placed.append(i) } } label: { tile(bank[i]) }
+                        Button {
+                            if !c.done, placed.count < c.item.tiles.count { placed.append(i) }
+                        } label: { tile(bank[i]) }
                             .buttonStyle(QuizKey(look: c.done ? .dim : .plain))
                             .fixedSize()
                     }
@@ -378,7 +376,7 @@ struct BuildQuiz: View {
             }
             Spacer()
             if !c.done {
-                QuizCheckButton(enabled: !placed.isEmpty) {
+                QuizCheckButton(enabled: QuizRound.canCheck(c.item, placed: placed.count)) {
                     c.answer(QuizRound.score(c.item, tiles: placed.map { bank[$0] }))
                 }
             }
@@ -403,20 +401,25 @@ struct TransformQuiz: View {
     @FocusState private var focused: Bool
 
     var body: some View {
+        if let build = ChineseInput.fallback(for: c.item) {
+            // No Chinese keyboard: the same answer as tiles.
+            VStack(alignment: .leading, spacing: 14) {
+                Text(c.item.prompt ?? "").font(Theme.F.target(size: 22))
+                Text(c.item.task ?? "").font(Theme.F.label).foregroundStyle(Theme.C.accent)
+                BuildQuiz(c: QuizFormatContext(item: build, revealed: c.revealed,
+                                               answer: c.answer, speak: c.speak))
+            }
+        } else {
+            typing
+        }
+    }
+
+    private var typing: some View {
         VStack(alignment: .leading, spacing: 18) {
             Text(c.item.prompt ?? "").font(Theme.F.target(size: 24))
             gloss(c.item.gloss)
             Text(c.item.task ?? "").font(Theme.F.label).foregroundStyle(Theme.C.accent)
-            TextField("", text: $typed, axis: .vertical)
-                .font(Theme.F.target)
-                .textFieldStyle(.plain)
-                .targetLanguageInput()
-                .focused($focused)
-                .submitLabel(.done)
-                .onSubmit(check)
-                .disabled(c.done)
-                .strikethrough(c.revealed?.right == false, color: Theme.C.bad)
-                .foregroundStyle(c.revealed.map { $0.right ? Theme.C.good : Theme.C.bad } ?? Theme.C.ink)
+            field
                 .padding(Theme.M.pad)
                 .background(Theme.C.sunk)
                 .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
@@ -430,6 +433,25 @@ struct TransformQuiz: View {
             }
         }
         .onAppear { focused = true }
+    }
+
+    @ViewBuilder private var field: some View {
+        let tint = c.revealed.map { $0.right ? Theme.C.good : Theme.C.bad } ?? Theme.C.ink
+        if ChineseInput.isChinese(c.item) {
+            ChineseField(text: $typed, enabled: !c.done, colour: UIColor(tint), onSubmit: check)
+                .frame(height: 30)
+        } else {
+            TextField("", text: $typed, axis: .vertical)
+                .font(Theme.F.target)
+                .textFieldStyle(.plain)
+                .targetLanguageInput()
+                .focused($focused)
+                .submitLabel(.done)
+                .onSubmit(check)
+                .disabled(c.done)
+                .strikethrough(c.revealed?.right == false, color: Theme.C.bad)
+                .foregroundStyle(tint)
+        }
     }
 
     private func check() {
