@@ -114,6 +114,7 @@ func quizGapText(_ prompt: String, _ fills: [QuizGapFill?]) -> Text {
         if let f, let given = f.given {
             if f.right == false, let correct = f.correct {
                 out = out + Text(given).strikethrough().foregroundColor(Theme.C.bad)
+                    + Text(" → ").foregroundColor(Theme.C.ink3)
                     + Text(correct).foregroundColor(Theme.C.good).underline()
             } else {
                 out = out + Text(given).underline()

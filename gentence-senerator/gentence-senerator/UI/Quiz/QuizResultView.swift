@@ -9,89 +9,139 @@ struct QuizResultView: View {
     let chapters: [(chapter: Chapter, before: Int, after: Int)]
     let again: () -> Void
     let done: () -> Void
-    var openChapter: ((Chapter) -> Void)?
+    /// Chapter id, entry id.
+    var openEntry: ((String, String) -> Void)?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(round.plan.name.uppercased()).tracking(1)
-                    Spacer()
-                    Text(Self.clock(round.seconds())).foregroundStyle(Theme.C.ink2)
-                }
-                .font(Theme.F.mono(12))
-
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text("\(round.right)").font(Theme.F.mono(56, bold: true))
-                    Text("/ \(round.items.count)").font(Theme.F.mono(18))
-                        .foregroundStyle(Theme.C.ink2)
-                    Spacer()
-                    if let best = record.best, let avg = record.average {
-                        Text("BEST \(best) · AVG \(avg)").font(Theme.F.mono(12))
-                            .foregroundStyle(Theme.C.good)
-                    }
-                }
-
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 10),
-                          spacing: 2) {
-                    ForEach(round.answers.indices, id: \.self) { i in
-                        Rectangle()
-                            .fill(round.answers[i].map { $0.right ? Theme.C.good : Theme.C.bad } ?? Theme.C.raised)
-                            .frame(height: 22)
-                    }
-                }
+                stub
+                ForEach(chapters, id: \.chapter.id) { change($0) }
+                strip
 
                 if !round.misses.isEmpty {
-                    VStack(spacing: 0) {
-                        ForEach(round.misses, id: \.item.id) { miss in row(miss.item, miss.answer) }
+                    LedgerSheet {
+                        ForEach(Array(round.misses.enumerated()), id: \.element.item.id) { i, miss in
+                            row(miss.item, miss.answer, last: i == round.misses.count - 1)
+                        }
                     }
-                    .overlay(alignment: .top) { Rectangle().fill(Theme.C.seam).frame(height: 1) }
-                }
-
-                ForEach(chapters, id: \.chapter.id) { c in
-                    HStack {
-                        Text(c.chapter.name.uppercased())
-                        Spacer()
-                        Text("\(c.before) → ")
-                            + Text("\(c.after)").foregroundColor(c.after > c.before ? Theme.C.good
-                                                                 : c.after < c.before ? Theme.C.bad : Theme.C.ink)
-                            + Text(" / \(c.chapter.entries.count)")
-                    }
-                    .font(Theme.F.mono(12))
-                    .padding(.vertical, 10).padding(.horizontal, 12)
-                    .background(Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-                }
-
-                HStack(spacing: 8) {
-                    ActionKey("Again", action: again)
-                    ActionKey("Done", variant: .neutral, action: done)
                 }
             }
             .padding(.horizontal, Theme.M.gap)
-            .padding(.top, 24)
-            .padding(.bottom, 32)
+            .padding(.top, 16)
+            .padding(.bottom, 24)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            HStack(spacing: 10) {
+                ActionKey("Again", action: again)
+                ActionKey("Done", variant: .neutral, action: done)
+            }
+            .padding(.horizontal, Theme.M.gap)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
+            .background(Theme.C.ground.ignoresSafeArea(edges: .bottom))
+            .overlay(alignment: .top) { Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair) }
         }
     }
 
-    private func row(_ item: QuizItem, _ answer: QuizRound.Answer) -> some View {
+    /// Entry head | wrong → right | ›, opening the entry.
+    @ViewBuilder
+    private func row(_ item: QuizItem, _ answer: QuizRound.Answer, last: Bool) -> some View {
         let chapter = book.chapter(of: item.entry)
-        return HStack(alignment: .firstTextBaseline) {
-            Self.miss(item, answer).font(Theme.F.target(size: 17))
-            Spacer(minLength: 8)
-            if let chapter, let openChapter {
-                Button { openChapter(chapter) } label: {
-                    Text((item.why ?? chapter.name) + " ›")
+        let entry = chapter?.entries.first { $0.id == item.entry }
+        let line = LedgerRow(account: entry.map { chapter!.fullHead($0) } ?? "", colour: Theme.C.bad,
+                             ruled: !last) {
+            VStack(alignment: .leading, spacing: 3) {
+                Self.miss(item, answer).font(Theme.F.target(size: 17))
+                    .fixedSize(horizontal: false, vertical: true)
+                if let why = item.why {
+                    Text(why).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
                 }
-                .buttonStyle(.plain)
-            } else if let why = item.why {
-                Text(why)
+            }
+        } trailing: {
+            if openEntry != nil, entry != nil {
+                Text("›").font(Theme.F.mono(15)).foregroundStyle(Theme.C.accent)
+                    .padding(.trailing, 12)
+                    .frame(maxHeight: .infinity)
             }
         }
-        .font(Theme.F.meta)
-        .foregroundStyle(Theme.C.ink2)
-        .padding(.vertical, 12)
-        .overlay(alignment: .bottom) { Rectangle().fill(Theme.C.seam).frame(height: 1) }
+        if let openEntry, let chapter, entry != nil {
+            Button { openEntry(chapter.id, item.entry) } label: { line.contentShape(Rectangle()) }
+                .buttonStyle(PressDim())
+        } else {
+            line
+        }
+    }
+
+    /// Ticket stub: what was run, the score, best and average; stamped.
+    private var stub: some View {
+        Panel(padding: 14) {
+            HStack {
+                Text(round.plan.name).monoCaps()
+                Spacer()
+                Text(Self.clock(round.seconds())).font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("\(round.right)").font(Theme.F.mono(64, bold: true))
+                Text("/ \(round.items.count)").font(Theme.F.mono(20)).foregroundStyle(Theme.C.ink2)
+                Spacer()
+                if let best = record.best, let avg = record.average {
+                    Text("BEST \(best)\nAVG \(avg)").font(Theme.F.meta)
+                        .foregroundStyle(Theme.C.ink2).multilineTextAlignment(.trailing)
+                }
+            }
+            .padding(.top, 6)
+            .padding(.bottom, 8)
+        }
+        .foregroundStyle(Theme.C.ink)
+        .overlay(alignment: .bottom) { Perforation(colour: Theme.C.ground).offset(y: 1) }
+        .overlay(alignment: .bottomTrailing) {
+            let band = Self.band(right: round.right, of: round.items.count)
+            Stamp(band.word, colour: band.colour, size: 13)
+                .background(Theme.C.surface.opacity(0.7))
+                .offset(x: -14, y: 16)
+        }
+        .padding(.bottom, 10)
+    }
+
+    /// ≥85% CLEAN, ≥60% HOLDING, else AGAIN.
+    static func band(right: Int, of total: Int) -> (word: String, colour: Color) {
+        let share = total == 0 ? 0 : Double(right) / Double(total)
+        if share >= 0.85 { return ("Clean", Theme.C.good) }
+        if share >= 0.6 { return ("Holding", Theme.C.warn) }
+        return ("Again", Theme.C.bad)
+    }
+
+    /// MEASURE WORDS   8 → 10 / 20
+    private func change(_ c: (chapter: Chapter, before: Int, after: Int)) -> some View {
+        Panel {
+            HStack {
+                Text(c.chapter.name.uppercased()).lineLimit(1)
+                Spacer()
+                Text("\(c.before) → ")
+                    + Text("\(c.after)").bold()
+                        .foregroundColor(c.after > c.before ? Theme.C.good
+                                         : c.after < c.before ? Theme.C.bad : Theme.C.ink)
+                    + Text(" / \(c.chapter.entries.count)")
+            }
+            .font(Theme.F.mono(12))
+            .foregroundStyle(Theme.C.ink)
+        }
+    }
+
+    /// The round, one cell per item, on a card with its corner clipped.
+    private var strip: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 10), spacing: 2) {
+            ForEach(round.answers.indices, id: \.self) { i in
+                Rectangle()
+                    .fill(round.answers[i].map { $0.right ? Theme.C.good : Theme.C.bad } ?? Theme.C.raised)
+                    .frame(height: 20)
+            }
+        }
+        .padding(6)
+        .background(Theme.C.surface)
+        .overlay(ClippedCorner().stroke(Theme.C.ink, lineWidth: Theme.M.hair))
+        .clipShape(ClippedCorner())
     }
 
     /// Wrong → right, in place where the prompt has gaps.
@@ -100,6 +150,7 @@ struct QuizResultView: View {
         func pair(_ given: String, _ right: String, _ ok: Bool) -> Text {
             ok ? Text(right).foregroundColor(Theme.C.ink)
                 : Text(given).strikethrough().foregroundColor(Theme.C.bad)
+                    + Text(" → ").foregroundColor(Theme.C.ink3)
                     + Text(right).bold().foregroundColor(Theme.C.good)
         }
         switch item.format {
@@ -133,4 +184,19 @@ struct QuizResultView: View {
     }
 
     static func clock(_ s: Int) -> String { String(format: "%d:%02d", s / 60, s % 60) }
+}
+
+/// A rectangle with its top-leading corner cut at 45°.
+struct ClippedCorner: Shape {
+    var cut: CGFloat = 10
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX + cut, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.minY + cut))
+        p.closeSubpath()
+        return p
+    }
 }
