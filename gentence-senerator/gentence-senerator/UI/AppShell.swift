@@ -63,8 +63,11 @@ struct AppShell: View {
                     }
             }
         case .history:
-            NavigationStack {
+            NavigationStack(path: $store.path) {
                 HistoryScreen(store: store)
+                    .navigationDestination(for: LessonRequest.self) { request in
+                        LessonHost(store: store, request: request)
+                    }
             }
         }
     }

@@ -2305,6 +2305,33 @@ final class Store {
         }
         return marks
     }
+
+    // MARK: History
+
+    /// The archive in the current language, with quiz rounds, by day.
+    var history: [HistoryDay] {
+        let names = Dictionary(book.chapters.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
+        return HistoryDay.build(archive: archive, quizzes: quizLog.plans,
+                                language: settings.language, today: Spend.key(.now)) {
+            names[$0] ?? "Quiz"
+        }
+    }
+
+    /// A recurring point's lesson. The latest finding it came from when one
+    /// is still archived, so the lesson keeps its sentence; else its subject.
+    func open(_ encounter: Progress.Encounter) {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let atom = sessions.sorted { $0.startedAt > $1.startedAt }.lazy
+            .flatMap(\.turns)
+            .compactMap { $0.review?.atoms.first { $0.id == encounter.atomID } }
+            .first
+        if let atom {
+            open(atom)
+        } else {
+            open(seed: Atom.Seed(subject: encounter.subject, context: "", pointID: nil),
+                 kind: encounter.kind)
+        }
+    }
 }
 
 // MARK: - Moving the level
