@@ -1,25 +1,24 @@
 import SwiftUI
 
-/// The day before it starts. Four rows saying what has been picked, then the
-/// record: every structure the learner could be asked for at this level, one
-/// row per band.
-///
-/// It sits under the mode cards on the start screen rather than behind a tap,
-/// because a screen nobody opens cannot be audited — what is coming is in front
-/// of them when they choose to begin. `DayScreen` keeps the other end of the
-/// day, which is a different question entirely.
-///
-/// Two colours, and each means one thing. Green is what they have; orange is
-/// what today is. What is due is not on the map: being due is a fact about the
-/// schedule, not about knowledge, and `Theme.C.warn` already means `weakens`
-/// everywhere else in the app. Due appears in the Back row instead.
+/// The day before it starts: what is new and what is coming back, then the
+/// record, one band per level. Green is what the learner has; the accent
+/// outline is today's stretch. Due items are in the Back row, not the map.
 struct PlanView: View {
     let plan: DayPlan
 
+    /// The stretch and the words are on the Produce key; these are the rest.
+    private var rows: [DayPlan.Row] {
+        plan.rows.filter { $0.slot.label != nil && !$0.items.isEmpty }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            VStack(alignment: .leading, spacing: 6) {
-                ForEach(plan.rows) { row in SlotRow(row: row) }
+            if !rows.isEmpty {
+                LedgerSheet {
+                    ForEach(rows) { row in
+                        SlotRow(row: row, ruled: row.id != rows.last?.id)
+                    }
+                }
             }
             if !plan.bands.isEmpty { record }
         }
@@ -30,14 +29,7 @@ struct PlanView: View {
             VStack(alignment: .leading, spacing: Theme.M.pad) {
                 ForEach(plan.bands) { band in
                     VStack(alignment: .leading, spacing: 5) {
-                        HStack {
-                            Text(band.name.uppercased())
-                                .font(Theme.F.label).tracking(1.1)
-                            Spacer()
-                            Text("\(band.held) of \(band.cells.count)")
-                                .font(Theme.F.label)
-                        }
-                        .foregroundStyle(Theme.C.ink3)
+                        ModuleLabel(text: band.name, trailing: "\(band.held)/\(band.cells.count)")
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 14), spacing: 3)],
                                   alignment: .leading, spacing: 3) {
                             ForEach(band.cells) { CellView(cell: $0) }
@@ -57,34 +49,18 @@ struct PlanView: View {
 /// One of the four ways the day is chosen: the kind, how many, and the thing.
 private struct SlotRow: View {
     let row: DayPlan.Row
+    var ruled = true
 
     var body: some View {
-        if row.slot.label != nil || !row.items.isEmpty {
-            VStack(alignment: .leading, spacing: 3) {
-                if let label = row.slot.label {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(label.uppercased())
-                            .font(Theme.F.label).tracking(1.1)
-                            .foregroundStyle(Theme.C.ink3)
-                        Spacer()
-                        Text("\(row.items.count)")
-                            .font(Theme.F.label)
-                            .foregroundStyle(row.items.isEmpty ? Theme.C.ink3 : Theme.C.accent)
-                    }
-                }
-                if row.items.isEmpty {
-                    Text("—").font(Theme.F.body).foregroundStyle(Theme.C.ink3)
-                } else {
-                    Text(row.items.joined(separator: "  ·  "))
-                        .font(isTarget ? Theme.F.targetSmall : Theme.F.body)
-                        .foregroundStyle(Theme.C.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.M.padTight)
-            .background(Theme.C.surface)
-            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        LedgerRow(account: row.slot.label ?? "", accountWidth: 76, ruled: ruled) {
+            Text(row.items.joined(separator: "  ·  "))
+                .font(isTarget ? Theme.F.targetSmall : Theme.F.bodyTight)
+                .foregroundStyle(Theme.C.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        } trailing: {
+            Text("\(row.items.count)")
+                .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                .padding(.trailing, 10).padding(.top, 12)
         }
     }
 
