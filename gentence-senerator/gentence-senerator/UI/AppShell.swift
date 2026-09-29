@@ -27,11 +27,15 @@ struct AppShell: View {
         }
         // Reading a review, from a tapped push or History, happens on Today.
         .onChange(of: store.reading.isEmpty) { _, idle in
-            if !idle {
-                quiz = nil
-                if tab != .today { paths[tab] = nil; tab = .today }
+            guard !idle else { return }
+            // The tab left behind keeps its lessons; an open quiz stays up.
+            if tab != .today {
+                if let before = store.pathBeforeTap { paths[tab] = before }
+                tab = .today
             }
+            store.pathBeforeTap = nil
         }
+        .onChange(of: quiz?.id) { _, open in store.quizOpen = open != nil }
         .onChange(of: store.settings.language) { bookRoutes = [] }
         .onChange(of: store.settings.language, initial: true) { _, language in
             ThemeState.shared.language = language
@@ -43,7 +47,7 @@ struct AppShell: View {
         switch tab {
         case .today:
             NavigationStack(path: $store.path) {
-                ModeScreen(store: store)
+                ModeScreen(store: store, openEntry: openEntry)
                     .navigationDestination(for: LessonRequest.self) { request in
                         LessonHost(store: store, request: request)
                     }
@@ -89,6 +93,15 @@ struct AppShell: View {
             store.path = paths[next] ?? []
             tab = next
         })
+    }
+
+    /// A book entry, opened from Today: Today's lessons are set aside and the
+    /// Book tab opens on the entry, its chapter underneath.
+    private func openEntry(chapter: String, entry: String) {
+        paths[tab] = store.path
+        store.path = []
+        bookRoutes = [.chapter(chapter), .entry(chapter: chapter, entry: entry)]
+        tab = .book
     }
 
     /// Book pages below, lessons above.

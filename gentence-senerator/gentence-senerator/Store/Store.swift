@@ -2008,10 +2008,12 @@ final class Store {
         // Launch's `wake` may be mid-pump; a second pump would return at once.
         while pumping { try? await Task.sleep(for: .milliseconds(200)) }
         await pump()
-        let interruptible = phase == .idle || phase == .complete
-            || (phase == .reviewing && !reading.isEmpty)
+        // An open quiz is not interrupted: its round would be lost.
+        let interruptible = !quizOpen && (phase == .idle || phase == .complete
+            || (phase == .reviewing && !reading.isEmpty))
         guard interruptible,
               let job = Store.target(of: tap, in: jobs, readable: canRead) else { return }
+        pathBeforeTap = path
         read(job)
     }
 
@@ -2304,6 +2306,210 @@ final class Store {
             }
         }
         return marks
+    }
+
+    // MARK: Today
+
+    /// A quiz is on screen. A tapped push reads its results in but leaves it up.
+    var quizOpen = false
+    /// The lessons on screen when a tapped push started reading, so the shell
+    /// can hand them back to the tab they belonged to.
+    var pathBeforeTap: [LessonRequest]?
+
+    /// Today's order on the start screen: produce carries the day.
+    nonisolated static let todayOrder: [Mode] = [.produce, .translate, .listen]
+
+    /// The first mode not yet done today.
+    var nextMode: Mode? { Store.todayOrder.first { !isDone($0) } }
+
+    var modesDoneToday: Int { Mode.allCases.filter(isDone).count }
+
+    /// One answer the learner wrote today.
+    struct Written: Identifiable, Hashable {
+        let turn: Turn
+        let mode: Mode
+        /// 1-based, within its session.
+        let number: Int
+        var id: UUID { turn.id }
+    }
+
+    /// The learner's own sentences today, oldest first. Listen is
+    /// transcription, not writing.
+    var writtenToday: [Written] {
+        Store.written([Mode.translate, .produce].compactMap { today($0) })
+    }
+
+    nonisolated static func written(_ sessions: [Session]) -> [Written] {
+        sessions.filter { $0.mode != .listen }
+            .flatMap { session in
+                session.turns.filter { !$0.attempt.confirmed.isEmpty }
+                    .enumerated()
+                    .map { Written(turn: $0.element, mode: session.mode, number: $0.offset + 1) }
+            }
+            .sorted { $0.turn.createdAt < $1.turn.createdAt }
+    }
+
+    /// The turn on screen, 1-based: the one being answered, or the one just
+    /// answered while its reference is up.
+    nonisolated static func turnNumber(session: Session, current: Turn?) -> Int {
+        if let current, let at = session.turns.firstIndex(where: { $0.id == current.id }) {
+            return at + 1
+        }
+        return min(session.completedCount + 1, max(session.goal, 1))
+    }
+
+    /// What the session just finished sent: the newest job's answers, else
+    /// the answers not filed before.
+    func justSent(_ session: Session) -> [Turn] {
+        if let job = jobs.last(where: { $0.sessionID == session.id }) {
+            let turns = job.exchanges.flatMap(\.turnIDs)
+                .compactMap { id in session.turns.first { $0.id == id } }
+            if !turns.isEmpty { return turns }
+        }
+        return session.open.filter { !$0.attempt.confirmed.isEmpty }
+    }
+
+    nonisolated static func showsSendNow(_ job: GradingJob, sending: Bool) -> Bool {
+        job.state == .unsent && job.batchID == nil && !job.uploading && !sending
+    }
+
+    /// The speed round Today offers: only once a mode is done, with the single
+    /// worst item as its reason.
+    func todaysRound() -> (plan: QuizPlan, reason: String)? {
+        guard let pick = recommended(),
+              let reason = Store.roundReason(pick.reason, modesDone: modesDoneToday)
+        else { return nil }
+        return (pick.plan, reason)
+    }
+
+    /// `QuizLog.recommend` ranks its parts worst first, joined with " · ".
+    nonisolated static func roundReason(_ reason: String, modesDone: Int) -> String? {
+        guard modesDone > 0 else { return nil }
+        return reason.components(separatedBy: " · ").first ?? reason
+    }
+
+    /// Scores of today's graded answers, in the order they were given.
+    var todayScores: [Int] {
+        Mode.allCases.compactMap { today($0) }
+            .flatMap(\.turns)
+            .sorted { $0.createdAt < $1.createdAt }
+            .compactMap { $0.review?.score }
+    }
+
+    /// The book entry a point is taught under, if the book shows one.
+    func bookEntry(for pointID: String) -> (chapter: String, entry: String)? {
+        for chapter in visibleBook.chapters {
+            if let entry = chapter.entries.first(where: { $0.point == pointID }) {
+                return (chapter.id, entry.id)
+            }
+        }
+        return nil
+    }
+
+    /// What in a sentence shows the stretch was used: its name, and the heads
+    /// of the book entries under it (warten, 了, 等…再…).
+    func markers(of point: GrammarPoint) -> [String] {
+        [point.name] + book.chapters.flatMap(\.entries)
+            .filter { $0.point == point.id }.map(\.head)
+    }
+
+    /// The stretch's lesson, on the current path.
+    func openLesson(for point: GrammarPoint) {
+        let request = ruleRequest(for: point)
+        open(seed: request.seed, kind: request.kind)
+    }
+
+    /// Whether `text` contains `chip`. Case-insensitive; Mandarin is a plain
+    /// substring. A formula (等…再…) needs every part.
+    nonisolated static func uses(_ chip: String, in text: String, language: Language) -> Bool {
+        let parts = chip.replacingOccurrences(of: "...", with: "…")
+            .components(separatedBy: "…")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        guard !parts.isEmpty else { return false }
+        return parts.allSatisfy { part in
+            language == .mandarin
+                ? text.contains(part)
+                : text.range(of: part, options: .caseInsensitive) != nil
+        }
+    }
+
+    /// Character ranges where two sentences differ, token by token: words for
+    /// Latin scripts, characters for Mandarin. Case and punctuation are
+    /// ignored. Tokens outside a longest common subsequence are marked;
+    /// neighbours merge.
+    nonisolated static func divergence(_ said: String, _ ref: String,
+                                       language: Language) -> (said: [Range<Int>], ref: [Range<Int>]) {
+        let a = tokens(said, language: language)
+        let b = tokens(ref, language: language)
+        let n = a.count, m = b.count
+        var lcs = Array(repeating: Array(repeating: 0, count: m + 1), count: n + 1)
+        if n > 0 && m > 0 {
+            for i in stride(from: n - 1, through: 0, by: -1) {
+                for j in stride(from: m - 1, through: 0, by: -1) {
+                    lcs[i][j] = a[i].key == b[j].key ? lcs[i + 1][j + 1] + 1
+                        : max(lcs[i + 1][j], lcs[i][j + 1])
+                }
+            }
+        }
+        var keepA = Array(repeating: false, count: n)
+        var keepB = Array(repeating: false, count: m)
+        var i = 0, j = 0
+        while i < n && j < m {
+            if a[i].key == b[j].key {
+                keepA[i] = true; keepB[j] = true; i += 1; j += 1
+            } else if lcs[i + 1][j] >= lcs[i][j + 1] {
+                i += 1
+            } else {
+                j += 1
+            }
+        }
+        return (merged(a, keepA), merged(b, keepB))
+    }
+
+    private struct Token: Sendable { let range: Range<Int>; let key: String }
+
+    private nonisolated static func tokens(_ text: String, language: Language) -> [Token] {
+        let chars = Array(text)
+        func key(_ s: String) -> String {
+            String(String.UnicodeScalarView(s.lowercased().unicodeScalars.filter {
+                !CharacterSet.punctuationCharacters.contains($0) && !CharacterSet.symbols.contains($0)
+            }))
+        }
+        var out: [Token] = []
+        if language == .mandarin {
+            for (i, c) in chars.enumerated() where !c.isWhitespace {
+                let k = key(String(c))
+                if !k.isEmpty { out.append(Token(range: i..<(i + 1), key: k)) }
+            }
+            return out
+        }
+        var start: Int?
+        for i in 0...chars.count {
+            let space = i == chars.count || chars[i].isWhitespace
+            if space, let s = start {
+                let k = key(String(chars[s..<i]))
+                if !k.isEmpty { out.append(Token(range: s..<i, key: k)) }
+                start = nil
+            } else if !space, start == nil {
+                start = i
+            }
+        }
+        return out
+    }
+
+    private nonisolated static func merged(_ tokens: [Token], _ keep: [Bool]) -> [Range<Int>] {
+        var out: [Range<Int>] = []
+        var previous = -2
+        for (i, t) in tokens.enumerated() where !keep[i] {
+            if previous == i - 1, let last = out.last {
+                out[out.count - 1] = last.lowerBound..<t.range.upperBound
+            } else {
+                out.append(t.range)
+            }
+            previous = i
+        }
+        return out
     }
 }
 
