@@ -248,7 +248,8 @@ struct ModeScreen: View {
             return "\(tally.done)/\(tally.goal)"
         }
         guard let session = store.session else { return "" }
-        return "\(session.completedCount)/\(session.goal)"
+        if store.phase == .complete { return "\(session.completedCount)/\(session.goal)" }
+        return "\(Store.turnNumber(session: session, current: store.current))/\(session.goal)"
     }
 
     // MARK: Phases
