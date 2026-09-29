@@ -2195,6 +2195,15 @@ final class Store {
             .sorted { $0.at > $1.at }
     }
 
+    /// The learner's own sentences that used this point, newest first.
+    func uses(point: String) -> [Textbook.Use] {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.uses(of: point, in: sessions, language: settings.language)
+    }
+
+    /// Best round for a plan, nil before the first.
+    func best(_ plan: QuizPlan) -> Int? { record(of: plan).best }
+
     /// Questions whose answers pointed at this point, newest first.
     func asked(point: String) -> [Textbook.Suggestion] {
         suggestions.filter { $0.language == settings.language && $0.pointID == point }

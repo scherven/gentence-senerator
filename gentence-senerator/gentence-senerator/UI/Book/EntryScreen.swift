@@ -29,28 +29,28 @@ struct EntryScreen: View {
         let point = store.point(entry.point)
         let noted = entry.point.map { store.noted(point: $0) } ?? []
         let asked = entry.point.map { store.asked(point: $0) } ?? []
+        let uses = entry.point.map { store.uses(point: $0) } ?? []
         return ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                BookPageHeader(back: chapter.name, title: "")
                 head(entry, chapter, state, point: point, source: source, asked: asked, noted: noted)
                 if let point { rule(point) }
-                own(noted: noted, source: source)
+                own(uses: uses, source: source)
                 if let question = asked.first?.question ?? source?.question, !question.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        GroupLabel(text: "Asked")
-                        Text(question).font(Theme.F.bodyTight)
-                            .padding(.horizontal, Theme.M.pad).padding(.vertical, 10)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .overlay(Rectangle().strokeBorder(Theme.C.seam2,
-                                                              style: StrokeStyle(lineWidth: 1, dash: [3, 2])))
+                        ModuleLabel(text: "Asked")
+                        Panel {
+                            Text(question).font(Theme.F.bodyTight)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                 }
                 actions(entry, chapter, point: point, source: source)
             }
             .padding(.horizontal, Theme.M.gap)
-            .padding(.top, Theme.M.gapTight)
+            .padding(.top, 14)
             .padding(.bottom, Theme.M.gap)
         }
+        .pageHeader(.back(chapter.name))
     }
 
     // MARK: Head
@@ -68,7 +68,8 @@ struct EntryScreen: View {
                 }
             } else {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    Text(entry.head).font(Theme.F.target(size: entry.head.count > 10 ? 24 : 34, bold: true))
+                    let head = chapter.fullHead(entry)
+                    Text(head).font(Theme.F.target(size: head.count > 10 ? 24 : 34, bold: true))
                         .fixedSize(horizontal: false, vertical: true)
                     if let tag = entry.tag {
                         BookTag(text: tag, colour: BookColour.tag(tag, among: BookColour.order(chapter.entries.map(\.tag))))
@@ -99,11 +100,15 @@ struct EntryScreen: View {
 
     // MARK: Rule
 
+    /// The saved rule on an index card. The rule block carries its own label.
     private func rule(_ point: GrammarPoint) -> some View {
         let request = store.ruleRequest(for: point)
         let lesson = store.lesson(for: request)
-        return VStack(alignment: .leading, spacing: 8) {
-            GroupLabel(text: "Rule")
+        return IndexCard {
+            Text(point.name).font(Theme.F.cardTitle).foregroundStyle(Theme.C.ink)
+                .lineLimit(1).minimumScaleFactor(0.8)
+                .frame(height: 24, alignment: .leading)
+                .padding(.bottom, 12)
             VStack(alignment: .leading, spacing: 10) {
                 if let lesson {
                     ForEach(lesson.blocks.filter { $0.kind == .rule || $0.kind == .contrast }) { block in
@@ -119,8 +124,6 @@ struct EntryScreen: View {
                         Text(store.ruleSaved[request.cacheKey].map { "SAVED \(day($0))" } ?? "SAVED")
                             .font(Theme.F.label).foregroundStyle(Theme.C.ink3)
                     }
-                    .padding(.top, 8)
-                    .overlay(alignment: .top) { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
                 } else if loading || store.isLoading(request) {
                     Ticker(text: "Writing")
                 } else {
@@ -135,43 +138,40 @@ struct EntryScreen: View {
                     }
                 }
             }
-            .padding(Theme.M.pad)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.C.surface)
-            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
         }
     }
 
     // MARK: The learner's own
 
+    /// The last three sentences that used the point, by verdict. A Noted
+    /// entry without a point shows the sentence it came from.
     @ViewBuilder
-    private func own(noted: [Textbook.Noted], source: Textbook.Entry?) -> some View {
-        let lines: [(you: String, fix: String)] = noted.isEmpty
-            ? (source?.sentence).map { [($0, source?.atom?.stages.fix ?? "")] } ?? []
-            : noted.prefix(5).map { ($0.sentence, $0.atom.stages.fix) }
+    private func own(uses: [Textbook.Use], source: Textbook.Entry?) -> some View {
+        let lines: [(sentence: String, clean: Bool, fix: String)] = uses.isEmpty
+            ? (source?.sentence).map { [($0, false, source?.atom?.stages.fix ?? "")] } ?? []
+            : uses.prefix(3).map { ($0.sentence, $0.clean, $0.fix) }
         if !lines.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
-                GroupLabel(text: "Yours")
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-                        VStack(alignment: .leading, spacing: 3) {
-                            mark("YOU", line.you, Theme.C.bad)
-                            if !line.fix.isEmpty { mark("FIX", line.fix, Theme.C.good) }
+                ModuleLabel(text: "Yours")
+                LedgerSheet {
+                    ForEach(Array(lines.enumerated()), id: \.offset) { i, line in
+                        let colour = line.clean ? Theme.C.good : Theme.C.bad
+                        LedgerRow(account: line.clean ? "Clean" : "Broke", colour: colour,
+                                  edge: colour, accountWidth: 64, ruled: i < lines.count - 1) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(line.sentence).font(Theme.F.target(size: 15))
+                                    .foregroundStyle(Theme.C.ink)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                if !line.clean, !line.fix.isEmpty {
+                                    Text("→ " + line.fix).font(Theme.F.target(size: 15))
+                                        .foregroundStyle(Theme.C.good)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
                         }
                     }
                 }
-                .padding(Theme.M.pad)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.C.surface)
-                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
             }
-        }
-    }
-
-    private func mark(_ label: String, _ text: String, _ colour: Color) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(label).font(Theme.F.label).foregroundStyle(colour).frame(width: 26, alignment: .leading)
-            Text(text).font(Theme.F.target(size: 15)).fixedSize(horizontal: false, vertical: true)
         }
     }
 

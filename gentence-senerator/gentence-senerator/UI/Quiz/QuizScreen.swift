@@ -1,12 +1,13 @@
 import SwiftUI
 
 /// Full-screen runner for one plan, then its result. Present as a
-/// `fullScreenCover`. `openChapter` makes the misses link to their chapter;
-/// the screen dismisses itself first.
+/// `fullScreenCover`. `openEntry` makes each miss link to its entry page; the
+/// screen dismisses itself first.
 struct QuizScreen: View {
     let store: Store
     let plan: QuizPlan
-    var openChapter: ((Chapter) -> Void)?
+    /// Chapter id, entry id.
+    var openEntry: ((String, String) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @State private var round: QuizRound
@@ -16,10 +17,10 @@ struct QuizScreen: View {
     /// Chapter id → entries holding or better, when the round began.
     @State private var before: [String: Int]
 
-    init(store: Store, plan: QuizPlan, openChapter: ((Chapter) -> Void)? = nil) {
+    init(store: Store, plan: QuizPlan, openEntry: ((String, String) -> Void)? = nil) {
         self.store = store
         self.plan = plan
-        self.openChapter = openChapter
+        self.openEntry = openEntry
         let r = store.round(for: plan)
         _round = State(initialValue: r)
         _before = State(initialValue: Self.held(store, r))
@@ -31,7 +32,9 @@ struct QuizScreen: View {
                 QuizResultView(round: round, record: store.record(of: plan), book: store.book,
                                chapters: chapters.map { ($0, before[$0.id] ?? 0, store.held(in: $0)) },
                                again: again, done: { dismiss() },
-                               openChapter: openChapter.map { open in { ch in dismiss(); open(ch) } })
+                               openEntry: openEntry.map { open in
+                                   { chapter, entry in dismiss(); open(chapter, entry) }
+                               })
             } else if round.items.isEmpty {
                 VStack(spacing: Theme.M.gap) {
                     Text("No items.").font(Theme.F.body).foregroundStyle(Theme.C.ink2)
@@ -54,22 +57,28 @@ struct QuizScreen: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Button { quit() } label: {
-                    Text("✕").font(Theme.F.mono(18)).foregroundStyle(Theme.C.ink)
+                    Text("✕").font(Theme.F.mono(16)).foregroundStyle(Theme.C.ink)
+                        .frame(width: 44, height: 44, alignment: .leading)
+                        .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressDim())
                 .accessibilityLabel("Quit")
                 Spacer()
                 Text("\(index + 1) / \(round.items.count)").font(Theme.F.mono(13))
                 Spacer()
                 Text("×\(round.streak)").font(Theme.F.mono(13))
                     .foregroundStyle(Theme.C.accent)
+                    .frame(width: 44, alignment: .trailing)
             }
-            ticks
+            .foregroundStyle(Theme.C.ink)
+            QuizRibbon(answers: round.answers.map { $0?.right }, current: index)
             timer
             QuizFormatView(context: QuizFormatContext(
                 item: item, revealed: revealed,
                 answer: { answer($0) },
-                speak: { store.speakQuiz($0) }))
+                speak: { store.speakQuiz($0) },
+                entryGloss: store.book.chapter(of: item.entry)?
+                    .entries.first { $0.id == item.entry }?.gloss))
                 .id(item.id)
                 .padding(.top, 36)
                 .frame(maxHeight: .infinity, alignment: .top)
@@ -77,34 +86,21 @@ struct QuizScreen: View {
             ZStack { Color.clear; footer }.frame(height: 44)
         }
         .padding(.horizontal, Theme.M.gap)
-        .padding(.top, 8)
+        .padding(.top, 4)
     }
 
-    private var ticks: some View {
-        HStack(spacing: 2) {
-            ForEach(round.answers.indices, id: \.self) { i in
-                Rectangle()
-                    .fill(round.answers[i].map { $0.right ? Theme.C.good : Theme.C.bad }
-                          ?? (i == index ? Theme.C.seam2 : Theme.C.raised))
-                    .frame(height: 6)
-            }
-        }
-    }
-
-    /// Runs down over the format's par. Pressure only; running out scores
-    /// nothing.
+    /// A 1pt ink line under the ribbon, shortening over the format's par.
+    /// Pressure only; running out scores nothing.
     private var timer: some View {
         TimelineView(.animation(paused: revealed != nil)) { t in
             let left = max(0, 1 - t.date.timeIntervalSince(shownAt) / Self.par(item.format))
             GeometryReader { g in
-                Rectangle().fill(Theme.C.raised)
-                    .overlay(alignment: .leading) {
-                        Rectangle().fill(left < 0.2 ? Theme.C.bad : Theme.C.ink)
-                            .frame(width: g.size.width * left)
-                    }
+                Rectangle().fill(Theme.C.ink)
+                    .frame(width: g.size.width * left, height: 1)
             }
-            .frame(height: 3)
+            .frame(height: 1)
         }
+        .accessibilityHidden(true)
     }
 
     @ViewBuilder private var footer: some View {
@@ -117,9 +113,10 @@ struct QuizScreen: View {
                 }
                 .font(Theme.F.meta)
                 .foregroundStyle(Theme.C.ink2)
+                .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressDim())
         }
     }
 
@@ -186,5 +183,29 @@ struct QuizScreen: View {
         case .build:     return 25
         case .sort, .transform: return 30
         }
+    }
+}
+
+/// The round as a ribbon of slugs: done ones filled good or bad, the I-beam
+/// after the last one answered.
+struct QuizRibbon: View {
+    /// Nil until answered.
+    let answers: [Bool?]
+    let current: Int
+
+    var body: some View {
+        let caret = answers.lastIndex { $0 != nil }.map { $0 + 1 } ?? 0
+        HStack(spacing: 2) {
+            ForEach(answers.indices, id: \.self) { i in
+                if i == caret { IBeam().padding(.horizontal, 1) }
+                Rectangle()
+                    .fill(answers[i].map { $0 ? Theme.C.good : Theme.C.bad } ?? Theme.C.raised)
+                    .frame(height: 6)
+            }
+            if caret == answers.count { IBeam().padding(.horizontal, 1) }
+        }
+        .frame(height: 11)
+        .accessibilityElement()
+        .accessibilityLabel("\(answers.compactMap { $0 }.count) of \(answers.count) answered")
     }
 }

@@ -8,37 +8,55 @@ struct BookScreen: View {
     var body: some View {
         let index = store.bookIndex
         ScrollView {
-            VStack(alignment: .leading, spacing: Theme.M.gap) {
-                header
+            VStack(alignment: .leading, spacing: 14) {
                 tally(index)
                 drills(index.book.drills)
                 chapters(index)
             }
             .padding(.horizontal, Theme.M.gap)
-            .padding(.top, Theme.M.gapTight)
+            .padding(.top, 14)
             .padding(.bottom, Theme.M.gap)
         }
         .background(Theme.C.ground)
+        .pageHeader(PageHeader(title: "Book", centred: false) { selector })
         .toolbar(.hidden, for: .navigationBar)
     }
 
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text("Book").font(Theme.F.title).foregroundStyle(Theme.C.ink)
-            Spacer()
-            Menu {
+    /// `中文 · HSK 3 ▾`: the language, and the level one step either way.
+    private var selector: some View {
+        let level = store.settings.level
+        return Menu {
+            Section {
                 ForEach(Language.allCases) { language in
-                    Button(language.name) { store.switchLanguage(language) }
+                    Button { store.switchLanguage(language) } label: {
+                        if language == store.settings.language {
+                            Label(language.name, systemImage: "checkmark")
+                        } else {
+                            Text(language.name)
+                        }
+                    }
                 }
-            } label: {
-                Text("\(store.settings.language.native) · \(store.pack.level(store.settings.level)) ▾")
-                    .font(Theme.F.meta)
-                    .foregroundStyle(Theme.C.ink)
-                    .padding(.horizontal, 10).padding(.vertical, 6)
-                    .background(Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
             }
+            Section {
+                if level < store.pack.levels {
+                    Button("\(store.pack.level(level + 1)) ↑") { store.setLevel(level + 1) }
+                }
+                if level > 1 {
+                    Button("\(store.pack.level(level - 1)) ↓") { store.setLevel(level - 1) }
+                }
+            }
+        } label: {
+            Text("\(store.settings.language.native) · \(store.pack.level(level)) ▾")
+                .font(Theme.F.mono(12))
+                .foregroundStyle(Theme.C.ink)
+                .padding(.vertical, 2)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair)
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
         }
+        .accessibilityLabel("Language and level")
     }
 
     // MARK: Tally
@@ -67,15 +85,11 @@ struct BookScreen: View {
 
     private func tally(_ index: Store.BookIndex) -> some View {
         let c = counts(index)
-        let parts: [(String, Int, Color)] = [
-            ("SOLID", c.solid, LedgerState.solid.fill ?? .clear),
-            ("HOLDING", c.holding, LedgerState.holding.fill ?? .clear),
-            ("TRIED", c.tried, LedgerState.tried.fill ?? .clear),
-            ("SLIPPING", c.slipping, LedgerState.slipping.fill ?? .clear),
-        ]
-        return VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text("\(c.met)").font(Theme.F.display)
+        let parts: [(LedgerState, Int)] = [(.solid, c.solid), (.holding, c.holding),
+                                           (.tried, c.tried), (.slipping, c.slipping)]
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("\(c.met)").font(Theme.F.mono(40, bold: true))
                 Text("/ \(c.total)").font(Theme.F.mono(15))
                     .foregroundStyle(Theme.C.ink2)
             }
@@ -83,7 +97,7 @@ struct BookScreen: View {
             GeometryReader { geo in
                 HStack(spacing: 0) {
                     ForEach(parts, id: \.0) { part in
-                        Rectangle().fill(part.2)
+                        Rectangle().fill(part.0.fill ?? .clear)
                             .frame(width: c.total == 0 ? 0
                                    : geo.size.width * CGFloat(part.1) / CGFloat(c.total))
                     }
@@ -92,9 +106,9 @@ struct BookScreen: View {
             }
             .frame(height: 8)
             .background(Theme.C.raised)
-            .overlay(Rectangle().stroke(Theme.C.ink, lineWidth: Theme.M.hair))
-            StateLegend(states: [.solid, .holding, .tried, .slipping],
-                        counts: [.solid: c.solid, .holding: c.holding, .tried: c.tried, .slipping: c.slipping])
+            .overlay(Rectangle().strokeBorder(Theme.C.ink, lineWidth: Theme.M.hair))
+            StateLegend(states: parts.map(\.0),
+                        counts: Dictionary(uniqueKeysWithValues: parts.map { ($0.0, $0.1) }))
         }
     }
 
@@ -103,10 +117,9 @@ struct BookScreen: View {
     @ViewBuilder
     private func drills(_ plans: [QuizPlan]) -> some View {
         if !plans.isEmpty {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4),
-                      spacing: 6) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
+                      spacing: 8) {
                 ForEach(plans) { plan in
-                    let done = store.roundsDone(plan)
                     Button { startQuiz(plan) } label: {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(plan.name.uppercased())
@@ -115,8 +128,7 @@ struct BookScreen: View {
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
                             Spacer(minLength: 0)
-                            Text(done == 0 ? "—" : "\(done)")
-                                .font(Theme.F.number)
+                            best(plan)
                         }
                         .foregroundStyle(Theme.C.ink)
                         .frame(maxWidth: .infinity, minHeight: 64, alignment: .topLeading)
@@ -126,6 +138,15 @@ struct BookScreen: View {
                 }
             }
         }
+    }
+
+    /// Best round: `14/20`, or — before the first.
+    private func best(_ plan: QuizPlan) -> Text {
+        guard let best = store.best(plan) else {
+            return Text("—").font(Theme.F.number).foregroundColor(Theme.C.ink3)
+        }
+        return Text("\(best)").font(Theme.F.number)
+            + Text("/\(plan.count)").font(Theme.F.meta).foregroundColor(Theme.C.ink3)
     }
 
     // MARK: Chapters
@@ -142,21 +163,22 @@ struct BookScreen: View {
                 }
             }
         }
-        .background(Theme.C.seam)
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        .background(Theme.C.ink)
+        .overlay(Rectangle().strokeBorder(Theme.C.ink, lineWidth: Theme.M.hair))
     }
 
     private func tile(_ chapter: Chapter, _ index: Store.BookIndex) -> some View {
         let states = chapter.entries.map { store.bookState(of: $0, in: index) }
             .sorted { rank($0) < rank($1) }
         let met = states.filter { $0.standing != .never || $0.slipping }.count
-        let dim = met == 0
+        let noted = chapter.formats.isEmpty && chapter.id.hasSuffix(".noted")
         return NavigationLink(value: BookRoute.chapter(chapter.id)) {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    // Shrinks rather than breaking a long compound mid-word.
-                    Text(chapter.name).font(Theme.F.serif(15, bold: true))
-                        .lineLimit(1).minimumScaleFactor(0.6)
+                    Text(chapter.name).font(Theme.F.serif(16, bold: true))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
                     Text("\(met)/\(chapter.entries.count)").font(Theme.F.meta)
                         .foregroundStyle(Theme.C.ink2)
@@ -166,14 +188,22 @@ struct BookScreen: View {
                 cells(states).padding(.top, 4)
             }
             .foregroundStyle(Theme.C.ink)
-            .padding(12)
+            .padding(11)
+            .padding(.leading, noted ? Theme.M.edge : 0)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .frame(minHeight: 96)
-            .background(dim ? Theme.C.sunk : Theme.C.surface)
-            .opacity(dim ? 0.55 : 1)
+            .frame(minHeight: 104)
+            .background {
+                ZStack {
+                    Theme.C.surface
+                    if met == 0 { Hatch() }
+                }
+            }
+            .overlay(alignment: .leading) {
+                if noted { Rectangle().fill(Theme.C.margin).frame(width: Theme.M.edge) }
+            }
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressDim())
     }
 
     /// Solid first, never last, the way the record reads.
@@ -194,7 +224,7 @@ struct BookScreen: View {
         return VStack(alignment: .leading, spacing: 2) {
             ForEach(rows.indices, id: \.self) { r in
                 HStack(spacing: 2) {
-                    ForEach(rows[r].indices, id: \.self) { i in StateCell(state: rows[r][i]) }
+                    ForEach(rows[r].indices, id: \.self) { i in StateCell(state: rows[r][i], size: 10) }
                 }
             }
         }

@@ -65,28 +65,42 @@ struct SpeedRoundBar: View {
         }
         .buttonStyle(KeyStyle(.inverse, perforated: true))
     }
+
+    /// Bar, drop and padding: what the page keeps clear under its last row.
+    static let footprint: CGFloat = 48 + Theme.M.drop + 2 * Theme.M.gapTight
 }
 
-/// ‹ BOOK, the name, met/total. Inline; `.pageHeader` pins one instead.
-struct BookPageHeader: View {
-    let back: String
-    let title: String
-    var count: String?
-
+/// Diagonal hatching: an unstarted chapter.
+struct Hatch: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            PageHeader(lead: .back(back), title: "", meta: nil, centred: false)
-                .padding(.horizontal, -Theme.M.gap)
-            if !title.isEmpty { HStack(alignment: .firstTextBaseline) {
-                Text(title).font(Theme.F.title)
-                    .foregroundStyle(Theme.C.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-                if let count {
-                    Text(count).font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                }
-            } }
+        Canvas { ctx, size in
+            var x = -size.height
+            while x < size.width {
+                var p = Path()
+                p.move(to: CGPoint(x: x, y: size.height))
+                p.addLine(to: CGPoint(x: x + size.height, y: 0))
+                ctx.stroke(p, with: .color(Theme.C.seam.opacity(0.8)), lineWidth: 1)
+                x += 6
+            }
         }
+        .allowsHitTesting(false)
+    }
+}
+
+/// The accent I-beam: where you are.
+struct IBeam: View {
+    var body: some View {
+        Rectangle().fill(Theme.C.accent).frame(width: 3, height: 11)
+    }
+}
+
+extension Chapter {
+    /// The head as said: a pairs entry carries its preposition (warten auf).
+    func fullHead(_ entry: Chapter.Entry) -> String {
+        guard layout == .pairs, let group = entry.group, !group.isEmpty,
+              !group.contains(" "), !entry.head.lowercased().contains(group.lowercased())
+        else { return entry.head }
+        return "\(entry.head) \(group)"
     }
 }
 

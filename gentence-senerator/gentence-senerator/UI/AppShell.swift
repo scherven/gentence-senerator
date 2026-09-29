@@ -23,7 +23,15 @@ struct AppShell: View {
         }
         .environment(\.startQuiz) { quiz = $0 }
         .fullScreenCover(item: $quiz) { plan in
-            QuizScreen(store: store, plan: plan)
+            QuizScreen(store: store, plan: plan) { chapter, entry in
+                // A miss opens its entry on the Book tab, from wherever the round began.
+                if tab != .book {
+                    paths[tab] = store.path
+                    tab = .book
+                }
+                store.path = []
+                bookRoutes = [.chapter(chapter), .entry(chapter: chapter, entry: entry)]
+            }
         }
         // Reading a review, from a tapped push or History, happens on Today.
         .onChange(of: store.reading.isEmpty) { _, idle in
