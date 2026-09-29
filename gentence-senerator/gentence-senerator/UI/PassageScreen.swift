@@ -222,25 +222,22 @@ struct PassageScreen: View {
             }
 
             if let review = store.current?.review, !review.problems.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
+                LedgerSheet {
                     ForEach(review.problems) { atom in
+                        let colour = Theme.colour(for: atom.verdict)
                         Button { store.open(atom) } label: {
-                            HStack(alignment: .top, spacing: 10) {
-                                Text(atom.stages.name).font(Theme.F.bodyTight)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(atom.stages.locate).font(Theme.F.meta)
-                                    .foregroundStyle(Theme.C.ink3)
-                                Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                            LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
+                                      ruled: atom.id != review.problems.last?.id) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(atom.stages.name).font(Theme.F.bodyTight)
+                                        .foregroundStyle(Theme.C.ink)
+                                    Text(atom.stages.locate).font(Theme.F.meta)
+                                        .foregroundStyle(Theme.C.ink3)
+                                }
                             }
-                            .padding(Theme.M.padTight)
-                            .background(Theme.C.surface)
-                            .overlay(alignment: .leading) {
-                                Rectangle().fill(Theme.colour(for: atom.verdict))
-                                    .frame(width: Theme.M.edge)
-                            }
-                            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                            .contentShape(Rectangle())
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressDim())
                     }
                 }
             }
@@ -280,38 +277,28 @@ struct PassageScreen: View {
     /// nothing that gets saved is in this order.
     private func options(_ options: [String], picked: Int?, answer: Int,
                          choose: @escaping (Int) -> Void) -> some View {
-        VStack(spacing: -Theme.M.hair) {
+        VStack(spacing: Theme.M.gapTight) {
             ForEach(Array(options.enumerated()), id: \.offset) { index, option in
                 Button { if picked == nil { choose(index) } } label: {
                     HStack(spacing: 10) {
-                        Text(String(UnicodeScalar(65 + index)!))
-                            .font(Theme.F.meta)
-                            .foregroundStyle(mark(index, picked, answer) ?? Theme.C.ink3)
-                        Text(option)
-                            .font(Theme.F.targetSmall)
-                            .foregroundStyle(mark(index, picked, answer) ?? Theme.C.ink)
+                        Text(String(UnicodeScalar(65 + index)!)).font(Theme.F.meta).opacity(0.7)
+                        Text(option).font(Theme.F.targetSmall)
                         Spacer(minLength: 0)
                     }
                     .padding(Theme.M.padTight)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.C.surface)
-                    .overlay(alignment: .leading) {
-                        if let colour = mark(index, picked, answer) {
-                            Rectangle().fill(colour).frame(width: Theme.M.edge)
-                        }
-                    }
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(KeyStyle(variant(index, picked, answer), dimsWhenDisabled: false))
                 .disabled(picked != nil)
             }
         }
     }
 
-    private func mark(_ index: Int, _ picked: Int?, _ answer: Int) -> Color? {
-        guard let picked else { return nil }
-        if index == answer { return Theme.C.good }
-        if index == picked { return Theme.C.bad }
-        return nil
+    /// Once picked: the right one marked right, a wrong pick struck, the rest spent.
+    private func variant(_ index: Int, _ picked: Int?, _ answer: Int) -> KeyStyle.Variant {
+        guard let picked else { return .neutral }
+        if index == answer { return .right }
+        if index == picked { return .wrong }
+        return .spent
     }
 }
