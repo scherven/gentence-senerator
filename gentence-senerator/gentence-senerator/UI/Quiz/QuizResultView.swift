@@ -16,7 +16,9 @@ struct QuizResultView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 stub
-                ForEach(chapters, id: \.chapter.id) { change($0) }
+                // A mixed drill touches many chapters: only the ones that moved.
+                ForEach(chapters.filter { chapters.count == 1 || $0.before != $0.after },
+                        id: \.chapter.id) { change($0) }
                 strip
 
                 if !round.misses.isEmpty {
@@ -30,6 +32,10 @@ struct QuizResultView: View {
             .padding(.horizontal, Theme.M.gap)
             .padding(.top, 16)
             .padding(.bottom, 24)
+        }
+        // Nothing scrolls under the status bar.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Color.clear.frame(height: 0).background(Theme.C.ground.ignoresSafeArea(edges: .top))
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             HStack(spacing: 10) {
