@@ -127,4 +127,5 @@ enum Vault {
     /// This device's APNs token, as hex.
     static let pushToken = "push.token"
     static let quizLog = "quiz.log.v1" // per-entry results, per-plan rounds
+    static let activity = "activity.v1" // what was done each day, for History
 }

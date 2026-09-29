@@ -324,6 +324,7 @@ final class Store {
             past.append(finished)
         }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
+        if activity.add(finished) { Vault.save(activity, Vault.activity) }
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
@@ -1244,6 +1245,7 @@ final class Store {
     /// then the day — and, once today's feedback is in, tomorrow — is written.
     /// Polls while anything is out, so the graded count moves on screen.
     func wake() async {
+        backfillActivity()
         retireStale()
         await reconcileUploads()
         await pump()
@@ -2115,6 +2117,10 @@ final class Store {
     func finish(_ round: QuizRound) {
         quizLog.record(round, planKey: planKey(round.plan))
         Vault.save(quizLog, Vault.quizLog)
+        if round.answers.allSatisfy({ $0 != nil }),
+           activity.add(.quiz, on: .now, settings.language) {
+            Vault.save(activity, Vault.activity)
+        }
     }
 
     /// Entries holding or better.
@@ -2267,6 +2273,37 @@ final class Store {
             Vault.save(requests, Vault.requests)
         }
         return id
+    }
+
+    // MARK: Activity
+
+    private(set) var activity: ActivityLog =
+        Vault.load(ActivityLog.self, Vault.activity) ?? ActivityLog()
+
+    /// Days from before the log existed, or from sessions filed some other
+    /// way, read off what the archive and quiz scores still hold.
+    private func backfillActivity() {
+        var changed = false
+        for s in past + holds.values.map(\.session) { changed = activity.add(s) || changed }
+        for (key, plan) in quizLog.plans {
+            guard let language = key.split(separator: "|").first
+                .flatMap({ Language(rawValue: String($0)) }) else { continue }
+            for score in plan.scores {
+                changed = activity.add(.quiz, on: score.at, language) || changed
+            }
+        }
+        if changed { Vault.save(activity, Vault.activity) }
+    }
+
+    func activity(on day: Date) -> Set<ActivityLog.Mark> {
+        var marks = activity.marks(on: day, settings.language)
+        // Today's sessions may not be filed yet.
+        if Calendar.current.isDateInToday(day) {
+            for mode in [Mode.translate, .produce] {
+                if let s = today(mode), let m = ActivityLog.mark(for: s) { marks.insert(m) }
+            }
+        }
+        return marks
     }
 }
 

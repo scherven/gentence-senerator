@@ -8,6 +8,7 @@ struct HistoryScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                ActivityCalendar(store: store)
                 if !weakest.isEmpty { recurring }
                 sessions
             }
@@ -71,10 +72,6 @@ struct HistoryScreen: View {
     /// One block per day, newest first.
     private var sessions: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            if store.archive.isEmpty && weakest.isEmpty {
-                Text("Nothing yet.")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
-            }
             ForEach(store.archive) { day in
                 VStack(alignment: .leading, spacing: 6) {
                     ModuleLabel(text: day.day)
