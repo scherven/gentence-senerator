@@ -216,7 +216,7 @@ struct ModeScreen: View {
                 ToolbarItem(placement: .topBarLeading) {
                     if store.phase == .passage {
                         TinyButton(title: "Leave") { store.leavePassage() }
-                    } else {
+                    } else if store.phase != .complete {
                         TinyButton(title: "End") { store.endSession() }
                     }
                 }
@@ -534,14 +534,28 @@ struct ModeScreen: View {
                     Text("\(session.completedCount) attempts · average \(session.averageScore)")
                         .font(Theme.F.body)
                 } else {
-                    let sent = session.open.filter { !$0.attempt.confirmed.isEmpty }.count
-                    let count = "\(sent) answer\(sent == 1 ? "" : "s") sent for grading."
-                    Text(store.notificationsOn ? count : "\(count) Notifications off.")
-                        .font(Theme.F.body)
+                    // Only what this session just sent.
+                    let sent = store.justSent(session)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ModuleLabel(text: "Sent",
+                                    trailing: store.notificationsOn ? "\(sent.count)"
+                                        : "\(sent.count) · notifications off")
+                        WrittenRows(rows: sent.enumerated().map {
+                            Store.Written(turn: $0.element, mode: session.mode, number: $0.offset + 1)
+                        })
+                    }
                 }
             }
-            MainButton(title: store.dayComplete ? "See the day" : "Back") {
-                store.endSession()
+            HStack(spacing: 10) {
+                ActionKey("Back", variant: .neutral) { store.endSession() }
+                if let next = store.nextMode {
+                    ActionKey("\(next.name) ›") {
+                        store.endSession()
+                        Task { await store.begin(next) }
+                    }
+                } else if store.dayComplete {
+                    ActionKey("See the day ›") { store.endSession() }
+                }
             }
             Spacer()
         }
