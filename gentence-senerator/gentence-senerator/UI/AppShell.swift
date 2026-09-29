@@ -342,23 +342,36 @@ struct ModeScreen: View {
         }
     }
 
+    /// What this produce answer can be made of, each ticked once the answer
+    /// uses it. The stretch only on the prompt written for it.
+    @ViewBuilder
+    private var chips: some View {
+        let answer = store.phase == .recording ? store.draft : typing
+        let language = store.current?.language ?? store.settings.language
+        let stretch = store.stretch.flatMap { $0.id == store.current?.prompt.pointID ? $0 : nil }
+        let words = store.plan.words.have + store.plan.words.new
+        if stretch != nil || !words.isEmpty {
+            Flow(spacing: 6, lineSpacing: 6) {
+                if let stretch {
+                    Ingredient(text: stretch.name, caps: true,
+                               used: store.markers(of: stretch).contains {
+                                   Store.uses($0, in: answer, language: language)
+                               })
+                }
+                ForEach(words, id: \.self) { word in
+                    Ingredient(text: word, used: Store.uses(word, in: answer, language: language))
+                }
+            }
+            .foregroundStyle(Theme.C.ink2)
+        }
+    }
+
     private var attempt: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
-                if let stretch = store.stretch, store.settings.mode == .produce,
-                   store.current?.prompt.pointID == stretch.id {
-                    Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("TRY TO USE").font(Theme.F.label).tracking(1.1)
-                                .foregroundStyle(Theme.C.accent)
-                            Text(stretch.name).font(Theme.F.body)
-                            Text(stretch.instruction).font(Theme.F.note)
-                                .foregroundStyle(Theme.C.ink2)
-                        }
-                    }
-                }
-
                 prompt
+
+                if store.settings.mode == .produce { chips }
 
                 if store.phase == .recording {
                     VStack(alignment: .leading, spacing: Theme.M.gapTight) {
@@ -375,7 +388,9 @@ struct ModeScreen: View {
                             .font(Theme.F.target)
                             .textFieldStyle(.plain)
                             .targetLanguageInput()
-                            .lineLimit(2...5)
+                            .lineLimit(store.settings.mode == .produce ? 5...12 : 2...5)
+                            .frame(minHeight: store.settings.mode == .produce ? 140 : nil,
+                                   alignment: .topLeading)
                             .inset()
                         MainButton(title: "Continue", enabled: !typing.isEmpty) {
                             store.typed(typing); typing = ""
