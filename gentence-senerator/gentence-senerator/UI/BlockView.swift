@@ -20,28 +20,34 @@ struct BlockView: View {
     private var content: some View {
         switch block.kind {
         case .rule:
-            Text(block.text ?? "")
-                .font(Theme.F.body)
-                .foregroundStyle(Theme.C.ink)
-                .fixedSize(horizontal: false, vertical: true)
+            IndexCard(headRule: nil, pitch: nil) {
+                Text(block.text ?? "")
+                    .font(Theme.F.body)
+                    .foregroundStyle(Theme.C.ink)
+                    .lineSpacing(4)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
         case .contrast:
             HStack(spacing: 0) {
-                ForEach(block.sides ?? []) { side in
+                ForEach(Array((block.sides ?? []).enumerated()), id: \.element.id) { index, side in
+                    if index > 0 { Rectangle().fill(Theme.C.seam).frame(width: Theme.M.hair) }
                     contrastSide(side)
                 }
             }
-            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+            .fixedSize(horizontal: false, vertical: true)
+            .overlay(Rectangle().strokeBorder(Theme.C.seam, lineWidth: Theme.M.hair))
 
         case .examples:
-            VStack(spacing: 0) {
-                ForEach(block.examples ?? []) { example in
-                    exampleRow(example)
+            LedgerSheet {
+                let examples = block.examples ?? []
+                ForEach(Array(examples.enumerated()), id: \.element.id) { index, example in
+                    exampleRow(example, number: index + 1, last: index == examples.count - 1)
                 }
             }
 
         case .drills:
-            VStack(spacing: 0) {
+            VStack(spacing: Theme.M.gapTight) {
                 ForEach(block.drills ?? []) { drill in
                     DrillView(drill: drill,
                               onOpenLink: onOpenLink,
@@ -51,9 +57,10 @@ struct BlockView: View {
             }
 
         case .atoms:
-            VStack(spacing: 0) {
-                ForEach(block.atoms ?? []) { link in
-                    AtomRow(link: link) { onOpenLink(link) }
+            LedgerSheet {
+                let links = block.atoms ?? []
+                ForEach(links) { link in
+                    AtomRow(link: link, last: link.id == links.last?.id) { onOpenLink(link) }
                 }
             }
         }
@@ -65,7 +72,7 @@ struct BlockView: View {
             Text(side.term)
                 .font(Theme.F.targetSmall)
                 .foregroundStyle(side.seed == nil ? Theme.C.ink : Theme.C.accent)
-            Text(side.seed == nil ? side.note : side.note + "  +")
+            Text(side.seed == nil ? side.note : side.note + "  ›")
                 .font(Theme.F.note)
                 .foregroundStyle(Theme.C.ink2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -83,26 +90,31 @@ struct BlockView: View {
     }
 
     @ViewBuilder
-    private func exampleRow(_ example: Example) -> some View {
-        let inner = HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text(example.target)
-                .font(Theme.F.targetSmall)
-                .foregroundStyle(Theme.C.ink)
-            Text(example.gloss)
-                .font(Theme.F.note)
-                .foregroundStyle(Theme.C.ink2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+    private func exampleRow(_ example: Example, number: Int, last: Bool) -> some View {
+        let inner = LedgerRow(account: "\(number)", colour: Theme.C.ink3,
+                              accountWidth: 34, ruled: !last) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(example.target)
+                    .font(Theme.F.targetSmall)
+                    .foregroundStyle(Theme.C.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(example.gloss)
+                    .font(Theme.F.gloss)
+                    .foregroundStyle(Theme.C.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        } trailing: {
             if example.seed != nil {
-                Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                Text("›").font(Theme.F.label).foregroundStyle(Theme.C.ink3)
+                    .padding(.top, 12).padding(.trailing, 10)
             }
         }
-        .padding(Theme.M.padTight)
         .background(Theme.C.surface)
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        .contentShape(Rectangle())
 
         if let seed = example.seed {
             Button { onOpenSeed(seed, .wordChoice) } label: { inner }
-                .buttonStyle(.plain)
+                .buttonStyle(PressDim())
         } else {
             inner
         }
@@ -124,37 +136,40 @@ struct AskView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             ForEach(answers) { item in
-                VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                Panel {
                     Text(item.question)
-                        .font(Theme.F.note)
+                        .font(Theme.F.gloss)
                         .foregroundStyle(Theme.C.ink2)
                     Text(item.answer)
                         .font(Theme.F.bodyTight)
+                        .foregroundStyle(Theme.C.ink)
                         .fixedSize(horizontal: false, vertical: true)
-                    ForEach(item.atoms) { link in
-                        AtomRow(link: link) { onOpenLink(link) }
+                    if !item.atoms.isEmpty {
+                        LedgerSheet {
+                            ForEach(item.atoms) { link in
+                                AtomRow(link: link, last: link.id == item.atoms.last?.id) {
+                                    onOpenLink(link)
+                                }
+                            }
+                        }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(Theme.M.pad)
-                .background(Theme.C.sunk)
-                .overlay(alignment: .leading) {
-                    Rectangle().fill(Theme.C.ink3).frame(width: Theme.M.edge)
-                }
-                .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
             }
 
-            HStack(spacing: 0) {
+            HStack(alignment: .center, spacing: Theme.M.gapTight) {
                 TextField(isAsking ? "Thinking…" : "Ask a question…", text: $typed)
                     .font(Theme.F.bodyTight)
+                    .foregroundStyle(Theme.C.ink)
                     .textFieldStyle(.plain)
-                    .padding(Theme.M.padTight)
-                    .background(Theme.C.sunk)
-                    .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
                     .submitLabel(.send)
                     .onSubmit(send)
                     .disabled(isAsking)
-                TinyButton(title: isAsking ? "…" : "Ask", action: send)
+                    .inset(padding: Theme.M.padTight)
+                if isAsking {
+                    Ticker()
+                } else {
+                    TinyButton(title: "Ask", action: send)
+                }
             }
         }
     }

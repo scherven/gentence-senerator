@@ -379,39 +379,8 @@ struct ModeScreen: View {
         .padding(Theme.M.gap)
     }
 
-    @ViewBuilder
-    private var review: some View {
-        if let turn = store.current {
-            VStack(spacing: 0) {
-                ReviewScreen(
-                    turn: turn,
-                    exchange: store.exchange(endingAt: turn),
-                    knowledge: store.knowledge,
-                    onOpenAtom: { store.open($0) },
-                    onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
-                    onClassify: { store.classify($0, as: $1) },
-                    onAsk: { question in
-                        Task {
-                            await store.ask(question,
-                                            about: .init(subject: turn.attempt.confirmed,
-                                                         context: turn.attempt.confirmed,
-                                                         pointID: turn.prompt.pointID),
-                                            context: turn.id.uuidString)
-                        }
-                    },
-                    answers: store.asked[turn.id.uuidString] ?? [],
-                    isAsking: store.asking.contains(turn.id.uuidString)
-                )
-                MainButton(title: store.reading.count == 1 ? "Done" : "Next") {
-                    Task { await store.advance() }
-                }
-                .padding(.horizontal, Theme.M.gap)
-                .padding(.vertical, Theme.M.gapTight)
-                .background(Theme.C.ground)
-                .overlay(alignment: .top) { Rectangle().fill(Theme.C.ink).frame(height: Theme.M.hair) }
-            }
-        }
-    }
+    /// Owns its header, so the bar above is hidden while it is up.
+    private var review: some View { ReviewReader(store: store) }
 
     /// A translate answer, and one good way to say it. Not a grade: the
     /// review comes with the batch.
@@ -488,12 +457,22 @@ struct LessonHost: View {
             } else if let error = store.lessonError {
                 Trouble(message: error) { }
             } else {
-                Busy(text: "Writing the lesson…")
+                VStack(alignment: .leading, spacing: Theme.M.gap) {
+                    Text(request.seed.subject)
+                        .font(Theme.F.title)
+                        .foregroundStyle(Theme.C.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Ticker(text: "Writing the lesson")
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.M.gap)
             }
         }
-        .navigationTitle(store.lesson(for: request)?.title ?? request.seed.subject)
-        .navigationBarTitleDisplayMode(.inline)
         .background(Theme.C.ground)
+        .toolbar(.hidden, for: .navigationBar)
+        // The title is on the page, once; the bar only goes back.
+        .pageHeader(.back("Back"), centred: false)
     }
 }
 
