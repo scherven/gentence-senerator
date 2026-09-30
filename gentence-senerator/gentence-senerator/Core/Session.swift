@@ -16,14 +16,6 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
         }
     }
 
-    var blurb: String {
-        switch self {
-        case .translate: return "Read English, say it in the language."
-        case .listen:    return "Hear it, write what was said."
-        case .produce:   return "Hold a conversation. Corrections wait."
-        }
-    }
-
     /// False for produce: turns run uninterrupted, review comes after.
     var reviewsEachAttempt: Bool { self != .produce }
 }
@@ -67,9 +59,10 @@ struct Turn: Identifiable, Codable, Hashable {
     var prompt: Prompt
     var attempt: Attempt
     var review: Review?
-    /// The turns one review covers share this. One turn in translate and
-    /// listen; a whole held exchange in produce. Nil on turns from before
-    /// grading moved to a batch, where "no review yet" was the grouping.
+    /// The turns one review covers share this. Unique per turn now; shared
+    /// across a held produce exchange before each answer was graded alone.
+    /// Nil on turns from before grading moved to a batch, where "no review
+    /// yet" was the grouping.
     var exchangeID: UUID? = nil
 
     struct Prompt: Codable, Hashable {
@@ -202,6 +195,29 @@ struct Session: Identifiable, Codable, Hashable {
     /// The level it was answered at. Graded at that level, however long the
     /// grading waits and whatever the learner has switched to since.
     var level: Int? = nil
+    /// Turns already filed for grading when the session first ended. A raised
+    /// goal reopens it; only turns after these are graded again, as their own
+    /// job, and they start a fresh exchange.
+    var filed: Int? = nil
+
+    /// Answered, and not yet filed for grading.
+    var open: [Turn] { Array(turns.dropFirst(filed ?? 0)) }
+
+    /// A new daily goal. Raising reopens a finished session past what was
+    /// already filed. Lowering only touches a session with nothing new
+    /// answered, and never below what was answered — nothing is unfinished or
+    /// dropped. True when the goal moved.
+    @discardableResult
+    mutating func regoal(_ n: Int) -> Bool {
+        let before = goal
+        if n > goal {
+            if isComplete { filed = turns.count }
+            goal = n
+        } else if n < goal, open.isEmpty {
+            goal = max(n, turns.count)
+        }
+        return goal != before
+    }
 
     /// Turns the learner actually finished. Counting reviewed turns instead
     /// would never advance in produce mode, where the review is deliberately
@@ -215,4 +231,11 @@ struct Session: Identifiable, Codable, Hashable {
         guard !scores.isEmpty else { return 0 }
         return scores.reduce(0, +) / scores.count
     }
+}
+
+/// One day of the archive.
+struct ArchiveDay: Identifiable, Hashable {
+    let day: String
+    let sessions: [Session]
+    var id: String { day }
 }

@@ -56,33 +56,26 @@ struct PassageScreen: View {
     @ViewBuilder
     private func gist(_ passage: Passage, _ run: PassageRun) -> some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
-            VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: "Listen once")
-                Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(passage.title).font(Theme.F.target)
-                        Text(heard(passage, run))
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                    }
+            Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(passage.title).font(Theme.F.target)
+                    Text(heard(passage, run))
+                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                 }
             }
-            Text(run.played
-                 ? "Questions next."
-                 : "\(passage.quiz.count) questions after. One replay.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
 
             MainButton(title: run.played ? "Play again" : "Play",
                        enabled: !run.played || run.canReplay) { store.playGist() }
-            MainButton(title: "Go to the questions", enabled: run.played) { store.toQuiz() }
+            MainButton(title: "Questions", enabled: run.played) { store.toQuiz() }
         }
     }
 
     private func heard(_ passage: Passage, _ run: PassageRun) -> String {
         let length = "\(Int(passage.length.rounded()))s"
         let voices = "\(passage.speakers.count) speakers"
-        guard run.played else { return "\(length) · \(voices) · no text" }
+        guard run.played else { return "\(length) · \(voices)" }
         let left = PassageRun.replayLimit - run.replays
-        return "\(length) · played · \(left) replay\(left == 1 ? "" : "s") left"
+        return "\(length) · \(left) replay\(left == 1 ? "" : "s") left"
     }
 
     // MARK: Quiz
@@ -110,16 +103,14 @@ struct PassageScreen: View {
                    let line = passage.line(from) {
                     Panel {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("True — of line \(from), not this question.")
+                            Text("Line \(from)")
                                 .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
                             Text(line.text).font(Theme.F.targetSmall)
                         }
                     }
-                } else {
-                    Panel { Text("Right.").font(Theme.F.meta).foregroundStyle(Theme.C.good) }
                 }
                 MainButton(title: run.quizAt + 1 < passage.quiz.count
-                           ? "Next question" : "What to go back to") { store.advanceQuiz() }
+                           ? "Next question" : "Repair") { store.advanceQuiz() }
             }
         }
     }
@@ -145,7 +136,7 @@ struct PassageScreen: View {
                     }
                 }
                 HStack {
-                    TinyButton(title: "Hear this line") { store.hearLine(n) }
+                    TinyButton(title: "Hear line") { store.hearLine(n) }
                     Spacer()
                 }
                 options(choices.options, picked: picked.map(choices.slot(of:)),
@@ -154,7 +145,7 @@ struct PassageScreen: View {
                 }
                 if picked != nil {
                     MainButton(title: run.repairAt + 1 < run.repair.count
-                               ? "Next line" : "Try those questions again") {
+                               ? "Next line" : "Retry questions") {
                         store.advanceRepair()
                     }
                 }
@@ -216,7 +207,6 @@ struct PassageScreen: View {
         let outcome = run.outcome(of: passage)
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             VStack(alignment: .leading, spacing: 6) {
-                ModuleLabel(text: "Listening · day done")
                 Panel(fill: Theme.C.sunk) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(tally.first) of \(tally.asked)").font(Theme.F.number)
@@ -232,32 +222,26 @@ struct PassageScreen: View {
             }
 
             if let review = store.current?.review, !review.problems.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "What you missed")
+                LedgerSheet {
                     ForEach(review.problems) { atom in
+                        let colour = Theme.colour(for: atom.verdict)
                         Button { store.open(atom) } label: {
-                            HStack(alignment: .top, spacing: 10) {
-                                Text(atom.stages.name).font(Theme.F.bodyTight)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(atom.stages.locate).font(Theme.F.meta)
-                                    .foregroundStyle(Theme.C.ink3)
-                                Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                            LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
+                                      ruled: atom.id != review.problems.last?.id) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(atom.stages.name).font(Theme.F.bodyTight)
+                                        .foregroundStyle(Theme.C.ink)
+                                    Text(atom.stages.locate).font(Theme.F.meta)
+                                        .foregroundStyle(Theme.C.ink3)
+                                }
                             }
-                            .padding(Theme.M.padTight)
-                            .background(Theme.C.surface)
-                            .overlay(alignment: .leading) {
-                                Rectangle().fill(Theme.colour(for: atom.verdict))
-                                    .frame(width: Theme.M.edge)
-                            }
-                            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                            .contentShape(Rectangle())
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressDim())
                     }
                 }
             }
 
-            Text("One dialogue is the whole listening day. Translate and produce are still open.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
             MainButton(title: "Done") { store.leavePassage() }
         }
     }
@@ -293,38 +277,28 @@ struct PassageScreen: View {
     /// nothing that gets saved is in this order.
     private func options(_ options: [String], picked: Int?, answer: Int,
                          choose: @escaping (Int) -> Void) -> some View {
-        VStack(spacing: -Theme.M.hair) {
+        VStack(spacing: Theme.M.gapTight) {
             ForEach(Array(options.enumerated()), id: \.offset) { index, option in
                 Button { if picked == nil { choose(index) } } label: {
                     HStack(spacing: 10) {
-                        Text(String(UnicodeScalar(65 + index)!))
-                            .font(Theme.F.meta)
-                            .foregroundStyle(mark(index, picked, answer) ?? Theme.C.ink3)
-                        Text(option)
-                            .font(Theme.F.targetSmall)
-                            .foregroundStyle(mark(index, picked, answer) ?? Theme.C.ink)
+                        Text(String(UnicodeScalar(65 + index)!)).font(Theme.F.meta).opacity(0.7)
+                        Text(option).font(Theme.F.targetSmall)
                         Spacer(minLength: 0)
                     }
                     .padding(Theme.M.padTight)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.C.surface)
-                    .overlay(alignment: .leading) {
-                        if let colour = mark(index, picked, answer) {
-                            Rectangle().fill(colour).frame(width: Theme.M.edge)
-                        }
-                    }
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(KeyStyle(variant(index, picked, answer), dimsWhenDisabled: false))
                 .disabled(picked != nil)
             }
         }
     }
 
-    private func mark(_ index: Int, _ picked: Int?, _ answer: Int) -> Color? {
-        guard let picked else { return nil }
-        if index == answer { return Theme.C.good }
-        if index == picked { return Theme.C.bad }
-        return nil
+    /// Once picked: the right one marked right, a wrong pick struck, the rest spent.
+    private func variant(_ index: Int, _ picked: Int?, _ answer: Int) -> KeyStyle.Variant {
+        guard let picked else { return .neutral }
+        if index == answer { return .right }
+        if index == picked { return .wrong }
+        return .spent
     }
 }

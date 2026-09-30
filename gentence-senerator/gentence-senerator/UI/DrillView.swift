@@ -24,47 +24,45 @@ struct DrillView: View {
         VStack(alignment: .leading, spacing: Theme.M.gapTight) {
             support
             if steppedDown && result == nil {
-                Text("Less to build.")
+                Text("Easier version.")
                     .font(Theme.F.note)
-                    .foregroundStyle(Theme.C.warn)
-                    .padding(.leading, Theme.M.gapTight)
-                    .overlay(alignment: .leading) {
-                        Rectangle().fill(Theme.C.warn).frame(width: Theme.M.edge)
-                    }
+                    .foregroundStyle(Theme.C.ink2)
             }
 
             Text(rung.prompt)
                 .font(Theme.F.body)
                 .foregroundStyle(Theme.C.ink)
+                .fixedSize(horizontal: false, vertical: true)
 
             if rung.support == .choice, let options = rung.options {
-                VStack(spacing: 0) {
+                VStack(spacing: Theme.M.gapTight) {
                     ForEach(Array(options.enumerated()), id: \.offset) { index, option in
                         Button { Task { await check(choice: index) } } label: {
                             Text(option)
                                 .font(Theme.F.targetSmall)
+                                .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(Theme.M.padTight)
-                                .background(Theme.C.sunk)
-                                .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+                                .padding(.horizontal, Theme.M.pad)
+                                .padding(.vertical, 11)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(KeyStyle(key(for: index)))
                     }
                 }
             } else {
-                HStack(spacing: 0) {
+                HStack(spacing: Theme.M.gapTight) {
                     TextField("Type it…", text: $input)
                         .font(Theme.F.targetSmall)
+                        .foregroundStyle(Theme.C.ink)
                         .textFieldStyle(.plain)
                         .targetLanguageInput()
-                        .padding(Theme.M.padTight)
-                        .background(Theme.C.sunk)
-                        .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
                         .submitLabel(.done)
                         .onSubmit { Task { await check(choice: nil) } }
                         .disabled(checking)
-                    TinyButton(title: checking ? "…" : "Check") {
-                        Task { await check(choice: nil) }
+                        .inset(padding: Theme.M.padTight)
+                    if checking {
+                        Ticker()
+                    } else {
+                        TinyButton(title: "Check") { Task { await check(choice: nil) } }
                     }
                 }
             }
@@ -73,53 +71,60 @@ struct DrillView: View {
         }
         .padding(Theme.M.pad)
         .background(Theme.C.surface)
-        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+        .overlay(Rectangle().strokeBorder(Theme.C.seam, lineWidth: Theme.M.hair))
+    }
+
+    /// Quiz keys: the answer turns right once it is known.
+    private func key(for index: Int) -> KeyStyle.Variant {
+        guard result == true, index == rung.answerIndex else { return .neutral }
+        return .right
     }
 
     private var support: some View {
-        HStack(spacing: 7) {
-            Text(rung.support.label.uppercased())
-                .font(Theme.F.label)
-                .tracking(1.1)
-                .foregroundStyle(Theme.C.ink3)
-            HStack(spacing: 3) {
-                ForEach(Array(drill.rungs.enumerated()), id: \.offset) { index, _ in
-                    Rectangle()
-                        .fill(index <= rungIndex ? Theme.C.accent : Theme.C.seam2)
-                        .frame(width: 13, height: 3)
-                }
+        HStack(spacing: 3) {
+            ForEach(Array(drill.rungs.enumerated()), id: \.offset) { index, _ in
+                Rectangle()
+                    .fill(index <= rungIndex ? Theme.C.ink2 : Theme.C.seam2)
+                    .frame(width: 13, height: 3)
             }
         }
     }
 
     @ViewBuilder
     private func outcome(correct: Bool) -> some View {
-        VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-            Text(correct ? "GOT IT" : "NOT YET")
-                .font(Theme.F.label)
-                .tracking(1.2)
-                .foregroundStyle(correct ? Theme.C.good : Theme.C.bad)
+        if extra == Store.uncheckable {
+            Panel(fill: Theme.C.sunk, edge: Theme.C.warn, padding: Theme.M.padTight) {
+                Text(Store.uncheckable)
+                    .font(Theme.F.bodyTight)
+                    .foregroundStyle(Theme.C.ink)
+            }
+        } else {
+            Panel(fill: Theme.C.sunk, edge: correct ? Theme.C.good : Theme.C.bad,
+                  padding: Theme.M.padTight) {
+                Text(correct ? "GOT IT" : "NOT YET")
+                    .monoCaps()
+                    .foregroundStyle(correct ? Theme.C.good : Theme.C.bad)
+                Text(extra ?? (correct ? drill.correct : drill.incorrect))
+                    .font(Theme.F.bodyTight)
+                    .foregroundStyle(Theme.C.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
 
-            Text(extra ?? (correct ? drill.correct : drill.incorrect))
-                .font(Theme.F.bodyTight)
-                .foregroundStyle(Theme.C.ink)
-
-            if correct && rungIndex > 0 {
-                TinyButton(title: "Back up to the full version") {
+        if correct {
+            // The lesson's related rows are already on the page.
+            if rungIndex > 0 {
+                TinyButton(title: "Harder version") {
                     rungIndex -= 1
                     reset()
                 }
             }
-
-            ForEach(drill.atoms) { link in
-                AtomRow(link: link) { onOpenLink(link) }
+        } else if !drill.atoms.isEmpty {
+            LedgerSheet {
+                ForEach(drill.atoms) { link in
+                    AtomRow(link: link, last: link.id == drill.atoms.last?.id) { onOpenLink(link) }
+                }
             }
-        }
-        .padding(.leading, Theme.M.gapTight)
-        .overlay(alignment: .leading) {
-            Rectangle()
-                .fill(correct ? Theme.C.good : Theme.C.bad)
-                .frame(width: Theme.M.edge)
         }
     }
 

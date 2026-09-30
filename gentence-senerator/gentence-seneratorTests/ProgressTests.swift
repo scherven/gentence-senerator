@@ -372,8 +372,8 @@ struct ProgressTests {
                                     turns: Self.window(score: 88), holding: 0.8)
 
         #expect(offer?.level == 5)
-        #expect(offer?.reason == "Nothing broke in 20 sentences at HSK 4, "
-                + "and you've used most of what it has. Move up?")
+        #expect(offer?.reason == "Nothing broke in 20 sentences at HSK 4. "
+                + "Most of its points used.")
     }
 
     /// One sentence nobody could follow is the whole case against moving up.
@@ -397,8 +397,7 @@ struct ProgressTests {
                                     turns: Self.window(score: 55), holding: 0)
 
         #expect(offer?.level == 3)
-        #expect(offer?.reason == "Your last 20 sentences at HSK 4 averaged 55. "
-                + "Try HSK 3 for a while?")
+        #expect(offer?.reason == "Your last 20 sentences at HSK 4 averaged 55.")
     }
 
     @Test func theMiddleIsStay() {

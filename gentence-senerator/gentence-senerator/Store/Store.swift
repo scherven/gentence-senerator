@@ -40,7 +40,9 @@ final class Store {
 
     /// Finished sessions out for grading, oldest first, until their reviews
     /// are in the archive.
-    private(set) var jobs: [GradingJob] = []
+    private(set) var jobs: [GradingJob] = [] { didSet { noteLanded(since: oldValue) } }
+    /// The day each job came back, by job id, for jobs seen to come back.
+    private var landed: [String: String] = [:]
     /// Reviews being read, as the turns they landed on. Empty outside reading.
     private(set) var reading: [UUID] = []
     /// The day's prompt sets being written, by hold key, so starting a
@@ -153,6 +155,7 @@ final class Store {
         passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
         draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
         jobs = Vault.load([GradingJob].self, Vault.grading) ?? []
+        landed = Vault.load([String: String].self, Vault.landed) ?? [:]
         if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
             lessons = shelf.lessons
             lessonOrder = shelf.order
@@ -187,7 +190,7 @@ final class Store {
         let stale = holds.filter { String($0.value.session.id.prefix(10)) < today }
         guard !stale.isEmpty else { return }
         let unfinished = stale.values.map(\.session).filter { $0.completedCount > 0 }
-        past.append(contentsOf: unfinished)
+        for session in unfinished { file(session) }
         past.sort { $0.startedAt < $1.startedAt }
         for key in stale.keys { holds[key] = nil }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
@@ -248,19 +251,22 @@ final class Store {
     /// Three of each and the day is over. The main screen becomes the summary.
     var dayComplete: Bool { Mode.allCases.allSatisfy(isDone) }
 
-    /// The turns one review covers. In produce the review is held until the
-    /// end of an exchange, so a reviewed turn stands for several, not one.
+    /// The turns one review covers. One, except in produce graded before each
+    /// answer was graded alone: there the review landed on the last answer of
+    /// a held exchange and stands for the unreviewed ones before it.
     func exchange(endingAt turn: Turn) -> [Turn] {
         let live = session?.turns ?? []
         let turns = live.contains { $0.id == turn.id }
             ? live
             : past.first { $0.turns.contains { $0.id == turn.id } }?.turns ?? []
+        return Store.exchange(endingAt: turn, in: turns)
+    }
+
+    nonisolated static func exchange(endingAt turn: Turn, in turns: [Turn]) -> [Turn] {
         guard let end = turns.firstIndex(where: { $0.id == turn.id }) else { return [turn] }
-        if let id = turn.exchangeID {
-            return turns[...end].filter { $0.exchangeID == id }
-        }
         var start = end
-        while start > 0, turns[start - 1].review == nil { start -= 1 }
+        while start > 0, turns[start - 1].review == nil,
+              turns[start - 1].exchangeID == turn.exchangeID { start -= 1 }
         return Array(turns[start...end])
     }
 
@@ -269,6 +275,56 @@ final class Store {
         guard let held = holds[Store.holdKey(settings.language, mode)]?.session,
               held.id == sessionID(for: mode), !held.isComplete else { return nil }
         return held
+    }
+
+    /// The stepper. Today's translate and produce in this language follow the
+    /// goal: raised, a finished one is held again so the mode resumes and the
+    /// rest of its set is written; what was already sent stays sent. Listen is
+    /// left alone — a dialogue is not counted in turns.
+    func setGoal(_ n: Int) {
+        guard n != settings.dailyGoal else { return }
+        settings.dailyGoal = n
+        for mode in [Mode.translate, .produce] {
+            let key = Store.holdKey(settings.language, mode)
+            if var live = session, live.id == sessionID(for: mode), !live.isComplete {
+                live.regoal(n)
+                session = live
+                hold()
+                continue
+            }
+            // Tomorrow's set, written ahead: nothing answered, so it just
+            // takes the goal.
+            if var ahead = holds[key], ahead.session.id != sessionID(for: mode) {
+                ahead.session.regoal(n)
+                holds[key] = ahead
+            }
+            guard var today = today(mode), today.regoal(n) else { continue }
+            let held = holds[key]?.session.id == today.id ? holds[key] : nil
+            if today.isComplete {
+                // Lowered back over a reopened one: it was already filed.
+                if held != nil { holds[key] = nil }
+                file(today)
+            } else {
+                // Over tomorrow's set, if one was written; that is written
+                // again once this one is done.
+                holds[key] = Unfinished(session: today, turn: held?.turn)
+            }
+        }
+        Vault.save(holds, Vault.holds)
+        refreshPlan()
+        Task { await prepareDay() }
+    }
+
+    /// Into the archive, over any earlier copy of the same session — a
+    /// reopened one is archived twice.
+    private func file(_ finished: Session) {
+        if let index = past.firstIndex(where: { $0.id == finished.id }) {
+            past[index] = finished
+        } else {
+            past.append(finished)
+        }
+        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        if activity.add(finished) { Vault.save(activity, Vault.activity) }
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
@@ -288,6 +344,51 @@ final class Store {
         path = []
         knowledge = [:]
         refreshPlan()
+    }
+
+    // MARK: Feedback by day
+
+    /// Feedback belongs to the day. The main screen shows today's sessions'
+    /// jobs, anything still out, and anything that came back today — a job
+    /// from yesterday that lands today stays until tomorrow, read or not.
+    var todaysJobs: [GradingJob] {
+        let today = Spend.key(.now)
+        return jobs.filter { Store.showsToday($0, landed: landed[$0.id.uuidString], today: today) }
+    }
+
+    nonisolated static func showsToday(_ job: GradingJob, landed: String?, today: String) -> Bool {
+        job.state != .done || String(job.sessionID.prefix(10)) >= today || landed == today
+    }
+
+    private func noteLanded(since old: [GradingJob]) {
+        let out = Set(old.filter { $0.state != .done }.map(\.id))
+        let now = jobs.filter { $0.state == .done && out.contains($0.id) }
+            .map(\.id.uuidString).filter { landed[$0] == nil }
+        guard !now.isEmpty else { return }
+        let ids = Set(jobs.map(\.id.uuidString))
+        landed = landed.filter { ids.contains($0.key) }
+        for id in now { landed[id] = Spend.key(.now) }
+        Vault.save(landed, Vault.landed)
+    }
+
+    /// Everything off the main screen, by day, newest first.
+    var archive: [ArchiveDay] {
+        Store.archive(past, showing: Set(todaysJobs.map(\.sessionID)), today: Spend.key(.now))
+    }
+
+    nonisolated static func archive(_ past: [Session], showing: Set<String>,
+                                    today: String) -> [ArchiveDay] {
+        let old = past.filter { String($0.id.prefix(10)) < today && !showing.contains($0.id) }
+        return Dictionary(grouping: old) { String($0.id.prefix(10)) }
+            .map { ArchiveDay(day: $0.key, sessions: $0.value.sorted { $0.startedAt > $1.startedAt }) }
+            .sorted { $0.day > $1.day }
+    }
+
+    /// An archived session's reviews, read the way a job's are.
+    func read(_ session: Session) {
+        read(GradingJob(id: UUID(), sessionID: session.id, language: session.language,
+                        mode: session.mode, createdAt: session.startedAt, level: session.level,
+                        exchanges: GradingJob.exchanges(of: session)))
     }
 
     // MARK: Level
@@ -341,6 +442,16 @@ final class Store {
     }
 
     // MARK: Session
+
+    /// A session's exchanges no job holds yet: after what was filed when it
+    /// first ended, and not already sent.
+    nonisolated static func unfiled(_ session: Session, jobs: [GradingJob]) -> [GradingJob.Exchange] {
+        let sent = Set(jobs.filter { $0.sessionID == session.id }
+            .flatMap { $0.exchanges.flatMap(\.turnIDs) })
+        var rest = session
+        rest.turns = session.open.filter { !sent.contains($0.id) }
+        return GradingJob.exchanges(of: rest)
+    }
 
     func begin(_ mode: Mode) async {
         guard !isDone(mode) else { return }
@@ -410,7 +521,11 @@ final class Store {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
         for mode in [Mode.translate, .produce] {
             let key = Store.holdKey(settings.language, mode)
-            guard writing[key] == nil, holds[key] == nil else { continue }
+            guard writing[key] == nil else { continue }
+            if let held = holds[key]?.session {
+                if held.id == sessionID(for: mode) { await writeRest(of: held, key: key) }
+                continue
+            }
 
             let day: Date
             let stretch: GrammarPoint?
@@ -440,6 +555,8 @@ final class Store {
                 guard self.holds[key] == nil, self.session?.id != draft.id else { return }
                 var planned = draft
                 planned.planned = prompts
+                // The goal may have moved while this was being written.
+                planned.goal = self.settings.dailyGoal
                 self.holds[key] = Unfinished(session: planned, turn: nil)
                 Vault.save(self.holds, Vault.holds)
             }
@@ -447,6 +564,34 @@ final class Store {
             await task.value
             writing[key] = nil
         }
+    }
+
+    /// Today's held session asks more than its set holds — the goal was
+    /// raised — so the rest is written now, while there is signal. `begin`
+    /// joins it; `plannedTurn` would otherwise write it on the spot.
+    private func writeRest(of held: Session, key: String) async {
+        let have = held.planned ?? held.turns.map(\.prompt)
+        guard have.count < held.goal else { return }
+        let task = Task { [weak self] in
+            guard let self else { return }
+            guard let written = try? await self.writeSet(for: held, from: have.count,
+                                                         stretch: self.plan.stretch,
+                                                         words: self.plan.words)
+            else { return }
+            let full = have + written
+            if var now = self.holds[key], now.session.id == held.id,
+               (now.session.planned ?? []).count <= have.count {
+                now.session.planned = full
+                self.holds[key] = now
+                Vault.save(self.holds, Vault.holds)
+            }
+            if self.session?.id == held.id, (self.session?.planned ?? []).count <= have.count {
+                self.session?.planned = full
+            }
+        }
+        writing[key] = task
+        await task.value
+        writing[key] = nil
     }
 
     /// Every job for that session has come back. No job — nothing was
@@ -463,7 +608,7 @@ final class Store {
         let slot = language.rawValue + "|next"
         let drawn = DayDraw.forToday(draws[slot], day: Spend.key(day),
                                      language: language, level: level) {
-            (pickStretch()?.id,
+            (requestedStretch(on: Spend.key(day)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
                             progress: progress, language: language))
@@ -536,7 +681,7 @@ final class Store {
         }
         let drawn = DayDraw.forToday(draws[language.rawValue], day: Spend.key(.now),
                                      language: language, level: level) {
-            (pickStretch()?.id,
+            (requestedStretch(on: Spend.key(.now)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
                             progress: progress, language: language))
@@ -759,8 +904,8 @@ final class Store {
         turn.attempt.confirmed = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !turn.attempt.confirmed.isEmpty else { return }
 
-        turn.exchangeID = Store.exchangeID(after: live.turns, mode: live.mode,
-                                           size: settings.turnsBeforeReview)
+        // Every answer is its own review, produce included.
+        turn.exchangeID = UUID()
         current = turn
 
         // Scored against what they should have said: the played sentence in
@@ -792,17 +937,6 @@ final class Store {
         } else {
             await advance()
         }
-    }
-
-    /// Produce holds corrections until an exchange of `size` answers is done;
-    /// a session that ends part-way through one grades it short rather than
-    /// dropping it. Each translate and listen answer is its own exchange.
-    nonisolated static func exchangeID(after turns: [Turn], mode: Mode, size: Int) -> UUID {
-        if mode == .produce, let id = turns.last?.exchangeID,
-           turns.filter({ $0.exchangeID == id }).count < size {
-            return id
-        }
-        return UUID()
     }
 
     /// Listen's path: one call, waited on.
@@ -842,6 +976,13 @@ final class Store {
                 Vault.save(Array(past.suffix(120)), Vault.sessions)
             }
         }
+        // A reopened session is held and archived at once.
+        for key in holds.keys where session?.id != holds[key]?.session.id {
+            if let t = holds[key]?.session.turns.firstIndex(where: { $0.id == id }) {
+                change(&holds[key]!.session.turns[t])
+                Vault.save(holds, Vault.holds)
+            }
+        }
     }
 
     private func archived(_ id: UUID) -> Turn? {
@@ -856,8 +997,7 @@ final class Store {
     /// Files a finished session for grading. Nothing is sent here, so this is
     /// safe offline and at launch; `pump` does the sending.
     private func enqueue(_ session: Session) {
-        guard !jobs.contains(where: { $0.sessionID == session.id }) else { return }
-        let exchanges = GradingJob.exchanges(of: session)
+        let exchanges = Store.unfiled(session, jobs: jobs)
         guard !exchanges.isEmpty else { return }
         // A session from before sessions carried a level, retired after a
         // language switch, can only take the setting — which is shared.
@@ -889,7 +1029,7 @@ final class Store {
                 }
                 guard let batchID = job.batchID else { continue }
 
-                if !job.watched, await watch(batchID, label: label(of: job)) {
+                if !job.watched, await watch(batchID, job: job.id, label: label(of: job)) {
                     job.watched = true
                 }
 
@@ -897,9 +1037,32 @@ final class Store {
                 job.graded = batch.succeeded
                 job.failed = batch.failed
                 job.error = nil
-                if batch.ended {
-                    ingest(try await tutor.api.batchResults(batch), into: job)
+                // Past the switch, the worker may have cancelled the batch and
+                // graded it directly: its results come first, and while it is
+                // still grading, the cancelled batch is left alone.
+                var results: [Anthropic.BatchResult]?
+                if Store.pastSwitch(job) {
+                    switch await directResults(batchID) {
+                    case .pending: put(job); continue
+                    case .ready(let direct): results = direct
+                    case .none: break
+                    }
+                }
+                if results == nil, batch.ended {
+                    results = try await tutor.api.batchResults(batch)
+                }
+                if let results {
+                    ingest(results, into: job)
+                    job.graded = results.filter { $0.reply != nil }.count
+                    job.failed = results.count - job.graded
                     job.state = .done
+                    if job.returnedAt == nil {
+                        job.returnedAt = .now
+                        if let sent = job.sentAt {
+                            gradingTimes = GradingClock.adding(Date.now.timeIntervalSince(sent), to: gradingTimes)
+                            Vault.save(gradingTimes, Vault.gradingTimes)
+                        }
+                    }
                 }
             } catch {
                 job.error = error.localizedDescription
@@ -954,7 +1117,7 @@ final class Store {
                                                  level: level)]
         }
         guard !requests.isEmpty else { return nil }
-        return try JSONSerialization.data(withJSONObject: ["requests": requests])
+        return try Schemas.data(["requests": requests])
     }
 
     /// Sends a job from the app, now, beside whatever iOS is holding for it.
@@ -993,6 +1156,7 @@ final class Store {
         case .success(let batch):
             job.batchID = batch
             job.state = .grading
+            job.sentAt = .now
             job.watched = UserDefaults.standard.string(forKey: Vault.pushToken) != nil
             job.error = nil
         case .failure(let error):
@@ -1070,7 +1234,7 @@ final class Store {
     /// Tells the push worker to notify this device when the batch ends — for
     /// a job submitted before the device had a token. False when it could
     /// not, so the next pump tries again.
-    private func watch(_ batchID: String, label: String) async -> Bool {
+    private func watch(_ batchID: String, job: UUID, label: String) async -> Bool {
         guard let token = UserDefaults.standard.string(forKey: Vault.pushToken),
               let url = URL(string: Key.graderURL + "/watch") else { return false }
         var request = URLRequest(url: url)
@@ -1078,7 +1242,7 @@ final class Store {
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
         request.httpBody = try? JSONSerialization.data(
-            withJSONObject: ["batch": batchID, "token": token, "label": label,
+            withJSONObject: ["batch": batchID, "job": job.uuidString, "token": token, "label": label,
                              "sandbox": Sender.sandbox])
         guard let (_, response) = try? await URLSession.shared.data(for: request) else { return false }
         return (response as? HTTPURLResponse)?.statusCode == 200
@@ -1105,6 +1269,7 @@ final class Store {
     /// then the day — and, once today's feedback is in, tomorrow — is written.
     /// Polls while anything is out, so the graded count moves on screen.
     func wake() async {
+        backfillActivity()
         retireStale()
         await reconcileUploads()
         await pump()
@@ -1145,15 +1310,54 @@ final class Store {
         phase = .reviewing
     }
 
+    private var gradingTimes: [TimeInterval] = Vault.load([TimeInterval].self, Vault.gradingTimes) ?? []
+
+    /// How far along the wait for the switch to direct grading, 0–0.95.
+    func gradingProgress(_ job: GradingJob) -> Double {
+        GradingClock.progress(sentAt: job.sentAt ?? job.createdAt, expected: Store.directAfter)
+    }
+
+    /// The worker cancels a batch that has not ended this long after it was
+    /// sent and grades it directly (worker/src/index.js, DIRECT_AFTER_MS).
+    nonisolated static let directAfter: TimeInterval = 20 * 60
+
+    nonisolated static func switchAt(_ job: GradingJob) -> Date {
+        (job.sentAt ?? job.createdAt).addingTimeInterval(directAfter)
+    }
+
+    nonisolated static func pastSwitch(_ job: GradingJob, now: Date = .now) -> Bool {
+        now >= switchAt(job)
+    }
+
+    enum Direct { case none, pending, ready([Anthropic.BatchResult]) }
+
+    /// What the worker graded directly for a batch, if it stepped in.
+    private func directResults(_ batchID: String) async -> Direct {
+        guard var parts = URLComponents(string: Key.graderURL + "/results") else { return .none }
+        parts.queryItems = [URLQueryItem(name: "batch", value: batchID)]
+        guard let url = parts.url else { return .none }
+        var request = URLRequest(url: url)
+        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let code = (response as? HTTPURLResponse)?.statusCode else { return .none }
+        switch code {
+        case 200: return .ready(Anthropic.results(from: data))
+        case 202: return .pending
+        default: return .none
+        }
+    }
+
     /// Where a job stands, in the learner's words.
     func status(of job: GradingJob) -> String {
         switch job.state {
         case .unsent:
             if sendingNow.contains(job.id) { return "Sending…" }
-            if !online { return "No connection — sends when there's signal" }
-            return job.uploading ? "Sending…" : "Not sent yet — will retry"
+            if !online { return "Offline" }
+            return job.uploading ? "Sending…" : "Not sent"
         case .grading:
-            return "\(job.graded) of \(job.total) graded"
+            let left = Store.switchAt(job).timeIntervalSinceNow
+            guard left > 0 else { return "Grading directly" }
+            return "Direct in \(Int(left) / 60):" + String(format: "%02d", Int(left) % 60)
         case .done:
             let missing = job.exchanges.filter {
                 $0.turnIDs.last.flatMap(archived)?.review == nil
@@ -1246,8 +1450,7 @@ final class Store {
         guard let live = session else { return }
         if live.isComplete {
             phase = .complete
-            past.append(live)
-            Vault.save(Array(past.suffix(120)), Vault.sessions)
+            file(live)
             holds[Store.holdKey(live.language, live.mode)] = nil
             Vault.save(holds, Vault.holds)
             dropPending()
@@ -1497,7 +1700,7 @@ final class Store {
                 verdict: right ? .kept : (brokeMeaning ? .breaks : .weakens),
                 stages: .init(
                     locate: "Line \(n) of \(passage.lines.count).",
-                    name: right ? "\(gap.answer) landed" : "\(gap.answer), not \(chose)",
+                    name: right ? "\(gap.answer), correct" : "\(gap.answer), not \(chose)",
                     fix: gap.answer,
                     note: gap.why
                 ),
@@ -1683,8 +1886,16 @@ final class Store {
     }
 
     // MARK: Keeping things
+    //
+    // Keeping is pinning: the bank is the textbook's pinned section.
 
     func isKept(_ atomID: String) -> Bool { bank.contains { $0.atomID == atomID } }
+
+    func keep(_ entry: Textbook.Entry) {
+        bank.removeAll { $0.atomID == entry.id }
+        bank.append(BankEntry(entry: entry, language: settings.language))
+        Vault.save(bank, Vault.bank)
+    }
 
     /// Keeping the same point twice replaces it — the newer wording is the one
     /// the learner just decided was worth holding onto.
@@ -1724,11 +1935,13 @@ final class Store {
         guard !question.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         asking.insert(context)
         do {
-            let (item, usage) = try await tutor.answer(
+            let (reply, usage) = try await tutor.answer(
                 question: question, about: seed, in: language
             )
             note(usage)
-            asked[context, default: []].append(item)
+            asked[context, default: []].append(reply.item)
+            file(reply.suggestions(language: language, validPoints: LanguagePacks.pack(for: language).pointIDs,
+                                   question: question, context: seed.context))
         } catch {
             asked[context, default: []].append(
                 AskItem(id: UUID().uuidString, question: question,
@@ -1754,7 +1967,7 @@ final class Store {
             return verdict
         } catch {
             return Tutor.DrillVerdict(
-                correct: false, note: "Couldn't check that just now."
+                correct: false, note: "Couldn't check that."
             )
         }
     }
@@ -1819,6 +2032,800 @@ final class Store {
     }
 
     var spentToday: Double { spend.today().dollars }
+
+    // MARK: Opening from a notification
+
+    /// What a tapped push names. The worker sends `job` and `batch`; pushes
+    /// from before it kept job ids have only `batch`.
+    struct Tap: Equatable, Sendable {
+        var job: UUID?
+        var batch: String?
+
+        init(job: UUID? = nil, batch: String? = nil) {
+            self.job = job
+            self.batch = batch
+        }
+
+        init(_ userInfo: [AnyHashable: Any]) {
+            job = (userInfo["job"] as? String).flatMap(UUID.init(uuidString:))
+            batch = userInfo["batch"] as? String
+        }
+    }
+
+    /// The job a tap is about. A tap naming nothing opens the newest graded
+    /// job; one naming a job that cannot be read yet opens nothing.
+    nonisolated static func target(of tap: Tap, in jobs: [GradingJob],
+                                   readable: (GradingJob) -> Bool) -> GradingJob? {
+        let named = jobs.first { job in
+            tap.job == job.id || (tap.batch != nil && tap.batch == job.batchID)
+        }
+        if tap.job != nil || tap.batch != nil {
+            return named.flatMap { $0.state == .done && readable($0) ? $0 : nil }
+        }
+        return jobs.last { $0.state == .done && readable($0) }
+    }
+
+    /// Reads the results in, then opens the review. Mid-attempt it only reads
+    /// them in: the panel shows them when the learner steps out.
+    func open(_ tap: Tap) async {
+        // Launch's `wake` may be mid-pump; a second pump would return at once.
+        while pumping { try? await Task.sleep(for: .milliseconds(200)) }
+        await pump()
+        // An open quiz is not interrupted: its round would be lost.
+        let interruptible = !quizOpen && (phase == .idle || phase == .complete
+            || (phase == .reviewing && !reading.isEmpty))
+        guard interruptible,
+              let job = Store.target(of: tap, in: jobs, readable: canRead) else { return }
+        pathBeforeTap = path
+        read(job)
+    }
+
+    // MARK: Textbook
+
+    /// Links out of ask answers. The answers themselves live only for the
+    /// launch; what they pointed at is kept.
+    private(set) var suggestions: [Textbook.Suggestion] =
+        Vault.load([Textbook.Suggestion].self, Vault.suggestions) ?? []
+
+    private func file(_ new: [Textbook.Suggestion]) {
+        guard !new.isEmpty else { return }
+        suggestions = Textbook.Suggestion.adding(new, to: suggestions)
+        Vault.save(suggestions, Vault.suggestions)
+    }
+
+    func textbook(scope: Textbook.Scope, search: String = "") -> [Textbook.Section] {
+        let language = settings.language
+        let pack = LanguagePacks.pack(for: language)
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.assemble(
+            language: language, kinds: pack.kinds, points: pack.points,
+            noted: Textbook.noted(in: sessions, language: language),
+            progress: progress, suggestions: suggestions, bank: bank,
+            scope: scope, search: search
+        )
+    }
+
+    /// Onto the same lesson path as everything else. A finding counts as a
+    /// visit; a point or a suggestion has no atom to record.
+    func open(_ entry: Textbook.Entry) {
+        if let atom = entry.atom {
+            open(atom)
+        } else {
+            open(seed: entry.seed, kind: entry.kind)
+        }
+    }
+
+    func togglePin(_ entry: Textbook.Entry) {
+        if isKept(entry.id) { unkeep(entry.id) } else { keep(entry) }
+    }
+
+    // MARK: Quizzes
+
+    private let books = BookLibrary()
+    private(set) var quizLog: QuizLog = Vault.load(QuizLog.self, Vault.quizLog) ?? QuizLog()
+
+    /// The current language's book.
+    var book: Book { books.book(for: settings.language) }
+    var quizItems: [QuizItem] { books.items(for: settings.language) }
+
+    /// Quizzes take an entry to holding; solid is its point's production
+    /// standing, as the day plan reads it.
+    func state(of entry: Chapter.Entry) -> EntryState {
+        let solid = entry.point.map { DayPlan.standing(of: $0, in: progress) == .solid } ?? false
+        return quizLog.state(of: entry.id, pointSolid: solid)
+    }
+
+    /// Drill ids are not language-scoped, so the log key is.
+    private func planKey(_ plan: QuizPlan) -> String { "\(settings.language.rawValue)|\(plan.id)" }
+
+    func roundsDone(_ plan: QuizPlan) -> Int { quizLog.plans[planKey(plan)]?.rounds ?? 0 }
+
+    func record(of plan: QuizPlan) -> QuizLog.PlanRecord { quizLog.plans[planKey(plan)] ?? .init() }
+
+    /// The entry's level, falling back to its point's.
+    func level(of entry: Chapter.Entry) -> Int {
+        let points = pointLevels
+        return entry.effectiveLevel { points[$0] }
+    }
+
+    private var pointLevels: [String: Int] {
+        Dictionary(pack.points.map { ($0.id, $0.level) }, uniquingKeysWith: { a, _ in a })
+    }
+
+    /// The book cut to what the learner sees: up to their level + 1.
+    var visibleBook: Book {
+        let points = pointLevels
+        return book.visible(at: settings.level) { $0.effectiveLevel { points[$0] } }
+    }
+
+    /// The level shown on entries a step above the learner's; nil otherwise.
+    func stretchTag(_ entry: Chapter.Entry) -> String? {
+        let n = level(of: entry)
+        return n > settings.level ? pack.level(n) : nil
+    }
+
+    func round(for plan: QuizPlan) -> QuizRound {
+        let book = book
+        let points = pointLevels
+        let entries = Dictionary(book.chapters.flatMap(\.entries).map { ($0.id, $0) },
+                                 uniquingKeysWith: { a, _ in a })
+        return QuizRound.assemble(
+            plan: plan, book: book, bank: quizItems, maxLevel: settings.level + 1,
+            levelOf: { id in entries[id]?.effectiveLevel { points[$0] } ?? 1 }
+        ) { id in
+            entries[id].map(self.state(of:)) ?? self.quizLog.state(of: id)
+        }
+    }
+
+
+    /// Answered items move their entries; a finished round counts to its plan.
+    func finish(_ round: QuizRound) {
+        quizLog.record(round, planKey: planKey(round.plan))
+        Vault.save(quizLog, Vault.quizLog)
+        if round.answers.allSatisfy({ $0 != nil }),
+           activity.add(.quiz, on: .now, settings.language) {
+            Vault.save(activity, Vault.activity)
+        }
+    }
+
+    /// Entries holding or better.
+    func held(in chapter: Chapter) -> Int {
+        chapter.entries.filter {
+            let s = state(of: $0).standing
+            return s == .holding || s == .solid
+        }.count
+    }
+
+    func recommended() -> (plan: QuizPlan, reason: String)? {
+        QuizLog.recommend(book: visibleBook, bank: quizItems, state: state(of:))
+            .map { (Store.speedRound(for: $0.chapter), $0.reason) }
+    }
+
+    nonisolated static func speedRound(for chapter: Chapter) -> QuizPlan {
+        QuizPlan(id: chapter.id, name: chapter.name, chapters: [chapter.id], formats: chapter.formats)
+    }
+
+    /// Synthesised, always: `say` would play the current turn's recording.
+    func speakQuiz(_ text: String) {
+        speech?.speak(text, locale: settings.language.localeID)
+    }
+
+    // MARK: Book
+
+    /// The book as the tab shows it: the shipped chapters cut to the
+    /// learner's level, then Noted, which is never cut.
+    struct BookIndex {
+        var book: Book
+        var chapters: [Chapter]
+        /// Noted chapter entries, back to the textbook entries they came from.
+        var noted: [String: Textbook.Entry]
+
+        func chapter(_ id: String) -> Chapter? { chapters.first { $0.id == id } }
+    }
+
+    var bookIndex: BookIndex {
+        let shown = visibleBook
+        let bank = quizItems
+        var book = shown
+        // A drill with nothing at this level goes with its chapters.
+        book.drills = shown.drills.filter { !QuizRound.candidates(plan: $0, book: shown, bank: bank).isEmpty }
+        var chapters = book.chapters
+        var noted: [String: Textbook.Entry] = [:]
+        if let extra = Textbook.notedChapter(
+            language: settings.language, sections: textbook(scope: .mine),
+            bookPoints: Set(chapters.flatMap(\.entries).compactMap(\.point)),
+            known: Set(pack.points.map(\.id))) {
+            chapters.append(extra.chapter)
+            noted = extra.sources
+        }
+        return BookIndex(book: book, chapters: chapters, noted: noted)
+    }
+
+    func bookState(of entry: Chapter.Entry, in index: BookIndex) -> EntryState {
+        if let source = index.noted[entry.id] { return Textbook.state(of: source) }
+        return state(of: entry)
+    }
+
+    func point(_ id: String?) -> GrammarPoint? {
+        id.flatMap { id in pack.points.first { $0.id == id } }
+    }
+
+    /// The learner's own sentences where this point was noted, newest first.
+    func noted(point: String) -> [Textbook.Noted] {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.noted(in: sessions, language: settings.language)
+            .filter { $0.atom.seed.pointID == point }
+            .sorted { $0.at > $1.at }
+    }
+
+    /// The learner's own sentences that used this point, newest first.
+    func uses(point: String) -> [Textbook.Use] {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        return Textbook.uses(of: point, in: sessions, language: settings.language)
+    }
+
+    /// Best round for a plan, nil before the first.
+    func best(_ plan: QuizPlan) -> Int? { record(of: plan).best }
+
+    /// Questions whose answers pointed at this point, newest first.
+    func asked(point: String) -> [Textbook.Suggestion] {
+        suggestions.filter { $0.language == settings.language && $0.pointID == point }
+            .sorted { $0.at > $1.at }
+    }
+
+    /// The same request the textbook's curriculum rows made, so the lesson is
+    /// the one already on the shelf.
+    func ruleRequest(for point: GrammarPoint) -> LessonRequest {
+        LessonRequest(seed: Atom.Seed(subject: point.name, context: point.examples.first ?? "",
+                                      pointID: point.id),
+                      kind: point.kind, language: settings.language)
+    }
+
+    /// When a rule was first written from the book, by lesson cache key.
+    private(set) var ruleSaved: [String: Date] =
+        Vault.load([String: Date].self, Vault.bookRules) ?? [:]
+
+    /// Writes the rule and shelves it. The practice half waits for the lesson
+    /// to be opened.
+    func loadRule(_ request: LessonRequest) async {
+        let key = request.cacheKey
+        let had = lessons[key] != nil
+        await loadCore(request)
+        if !had, lessons[key] != nil {
+            ruleSaved[key] = .now
+            Vault.save(ruleSaved, Vault.bookRules)
+        }
+    }
+
+    /// Asked for from the book, by language. Spent by the next day drawn.
+    private(set) var requests: [String: StretchRequest] =
+        Vault.load([String: StretchRequest].self, Vault.requests) ?? [:]
+
+    /// Makes `point` tomorrow's stretch.
+    func requestTomorrow(point: String) {
+        let language = settings.language
+        guard pack.points.contains(where: { $0.id == point }) else { return }
+        let request = StretchRequest(pointID: point, language: language, madeOn: Spend.key(.now))
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        let slot = language.rawValue + "|next"
+        if let drawn = request.replacing(draws[slot], tomorrow: Spend.key(tomorrow)) {
+            // Tomorrow is already drawn: the request goes straight in.
+            draws[slot] = drawn
+            Vault.save(draws, Vault.plan)
+            requests[language.rawValue] = nil
+            // Its produce set was written for the old stretch. Unstarted, it
+            // is written again.
+            let key = Store.holdKey(language, .produce)
+            if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
+               held.session.id == sessionID(for: .produce, on: tomorrow) {
+                holds[key] = nil
+                Vault.save(holds, Vault.holds)
+            }
+        } else {
+            requests[language.rawValue] = request
+        }
+        Vault.save(requests, Vault.requests)
+    }
+
+    func isRequested(point: String) -> Bool {
+        let language = settings.language
+        if requests[language.rawValue]?.pointID == point { return true }
+        let tomorrow = Spend.key(Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now)
+        guard let ahead = draws[language.rawValue + "|next"], ahead.day == tomorrow else { return false }
+        return ahead.stretchID == point
+    }
+
+    /// The stretch for a draw on `day`, spending a request that applies.
+    private func requestedStretch(on day: String, fallback: () -> String?) -> String? {
+        let key = settings.language.rawValue
+        let (id, spent) = StretchRequest.stretch(on: day, language: settings.language,
+                                                 request: requests[key],
+                                                 known: Set(pack.points.map(\.id)),
+                                                 fallback: fallback)
+        if spent {
+            requests[key] = nil
+            Vault.save(requests, Vault.requests)
+        }
+        return id
+    }
+
+    // MARK: Activity
+
+    private(set) var activity: ActivityLog =
+        Vault.load(ActivityLog.self, Vault.activity) ?? ActivityLog()
+
+    /// Days from before the log existed, or from sessions filed some other
+    /// way, read off what the archive and quiz scores still hold.
+    private func backfillActivity() {
+        var changed = false
+        for s in past + holds.values.map(\.session) { changed = activity.add(s) || changed }
+        for (key, plan) in quizLog.plans {
+            guard let language = key.split(separator: "|").first
+                .flatMap({ Language(rawValue: String($0)) }) else { continue }
+            for score in plan.scores {
+                changed = activity.add(.quiz, on: score.at, language) || changed
+            }
+        }
+        if changed { Vault.save(activity, Vault.activity) }
+    }
+
+    func activity(on day: Date) -> Set<ActivityLog.Mark> {
+        var marks = activity.marks(on: day, settings.language)
+        // Today's sessions may not be filed yet.
+        if Calendar.current.isDateInToday(day) {
+            for mode in [Mode.translate, .produce] {
+                if let s = today(mode), let m = ActivityLog.mark(for: s) { marks.insert(m) }
+            }
+        }
+        return marks
+    }
+
+    // MARK: History
+
+    /// The archive in the current language, with quiz rounds, by day.
+    var history: [HistoryDay] {
+        let names = Dictionary(book.chapters.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
+        return HistoryDay.build(archive: archive, quizzes: quizLog.plans,
+                                language: settings.language, today: Spend.key(.now)) {
+            names[$0] ?? "Quiz"
+        }
+    }
+
+    /// A recurring point's lesson. The latest finding it came from when one
+    /// is still archived, so the lesson keeps its sentence; else its subject.
+    func open(_ encounter: Progress.Encounter) {
+        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let atom = sessions.sorted { $0.startedAt > $1.startedAt }.lazy
+            .flatMap(\.turns)
+            .compactMap { $0.review?.atoms.first { $0.id == encounter.atomID } }
+            .first
+        if let atom {
+            open(atom)
+        } else {
+            open(seed: Atom.Seed(subject: encounter.subject, context: "", pointID: nil),
+                 kind: encounter.kind)
+        }
+    }
+
+    // MARK: Review
+
+    /// Graded turns of a batch being read, in order. For the summary.
+    func reviewed(_ ids: [UUID]) -> [Turn] {
+        ids.compactMap { id in
+            archived(id) ?? session?.turns.first { $0.id == id }
+        }.filter { $0.review != nil }
+    }
+
+    /// The verdict `grade(_:against:)` returns when the model could not be reached.
+    static let uncheckable = "Couldn't check that."
+
+    /// Where a finding sits in what was said, and its fix as wrong → right.
+    struct Span: Equatable {
+        /// Character offsets into the sentence.
+        var range: Range<Int>
+        var wrong: String
+        /// Nil when the fix is not a correction of these words (kept, or no fix).
+        var right: String?
+    }
+
+    /// Finds a finding in the sentence from two sources: quoted fragments of
+    /// its stages that occur verbatim, and where the fix places it (the part a
+    /// whole-sentence fix changed, or the window a fragment fix rewrites).
+    /// Nil when neither lands.
+    nonisolated static func span(of atom: Atom, in said: String) -> Span? {
+        let chars = Array(said)
+        guard !chars.isEmpty else { return nil }
+        let fix = atom.stages.fix.trimmingCharacters(in: .whitespacesAndNewlines)
+        let problem = atom.verdict.isProblem && !fix.isEmpty
+        // Where the fix says it is, from the fix alone.
+        let fromFix: Span? = !problem ? nil : rewrite(said, to: fix) ?? window(for: fix, in: chars)
+            .map { Span(range: $0, wrong: String(chars[$0]), right: fix) }
+
+        var quoted = [atom.stages.locate, atom.stages.name, atom.stages.note]
+            .flatMap(quotes(in:))
+        if !atom.verdict.isProblem, !fix.isEmpty { quoted.append(fix) }
+        let near = { (r: Range<Int>) in fromFix.map { $0.range.overlaps(r) } ?? false }
+        let hits = quoted.compactMap { q -> (range: Range<Int>, count: Int)? in
+            let found = occurrences(of: q, in: chars)
+            guard let first = found.first else { return nil }
+            // A repeat is settled by the fix where it can be.
+            return (found.first(where: near) ?? first, found.count)
+        }
+        // A quote the fix agrees with. Where the fix places it elsewhere, the
+        // quote was context ("after „Gestern“"): the fix wins. With no fix,
+        // a quote that occurs once, then any.
+        let agreed = hits.first { near($0.range) }
+        if agreed == nil, let fromFix { return fromFix }
+        if let r = (agreed ?? hits.first { $0.count == 1 } ?? hits.first)?.range {
+            let right: String? = !problem ? nil
+                : (fromFix.flatMap { $0.range == r ? $0.right : nil } ?? fix)
+            return Span(range: r, wrong: String(chars[r]), right: right)
+        }
+        return fromFix
+    }
+
+    /// Text between paired quotes, trimmed. Two or more characters, or one CJK.
+    nonisolated static func quotes(in text: String) -> [String] {
+        let pairs: [(Character, Character)] = [
+            ("\"", "\""), ("“", "”"), ("„", "“"), ("«", "»"), ("‹", "›"),
+            ("‘", "’"), ("「", "」"), ("『", "』"), ("*", "*"), ("'", "'")
+        ]
+        let chars = Array(text)
+        var found: [String] = []
+        var i = 0
+        // One pass, so the closer of „…“ is never read as an opener.
+        while i < chars.count {
+            let c = chars[i]
+            // An apostrophe inside a word is not a quote.
+            let inWord = c == "'" && i > 0 && chars[i - 1].isLetter
+            let ends = inWord ? [] : pairs.filter { $0.0 == c }.compactMap { pair in
+                chars[(i + 1)...].firstIndex(of: pair.1)
+            }
+            guard let j = ends.min() else { i += 1; continue }
+            let inner = String(chars[(i + 1)..<j]).trimmingCharacters(in: .whitespaces)
+            if inner.count >= 2 || inner.contains(where: isCJK) { found.append(inner) }
+            i = j + 1
+        }
+        return found
+    }
+
+    nonisolated private static func occurrences(of needle: String, in chars: [Character]) -> [Range<Int>] {
+        let n = Array(needle)
+        guard !n.isEmpty, n.count <= chars.count else { return [] }
+        return (0...(chars.count - n.count)).compactMap { i in
+            Array(chars[i..<(i + n.count)]) == n ? i..<(i + n.count) : nil
+        }
+    }
+
+    nonisolated static func isCJK(_ c: Character) -> Bool {
+        c.unicodeScalars.contains { (0x3400...0x9FFF).contains($0.value) || (0xF900...0xFAFF).contains($0.value) }
+    }
+
+    nonisolated private static func isWord(_ c: Character) -> Bool {
+        !isCJK(c) && (c.isLetter || c.isNumber || c == "-" || c == "'" || c == "’")
+    }
+
+    /// A fix that is the whole sentence rewritten: what changed, on word
+    /// boundaries. An insertion takes the word before it.
+    nonisolated private static func rewrite(_ said: String, to fix: String) -> Span? {
+        let a = Array(said), b = Array(fix)
+        guard !b.isEmpty, a != b else { return nil }
+        var p = 0
+        while p < a.count, p < b.count, a[p] == b[p] { p += 1 }
+        var s = 0
+        while s < a.count - p, s < b.count - p, a[a.count - 1 - s] == b[b.count - 1 - s] { s += 1 }
+        // Too little shared: a fragment, not a rewrite.
+        guard p + s >= max(2, a.count / 3) else { return nil }
+        var lo = p, hiA = a.count - s, hiB = b.count - s
+        // Out to word boundaries; prefix and suffix are shared, so both move.
+        while lo > 0, lo < a.count, isWord(a[lo - 1]), isWord(a[lo]) { lo -= 1 }
+        while hiA > 0, hiA < a.count, isWord(a[hiA - 1]), isWord(a[hiA]) { hiA += 1; hiB += 1 }
+        if lo == hiA {
+            // Nothing of the learner's to mark: take the word before, or after.
+            if lo > 0 {
+                var w = lo - 1
+                while w > 0, a[w] == " " { w -= 1 }
+                var start = w
+                while start > 0, isWord(a[start - 1]) { start -= 1 }
+                if isCJK(a[w]) { start = w }
+                lo = start
+            } else if hiA < a.count {
+                var end = hiA + 1
+                while end < a.count, isWord(a[end - 1]), isWord(a[end]) { end += 1 }
+                hiB += end - hiA
+                hiA = end
+            }
+        }
+        guard lo < hiA, hiB <= b.count, lo <= hiB else { return nil }
+        let wrong = String(a[lo..<hiA]).trimmingCharacters(in: .whitespaces)
+        let right = String(b[lo..<hiB]).trimmingCharacters(in: .whitespaces)
+        guard !wrong.isEmpty else { return nil }
+        // Trim what trimming took off the range.
+        let lead = a[lo..<hiA].prefix { $0 == " " }.count
+        let trail = a[lo..<hiA].reversed().prefix { $0 == " " }.count
+        return Span(range: (lo + lead)..<(hiA - trail), wrong: wrong, right: right)
+    }
+
+    /// Words (or CJK characters) with their offsets.
+    nonisolated private static func tokens(_ chars: [Character]) -> [(String, Range<Int>)] {
+        var out: [(String, Range<Int>)] = []
+        var i = 0
+        while i < chars.count {
+            if isCJK(chars[i]) { out.append((String(chars[i]), i..<(i + 1))); i += 1; continue }
+            guard isWord(chars[i]) else { i += 1; continue }
+            var j = i
+            while j < chars.count, isWord(chars[j]) { j += 1 }
+            out.append((String(chars[i..<j]).lowercased(), i..<j))
+            i = j
+        }
+        return out
+    }
+
+    /// The run of words a fragment fix most plausibly replaces: the same
+    /// length, give or take one, sharing at least half its words. Earliest wins a tie.
+    nonisolated private static func window(for fix: String, in chars: [Character]) -> Range<Int>? {
+        let said = tokens(chars)
+        let want = tokens(Array(fix)).map(\.0)
+        guard !want.isEmpty, !said.isEmpty else { return nil }
+        var best: (score: Double, range: Range<Int>)?
+        for len in [want.count, want.count - 1, want.count + 1] where len >= 1 && len <= said.count {
+            for start in 0...(said.count - len) {
+                var pool = want
+                var shared = 0
+                for t in said[start..<(start + len)] {
+                    if let k = pool.firstIndex(of: t.0) { pool.remove(at: k); shared += 1 }
+                }
+                let overlap = Double(shared) / Double(max(len, want.count))
+                guard shared > 0, overlap >= 0.5 else { continue }
+                // Words in the same places break a tie.
+                let aligned = zip(said[start..<(start + len)], want).filter { $0.0.0 == $0.1 }.count
+                let score = overlap + 0.01 * Double(aligned)
+                // A window identical to the fix is not wrong.
+                if shared == want.count, len == want.count,
+                   said[start..<(start + len)].map(\.0) == want { continue }
+                let r = said[start].1.lowerBound..<said[start + len - 1].1.upperBound
+                if best == nil || score > best!.score { best = (score, r) }
+            }
+        }
+        return best?.range
+    }
+
+    // MARK: Today
+
+    /// A quiz is on screen. A tapped push reads its results in but leaves it up.
+    var quizOpen = false
+    /// The lessons on screen when a tapped push started reading, so the shell
+    /// can hand them back to the tab they belonged to.
+    var pathBeforeTap: [LessonRequest]?
+
+    /// Today's order on the start screen: produce carries the day.
+    nonisolated static let todayOrder: [Mode] = [.produce, .translate, .listen]
+
+    /// The first mode not yet done today.
+    var nextMode: Mode? { Store.todayOrder.first { !isDone($0) } }
+
+    var modesDoneToday: Int { Mode.allCases.filter(isDone).count }
+
+    /// One answer the learner wrote today.
+    struct Written: Identifiable, Hashable {
+        let turn: Turn
+        let mode: Mode
+        /// 1-based, within its session.
+        let number: Int
+        var id: UUID { turn.id }
+    }
+
+    /// The learner's own sentences today, oldest first. Listen is
+    /// transcription, not writing.
+    var writtenToday: [Written] {
+        Store.written([Mode.translate, .produce].compactMap { today($0) })
+    }
+
+    nonisolated static func written(_ sessions: [Session]) -> [Written] {
+        sessions.filter { $0.mode != .listen }
+            .flatMap { session in
+                session.turns.filter { !$0.attempt.confirmed.isEmpty }
+                    .enumerated()
+                    .map { Written(turn: $0.element, mode: session.mode, number: $0.offset + 1) }
+            }
+            .sorted { $0.turn.createdAt < $1.turn.createdAt }
+    }
+
+    /// The turn on screen, 1-based: the one being answered, or the one just
+    /// answered while its reference is up.
+    nonisolated static func turnNumber(session: Session, current: Turn?) -> Int {
+        if let current, let at = session.turns.firstIndex(where: { $0.id == current.id }) {
+            return at + 1
+        }
+        return min(session.completedCount + 1, max(session.goal, 1))
+    }
+
+    /// What the session just finished sent: the newest job's answers, else
+    /// the answers not filed before.
+    func justSent(_ session: Session) -> [Turn] {
+        if let job = jobs.last(where: { $0.sessionID == session.id }) {
+            let turns = job.exchanges.flatMap(\.turnIDs)
+                .compactMap { id in session.turns.first { $0.id == id } }
+            if !turns.isEmpty { return turns }
+        }
+        return session.open.filter { !$0.attempt.confirmed.isEmpty }
+    }
+
+    nonisolated static func showsSendNow(_ job: GradingJob, sending: Bool) -> Bool {
+        job.state == .unsent && job.batchID == nil && !job.uploading && !sending
+    }
+
+    /// The speed round Today offers: only once a mode is done, with the single
+    /// worst item as its reason.
+    func todaysRound() -> (plan: QuizPlan, reason: String)? {
+        guard let pick = recommended(),
+              let reason = Store.roundReason(pick.reason, modesDone: modesDoneToday)
+        else { return nil }
+        return (pick.plan, reason)
+    }
+
+    /// `QuizLog.recommend` ranks its parts worst first, joined with " · ".
+    nonisolated static func roundReason(_ reason: String, modesDone: Int) -> String? {
+        guard modesDone > 0 else { return nil }
+        return reason.components(separatedBy: " · ").first ?? reason
+    }
+
+    /// Scores of today's graded answers, in the order they were given.
+    var todayScores: [Int] {
+        Mode.allCases.compactMap { today($0) }
+            .flatMap(\.turns)
+            .sorted { $0.createdAt < $1.createdAt }
+            .compactMap { $0.review?.score }
+    }
+
+    /// The book entry a point is taught under, if the book shows one.
+    func bookEntry(for pointID: String) -> (chapter: String, entry: String)? {
+        for chapter in visibleBook.chapters {
+            if let entry = chapter.entries.first(where: { $0.point == pointID }) {
+                return (chapter.id, entry.id)
+            }
+        }
+        return nil
+    }
+
+    /// What in a sentence shows the stretch was used: its name, and the heads
+    /// of the book entries under it (warten, 了, 等…再…).
+    func markers(of point: GrammarPoint) -> [String] {
+        [point.name] + book.chapters.flatMap(\.entries)
+            .filter { $0.point == point.id }.map(\.head)
+    }
+
+    /// The stretch's lesson, on the current path.
+    func openLesson(for point: GrammarPoint) {
+        let request = ruleRequest(for: point)
+        open(seed: request.seed, kind: request.kind)
+    }
+
+    /// Whether `text` contains `chip`. Case-insensitive; Mandarin is a plain
+    /// substring. A formula (等…再…) needs every part.
+    nonisolated static func uses(_ chip: String, in text: String, language: Language) -> Bool {
+        let parts = chip.replacingOccurrences(of: "...", with: "…")
+            .components(separatedBy: "…")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        guard !parts.isEmpty else { return false }
+        return parts.allSatisfy { part in
+            language == .mandarin
+                ? text.contains(part)
+                : text.range(of: part, options: .caseInsensitive) != nil
+        }
+    }
+
+    /// Character ranges where two sentences differ, token by token: words for
+    /// Latin scripts, characters for Mandarin. Case and punctuation are
+    /// ignored. Tokens outside a longest common subsequence are marked;
+    /// neighbours merge.
+    nonisolated static func divergence(_ said: String, _ ref: String,
+                                       language: Language) -> (said: [Range<Int>], ref: [Range<Int>]) {
+        let a = tokens(said, language: language)
+        let b = tokens(ref, language: language)
+        let n = a.count, m = b.count
+        var lcs = Array(repeating: Array(repeating: 0, count: m + 1), count: n + 1)
+        if n > 0 && m > 0 {
+            for i in stride(from: n - 1, through: 0, by: -1) {
+                for j in stride(from: m - 1, through: 0, by: -1) {
+                    lcs[i][j] = a[i].key == b[j].key ? lcs[i + 1][j + 1] + 1
+                        : max(lcs[i + 1][j], lcs[i][j + 1])
+                }
+            }
+        }
+        var keepA = Array(repeating: false, count: n)
+        var keepB = Array(repeating: false, count: m)
+        var i = 0, j = 0
+        while i < n && j < m {
+            if a[i].key == b[j].key {
+                keepA[i] = true; keepB[j] = true; i += 1; j += 1
+            } else if lcs[i + 1][j] >= lcs[i][j + 1] {
+                i += 1
+            } else {
+                j += 1
+            }
+        }
+        return (merged(a, keepA), merged(b, keepB))
+    }
+
+    private struct Token: Sendable { let range: Range<Int>; let key: String }
+
+    private nonisolated static func tokens(_ text: String, language: Language) -> [Token] {
+        let chars = Array(text)
+        func key(_ s: String) -> String {
+            String(String.UnicodeScalarView(s.lowercased().unicodeScalars.filter {
+                !CharacterSet.punctuationCharacters.contains($0) && !CharacterSet.symbols.contains($0)
+            }))
+        }
+        var out: [Token] = []
+        if language == .mandarin {
+            for (i, c) in chars.enumerated() where !c.isWhitespace {
+                let k = key(String(c))
+                if !k.isEmpty { out.append(Token(range: i..<(i + 1), key: k)) }
+            }
+            return out
+        }
+        var start: Int?
+        for i in 0...chars.count {
+            let space = i == chars.count || chars[i].isWhitespace
+            if space, let s = start {
+                let k = key(String(chars[s..<i]))
+                if !k.isEmpty { out.append(Token(range: s..<i, key: k)) }
+                start = nil
+            } else if !space, start == nil {
+                start = i
+            }
+        }
+        return out
+    }
+
+    private nonisolated static func merged(_ tokens: [Token], _ keep: [Bool]) -> [Range<Int>] {
+        var out: [Range<Int>] = []
+        var previous = -2
+        for (i, t) in tokens.enumerated() where !keep[i] {
+            if previous == i - 1, let last = out.last {
+                out[out.count - 1] = last.lowerBound..<t.range.upperBound
+            } else {
+                out.append(t.range)
+            }
+            previous = i
+        }
+        return out
+    }
+
+    // MARK: Reroll
+
+    private(set) var rerolling = false
+
+    /// A different produce question in place of the one on screen, before any
+    /// answer. Keeps the point it was asked to reach for, if it had one.
+    func reroll() async {
+        guard var turn = current, turn.mode == .produce, draft.isEmpty, !rerolling else { return }
+        rerolling = true
+        defer { rerolling = false }
+        let point = turn.prompt.pointID.flatMap { id in pack.points.first { $0.id == id } }
+        let asked = (session?.planned ?? []) + (session?.turns.map(\.prompt) ?? []) + [turn.prompt]
+        let avoid = asked.compactMap { $0.english ?? $0.target }
+        do {
+            let (made, usage) = try await tutor.nextPrompt(
+                mode: .produce, language: settings.language, level: settings.level,
+                revisit: turn.prompt.revisited, stretch: point,
+                seed: DayPlan.seed(from: plan.words, turn: session?.turns.count ?? 0),
+                domain: nil, avoid: avoid)
+            note(usage)
+            turn.prompt.english = made.english
+            turn.prompt.target = made.target
+            guard current?.id == turn.id else { return }
+            current = turn
+            if let index = session?.turns.count, session?.planned?.indices.contains(index) == true {
+                session?.planned?[index] = turn.prompt
+            }
+            hold()
+        } catch {
+            speechTrouble = "Couldn't write another question."
+        }
+    }
 }
 
 // MARK: - Moving the level
@@ -1848,8 +2855,8 @@ struct LevelOffer: Hashable {
            !broke, holding >= LevelEvidence.promoteHolding {
             return LevelOffer(
                 level: level + 1,
-                reason: "Nothing broke in \(turns.count) sentences at \(here), "
-                    + "and you've used most of what it has. Move up?"
+                reason: "Nothing broke in \(turns.count) sentences at \(here). "
+                    + "Most of its points used."
             )
         }
 
@@ -1857,7 +2864,7 @@ struct LevelOffer: Hashable {
             return LevelOffer(
                 level: level - 1,
                 reason: "Your last \(turns.count) sentences at \(here) averaged "
-                    + "\(average). Try \(pack.level(level - 1)) for a while?"
+                    + "\(average)."
             )
         }
 

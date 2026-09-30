@@ -1,74 +1,31 @@
 import SwiftUI
 
-/// Past attempts, and what keeps coming back. Sessions were being written and
-/// never read in the previous build; this is the reader.
+/// Past days' feedback, and what keeps coming back. Today's stays on the main
+/// screen until the day is over.
 struct HistoryScreen: View {
     @Bindable var store: Store
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
+        let days = store.history
+        ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
-                    if !kept.isEmpty { saved }
+                    ActivityCalendar(store: store, targets: Set(days.map(\.day))) { day in
+                        withAnimation { proxy.scrollTo(day, anchor: .top) }
+                    }
                     if !weakest.isEmpty { recurring }
-                    sessions
+                    ForEach(days) { block($0) }
                 }
-                .padding(Theme.M.gap)
-            }
-            .background(Theme.C.surface)
-            .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    TinyButton(title: "Done") { dismiss() }
-                }
-            }
-            .navigationDestination(for: Turn.self) { turn in
-                PastReview(store: store, turn: turn)
+                .padding(.horizontal, Theme.M.gap)
+                .padding(.vertical, Theme.M.gap)
             }
         }
-        .tint(Theme.C.accent)
+        .background(Theme.C.ground)
+        .toolbar(.hidden, for: .navigationBar)
+        .pageHeader(title: "History", centred: false)
     }
 
-    /// Kept by hand off a day's summary, newest first. Not scheduling — this
-    /// is the shelf, and nothing on it comes back unless it was also asked for.
-    private var kept: [BankEntry] {
-        store.bank.filter { $0.language == store.settings.language }.reversed()
-    }
-
-    private var saved: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Saved")
-            ForEach(kept) { entry in
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text(entry.kind.label.uppercased())
-                            .font(Theme.F.label)
-                            .foregroundStyle(Theme.C.accent)
-                            .frame(width: 84, alignment: .leading)
-                        Text(entry.subject)
-                            .font(Theme.F.bodyTight)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        TinyButton(title: "Forget") { store.unkeep(entry.atomID) }
-                    }
-                    if !entry.fix.isEmpty {
-                        Text(entry.fix).font(Theme.F.targetSmall)
-                    }
-                    Text(entry.note).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                    Text(entry.sentence)
-                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink3).lineLimit(1)
-                }
-                .padding(Theme.M.padTight)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.C.surface)
-                .overlay(alignment: .leading) {
-                    Rectangle().fill(Theme.C.accent).frame(width: Theme.M.edge)
-                }
-                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-            }
-        }
-    }
+    // MARK: Recurring
 
     /// Everything scheduled to return, plus anything opened more than once.
     /// Marking a finding "New to me" schedules it without opening a lesson, so
@@ -89,110 +46,99 @@ struct HistoryScreen: View {
 
     private var recurring: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Keeps coming back")
-            VStack(spacing: 0) {
-                ForEach(weakest) { encounter in
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text(encounter.kind.label.uppercased())
-                            .font(Theme.F.label)
-                            .foregroundStyle(Theme.C.ink3)
-                            .frame(width: 84, alignment: .leading)
-                        Text(encounter.subject)
-                            .font(Theme.F.bodyTight)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        // Something picked off a day's summary has no visits,
-                        // no sightings and no verdict, and "×0" says nothing
-                        // about it.
-                        Text(encounter.knowledge == .gap ? "NEW"
-                             : encounter.knowledge == .slip ? "SLIP"
-                             : encounter.visits > 0 ? "×\(encounter.visits)"
-                             : encounter.sightings > 0 ? "SEEN ×\(encounter.sightings)"
-                             : "PICKED")
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                        Text(encounter.dueLabel)
-                            .font(Theme.F.label).foregroundStyle(Theme.C.accent)
-                    }
-                    .padding(Theme.M.padTight)
-                    .background(Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-                }
-            }
-        }
-    }
-
-    private var sessions: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Sessions")
-            if store.past.isEmpty {
-                Text("Nothing finished yet.")
-                    .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
-            }
-            ForEach(store.past.reversed()) { session in
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("\(session.mode.name) · \(session.language.name)")
-                            .font(Theme.F.bodyTight)
-                        Spacer()
-                        Text("\(session.completedCount) · avg \(session.averageScore)")
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                    }
-                    .padding(Theme.M.padTight)
-                    .background(Theme.C.sunk)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
-
-                    ForEach(session.turns) { turn in
-                        NavigationLink(value: turn) {
-                            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                                Text(turn.attempt.confirmed)
-                                    .font(Theme.F.bodyTight)
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                if let score = turn.review?.score {
-                                    Text("\(score)")
-                                        .font(Theme.F.meta)
-                                        .foregroundStyle(Theme.C.ink2)
-                                }
-                                Text("+").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+            ModuleLabel(text: "Recurring")
+            LedgerSheet {
+                ForEach(Array(weakest.enumerated()), id: \.element.id) { i, encounter in
+                    Button { store.open(encounter) } label: {
+                        LedgerRow(account: encounter.kind.label, colour: Theme.C.accent,
+                                  ruled: i < weakest.count - 1) {
+                            Text(encounter.subject)
+                                .font(Theme.F.target(size: 15, for: encounter.language))
+                                .foregroundStyle(Theme.C.ink)
+                                .lineLimit(2)
+                        } trailing: {
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(encounter.dueLabel)
+                                    .foregroundStyle(overdue(encounter) ? Theme.C.warn : Theme.C.ink2)
+                                Text(standing(encounter)).foregroundStyle(Theme.C.ink3)
                             }
-                            .padding(Theme.M.padTight)
-                            .background(Theme.C.surface)
-                            .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                            .font(Theme.F.meta)
+                            .padding(.vertical, 12).padding(.trailing, 10)
                         }
-                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(PressDim())
                 }
             }
         }
     }
-}
 
-/// A past attempt, read with the same screen that showed it live. Findings are
-/// still openable — the atoms were persisted with their seeds.
-struct PastReview: View {
-    @Bindable var store: Store
-    let turn: Turn
+    /// Something picked off a day's summary has no visits, no sightings and
+    /// no verdict, and "×0" says nothing about it.
+    private func standing(_ e: Progress.Encounter) -> String {
+        e.knowledge == .gap ? "new"
+            : e.knowledge == .slip ? "slip"
+            : e.visits > 0 ? "×\(e.visits)"
+            : e.sightings > 0 ? "seen ×\(e.sightings)"
+            : "picked"
+    }
 
-    var body: some View {
-        ReviewScreen(
-            turn: turn,
-            exchange: store.exchange(endingAt: turn),
-            knowledge: store.knowledge,
-            onOpenAtom: { store.open($0) },
-            onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
-            onClassify: { store.classify($0, as: $1) },
-            onAsk: { question in
-                Task {
-                    await store.ask(question,
-                                    about: .init(subject: turn.attempt.confirmed,
-                                                 context: turn.attempt.confirmed,
-                                                 pointID: turn.prompt.pointID),
-                                    context: turn.id.uuidString)
+    private func overdue(_ e: Progress.Encounter) -> Bool {
+        guard let due = e.dueAt else { return false }
+        return due < Calendar.current.startOfDay(for: .now)
+    }
+
+    // MARK: Archive
+
+    private func block(_ day: HistoryDay) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: day.label)
+            LedgerSheet {
+                ForEach(Array(day.rows.enumerated()), id: \.element.id) { i, row in
+                    let ruled = i < day.rows.count - 1
+                    switch row {
+                    case .session(let s): session(s, ruled: ruled)
+                    case .quiz(let name, let score): quiz(name, score, ruled: ruled)
+                    }
                 }
-            },
-            answers: store.asked[turn.id.uuidString] ?? [],
-            isAsking: store.asking.contains(turn.id.uuidString)
-        )
-        .navigationTitle(turn.mode.name)
-        .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+        .id(day.day)
+    }
+
+    /// The whole row opens the review, on Today.
+    @ViewBuilder
+    private func session(_ s: Session, ruled: Bool) -> some View {
+        let row = LedgerRow(account: s.mode.name, colour: s.isGraded ? Theme.C.accent : Theme.C.ink3,
+                            ruled: ruled) {
+            Text(s.firstAnswer ?? "—")
+                .font(Theme.F.target(size: 15, for: s.language))
+                .foregroundStyle(Theme.C.ink)
+                .lineLimit(1)
+        } trailing: {
+            Text(s.isGraded ? "\(s.completedCount) · \(s.averageScore)" : "\(s.completedCount) · —")
+                .font(Theme.F.meta)
+                .foregroundStyle(s.isGraded && s.averageScore < 60 ? Theme.C.bad : Theme.C.ink2)
+                .padding(.vertical, 12).padding(.trailing, 10)
+        }
+        if s.isGraded {
+            Button { store.read(s) } label: { row.contentShape(Rectangle()) }
+                .buttonStyle(PressDim())
+        } else {
+            row
+        }
+    }
+
+    private func quiz(_ name: String, _ score: QuizLog.Score, ruled: Bool) -> some View {
+        LedgerRow(account: "Quiz", colour: Theme.C.ink3, ruled: ruled) {
+            Text(name)
+                .font(Theme.F.bodyTight)
+                .foregroundStyle(Theme.C.ink)
+                .lineLimit(1)
+        } trailing: {
+            Text("\(score.right)/\(score.total)")
+                .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                .padding(.vertical, 12).padding(.trailing, 10)
+        }
     }
 }

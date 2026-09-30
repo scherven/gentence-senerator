@@ -4,6 +4,45 @@ import Foundation
 /// so nothing is remapped between the wire and the views.
 enum Schemas {
 
+    // MARK: Writing
+
+    /// Structured output writes fields in the order the schema lists them, and
+    /// `JSONSerialization` lists a dictionary in hash order — a new one per
+    /// request. Reviews came back with `score` before any finding and
+    /// `lessons` before the findings they index. So properties go in
+    /// `required` order, and every other object's keys sorted.
+    static func data(_ object: Any) throws -> Data {
+        var out = Data()
+        try write(object, order: [], into: &out)
+        return out
+    }
+
+    private static func write(_ value: Any, order: [String], into out: inout Data) throws {
+        switch value {
+        case let object as [String: Any]:
+            let first = order.filter { object[$0] != nil }
+            let keys = first + object.keys.filter { !first.contains($0) }.sorted()
+            let required = object["required"] as? [String] ?? []
+            out.append(UInt8(ascii: "{"))
+            for (index, key) in keys.enumerated() {
+                if index > 0 { out.append(UInt8(ascii: ",")) }
+                try write(key, order: [], into: &out)
+                out.append(UInt8(ascii: ":"))
+                try write(object[key]!, order: key == "properties" ? required : [], into: &out)
+            }
+            out.append(UInt8(ascii: "}"))
+        case let array as [Any]:
+            out.append(UInt8(ascii: "["))
+            for (index, item) in array.enumerated() {
+                if index > 0 { out.append(UInt8(ascii: ",")) }
+                try write(item, order: [], into: &out)
+            }
+            out.append(UInt8(ascii: "]"))
+        default:
+            out.append(try JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed))
+        }
+    }
+
     // MARK: Primitives
 
     private static func object(_ properties: [String: Any], required: [String]) -> [String: Any] {
@@ -36,13 +75,20 @@ enum Schemas {
         ], required: ["kind", "headline", "subject"])
     }
 
-    /// One answer to one typed question.
+    /// One answer to one typed question. Its links also name the curriculum
+    /// point they are, so the textbook can file a recommendation under it.
     static func freeAnswer(for language: Language) -> [String: Any] {
-        object([
+        var link = atomLink(for: language)
+        var properties = link["properties"] as? [String: Any] ?? [:]
+        properties["point"] = ["type": ["string", "null"],
+                               "description": "Id of the listed grammar point this is, or null."]
+        link["properties"] = properties
+        link["required"] = ["kind", "headline", "subject", "point"]
+        return object([
             "id": string,
             "question": string,
             "answer": ["type": "string", "description": "One or two sentences."],
-            "atoms": array(atomLink(for: language))
+            "atoms": array(link)
         ], required: ["id", "question", "answer", "atoms"])
     }
 
@@ -95,7 +141,7 @@ enum Schemas {
 
     // MARK: Review
     //
-    // One call per exchange, graded in a batch while nobody is waiting. Every
+    // One call per answer, graded in a batch while nobody is waiting. Every
     // stage of every finding, and a lesson for each problem, come back
     // together — there is no second pass to hold anything back for.
 
@@ -158,7 +204,7 @@ enum Schemas {
                           "contrastSubject", "examples", "drills", "patterns"])],
             "used": ["type": "array", "items": string,
                      "description": "Ids of the grammar points the learner's own sentences used, correctly or not. Only ids from the list given. Empty is a normal answer."]
-        ], required: ["score", "readOfScore", "findings", "natural", "respeaks", "lessons", "used"])
+        ], required: ["findings", "score", "readOfScore", "natural", "respeaks", "lessons", "used"])
     }
 
     // MARK: The day's prompts
@@ -175,7 +221,7 @@ enum Schemas {
                           "description": "Translate: one natural rendering, shown after the learner answers. Null for produce."],
             "revisited": ["type": "array", "items": string,
                           "description": "Which of the listed revisit subjects this sentence actually calls for, copied exactly."]
-        ], required: ["english", "target", "reference", "revisited"]))
+        ], required: ["target", "english", "reference", "revisited"]))
     ], required: ["items"])
 
     // MARK: Prompt generation

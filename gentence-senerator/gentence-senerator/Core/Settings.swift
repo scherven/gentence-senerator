@@ -113,13 +113,21 @@ enum Vault {
     static let inProgress = "inProgress.v2"
     /// What the learner kept out of a day's summary.
     static let bank = "bank.v1"
+    static let suggestions = "textbook.suggestions.v1" // what ask answers pointed at
     /// The dialogue in progress, per language. Kept off `holds` on purpose:
     /// holds are retired at the end of the day and a passage is not.
     static let passages = "passages.v1"
     /// Sessions sent for grading, until their results are read in.
     static let grading = "grading.v1"
+    /// Seconds each recent batch took to come back.
+    static let gradingTimes = "grading.times.v1"
+    /// The day each grading job came back, so its feedback leaves the main
+    /// screen the day after.
+    static let landed = "landed.v1"
     /// Lessons written with a review, by `LessonRequest.cacheKey`.
     static let lessons = "lessons.v1"
     /// This device's APNs token, as hex.
     static let pushToken = "push.token"
+    static let quizLog = "quiz.log.v1" // per-entry results, per-plan rounds
+    static let activity = "activity.v1" // what was done each day, for History
 }

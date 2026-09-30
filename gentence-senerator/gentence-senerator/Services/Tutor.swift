@@ -59,9 +59,9 @@ actor Tutor {
         ]
         if let term = core.contrastTerm, let note = core.contrastNote {
             blocks.append(Block(
-                id: "contrast", kind: .contrast, label: "Not to be confused with",
+                id: "contrast", kind: .contrast, label: "Don't confuse with",
                 sides: [
-                    Side(id: "a", term: request.seed.subject, note: "What you were doing.", seed: nil),
+                    Side(id: "a", term: request.seed.subject, note: "What you used.", seed: nil),
                     Side(id: "b", term: term, note: note,
                          seed: core.contrastSubject.map {
                              Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
@@ -70,7 +70,7 @@ actor Tutor {
             ))
         }
         blocks.append(Block(
-            id: "examples", kind: .examples, label: "In the wild",
+            id: "examples", kind: .examples, label: "Examples",
             examples: core.examples.enumerated().map { index, example in
                 Example(id: "ex\(index)", target: example.target, gloss: example.gloss,
                         seed: example.subject.map {
@@ -103,7 +103,7 @@ actor Tutor {
         )
 
         lesson.blocks.append(Block(
-            id: "drills", kind: .drills, label: "Your turn",
+            id: "drills", kind: .drills, label: "Practice",
             drills: practice.drills.enumerated().map { index, drill in
                 Drill(id: "d\(index)",
                       rungs: drill.rungs.enumerated().map { rungIndex, rung in
@@ -134,10 +134,11 @@ actor Tutor {
 
     // MARK: Assessment
     //
-    // One call per exchange. It used to be two — a score and `locate` first,
+    // One call per answer. It used to be two — a score and `locate` first,
     // the rest streamed in behind — because the learner was waiting. Graded in
     // a batch, nobody is, so every stage and a lesson per problem come back
-    // together and the model reasons about the exchange once.
+    // together. `history` is only for produce jobs filed before each answer
+    // was graded alone.
 
     struct Graded: Codable {
         struct Finding: Codable {
@@ -168,7 +169,7 @@ actor Tutor {
         var used: [String]
     }
 
-    /// The whole request for one exchange, for a batch.
+    /// The whole request for one answer, for a batch.
     nonisolated func reviewParams(turn: Turn, history: [Turn], level: Int) -> [String: Any] {
         let pack = LanguagePacks.pack(for: turn.language)
         return api.params(
@@ -205,9 +206,14 @@ actor Tutor {
     nonisolated static func read(_ reply: Anthropic.Reply, turn: Turn, history: [Turn])
     throws -> (Review, [Lesson]) {
         let graded = try Anthropic.decode(Graded.self, from: reply)
+        // Valid JSON, and nonsense: nothing found, yet a failing score. Seen
+        // as score 0, readOfScore "x". Failed, so it is graded again.
+        if graded.findings.isEmpty && graded.score < 50 {
+            throw Anthropic.Failure.malformed("score \(graded.score) with no findings")
+        }
         let pack = LanguagePacks.pack(for: turn.language)
-        // A finding can sit in any answer of a held exchange, so the seed
-        // carries all of them rather than only the last.
+        // A finding can sit in any answer of a legacy held exchange, so the
+        // seed carries all of them rather than only the last.
         let said = (history + [turn]).map(\.attempt.confirmed).joined(separator: " ")
 
         let atoms = graded.findings.map { f in
@@ -243,9 +249,9 @@ actor Tutor {
         var blocks: [Block] = [Block(id: "rule", kind: .rule, label: nil, text: taught.rule)]
         if let term = taught.contrastTerm, let note = taught.contrastNote {
             blocks.append(Block(
-                id: "contrast", kind: .contrast, label: "Not to be confused with",
+                id: "contrast", kind: .contrast, label: "Don't confuse with",
                 sides: [
-                    Side(id: "a", term: request.seed.subject, note: "What you were doing.", seed: nil),
+                    Side(id: "a", term: request.seed.subject, note: "What you used.", seed: nil),
                     Side(id: "b", term: term, note: note,
                          seed: taught.contrastSubject.map {
                              Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
@@ -254,13 +260,13 @@ actor Tutor {
             ))
         }
         blocks.append(Block(
-            id: "examples", kind: .examples, label: "In the wild",
+            id: "examples", kind: .examples, label: "Examples",
             examples: taught.examples.enumerated().map { index, pair in
                 Example(id: "ex\(index)", target: pair.target, gloss: pair.gloss, seed: nil)
             }
         ))
         blocks.append(Block(
-            id: "drills", kind: .drills, label: "Your turn",
+            id: "drills", kind: .drills, label: "Practice",
             drills: taught.drills.enumerated().map { index, drill in
                 Drill(id: "d\(index)",
                       rungs: drill.rungs.enumerated().map { rungIndex, rung in
@@ -291,7 +297,7 @@ actor Tutor {
         Level: \(pack.level(level))
         Spoken: \(turn.attempt.wasTyped ? "no, typed" : "yes")
         """
-        // A held produce exchange is assessed whole. Framing the earlier turns
+        // A legacy held produce exchange is assessed whole. Framing the earlier turns
         // as background and only the last as the attempt got them read as
         // context, and their errors went unreported — two thirds of a produce
         // session came back unmarked.
@@ -570,10 +576,10 @@ actor Tutor {
     }
 
     func answer(question: String, about seed: Atom.Seed, in language: Language)
-    async throws -> (AskItem, Anthropic.Usage) {
+    async throws -> (AskReply, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: language)
         return try await api.send(
-            AskItem.self,
+            AskReply.self,
             cachedSystem: Self.askSystem(pack),
             user: """
             Topic: \(seed.subject)
@@ -595,9 +601,11 @@ actor Tutor {
 
     nonisolated private static func voice(_ pack: LanguagePack) -> String {
         """
-        You are a \(pack.language.name) tutor: warm, exacting, and brief.
-        Write the way a good teacher talks, not the way a textbook reads. Never
-        pad. If one clause will do, use one clause.
+        You are a \(pack.language.name) tutor. Everything you write to the
+        learner is terse and plain. Lead with the fix or the fact. Short
+        sentences; if one clause will do, use one. No em-dash asides. No "not X
+        but Y" or "X, not Y" framing. No pep talk, praise filler or reassurance.
+        Do not restate the learner's sentence or your own point. No metaphors.
         """
     }
 
@@ -703,6 +711,8 @@ actor Tutor {
         construct, never a different point.
 
         `accept` lists every form a speaker would accept, not just the neatest.
+        `correct` and `incorrect` are one short sentence each; `incorrect` leads
+        with the right form.
 
         `patterns` replaces the rule on a third visit: examples only, no
         explanation. If explaining twice did not work, a third will not either.
@@ -728,7 +738,8 @@ actor Tutor {
         and tries to repair the sentence themselves. "Something is in the
         wrong place in the second half" is right. "已经 should come before the
         verb" is not. `name` says what is wrong, still without the corrected
-        text. `fix` is the correction. `note` is one or two sentences on why.
+        text. `fix` is the correction. `note` is one or two short sentences on
+        why.
 
         Rank them: exactly one finding has weight "start", the one that costs
         the learner most: being understood in translate and produce, catching
@@ -742,12 +753,10 @@ actor Tutor {
         over each problem and drop any you could not defend to a native
         speaker.
 
-        In produce the corrections were held back and the exchange is reviewed
-        as one thing. Every answer in it is being assessed, not only the last:
-        a problem in the first answer counts as much as one in the third, and
-        `locate` must say which answer it is in. The same mistake in two
-        answers is one finding and outranks two separate one-offs — say that it
-        recurred. The score is for the exchange, not for the last sentence.
+        In produce, when several numbered answers are given, every one is being
+        assessed, not only the last: `locate` must say which answer it is in.
+        The same mistake in two answers is one finding and outranks two
+        separate one-offs — say that it recurred. The score is for all of them.
 
         In listen the sentence is the speaker's and the learner is writing down
         what reached them, so nothing in it is a production error. Every finding
@@ -772,11 +781,11 @@ actor Tutor {
         the sentence. `natural` is null there: the played sentence is already
         what a speaker said. Build the respeaks from the played sentence.
 
-        Report what they got right as well, with verdict "kept". Praise that
-        names a real choice teaches; generic praise does not.
+        Report what they got right as well, with verdict "kept". Name the
+        specific choice that worked. No generic praise.
 
-        `readOfScore` is one clause on what the score means. Not a breakdown,
-        not a pep talk.
+        `readOfScore` is one clause on what the score means. No breakdown, no
+        pep talk.
 
         Severity follows the level. Below B1 or HSK 4, being understood matters
         more than being formally correct: a morphological slip that leaves the
@@ -803,6 +812,8 @@ actor Tutor {
         thing deliberately changed — a different subject, a different tense, an
         added detail. Never a plain repeat: the point is transfer, not recall of
         the correction. Two or three, each with the forms you would accept.
+        `correct` and `incorrect` are one short sentence each; `incorrect` leads
+        with the right form.
 
         `lessons`: one for each finding whose verdict is breaks or weakens,
         pointing at it by its index in `findings`. None for kept. A lesson
@@ -815,8 +826,10 @@ actor Tutor {
         later rung removes something the learner has to build — a frame with a
         gap, then a choice between two — and must test the same point with less
         to construct, never a different point. `accept` lists every form a
-        speaker would accept, not just the neatest. `patterns` replaces the
-        rule on a third visit: examples only, no explanation.
+        speaker would accept, not just the neatest. A drill's `correct` and
+        `incorrect` are one short sentence each; `incorrect` leads with the
+        right form. `patterns` replaces the rule on a third visit: examples
+        only, no explanation.
 
         `used` is not about the errors. List the points below that the
         learner's own words actually used, whether they used them well or badly
@@ -831,9 +844,12 @@ actor Tutor {
 
     private static func gradeSystem(_ pack: LanguagePack) -> String {
         """
+        \(voice(pack))
+
         You grade one short \(pack.language.name) answer. Accept any form a
-        speaker would accept, not only the model answers. Reply in one or two
-        sentences, naming what was wrong when it is wrong.
+        speaker would accept, not only the model answers. `note`: when it is
+        wrong, one or two short sentences, leading with the correct form, then
+        what was wrong. When it is right, a few words at most.
         """
     }
 
@@ -841,11 +857,15 @@ actor Tutor {
         """
         \(voice(pack))
 
-        Answer the learner's question about one point in one or two sentences,
-        then attach links for anything in your answer worth opening: `subject`
+        Answer the learner's question about one point in one or two sentences.
+        Answer first: no preamble, no restating the question. Then attach links for anything in your answer worth opening: `subject`
         is what a lesson about it would be about, `headline` one line on what it
-        teaches.
+        teaches. Anything you tell them to use gets a link.
         Kinds: \(pack.kinds.map(\.rawValue).joined(separator: ", ")).
+
+        When a link is one of these points, set `point` to its id; otherwise
+        null.
+        \(pack.points.map { "\($0.id) — \($0.name)" }.joined(separator: "\n"))
         """
     }
 }

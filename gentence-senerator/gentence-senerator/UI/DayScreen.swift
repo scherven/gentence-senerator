@@ -5,54 +5,53 @@ import SwiftUI
 /// and the two decisions the learner makes about it — keep it, or see it again.
 struct DayScreen: View {
     @Bindable var store: Store
+    /// The one finding showing its decisions.
+    @State private var expanded: String?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                WrittenToday(store: store)
                 GradingPanel(store: store)
                 tally
-                section("What came up", store.todayFindings.filter(\.isProblem),
-                        empty: "Nothing came up today.")
-                section("What held", store.todayFindings.filter { !$0.isProblem },
-                        empty: nil)
+                section("To fix", store.todayFindings.filter(\.isProblem))
+                section("Got right", store.todayFindings.filter { !$0.isProblem })
             }
             .padding(Theme.M.gap)
         }
     }
 
+    /// One tick per graded answer, coloured by band, then the figures.
     private var tally: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Day done")
-            Panel(fill: Theme.C.sunk) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(store.todayTally.attempts) attempts · average \(store.todayTally.average)")
-                        .font(Theme.F.body)
-                    Text(Mode.allCases
-                        .map { "\($0.name) \(store.tally($0).done)" }
-                        .joined(separator: " · "))
-                        .font(Theme.F.meta)
-                        .foregroundStyle(Theme.C.ink2)
+        let scores = store.todayScores
+        return HStack(alignment: .center, spacing: Theme.M.gapTight) {
+            HStack(spacing: 3) {
+                ForEach(Array(scores.enumerated()), id: \.offset) { _, score in
+                    Rectangle().fill(Theme.band(score)).frame(width: 4, height: 16)
                 }
             }
+            Text("\(store.todayTally.attempts) · avg \(store.todayTally.average)")
+                .font(Theme.F.meta)
+                .foregroundStyle(Theme.C.ink2)
+            Spacer(minLength: 0)
         }
+        .accessibilityElement(children: .combine)
     }
 
     /// Both halves render the same row: what held is worth keeping and worth
     /// seeing again just as much as what broke.
     @ViewBuilder
-    private func section(_ title: String, _ rows: [DayFinding],
-                         empty: String?) -> some View {
-        if !rows.isEmpty || empty != nil {
+    private func section(_ title: String, _ rows: [DayFinding]) -> some View {
+        if !rows.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 ModuleLabel(text: title)
-                if rows.isEmpty, let empty {
-                    Text(empty)
-                        .font(Theme.F.note)
-                        .foregroundStyle(Theme.C.ink3)
-                }
+                LedgerSheet {
                 ForEach(rows) { finding in
                     DayFindingRow(
                         finding: finding,
+                        expanded: Binding(get: { expanded == finding.id },
+                                          set: { expanded = $0 ? finding.id : nil }),
+                        ruled: finding.id != rows.last?.id,
                         kept: store.isKept(finding.id),
                         due: store.progress.dueLabel(finding.id),
                         onOpen: { store.open(finding.atom) },
@@ -66,15 +65,18 @@ struct DayScreen: View {
                         }
                     )
                 }
+                }
             }
         }
     }
 }
 
-/// A finding at the end of the day. Still openable — the atoms kept their
-/// seeds — with the keep and bring-back decisions under it.
+/// A finding at the end of the day. Tapped, it shows the keep and bring-back
+/// decisions and a way into its lesson.
 private struct DayFindingRow: View {
     let finding: DayFinding
+    @Binding var expanded: Bool
+    var ruled = true
     let kept: Bool
     /// When it is next due, if it is coming back at all.
     let due: String?
@@ -83,58 +85,40 @@ private struct DayFindingRow: View {
     let onReturn: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            Button(action: onOpen) {
-                HStack(alignment: .top, spacing: 10) {
-                    Text(finding.atom.kind.label.uppercased())
-                        .font(Theme.F.label)
-                        .tracking(1)
-                        .foregroundStyle(Theme.colour(for: finding.atom.verdict))
-                        .frame(width: 84, alignment: .leading)
-                        .padding(.top, 2)
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(finding.headline)
-                            .font(Theme.F.bodyTight)
-                            .foregroundStyle(Theme.C.ink)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(finding.sentence)
-                            .font(Theme.F.meta)
-                            .foregroundStyle(Theme.C.ink3)
-                            .lineLimit(1)
-                    }
-
-                    if finding.count > 1 {
-                        Text("×\(finding.count)")
-                            .font(Theme.F.meta)
-                            .foregroundStyle(Theme.C.accent)
-                            .padding(.top, 2)
-                    }
-
-                    Text("+")
+        let colour = Theme.colour(for: finding.atom.verdict)
+        // A tap gesture, not a Button: the decisions inside are buttons.
+        LedgerRow(account: finding.atom.kind.label, colour: colour, edge: colour,
+                      ruled: ruled) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(finding.headline)
+                        .font(Theme.F.bodyTight)
+                        .foregroundStyle(Theme.C.ink)
+                        .multilineTextAlignment(.leading)
+                    Text(finding.sentence)
                         .font(Theme.F.meta)
                         .foregroundStyle(Theme.C.ink3)
-                        .padding(.top, 2)
+                        .lineLimit(1)
+                    if expanded {
+                        HStack(spacing: 6) {
+                            TinyButton(title: kept ? "Saved" : "Save", selected: kept, action: onKeep)
+                            TinyButton(title: due ?? "Bring back", selected: due != nil,
+                                       action: onReturn)
+                            Spacer(minLength: 0)
+                            TypedLink("Open", action: onOpen)
+                        }
+                        .padding(.top, 6)
+                    }
                 }
-                .padding(Theme.M.padTight)
-                .background(Theme.C.surface)
-                .overlay(alignment: .leading) {
-                    Rectangle()
-                        .fill(Theme.colour(for: finding.atom.verdict))
-                        .frame(width: Theme.M.edge)
+            } trailing: {
+                if finding.count > 1 {
+                    Text("×\(finding.count)")
+                        .font(Theme.F.meta)
+                        .foregroundStyle(Theme.C.ink2)
+                        .padding(.trailing, 10).padding(.top, 12)
                 }
-                .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
             }
-            .buttonStyle(.plain)
-
-            HStack(spacing: 0) {
-                TinyButton(title: kept ? "Saved" : "Save",
-                           selected: kept, action: onKeep)
-                TinyButton(title: due ?? "Bring back",
-                           selected: due != nil, action: onReturn)
-                Spacer()
-            }
-            .padding(.leading, Theme.M.edge)
-        }
+        .contentShape(Rectangle())
+        .onTapGesture { expanded.toggle() }
+        .accessibilityAddTraits(.isButton)
     }
 }

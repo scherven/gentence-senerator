@@ -12,10 +12,21 @@ struct GentenceApp: App {
         speech: Voice()
     )
     @State private var store = GentenceApp.store
+    /// Once per process, so returning to the app never replays it. UI tests
+    /// pass `-skipOpening`.
+    @State private var opening = !ProcessInfo.processInfo.arguments.contains("-skipOpening")
+
+    init() { Theme.install() }
 
     var body: some Scene {
         WindowGroup {
-            AppShell(store: store)
+            ZStack {
+                AppShell(store: store)
+                if opening {
+                    Opening { opening = false }
+                        .transition(.identity)
+                }
+            }
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {

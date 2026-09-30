@@ -51,4 +51,14 @@ final class Push: NSObject, UIApplicationDelegate, UNUserNotificationCenterDeleg
     -> UNNotificationPresentationOptions {
         [.banner, .sound]
     }
+
+    /// Tapped: open the graded session it is about. On a cold launch this
+    /// arrives before the first scene, which is fine — the store is made here
+    /// and the screen reads it when it appears.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse) async {
+        guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
+        let tap = Store.Tap(response.notification.request.content.userInfo)
+        await GentenceApp.store.open(tap)
+    }
 }

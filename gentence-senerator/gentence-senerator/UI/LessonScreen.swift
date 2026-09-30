@@ -32,17 +32,14 @@ struct LessonScreen: View {
                 header
 
                 if showingPatterns {
-                    revisitBanner("Third time. Patterns instead of explanation.")
                     BlockView(block: patternBlock,
                               onOpenLink: onOpenLink,
                               onOpenSeed: onOpenSeed,
                               onDrillOutcome: onDrillOutcome,
                               grade: grade)
                     if !showRuleAnyway {
-                        TinyButton(title: "Show the rule anyway") { showRuleAnyway = true }
+                        TinyButton(title: "Show the rule") { showRuleAnyway = true }
                     }
-                } else if priorVisits == 1 {
-                    revisitBanner("Second time. Straight to the drill.")
                 }
 
                 ForEach(blocks) { block in
@@ -56,15 +53,7 @@ struct LessonScreen: View {
                 // Practice arrives in a second call. Without this the lesson
                 // reads as though it simply has none.
                 if !lesson.hasPractice {
-                    HStack(spacing: Theme.M.gapTight) {
-                        ProgressView().tint(Theme.C.accent)
-                        Text("Writing practice for this…")
-                            .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(Theme.M.pad)
-                    .background(Theme.C.surface)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                    Panel { Ticker(text: "Writing practice") }
                 }
 
                 AskView(answers: answers, isAsking: isAsking,
@@ -72,34 +61,19 @@ struct LessonScreen: View {
             }
             .padding(Theme.M.gap)
         }
-        .background(Theme.C.surface)
+        .scrollDismissesKeyboard(.interactively)
+        .background(Theme.C.ground)
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "Lesson")
-            Text(lesson.title)
-                .font(Theme.F.title)
-                .foregroundStyle(Theme.C.ink)
-                .fixedSize(horizontal: false, vertical: true)
-        }
+        Text(lesson.title)
+            .font(Theme.F.title)
+            .foregroundStyle(Theme.C.ink)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     private var patternBlock: Block {
         Block(id: "\(lesson.id)-patterns", kind: .examples,
-              label: "Just the patterns", examples: lesson.patterns)
-    }
-
-    private func revisitBanner(_ text: String) -> some View {
-        Text(text)
-            .font(Theme.F.bodyTight)
-            .foregroundStyle(Theme.C.ink2)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Theme.M.padTight)
-            .background(Theme.C.surface)
-            .overlay(alignment: .leading) {
-                Rectangle().fill(Theme.C.warn).frame(width: Theme.M.edge)
-            }
-            .overlay(Rectangle().stroke(Theme.C.warn, lineWidth: Theme.M.hair))
+              label: "Patterns", examples: lesson.patterns)
     }
 }

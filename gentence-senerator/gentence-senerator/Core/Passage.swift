@@ -233,9 +233,9 @@ struct PassageRun: Codable, Hashable {
         var read: String {
             switch self {
             case .clean:   return "Done. Raise the level."
-            case .sound:   return "The words never arrived."
-            case .context: return "You got there from context, not from the words."
-            case .thread:  return "You heard every word and lost the thread."
+            case .sound:   return "Missed the words."
+            case .context: return "Got it from context. Missed words."
+            case .thread:  return "Heard the words, missed the meaning."
             }
         }
     }
