@@ -634,9 +634,13 @@ struct GradingPanel: View {
         let ready = store.canRead(job) && job.state == .done
         return LedgerRow(account: job.mode.name, colour: ready ? Theme.C.accent : Theme.C.ink3,
                          edge: ready ? Theme.C.accent : nil, accountWidth: 84, ruled: ruled) {
-            Text(status(job))
-                .font(Theme.F.bodyTight)
-                .foregroundStyle(Theme.C.ink)
+            // Ticks each second while a batch counts down to direct grading.
+            TimelineView(.periodic(from: .now, by: job.state == .grading ? 1 : 3600)) { _ in
+                Text(status(job))
+                    .font(Theme.F.bodyTight)
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.C.ink)
+            }
         } trailing: {
             HStack(spacing: 6) {
                 if store.hasFailures(job) {
@@ -648,9 +652,8 @@ struct GradingPanel: View {
                 if ready {
                     TypedLink("Read") { store.read(job) }
                 } else if job.state == .grading {
-                    // Fills against the expected return time, so it moves
-                    // without anything coming back.
-                    TimelineView(.periodic(from: .now, by: 30)) { _ in
+                    // Fills toward the switch to direct grading.
+                    TimelineView(.periodic(from: .now, by: 10)) { _ in
                         SquareProgress(value: store.gradingProgress(job), total: 1)
                     }
                     .frame(width: 60)

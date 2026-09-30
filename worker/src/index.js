@@ -1,8 +1,10 @@
 // Watches the app's grading batches and pushes when one ends.
 //
-// The phone creates the batch itself and registers it here with its device
-// token. Nothing else is stored: the results stay with Anthropic until the
-// app downloads them.
+// A batch that has not ended DIRECT_AFTER_MS after it was sent is cancelled
+// and graded here with ordinary calls instead: batches are half price but can
+// sit in a queue for hours. The requests are kept (`req:`) for that; the
+// direct results go to `res:` in the batch results-file format, and the app
+// asks /results for them before reading a cancelled batch.
 //
 // One KV key per watched batch, `watch:<id>`. A single shared list was
 // read-modify-written by both /watch and the cron, so a batch registered
@@ -15,6 +17,12 @@ const WATCH = "watch:";
 // The batch a job became, so a resent job returns it instead of paying twice.
 const JOB = "job:";
 const APNS_JWT = "apns-jwt";
+// A batch's requests, kept so it can be graded directly if it stalls.
+const REQ = "req:";
+// Direct results, JSONL like a batch results file, or {"pending":true}.
+const RES = "res:";
+// The app shows a countdown to this, from when it sent the batch.
+const DIRECT_AFTER_MS = 20 * 60 * 1000;
 // A batch that has not ended in this long has expired on Anthropic's side
 // (24h) and will never end here either.
 const GIVE_UP_MS = 26 * 3600 * 1000;
@@ -39,6 +47,7 @@ export default {
       const existing = await env.STATE.get(JOB + job);
       if (existing) return Response.json({ batch: existing, resent: true });
 
+      const body = await request.text();
       const created = await fetch("https://api.anthropic.com/v1/messages/batches", {
         method: "POST",
         headers: {
@@ -46,13 +55,14 @@ export default {
           "anthropic-version": "2023-06-01",
           "content-type": "application/json",
         },
-        body: request.body,
+        body,
       });
       const text = await created.text();
       if (!created.ok) return new Response(text, { status: created.status });
       const batch = JSON.parse(text).id;
 
       await env.STATE.put(JOB + job, batch, { expirationTtl: 3 * 24 * 3600 });
+      await env.STATE.put(REQ + batch, body, { expirationTtl: 2 * 24 * 3600 });
       if (token) {
         await env.STATE.put(WATCH + batch,
           JSON.stringify({ batch, token, label, sandbox, job, since: Date.now() }),
@@ -76,6 +86,19 @@ export default {
                           { expirationTtl: GIVE_UP_MS / 1000 });
       return Response.json({ watching: batch });
     }
+    // What the worker graded directly for a batch: 404 if it didn't step in,
+    // 202 while it is grading, else the results file.
+    if (request.method === "GET" && url.pathname === "/results") {
+      if (request.headers.get("x-watch-secret") !== env.WATCH_SECRET) {
+        return new Response("no", { status: 401 });
+      }
+      const batch = url.searchParams.get("batch");
+      if (!batch) return new Response("batch", { status: 400 });
+      const stored = await env.STATE.get(RES + batch);
+      if (!stored) return new Response("none", { status: 404 });
+      if (stored.startsWith('{"pending"')) return new Response("grading", { status: 202 });
+      return new Response(stored, { headers: { "content-type": "application/x-ndjson" } });
+    }
     if (url.pathname === "/health") {
       const { keys } = await env.STATE.list({ prefix: WATCH });
       return Response.json({ watching: keys.length });
@@ -94,11 +117,64 @@ async function poll(env) {
     // Listing can lag a delete; a key already gone was already pushed.
     const w = await env.STATE.get(name, "json");
     if (!w) continue;
+    if (w.direct) continue; // being graded directly by an earlier run
     const batch = await retrieve(env, w.batch);
-    if (batch?.processing_status !== "ended") continue;
-    await env.STATE.delete(name);
-    await push(env, w, batch);
+    if (!batch) continue;
+    if (batch.processing_status === "ended") {
+      await env.STATE.delete(name);
+      await push(env, w, countsOf(batch), batch.id);
+      continue;
+    }
+    if (Date.now() - w.since < DIRECT_AFTER_MS) continue;
+    const body = await env.STATE.get(REQ + w.batch);
+    if (!body) continue; // sent before requests were kept: wait it out
+    await gradeDirectly(env, name, w, JSON.parse(body).requests);
   }
+}
+
+// Claims the watch, cancels the batch, grades every request with an ordinary
+// call, stores the results and pushes. A failed call is stored as an error,
+// which the app retries once on its own, as it does for a batch.
+async function gradeDirectly(env, name, w, requests) {
+  await env.STATE.put(name, JSON.stringify({ ...w, direct: true }),
+                      { expirationTtl: GIVE_UP_MS / 1000 });
+  await env.STATE.put(RES + w.batch, '{"pending":true}', { expirationTtl: 3 * 24 * 3600 });
+  await fetch(`https://api.anthropic.com/v1/messages/batches/${w.batch}/cancel`, {
+    method: "POST",
+    headers: { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01" },
+  });
+
+  const lines = await Promise.all(requests.map(async ({ custom_id, params }) => {
+    try {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": env.ANTHROPIC_KEY.trim(),
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "server-side-fallback-2026-07-01",
+          "content-type": "application/json",
+        },
+        // Unlike a batch, a direct call may route around a refusal.
+        body: JSON.stringify({ ...params, fallbacks: "default" }),
+      });
+      const text = await r.text();
+      if (!r.ok) return { custom_id, result: { type: "errored", error: { error: { message: text.slice(0, 300) } } } };
+      return { custom_id, result: { type: "succeeded", message: JSON.parse(text) } };
+    } catch (e) {
+      return { custom_id, result: { type: "errored", error: { error: { message: String(e) } } } };
+    }
+  }));
+
+  await env.STATE.put(RES + w.batch, lines.map((l) => JSON.stringify(l)).join("\n"),
+                      { expirationTtl: 3 * 24 * 3600 });
+  await env.STATE.delete(name);
+  const succeeded = lines.filter((l) => l.result.type === "succeeded").length;
+  await push(env, w, { succeeded, failed: lines.length - succeeded }, w.batch);
+}
+
+function countsOf(batch) {
+  const c = batch.request_counts;
+  return { succeeded: c.succeeded, failed: c.errored + c.expired + c.canceled };
 }
 
 async function retrieve(env, id) {
@@ -112,11 +188,10 @@ async function retrieve(env, id) {
   return response.json();
 }
 
-async function push(env, w, batch) {
+async function push(env, w, counts, batchID) {
   const { token, label } = w;
-  const c = batch.request_counts;
-  const graded = c.succeeded;
-  const failed = c.errored + c.expired + c.canceled;
+  const graded = counts.succeeded;
+  const failed = counts.failed;
   const count = failed === 0 ? `${graded} graded.` : `${graded} graded, ${failed} failed.`;
   const body = label ? `${label}: ${count}` : count;
 
@@ -135,12 +210,12 @@ async function push(env, w, batch) {
       aps: { alert: { title: "Feedback ready", body }, sound: "default" },
       // What a tap opens. Watches stored before job ids were kept have only
       // the batch, which the app matches too.
-      batch: batch.id,
+      batch: batchID,
       ...(w.job ? { job: w.job } : {}),
     }),
   });
   // A bad token is logged and dropped; retrying would only fail again.
-  if (!response.ok) console.log(`push ${batch.id}: ${response.status} ${await response.text()}`);
+  if (!response.ok) console.log(`push ${batchID}: ${response.status} ${await response.text()}`);
 }
 
 // APNs rejects a provider token regenerated more often than every 20 minutes

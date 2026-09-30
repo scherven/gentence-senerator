@@ -1037,8 +1037,24 @@ final class Store {
                 job.graded = batch.succeeded
                 job.failed = batch.failed
                 job.error = nil
-                if batch.ended {
-                    ingest(try await tutor.api.batchResults(batch), into: job)
+                // Past the switch, the worker may have cancelled the batch and
+                // graded it directly: its results come first, and while it is
+                // still grading, the cancelled batch is left alone.
+                var results: [Anthropic.BatchResult]?
+                if Store.pastSwitch(job) {
+                    switch await directResults(batchID) {
+                    case .pending: put(job); continue
+                    case .ready(let direct): results = direct
+                    case .none: break
+                    }
+                }
+                if results == nil, batch.ended {
+                    results = try await tutor.api.batchResults(batch)
+                }
+                if let results {
+                    ingest(results, into: job)
+                    job.graded = results.filter { $0.reply != nil }.count
+                    job.failed = results.count - job.graded
                     job.state = .done
                     if job.returnedAt == nil {
                         job.returnedAt = .now
@@ -1296,17 +1312,39 @@ final class Store {
 
     private var gradingTimes: [TimeInterval] = Vault.load([TimeInterval].self, Vault.gradingTimes) ?? []
 
-    /// When a batch should be back. Jobs sent before this was recorded count
-    /// from their creation.
-    func expectedBack(_ job: GradingJob) -> Date? {
-        guard job.state == .grading else { return nil }
-        return (job.sentAt ?? job.createdAt).addingTimeInterval(GradingClock.expected(gradingTimes))
+    /// How far along the wait for the switch to direct grading, 0–0.95.
+    func gradingProgress(_ job: GradingJob) -> Double {
+        GradingClock.progress(sentAt: job.sentAt ?? job.createdAt, expected: Store.directAfter)
     }
 
-    /// How far along the expected wait a job is, 0–0.95.
-    func gradingProgress(_ job: GradingJob) -> Double {
-        GradingClock.progress(sentAt: job.sentAt ?? job.createdAt,
-                              expected: GradingClock.expected(gradingTimes))
+    /// The worker cancels a batch that has not ended this long after it was
+    /// sent and grades it directly (worker/src/index.js, DIRECT_AFTER_MS).
+    nonisolated static let directAfter: TimeInterval = 20 * 60
+
+    nonisolated static func switchAt(_ job: GradingJob) -> Date {
+        (job.sentAt ?? job.createdAt).addingTimeInterval(directAfter)
+    }
+
+    nonisolated static func pastSwitch(_ job: GradingJob, now: Date = .now) -> Bool {
+        now >= switchAt(job)
+    }
+
+    enum Direct { case none, pending, ready([Anthropic.BatchResult]) }
+
+    /// What the worker graded directly for a batch, if it stepped in.
+    private func directResults(_ batchID: String) async -> Direct {
+        guard var parts = URLComponents(string: Key.graderURL + "/results") else { return .none }
+        parts.queryItems = [URLQueryItem(name: "batch", value: batchID)]
+        guard let url = parts.url else { return .none }
+        var request = URLRequest(url: url)
+        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let code = (response as? HTTPURLResponse)?.statusCode else { return .none }
+        switch code {
+        case 200: return .ready(Anthropic.results(from: data))
+        case 202: return .pending
+        default: return .none
+        }
     }
 
     /// Where a job stands, in the learner's words.
@@ -1317,8 +1355,9 @@ final class Store {
             if !online { return "Offline" }
             return job.uploading ? "Sending…" : "Not sent"
         case .grading:
-            guard let back = expectedBack(job) else { return "Grading" }
-            return back > .now ? "Back ~\(back.formatted(date: .omitted, time: .shortened))" : "Any minute"
+            let left = Store.switchAt(job).timeIntervalSinceNow
+            guard left > 0 else { return "Grading directly" }
+            return "Direct in \(Int(left) / 60):" + String(format: "%02d", Int(left) % 60)
         case .done:
             let missing = job.exchanges.filter {
                 $0.turnIDs.last.flatMap(archived)?.review == nil

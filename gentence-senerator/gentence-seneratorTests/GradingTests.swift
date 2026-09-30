@@ -226,3 +226,26 @@ struct GradingClockTests {
         #expect(past.first == 6)
     }
 }
+
+struct DirectSwitchTests {
+    static func job(sentAt: Date?) -> GradingJob {
+        var j = GradingJob(id: UUID(), sessionID: "2026-09-29|german|produce", language: .german,
+                           mode: .produce, createdAt: Date(timeIntervalSince1970: 0), exchanges: [])
+        j.sentAt = sentAt
+        j.state = .grading
+        return j
+    }
+
+    @Test func switchesTwentyMinutesAfterSending() {
+        let sent = Date(timeIntervalSince1970: 1_000)
+        let j = Self.job(sentAt: sent)
+        #expect(Store.switchAt(j) == sent.addingTimeInterval(1_200))
+        #expect(!Store.pastSwitch(j, now: sent.addingTimeInterval(1_199)))
+        #expect(Store.pastSwitch(j, now: sent.addingTimeInterval(1_200)))
+    }
+
+    @Test func oldJobsCountFromCreation() {
+        let j = Self.job(sentAt: nil)
+        #expect(Store.switchAt(j) == Date(timeIntervalSince1970: 1_200))
+    }
+}
