@@ -76,9 +76,9 @@ struct Opening: View {
         // Two quick blinks, a beat, then the press runs straight into the
         // expand.
         for _ in 0..<2 {
-            try? await Task.sleep(for: .milliseconds(260))
-            cursorOn = false
             try? await Task.sleep(for: .milliseconds(180))
+            cursorOn = false
+            try? await Task.sleep(for: .milliseconds(120))
             cursorOn = true
         }
         try? await Task.sleep(for: .milliseconds(350))
