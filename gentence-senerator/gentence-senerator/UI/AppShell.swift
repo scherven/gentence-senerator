@@ -282,11 +282,7 @@ struct ModeScreen: View {
     private var start: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
-                produceKey
-                HStack(alignment: .top, spacing: 10) {
-                    modeKey(.translate)
-                    modeKey(.listen)
-                }
+                ForEach(Mode.allCases) { modeKey($0) }
                 WrittenToday(store: store)
                 GradingPanel(store: store)
                 RecommendedRound(store: store)
@@ -296,31 +292,13 @@ struct ModeScreen: View {
         }
     }
 
-    /// Next undone: accent. Done: flush. Otherwise a plain key.
+    /// All three alike; produce in its own colour. Done: flush.
     private func variant(_ mode: Mode) -> KeyStyle.Variant {
-        store.isDone(mode) ? .spent : store.nextMode == mode ? .primary : .neutral
+        store.isDone(mode) ? .spent : mode == .produce ? .primary : .neutral
     }
 
     private func spentStamp(_ mode: Mode) -> some View {
         Stamp(mode == .listen ? "Done" : "Sent", colour: Theme.C.good, size: 10)
-    }
-
-    /// Produce carries the day: first and larger.
-    private var produceKey: some View {
-        let tally = store.tally(.produce)
-        let spent = store.isDone(.produce)
-        return Button { Task { await store.begin(.produce) } } label: {
-            HStack(alignment: .firstTextBaseline) {
-                Text(Mode.produce.name).font(Theme.F.serif(22, bold: true))
-                Spacer()
-                if spent { spentStamp(.produce) }
-                else { Text("\(tally.done)/\(tally.goal) ›").font(Theme.F.meta) }
-            }
-            .padding(.horizontal, 16).padding(.vertical, 18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .buttonStyle(KeyStyle(variant(.produce)))
-        .disabled(spent)
     }
 
     private func modeKey(_ mode: Mode) -> some View {
