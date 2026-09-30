@@ -305,31 +305,18 @@ struct ModeScreen: View {
         Stamp(mode == .listen ? "Done" : "Sent", colour: Theme.C.good, size: 10)
     }
 
-    /// Produce carries the day: first, larger, with what it is made of.
+    /// Produce carries the day: first and larger.
     private var produceKey: some View {
         let tally = store.tally(.produce)
         let spent = store.isDone(.produce)
-        let words = store.plan.words.have + store.plan.words.new
         return Button { Task { await store.begin(.produce) } } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(Mode.produce.name).font(Theme.F.serif(22, bold: true))
-                    Spacer()
-                    if spent { spentStamp(.produce) }
-                    else { Text("\(tally.done)/\(tally.goal) ›").font(Theme.F.meta) }
-                }
-                if !spent, store.plan.stretch != nil || !words.isEmpty {
-                    Flow(spacing: 6, lineSpacing: 6) {
-                        if let stretch = store.plan.stretch {
-                            Ingredient(text: stretch.name, caps: true)
-                                .onTapGesture { openStretch(stretch) }
-                                .accessibilityAddTraits(.isButton)
-                        }
-                        ForEach(words, id: \.self) { Ingredient(text: $0) }
-                    }
-                }
+            HStack(alignment: .firstTextBaseline) {
+                Text(Mode.produce.name).font(Theme.F.serif(22, bold: true))
+                Spacer()
+                if spent { spentStamp(.produce) }
+                else { Text("\(tally.done)/\(tally.goal) ›").font(Theme.F.meta) }
             }
-            .padding(.horizontal, 16).padding(.vertical, 14)
+            .padding(.horizontal, 16).padding(.vertical, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(KeyStyle(variant(.produce)))
@@ -356,15 +343,6 @@ struct ModeScreen: View {
         }
         .buttonStyle(KeyStyle(variant(mode)))
         .disabled(spent)
-    }
-
-    /// The stretch's book entry; its lesson if the book has none.
-    private func openStretch(_ point: GrammarPoint) {
-        if let at = store.bookEntry(for: point.id) {
-            openEntry(at.chapter, at.entry)
-        } else {
-            store.openLesson(for: point)
-        }
     }
 
     /// What this produce answer can be made of, each ticked once the answer
