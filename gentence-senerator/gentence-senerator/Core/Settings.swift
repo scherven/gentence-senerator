@@ -116,7 +116,7 @@ enum Vault {
     static let suggestions = "textbook.suggestions.v1" // what ask answers pointed at
     /// The dialogue in progress, per language. Kept off `holds` on purpose:
     /// holds are retired at the end of the day and a passage is not.
-    static let passages = "passages.v1"
+    static let passages = "passages.v3"
     /// Sessions sent for grading, until their results are read in.
     static let grading = "grading.v1"
     /// Seconds each recent batch took to come back.

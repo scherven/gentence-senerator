@@ -6,24 +6,27 @@ import Foundation
 /// lives — there is no model call to blame and no server to ask.
 struct PassageTests {
 
-    // The cinema dialogue, cut to what the assertions need.
+    // Transferring Money, cut to what the assertions need.
     static let json = """
-    [{"id":"t","language":"mandarin","level":1,"title":"外面等",
-      "audio":null,"seconds":34,"speakers":["A","B"],
+    [{"id":"cp-1660","lesson":1660,"language":"mandarin","level":4,"title":"Transferring Money",
+      "audio":null,"seconds":43.3,"setup":"A bank counter, then a phone call.",
+      "speakers":[{"id":"A","name":"Teller"},{"id":"B","name":"Customer"},{"id":"C","name":"Sister"}],
       "lines":[
-       {"n":1,"speaker":"A","text":"喂，你到了吗？","english":"Are you here yet?",
-        "startSeconds":0,"endSeconds":2.1,"gap":null},
-       {"n":2,"speaker":"B","text":"还没有，路上堵车堵得厉害。","english":"Traffic is terrible.",
-        "startSeconds":2.1,"endSeconds":5.2,
-        "gap":{"answer":"堵车","options":["堵车","打车","停车"],"why":"dǔ against dǎ."}},
-       {"n":7,"speaker":"A","text":"票在我这儿呢。","english":"I have the tickets.",
-        "startSeconds":5.2,"endSeconds":7.4,
-        "gap":{"answer":"票","options":["票","表","标"],"why":"piào against biǎo."}}],
-      "quiz":[
-       {"id":"q1","question":"B 为什么迟到？","english":"Why is B late?",
-        "options":["堵车","找不到票"],"answer":0,"line":2,"optionLines":[2,7]},
-       {"id":"q2","question":"谁有票？","english":"Who has the tickets?",
-        "options":["A","B"],"answer":0,"line":7,"optionLines":[7,2]}]}]
+       {"n":1,"speaker":"A","text":"我要转账。","english":"I'd like to make a transfer.",
+        "start":0.5,"end":2.0,
+        "words":[{"w":"我","py":"wǒ","g":"I","start":0.6,"end":0.8},
+                 {"w":"要","py":"yào","g":"want to","start":0.8,"end":1.0},
+                 {"w":"转账","py":"zhuǎnzhàng","g":"transfer money","start":1.0,"end":1.7},
+                 {"w":"。"}]},
+       {"n":2,"speaker":"C","text":"谢谢哥哥！","english":"Thanks, Gege!",
+        "start":2.0,"end":3.5,
+        "words":[{"w":"谢谢","py":"xièxie","g":"thanks"},{"w":"哥哥","py":"gēge","g":"big brother",
+                  "start":2.8,"end":3.3},{"w":"！"}]}],
+      "gist":[{"question":"Who pays the fee?","options":["The customer","The recipient","The bank"],
+               "answer":0,"line":1},
+              {"question":"When does it arrive?","options":["Tomorrow","In three days","Right away"],
+               "answer":2,"line":2}],
+      "chunks":["转账"]}]
     """
 
     static func passage() throws -> Passage {
@@ -31,174 +34,95 @@ struct PassageTests {
     }
 
     static func run() -> PassageRun {
-        PassageRun(passageID: "t", language: .mandarin, startedOn: "2026-09-07")
+        PassageRun(passageID: "cp-1660", language: .mandarin, startedOn: "2026-09-30")
     }
 
     @Test func decodesWhatTheScriptWrites() throws {
         let passage = try PassageTests.passage()
-        #expect(passage.lines.count == 3)
-        #expect(passage.line(7)?.gap?.answer == "票")
-        // Lines are addressed by `n`, not by position — the repair jumps around.
-        #expect(passage.line(2)?.text.contains("堵车") == true)
-        #expect(passage.lines[2].n == 7)
-        #expect(passage.wholeSource == nil)   // no recording attached yet
+        #expect(passage.lines.count == 2)
+        #expect(passage.name(of: "C") == "Sister")
+        #expect(passage.voice(of: "C") == 2)
+        #expect(passage.lines[0].words.last?.isPunctuation == true)
+        #expect(passage.wholeSource == nil)   // no recording bundled
     }
 
-    @Test func answerIndexFindsTheAnswerWhereverItSits() throws {
+    @Test func timingsFindTheLineAndTheWord() throws {
         let passage = try PassageTests.passage()
-        #expect(passage.line(2)?.gap?.answerIndex == 0)
-        let shuffled = Passage.Gap(answer: "表", options: ["票", "表", "标"], why: "")
-        #expect(shuffled.answerIndex == 1)
+        #expect(passage.span == 0.5...3.5)
+        #expect(passage.line(at: 1.2)?.n == 1)
+        #expect(passage.line(at: 2.0)?.n == 2)   // a boundary belongs to the next line
+        #expect(passage.line(at: 9) == nil)
+        let word = passage.lines[0].words[2]
+        let span = try #require(passage.span(of: word))
+        #expect(span.lowerBound < 1.0 && span.upperBound > 1.7)   // padded
+        // Whisper missed 谢谢: it can still be glossed, just not played alone.
+        #expect(passage.span(of: passage.lines[1].words[0]) == nil)
     }
 
     // MARK: The order they are shown in
 
-    /// Every question and every gap in the bundle is written answer-first, so
-    /// shown as written the answer is always A. The fixture is cut from it and
-    /// carries the same shape.
-    @Test func theDataPutsTheAnswerFirstEveryTime() throws {
+    @Test func choicesAreStableAndKeepTheAnswer() throws {
         let passage = try PassageTests.passage()
-        #expect(passage.quiz.allSatisfy { $0.answer == 0 })
-        #expect(passage.lines.compactMap(\.gap).allSatisfy { $0.answerIndex == 0 })
-    }
-
-    /// A view body re-evaluates whenever it likes. Drawn per render, the
-    /// buttons would reorder under the learner's finger.
-    @Test func aQuestionShufflesTheSameWayEveryTimeItIsDrawn() throws {
-        let passage = try PassageTests.passage()
-        let question = passage.quiz[0]
-        let once = passage.choices(for: question)
-        #expect((0..<20).allSatisfy { _ in passage.choices(for: question) == once })
-
-        let line = passage.line(2)!
-        let gap = passage.choices(for: line, gap: line.gap!)
-        #expect((0..<20).allSatisfy { _ in passage.choices(for: line, gap: line.gap!) == gap })
-    }
-
-    /// Seeded off the passage, the line and the question id, so two questions
-    /// in one passage are shuffled independently and the answer lands
-    /// everywhere rather than staying at the front.
-    @Test func theAnswerIsNotAlwaysTheFirstButton() throws {
-        let passage = try PassageTests.passage()
-        let slots = (1...40).map {
-            Passage.Choices(options: ["a", "b", "c", "d"], lines: [], answer: 0,
-                            seed: "\(passage.id)|\($0)|q").answer
+        for i in passage.gist.indices {
+            let once = passage.choices(for: i)
+            #expect((0..<20).allSatisfy { _ in passage.choices(for: i) == once })
+            #expect(once.order[once.answer] == passage.gist[i].answer)
+            #expect(once.options[once.answer] == passage.gist[i].options[passage.gist[i].answer])
         }
-        #expect(Set(slots).count == 4)
-        #expect(slots.filter { $0 == 0 }.count < 20)
     }
 
-    /// `optionLines` is parallel to `options` — per option, the line it is true
-    /// of. Permuted out of step, the feedback after a wrong answer points at
-    /// somebody else's line.
-    @Test func theLinesRideWithTheOptions() throws {
-        let passage = try PassageTests.passage()
-        let question = passage.quiz[0]
-        let choices = passage.choices(for: question)
+    // MARK: The three passes
 
-        #expect(Set(choices.options) == Set(question.options))
-        for (slot, option) in choices.options.enumerated() {
-            let written = question.options.firstIndex(of: option)!
-            #expect(choices.order[slot] == written)
-            #expect(choices.line(of: slot) == question.optionLines[written])
-        }
-        #expect(choices.options[choices.answer] == question.options[question.answer])
-        // A gap carries no lines, and asking for one is not an out-of-bounds.
-        let line = passage.line(2)!
-        #expect(passage.choices(for: line, gap: line.gap!).line(of: 0) == nil)
-    }
-
-    /// What is saved is an index into the passage as written, so a run that was
-    /// answered yesterday keeps its meaning whatever order the buttons came up
-    /// in today.
-    @Test func shownIndicesTranslateBothWays() throws {
-        let passage = try PassageTests.passage()
-        let question = passage.quiz[0]
-        let choices = passage.choices(for: question)
-        for written in question.options.indices {
-            #expect(choices.order[choices.slot(of: written)] == written)
-        }
-        #expect(choices.order[choices.answer] == question.answer)
-    }
-
-    @Test func oneReplayThenNoMore() {
-        var run = PassageTests.run()
-        #expect(!run.canReplay)          // nothing played yet
-        run.played = true
-        #expect(run.canReplay)
-        run.replays = 1
-        #expect(!run.canReplay)
-    }
-
-    /// The four outcomes are the point of the design, so each one is pinned.
-    @Test func everyOutcomeIsReachable() throws {
-        let passage = try PassageTests.passage()
-
-        var clean = PassageTests.run()
-        clean.answers = ["q1": 0, "q2": 0]
-        #expect(clean.outcome(of: passage) == .clean)
-
-        // Missed both questions, and missed both gaps behind them.
-        var sound = PassageTests.run()
-        sound.answers = ["q1": 1, "q2": 1]
-        sound.repair = [2, 7]
-        sound.gaps = [2: 1, 7: 1]
-        #expect(sound.outcome(of: passage) == .sound)
-
-        // Got the gist, could not pick the words back out.
-        var context = PassageTests.run()
-        context.answers = ["q1": 0, "q2": 0]
-        context.repair = [2]
-        context.gaps = [2: 1]
-        #expect(context.outcome(of: passage) == .context)
-
-        // Heard every word and still lost the thread — the learner no other
-        // mode in the app can see.
-        var thread = PassageTests.run()
-        thread.answers = ["q1": 1, "q2": 1]
-        thread.repair = [2, 7]
-        thread.gaps = [2: 0, 7: 0]
-        #expect(thread.outcome(of: passage) == .thread)
-    }
-
-    @Test func theScoreIsTheFirstPassOnly() throws {
+    /// Questions answer and a first rating, after hearing it out: the only way
+    /// into reading. Skipping the listen still counts as having heard it.
+    @Test func readingNeedsTheFirstListenAnsweredAndRated() throws {
         let passage = try PassageTests.passage()
         var run = PassageTests.run()
-        run.answers = ["q1": 1, "q2": 0]
-        run.repair = [2]
-        run.gaps = [2: 0]
-        // Repaired and answered right the second time; the read still says one
-        // of two. Repairing must not flatter the score.
-        run.reanswers = ["q1": 0]
-        let read = run.read(of: passage)
-        #expect(read.first == 1)
-        #expect(read.asked == 2)
-        #expect(read.gapsRight == 1)
-        #expect(read.gaps == 1)
+        run.answers = [0: 0, 1: 2]
+        run.followedFirst = .some
+        #expect(!run.canRead(passage))    // not heard yet
+        run.heardFirst = true
+        #expect(run.canRead(passage))
+        run.answers = [0: 0]
+        #expect(!run.canRead(passage))    // one question left
     }
 
-    /// Atom ids are derived, so the same miss on a different day schedules as
-    /// the same point rather than piling up new ones.
-    @Test func aMissKeepsItsIdentityAcrossDays() {
-        let first = Atom.identify(.pronunciation, "堵车 against 打车")
-        let later = Atom.identify(.pronunciation, "堵车 against 打车")
-        #expect(first == later)
-        #expect(first != Atom.identify(.pronunciation, "票 against 表"))
+    @Test func scoresTheFirstListenOnly() throws {
+        let passage = try PassageTests.passage()
+        var run = PassageTests.run()
+        run.answers = [0: 1, 1: 2]
+        #expect(run.right(in: passage) == 1)
+        #expect(!run.got(0, in: passage))
+        #expect(run.got(1, in: passage))
+    }
+
+    @Test func aWordIsTappedOnce() {
+        var run = PassageTests.run()
+        run.tap("转账")
+        run.tap("哥哥")
+        run.tap("转账")
+        #expect(run.tapped == ["转账", "哥哥"])
+    }
+
+    /// Only dialogues whose recording ships are offered.
+    @Test func theLibraryOffersOnlyWhatCanBePlayed() throws {
+        let library = PassageLibrary([try PassageTests.passage()])
+        #expect(library.passage("cp-1660") != nil)
+        #expect(library.playable(.mandarin).isEmpty)   // no recording bundled
     }
 
     /// It outlives the day it began — that is the whole reason it is persisted
     /// away from `holds`.
     @Test func survivesARoundTrip() throws {
         var run = PassageTests.run()
-        run.stage = .repairing
-        run.answers = ["q1": 1]
-        run.gaps = [2: 1]
-        run.repair = [2]
-        run.replays = 1
-        let back = try JSONDecoder().decode(
-            PassageRun.self, from: JSONEncoder().encode(run))
+        run.stage = .read
+        run.heardFirst = true
+        run.answers = [0: 1, 1: 2]
+        run.followedFirst = .most
+        run.tapped = ["转账"]
+        let back = try JSONDecoder().decode(PassageRun.self, from: JSONEncoder().encode(run))
         #expect(back == run)
-        #expect(back.gaps[2] == 1)
-        #expect(back.stage == .repairing)
+        #expect(back.answers[1] == 2)
+        #expect(back.stage == .read)
     }
 }

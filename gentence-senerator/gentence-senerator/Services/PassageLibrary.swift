@@ -1,7 +1,8 @@
 import Foundation
 
-/// Dialogues for listen mode. Empty until some are built, and the store falls
-/// back to single clips when it is — so this shipping empty costs nothing.
+/// ChinesePod dialogues for listen mode, from the gitignored `Dialogues/`
+/// folder. Empty in a checkout that hasn't run tools/chinesepod_listen.py, and
+/// the store falls back to single clips when it is.
 struct PassageLibrary {
 
     private let passages: [Passage]
@@ -14,16 +15,14 @@ struct PassageLibrary {
         self.passages = decoded
     }
 
+    init(_ passages: [Passage]) { self.passages = passages }
+
     var isEmpty: Bool { passages.isEmpty }
 
     func passage(_ id: String) -> Passage? { passages.first { $0.id == id } }
 
-    /// One at or below the learner's level that they have not finished. There
-    /// is no level gate beyond that: a language with no passages at this level
-    /// simply returns nil, and listen stays on single clips.
-    func pick(language: Language, level: Int, excluding done: Set<String>) -> Passage? {
-        passages
-            .filter { $0.language == language && $0.level <= level && !done.contains($0.id) }
-            .max { $0.level < $1.level }
+    /// The ones that can be listened to: this language, recording bundled.
+    func playable(_ language: Language) -> [Passage] {
+        passages.filter { $0.language == language && $0.url != nil }
     }
 }

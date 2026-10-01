@@ -1,304 +1,374 @@
 import SwiftUI
 
-/// A dialogue, heard once and then answered on. Four stages in a fixed order:
-/// the quiz runs before the repair, because one uninterrupted listen is the
-/// only honest measure of comprehension.
+/// A dialogue in three passes: by ear, reading along, by ear again. The gist
+/// questions come after the first listen, never before it, so they measure
+/// what was caught rather than what was hunted for. How much the learner
+/// followed is asked after both blind passes; the difference is what reading
+/// bought.
 ///
-/// Nothing here calls the model. Every answer is a choice, so it is graded on
-/// the device — which is also why the whole screen works offline.
+/// Nothing here calls the model. Every answer is a choice, graded on the
+/// device, so the whole screen works offline.
 struct PassageScreen: View {
     @Bindable var store: Store
+    /// The word whose gloss is showing.
+    @State private var glossed: Passage.Word?
+    /// Lines with their English open.
+    @State private var english: Set<Int> = []
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: Theme.M.gap) {
-                if let passage = store.passage, let run = store.run {
-                    stages(run)
-                    switch run.stage {
-                    case .gist:      gist(passage, run)
-                    case .quiz:      quiz(passage, run)
-                    case .repairing: repairing(passage, run)
-                    case .reask:     reask(passage, run)
-                    case .done:      done(passage, run)
+        if let passage = store.passage, let run = store.run {
+            VStack(spacing: 0) {
+                ScrollViewReader { scroller in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: Theme.M.gap) {
+                            TypedLink("All dialogues", colour: Theme.C.ink3, chevron: false) {
+                                glossed = nil
+                                store.backToPicker()
+                            }
+                            .id("top")
+                            stages(run)
+                            switch run.stage {
+                            case .first:  first(passage, run)
+                            case .read:   reading(passage, run, scroller: scroller)
+                            case .second: second(passage, run)
+                            case .done:   done(passage, run)
+                            }
+                        }
+                        .padding(Theme.M.gap)
                     }
+                    // Each pass starts at its top, not wherever the last one was left.
+                    .onChange(of: run.stage) { _, _ in scroller.scrollTo("top", anchor: .top) }
                 }
+                if run.stage == .read, let glossed { gloss(glossed) }
             }
-            .padding(Theme.M.gap)
+            .onDisappear { store.stopDialogue() }
+        } else {
+            DialoguePicker(store: store)
         }
     }
 
     // MARK: Rail
 
     private static let rail: [(PassageRun.Stage, String)] =
-        [(.gist, "Listen"), (.quiz, "Quiz"), (.repairing, "Repair"), (.done, "Done")]
+        [(.first, "Listen"), (.read, "Read"), (.second, "Listen"), (.done, "Done")]
 
     private func stages(_ run: PassageRun) -> some View {
-        let here = PassageScreen.rail.firstIndex {
-            $0.0 == (run.stage == .reask ? .repairing : run.stage)
-        } ?? 0
-        return HStack(spacing: 0) {
+        HStack(spacing: 0) {
             ForEach(Array(PassageScreen.rail.enumerated()), id: \.offset) { index, step in
+                let here = step.0 == run.stage
+                let past = PassageScreen.rail.firstIndex { $0.0 == run.stage }.map { index < $0 } ?? false
                 Text(step.1.uppercased())
                     .font(Theme.F.label)
-                    .tracking(0.8)
-                    .foregroundStyle(index == here ? Theme.C.onAccent
-                                     : (index < here ? Theme.C.ink2 : Theme.C.ink3))
+                    .tracking(Theme.M.caps)
+                    .foregroundStyle(here ? Theme.C.onAccent : (past ? Theme.C.ink2 : Theme.C.ink3))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 7)
-                    .background(index == here ? Theme.C.accent : Theme.C.sunk)
+                    .background(here ? Theme.C.accent : Theme.C.sunk)
                     .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
             }
         }
     }
 
-    // MARK: One listen
+    // MARK: Pass 1
 
     @ViewBuilder
-    private func gist(_ passage: Passage, _ run: PassageRun) -> some View {
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(passage.title).font(Theme.F.target)
-                    Text(heard(passage, run))
-                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                }
-            }
+    private func first(_ passage: Passage, _ run: PassageRun) -> some View {
+        Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+            Text(passage.title).font(Theme.F.cardTitle)
+            Text(passage.setup).font(Theme.F.body)
+            Text(meta(passage)).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+        }
+        timeline(passage)
 
-            MainButton(title: run.played ? "Play again" : "Play",
-                       enabled: !run.played || run.canReplay) { store.playGist() }
-            MainButton(title: "Questions", enabled: run.played) { store.toQuiz() }
+        if !run.heardFirst {
+            playKey(title: "Listen · no text")
+            HStack {
+                Spacer()
+                TypedLink("Skip to questions", colour: Theme.C.ink3) { store.skipToQuestions() }
+            }
+        } else {
+            HStack {
+                TinyButton(title: store.dialogue.isPlaying ? "Stop" : "Again") { toggleBlind() }
+                Spacer()
+            }
+            ModuleLabel(text: "What did you catch?")
+            ForEach(passage.gist.indices, id: \.self) { i in question(passage, run, i) }
+            followed(run.followedFirst)
+            ActionKey("Read along", enabled: run.canRead(passage)) { store.toReading() }
         }
     }
 
-    private func heard(_ passage: Passage, _ run: PassageRun) -> String {
-        let length = "\(Int(passage.length.rounded()))s"
-        let voices = "\(passage.speakers.count) speakers"
-        guard run.played else { return "\(length) · \(voices)" }
-        let left = PassageRun.replayLimit - run.replays
-        return "\(length) · \(left) replay\(left == 1 ? "" : "s") left"
+    private func meta(_ passage: Passage) -> String {
+        let seconds = passage.span.map { Int(($0.upperBound - $0.lowerBound).rounded()) } ?? 0
+        return "\(seconds)s · \(passage.lines.count) lines · "
+            + passage.speakers.map(\.name).joined(separator: ", ")
     }
 
-    // MARK: Quiz
-
-    @ViewBuilder
-    private func quiz(_ passage: Passage, _ run: PassageRun) -> some View {
-        let question = passage.quiz[min(run.quizAt, passage.quiz.count - 1)]
-        let choices = passage.choices(for: question)
-        let picked = run.answers[question.id]
-
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            asked(question, index: run.quizAt, of: passage.quiz.count)
-            options(choices.options, picked: picked.map(choices.slot(of:)),
-                    answer: choices.answer) {
-                store.answerQuiz(choices.order[$0])
-            }
-
-            if let picked {
-                let shown = choices.slot(of: picked)
-                // Every wrong option is true of some other line, so a wrong
-                // pick says where the fact was misfiled rather than only that
-                // it was.
-                if shown != choices.answer,
-                   let from = choices.line(of: shown),
-                   let line = passage.line(from) {
-                    Panel {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Line \(from)")
-                                .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                            Text(line.text).font(Theme.F.targetSmall)
-                        }
-                    }
-                }
-                MainButton(title: run.quizAt + 1 < passage.quiz.count
-                           ? "Next question" : "Repair") { store.advanceQuiz() }
-            }
-        }
-    }
-
-    // MARK: Repair
-
-    @ViewBuilder
-    private func repairing(_ passage: Passage, _ run: PassageRun) -> some View {
-        let n = run.repair[min(run.repairAt, run.repair.count - 1)]
-        if let line = passage.line(n), let gap = line.gap {
-            let choices = passage.choices(for: line, gap: gap)
-            let picked = run.gaps[n]
-            VStack(alignment: .leading, spacing: Theme.M.gap) {
-                VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "Line \(n) of \(passage.lines.count)")
-                    Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            if let before = passage.line(n - 1) {
-                                spoken(before, dim: true, gap: nil, picked: nil)
-                            }
-                            spoken(line, dim: false, gap: gap, picked: picked)
-                        }
-                    }
-                }
-                HStack {
-                    TinyButton(title: "Hear line") { store.hearLine(n) }
-                    Spacer()
-                }
-                options(choices.options, picked: picked.map(choices.slot(of:)),
-                        answer: choices.answer) {
-                    store.answerGap(choices.order[$0])
-                }
-                if picked != nil {
-                    MainButton(title: run.repairAt + 1 < run.repair.count
-                               ? "Next line" : "Retry questions") {
-                        store.advanceRepair()
-                    }
-                }
-            }
-        }
-    }
-
-    /// One line of the dialogue, with the gap shown as a rule the answer drops
-    /// into once it is picked.
-    private func spoken(_ line: Passage.Line, dim: Bool,
-                        gap: Passage.Gap?, picked: Int?) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text(line.speaker)
-                .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
-            if let gap {
-                let parts = line.text.components(separatedBy: gap.answer)
-                (Text(parts.first ?? "")
-                 + Text(picked.map { gap.options[$0] } ?? "＿＿")
-                    .foregroundColor(Theme.C.accent)
-                 + Text(parts.count > 1 ? parts[1] : ""))
-                    .font(Theme.F.targetSmall)
-            } else {
-                Text(line.text).font(Theme.F.targetSmall)
-            }
-            Spacer(minLength: 0)
-        }
-        .opacity(dim ? 0.45 : 1)
-    }
-
-    // MARK: Asked again
-
-    @ViewBuilder
-    private func reask(_ passage: Passage, _ run: PassageRun) -> some View {
-        let id = run.reask[min(run.reaskAt, run.reask.count - 1)]
-        if let question = passage.quiz.first(where: { $0.id == id }) {
-            // The same seed as the quiz, so the options are where they were.
-            let choices = passage.choices(for: question)
-            let picked = run.reanswers[id]
-            VStack(alignment: .leading, spacing: Theme.M.gap) {
-                asked(question, index: run.reaskAt, of: run.reask.count, label: "Again")
-                options(choices.options, picked: picked.map(choices.slot(of:)),
-                        answer: choices.answer) {
-                    store.answerReask(choices.order[$0])
-                }
-                if picked != nil {
-                    MainButton(title: run.reaskAt + 1 < run.reask.count ? "Next" : "Finish") {
-                        store.advanceReask()
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: The read
-
-    @ViewBuilder
-    private func done(_ passage: Passage, _ run: PassageRun) -> some View {
-        let tally = run.read(of: passage)
-        let outcome = run.outcome(of: passage)
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            VStack(alignment: .leading, spacing: 6) {
-                Panel(fill: Theme.C.sunk) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("\(tally.first) of \(tally.asked)").font(Theme.F.number)
-                        Text("\(Int(passage.length.rounded()))s · \(run.replays) "
-                             + "replay\(run.replays == 1 ? "" : "s") · "
-                             + "\(tally.gapsRight)/\(tally.gaps) gaps")
-                            .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                    }
-                }
-                Panel(edge: colour(for: outcome)) {
-                    Text(outcome.read).font(Theme.F.body)
-                }
-            }
-
-            if let review = store.current?.review, !review.problems.isEmpty {
-                LedgerSheet {
-                    ForEach(review.problems) { atom in
-                        let colour = Theme.colour(for: atom.verdict)
-                        Button { store.open(atom) } label: {
-                            LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
-                                      ruled: atom.id != review.problems.last?.id) {
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(atom.stages.name).font(Theme.F.bodyTight)
-                                        .foregroundStyle(Theme.C.ink)
-                                    Text(atom.stages.locate).font(Theme.F.meta)
-                                        .foregroundStyle(Theme.C.ink3)
-                                }
-                            }
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(PressDim())
-                    }
-                }
-            }
-
-            MainButton(title: "Done") { store.leavePassage() }
-        }
-    }
-
-    private func colour(for outcome: PassageRun.Outcome) -> Color {
-        switch outcome {
-        case .clean:            return Theme.C.good
-        case .sound:            return Theme.C.bad
-        case .context, .thread: return Theme.C.warn
-        }
-    }
-
-    // MARK: Shared
-
-    private func asked(_ question: Passage.Question, index: Int, of total: Int,
-                       label: String = "Question") -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ModuleLabel(text: "\(label) \(index + 1) of \(total)")
-            Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(question.question).font(Theme.F.target)
-                    Text(question.english).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                }
-            }
-        }
-    }
-
-    /// The whole answering surface. Once picked, the right one is marked
-    /// whatever was chosen — being shown only that you were wrong teaches
-    /// nothing.
-    ///
-    /// Every index here is a shown index. `Passage.Choices` translates, so
-    /// nothing that gets saved is in this order.
-    private func options(_ options: [String], picked: Int?, answer: Int,
-                         choose: @escaping (Int) -> Void) -> some View {
-        VStack(spacing: Theme.M.gapTight) {
-            ForEach(Array(options.enumerated()), id: \.offset) { index, option in
-                Button { if picked == nil { choose(index) } } label: {
+    private func question(_ passage: Passage, _ run: PassageRun, _ i: Int) -> some View {
+        let choices = passage.choices(for: i)
+        let picked = run.answers[i].map(choices.slot(of:))
+        return VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+            Text(passage.gist[i].question).font(Theme.F.body)
+            ForEach(Array(choices.options.enumerated()), id: \.offset) { slot, option in
+                Button { if picked == nil { store.answerGist(i, option: choices.order[slot]) } } label: {
                     HStack(spacing: 10) {
-                        Text(String(UnicodeScalar(65 + index)!)).font(Theme.F.meta).opacity(0.7)
-                        Text(option).font(Theme.F.targetSmall)
+                        Text(String(UnicodeScalar(65 + slot)!)).font(Theme.F.meta).opacity(0.7)
+                        Text(option).font(Theme.F.bodyTight)
                         Spacer(minLength: 0)
                     }
                     .padding(Theme.M.padTight)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(KeyStyle(variant(index, picked, answer), dimsWhenDisabled: false))
+                .buttonStyle(KeyStyle(variant(slot, picked, choices.answer), dimsWhenDisabled: false))
                 .disabled(picked != nil)
             }
         }
     }
 
     /// Once picked: the right one marked right, a wrong pick struck, the rest spent.
-    private func variant(_ index: Int, _ picked: Int?, _ answer: Int) -> KeyStyle.Variant {
+    private func variant(_ slot: Int, _ picked: Int?, _ answer: Int) -> KeyStyle.Variant {
         guard let picked else { return .neutral }
-        if index == answer { return .right }
-        if index == picked { return .wrong }
+        if slot == answer { return .right }
+        if slot == picked { return .wrong }
         return .spent
+    }
+
+    private func followed(_ now: PassageRun.Followed?) -> some View {
+        VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+            ModuleLabel(text: "How much followed")
+            HStack(spacing: 6) {
+                ForEach(PassageRun.Followed.allCases, id: \.self) { f in
+                    TinyButton(title: f.word, selected: now == f) { store.rateFollowed(f) }
+                }
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    // MARK: Pass 2
+
+    @ViewBuilder
+    private func reading(_ passage: Passage, _ run: PassageRun, scroller: ScrollViewProxy) -> some View {
+        let now = store.dialogue.now
+        let playing = now.flatMap(passage.line(at:))?.n
+        LedgerSheet {
+            ForEach(passage.lines) { line in
+                spoken(passage, line, run: run, now: now, current: line.n == playing,
+                       ruled: line.n != passage.lines.last?.n)
+                    .id(line.n)
+            }
+        }
+        .onChange(of: playing) { _, n in
+            guard let n else { return }
+            withAnimation(.easeOut(duration: 0.2)) { scroller.scrollTo(n, anchor: .center) }
+        }
+        HStack(spacing: 6) {
+            TinyButton(title: store.dialogue.isPlaying ? "Stop" : "Play all") {
+                if store.dialogue.isPlaying { store.stopDialogue() }
+                else { store.playLines(from: 1, through: passage.lines.count) }
+            }
+            TinyButton(title: "0.8×") { store.playLines(from: 1, through: passage.lines.count, rate: 0.8) }
+            Spacer()
+        }
+        ActionKey("Listen again") { glossed = nil; store.toSecondListen() }
+    }
+
+    private func spoken(_ passage: Passage, _ line: Passage.Line, run: PassageRun,
+                        now: Double?, current: Bool, ruled: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 10) {
+                Tag(passage.name(of: line.speaker), .tinted(colour(passage.voice(of: line.speaker))))
+                TypedLink("Line", chevron: false) { store.playLines(from: line.n) }
+                TypedLink("EN", colour: english.contains(line.n) ? Theme.C.accent : Theme.C.ink3,
+                          chevron: false) {
+                    if english.contains(line.n) { english.remove(line.n) } else { english.insert(line.n) }
+                }
+                Spacer()
+            }
+            Flow(spacing: 2, lineSpacing: 6) {
+                ForEach(Array(line.words.enumerated()), id: \.offset) { _, word in
+                    token(word, lit: lit(word, now), tapped: run.tapped.contains(word.w))
+                }
+            }
+            if english.contains(line.n) {
+                Text(line.english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
+            }
+        }
+        .padding(Theme.M.padTight)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(current ? Theme.C.accent.opacity(0.08) : .clear)
+        .overlay(alignment: .bottom) {
+            if ruled { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
+        }
+    }
+
+    private func lit(_ word: Passage.Word, _ now: Double?) -> Bool {
+        guard let now, let start = word.start, let end = word.end else { return false }
+        return now >= start && now < end + 0.04
+    }
+
+    /// Pinyin over the characters. Punctuation keeps an empty pinyin row so
+    /// everything on a line shares a baseline.
+    private func token(_ word: Passage.Word, lit: Bool, tapped: Bool) -> some View {
+        let body = VStack(spacing: 0) {
+            Text(word.py ?? " ")
+                .font(Theme.F.mono(10))
+                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink3)
+                .lineLimit(1)
+                .fixedSize()
+            Text(word.w)
+                .font(Theme.F.target(size: 20))
+                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink)
+                .underline(tapped, color: Theme.C.warn)
+                .fixedSize()
+        }
+        .padding(.horizontal, 1)
+        .background(lit ? Theme.C.accent : .clear)
+        return Group {
+            if word.isPunctuation {
+                body
+            } else {
+                Button { glossed = word; store.hearWord(word) } label: { body }
+                    .buttonStyle(PressDim())
+            }
+        }
+    }
+
+    private func gloss(_ word: Passage.Word) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Text(word.w).font(Theme.F.target(size: 20)).foregroundStyle(Theme.C.onInverse)
+            Text(word.py ?? "").font(Theme.F.meta).foregroundStyle(Theme.C.accentOnInverse)
+            Text(word.g ?? "").font(Theme.F.bodyTight).foregroundStyle(Theme.C.onInverse)
+            Spacer(minLength: 0)
+            Button { glossed = nil } label: {
+                Text("×").font(Theme.F.mono(16)).foregroundStyle(Theme.C.onInverse)
+            }
+            .buttonStyle(PressDim())
+        }
+        .padding(.horizontal, Theme.M.gap)
+        .padding(.vertical, 10)
+        .background(Theme.C.inverse)
+    }
+
+    // MARK: Pass 3
+
+    @ViewBuilder
+    private func second(_ passage: Passage, _ run: PassageRun) -> some View {
+        Panel(fill: Theme.C.sunk, edge: Theme.C.accent) {
+            Text(passage.title).font(Theme.F.cardTitle)
+            Text(meta(passage)).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+        }
+        timeline(passage)
+        playKey(title: "Listen · no text")
+        followed(run.followedSecond)
+        ActionKey("Finish", enabled: run.followedSecond != nil) { store.finishListening() }
+    }
+
+    // MARK: Done
+
+    @ViewBuilder
+    private func done(_ passage: Passage, _ run: PassageRun) -> some View {
+        Panel(fill: Theme.C.sunk) {
+            Text("\(run.right(in: passage)) of \(passage.gist.count)").font(Theme.F.number)
+            Text("by ear, first listen").font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+        }
+        VStack(spacing: 6) {
+            meter("Pass 1", run.followedFirst, colour: Theme.C.ink2)
+            meter("Pass 3", run.followedSecond, colour: Theme.C.accent)
+        }
+
+        if let review = store.current?.review, !review.atoms.isEmpty {
+            LedgerSheet {
+                ForEach(review.atoms) { atom in
+                    let colour = Theme.colour(for: atom.verdict)
+                    Button { store.open(atom) } label: {
+                        LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
+                                  ruled: atom.id != review.atoms.last?.id) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(atom.stages.name).font(Theme.F.bodyTight)
+                                    .foregroundStyle(Theme.C.ink)
+                                Text(atom.stages.fix.isEmpty ? atom.stages.locate : atom.stages.fix)
+                                    .font(Theme.F.meta)
+                                    .foregroundStyle(Theme.C.ink3)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PressDim())
+                }
+            }
+        }
+
+        MainButton(title: "Done") { store.backToPicker() }
+    }
+
+    private func meter(_ label: String, _ value: PassageRun.Followed?, colour: Color) -> some View {
+        let fraction = CGFloat((value?.rawValue ?? -1) + 1) / 4
+        return HStack(spacing: 10) {
+            Text(label.uppercased()).font(Theme.F.label).tracking(Theme.M.caps)
+                .foregroundStyle(Theme.C.ink2).frame(width: 56, alignment: .leading)
+            GeometryReader { g in
+                Rectangle().fill(colour).frame(width: g.size.width * fraction)
+            }
+            .frame(height: 10)
+            .background(Theme.C.sunk)
+            .overlay(Rectangle().strokeBorder(Theme.C.seam2, lineWidth: Theme.M.hair))
+            Text(value?.word ?? "—").font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                .frame(width: 44, alignment: .leading)
+        }
+    }
+
+    // MARK: Shared
+
+    private func playKey(title: String) -> some View {
+        ActionKey(store.dialogue.isPlaying ? "Stop" : title,
+                  variant: store.dialogue.isPlaying ? .neutral : .primary) { toggleBlind() }
+    }
+
+    private func toggleBlind() {
+        if store.dialogue.isPlaying { store.stopDialogue() } else { store.playBlind() }
+    }
+
+    /// Who speaks when, with a playhead. The only thing on screen while
+    /// listening blind: turn-taking is information the ear gets anyway.
+    private func timeline(_ passage: Passage) -> some View {
+        let span = passage.span ?? 0...1
+        let length = span.upperBound - span.lowerBound
+        return VStack(alignment: .leading, spacing: 6) {
+            GeometryReader { g in
+                ZStack(alignment: .leading) {
+                    ForEach(passage.lines) { line in
+                        if let s = passage.span(of: line) {
+                            Rectangle()
+                                .fill(colour(passage.voice(of: line.speaker)).opacity(0.75))
+                                .frame(width: max(2, g.size.width * (s.upperBound - s.lowerBound) / length - 1.5),
+                                       height: 18)
+                                .offset(x: g.size.width * (s.lowerBound - span.lowerBound) / length)
+                        }
+                    }
+                    if let now = store.dialogue.now {
+                        Rectangle().fill(Theme.C.accent).frame(width: 2, height: 34)
+                            .offset(x: g.size.width * min(1, max(0, (now - span.lowerBound) / length)))
+                    }
+                }
+                .frame(maxHeight: .infinity)
+            }
+            .frame(height: 34)
+            .background(Theme.C.stock)
+            .overlay(Rectangle().strokeBorder(Theme.C.seam2, lineWidth: Theme.M.hair))
+
+            HStack(spacing: 12) {
+                ForEach(passage.speakers, id: \.id) { s in
+                    HStack(spacing: 4) {
+                        Rectangle().fill(colour(passage.voice(of: s.id))).frame(width: 9, height: 9)
+                        Text(s.name).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                    }
+                }
+            }
+        }
+    }
+
+    private func colour(_ voice: Int) -> Color {
+        [Theme.C.ink2, Theme.C.carbon, Theme.C.good, Theme.C.warn][voice % 4]
     }
 }
