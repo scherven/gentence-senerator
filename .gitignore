@@ -71,3 +71,7 @@ gentence-senerator/gentence-senerator/.DS_Store
 # scratch data out of status. It also caught real source, so exempt it:
 !gentence-senerator/gentence-senerator/Curriculum/*.json
 !gentence-senerator/gentence-senerator/Assets.xcassets/**/*.json
+
+# ChinesePod dialogues: not ours to publish. Built by tools/chinesepod_listen.py.
+tools/chinesepod/
+gentence-senerator/gentence-senerator/Dialogues/

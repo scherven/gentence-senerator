@@ -119,18 +119,22 @@ final class Store {
 
     private let passages = PassageLibrary()
 
-    /// Per language: the dialogue in progress, and the ones already finished.
-    /// Not in `holds` — those are retired at the end of the day and a passage
-    /// is deliberately allowed to outlive one.
+    /// Per language: a run per dialogue started and not finished, every
+    /// finished listen, and the one opened last. Not in `holds` — those are
+    /// retired at the end of the day and a passage is allowed to outlive one.
     private struct PassageState: Codable {
-        var run: PassageRun?
-        var finished: Set<String> = []
+        var runs: [String: PassageRun] = [:]
+        var heard: [String: [Heard]] = [:]
+        var open: String?
     }
     private var passageState: [String: PassageState] = [:]
 
-    /// What the passage screen is showing. Both nil when listen is on clips.
+    /// What the passage screen is showing. Both nil on the picker, and when
+    /// listen is on clips.
     private(set) var passage: Passage?
     private(set) var run: PassageRun?
+    /// Playback for the passage screen, polled for the read-along.
+    let dialogue = DialoguePlayer()
 
     init(tutor: Tutor, speech: SpeechIO? = nil,
          pronunciation: Pronunciation = Pronunciation(key: Key.azureKey, region: Key.azureRegion)) {
@@ -238,9 +242,14 @@ final class Store {
     /// goal, so changing the setting mid-day cannot retroactively unfinish one.
     func tally(_ mode: Mode) -> (done: Int, goal: Int) {
         // A dialogue is the whole listening day, so its own progress through
-        // the questions is the only number worth showing while it is running.
+        // the three passes is the only number worth showing while it is running.
         if mode == .listen, let held = heldPassage {
-            return (held.run.answers.count, held.passage.quiz.count)
+            let passes: Int = switch held.run.stage {
+            case .first:  held.run.canRead(held.passage) ? 1 : 0
+            case .read:   1
+            case .second, .done: held.run.followedSecond == nil ? 2 : 3
+            }
+            return (passes, 3)
         }
         guard let session = today(mode) else { return (0, settings.dailyGoal) }
         return (session.completedCount, session.goal)
@@ -454,7 +463,9 @@ final class Store {
     }
 
     func begin(_ mode: Mode) async {
-        guard !isDone(mode) else { return }
+        // Listen stays open past the day's one: the picker is how another
+        // dialogue gets chosen.
+        guard !isDone(mode) || (mode == .listen && hasDialogues) else { return }
         settings.mode = mode
         knowledge = [:]
         path = []
@@ -1495,158 +1506,160 @@ final class Store {
 
     // MARK: Dialogues
 
-    /// The dialogue in progress, if there is one. Readable at idle, so the
-    /// mode card can name it before the learner taps in.
+    /// The dialogue opened last, if it isn't finished. Readable at idle, so
+    /// the mode card can name it before the learner taps in.
     var heldPassage: (passage: Passage, run: PassageRun)? {
-        guard let held = passageState[settings.language.rawValue]?.run,
-              held.stage != .done,
-              let found = passages.passage(held.passageID) else { return nil }
+        guard let state = passageState[settings.language.rawValue],
+              let id = state.open, let held = state.runs[id], held.stage != .done,
+              let found = passages.passage(id) else { return nil }
         return (found, held)
     }
 
-    /// True when a dialogue took the session. An unfinished one outranks a new
-    /// one, whatever day it was started on.
+    var hasDialogues: Bool { !passages.playable(settings.language).isEmpty }
+
+    /// Every playable dialogue, in the picker's order.
+    var shelf: [ShelfEntry] {
+        let state = passageState[settings.language.rawValue] ?? PassageState()
+        return Shelf.entries(passages.playable(settings.language), runs: state.runs,
+                             heard: state.heard, today: .now)
+    }
+
+    /// True when dialogues took the session: listen opens on the picker.
     private func startPassage() -> Bool {
-        if let held = heldPassage {
-            passage = held.passage
-            run = held.run
-            phase = .passage
-            return true
-        }
-        let done = passageState[settings.language.rawValue]?.finished ?? []
-        guard let next = passages.pick(language: settings.language,
-                                       level: settings.level, excluding: done)
-        else { return false }
-        passage = next
-        run = PassageRun(passageID: next.id, language: settings.language,
-                         startedOn: Spend.key(.now))
+        guard hasDialogues else { return false }
+        passage = nil
+        run = nil
+        current = nil
         phase = .passage
-        savePassage()
         return true
+    }
+
+    /// Into one dialogue, where it was left unless `fresh`.
+    func choosePassage(_ id: String, fresh: Bool = false) {
+        guard let found = passages.passage(id) else { return }
+        dialogue.stop()
+        let held = passageState[settings.language.rawValue]?.runs[id]
+        passage = found
+        run = !fresh && held?.stage != .done ? held : nil
+        current = nil
+        if run == nil {
+            // Not saved until something happens in it, so opening one and
+            // backing out doesn't leave it half done.
+            run = PassageRun(passageID: id, language: settings.language,
+                             startedOn: Spend.key(.now))
+            if fresh { dropRun(id) }
+        } else {
+            savePassage()
+        }
+    }
+
+    private func dropRun(_ id: String) {
+        passageState[settings.language.rawValue]?.runs[id] = nil
+        Vault.save(passageState, Vault.passages)
+    }
+
+    /// Back to the list, keeping the run where it is.
+    func backToPicker() {
+        dialogue.stop()
+        passage = nil
+        run = nil
+        current = nil
+        phase = .passage
     }
 
     private func savePassage() {
         guard let run else { return }
         var state = passageState[run.language.rawValue] ?? PassageState()
-        state.run = run.stage == .done ? nil : run
-        if run.stage == .done { state.finished.insert(run.passageID) }
+        state.runs[run.passageID] = run.stage == .done ? nil : run
+        state.open = run.passageID
         passageState[run.language.rawValue] = state
         Vault.save(passageState, Vault.passages)
     }
 
+    private func recordHeard(_ heard: Heard, for run: PassageRun) {
+        var state = passageState[run.language.rawValue] ?? PassageState()
+        state.heard[run.passageID, default: []].append(heard)
+        passageState[run.language.rawValue] = state
+        Vault.save(passageState, Vault.passages)
+    }
+
+    private func updateRun(_ change: (inout PassageRun) -> Void) {
+        guard var live = run else { return }
+        change(&live)
+        run = live
+        savePassage()
+    }
+
     // MARK: Hearing it
 
-    func hearPassage() {
-        guard let passage else { return }
-        if let source = passage.wholeSource {
-            Task { try? await speech?.play(source) }
-        } else {
-            speech?.speak(passage.lines.map(\.text).joined(separator: " "),
-                          locale: settings.language.localeID)
+    /// A blind pass: the whole dialogue, no text. The first one unlocks the
+    /// questions only when it runs to the end.
+    func playBlind() {
+        guard let passage, let url = passage.url, let span = passage.span, let live = run
+        else { return }
+        savePassage()   // pressing play is what starts a dialogue
+        let stage = live.stage
+        dialogue.play(url, span) { [weak self] reachedEnd in
+            guard let self, reachedEnd, stage == .first else { return }
+            self.updateRun { $0.heardFirst = true; $0.firstPlays += 1 }
         }
     }
 
-    func hearLine(_ n: Int) {
-        guard let passage, let line = passage.line(n) else { return }
-        if let source = passage.source(for: line) {
-            Task { try? await speech?.play(source) }
-        } else {
-            speech?.speak(line.text, locale: settings.language.localeID)
-        }
+    /// Straight to the questions without finishing the first listen.
+    func skipToQuestions() {
+        dialogue.stop()
+        updateRun { $0.heardFirst = true }
     }
 
-    /// The first listen, and the one replay. Counted: how many times it took is
-    /// the measure, so it is never silently free.
-    func playGist() {
-        guard var live = run else { return }
-        if live.played {
-            guard live.canReplay else { return }
-            live.replays += 1
-        } else {
-            live.played = true
-        }
-        run = live
-        savePassage()
-        hearPassage()
+    /// Read-along playback: one line, or from a line to the end.
+    func playLines(from n: Int, through last: Int? = nil, rate: Float = 1) {
+        guard let passage, let url = passage.url,
+              let from = passage.line(n).flatMap(passage.span(of:)),
+              let to = passage.line(last ?? n).flatMap(passage.span(of:))
+        else { return }
+        dialogue.play(url, from.lowerBound...to.upperBound, rate: rate)
     }
 
-    func toQuiz() {
-        guard var live = run, live.played else { return }
-        live.stage = .quiz
-        run = live
-        savePassage()
+    /// One word, out of the recording, slowed a little. Tapping marks it.
+    func hearWord(_ word: Passage.Word) {
+        updateRun { $0.tap(word.w) }
+        guard let passage, let url = passage.url, let span = passage.span(of: word) else { return }
+        dialogue.play(url, span, rate: 0.85)
     }
+
+    func stopDialogue() { dialogue.stop() }
 
     // MARK: Answering
 
-    func answerQuiz(_ index: Int) {
-        guard var live = run, let passage,
-              live.quizAt < passage.quiz.count else { return }
-        let question = passage.quiz[live.quizAt]
-        guard live.answers[question.id] == nil else { return }
-        live.answers[question.id] = index
-        run = live
-        savePassage()
+    func answerGist(_ index: Int, option: Int) {
+        guard let passage, passage.gist.indices.contains(index) else { return }
+        updateRun { if $0.answers[index] == nil { $0.answers[index] = option } }
     }
 
-    /// Onto the next question, or into the repair — which covers only the
-    /// lines whose question was missed, and only those carrying a gap.
-    func advanceQuiz() {
-        guard var live = run, let passage else { return }
-        if live.quizAt + 1 < passage.quiz.count {
-            live.quizAt += 1
-        } else {
-            let missed = passage.quiz.filter { !live.got($0) }
-            live.repair = missed.map(\.line).filter { passage.line($0)?.gap != nil }
-            live.reask = missed.map(\.id)
-            live.stage = live.repair.isEmpty ? .done : .repairing
+    func rateFollowed(_ followed: PassageRun.Followed) {
+        updateRun {
+            if $0.stage == .first { $0.followedFirst = followed }
+            if $0.stage == .second { $0.followedSecond = followed }
         }
-        run = live
-        savePassage()
-        if live.stage == .done { finishPassage() }
     }
 
-    func answerGap(_ index: Int) {
-        guard var live = run, live.repairAt < live.repair.count else { return }
-        let n = live.repair[live.repairAt]
-        guard live.gaps[n] == nil else { return }
-        live.gaps[n] = index
-        run = live
-        savePassage()
+    func toReading() {
+        guard let passage, let live = run, live.canRead(passage) else { return }
+        dialogue.stop()
+        updateRun { $0.stage = .read }
     }
 
-    func advanceRepair() {
-        guard var live = run else { return }
-        if live.repairAt + 1 < live.repair.count {
-            live.repairAt += 1
-        } else {
-            live.stage = .reask
-        }
-        run = live
-        savePassage()
+    func toSecondListen() {
+        dialogue.stop()
+        updateRun { $0.stage = .second }
+        playBlind()
     }
 
-    func answerReask(_ index: Int) {
-        guard var live = run, let passage, live.reaskAt < live.reask.count else { return }
-        let id = live.reask[live.reaskAt]
-        guard passage.quiz.contains(where: { $0.id == id }), live.reanswers[id] == nil
-        else { return }
-        live.reanswers[id] = index
-        run = live
-        savePassage()
-    }
-
-    func advanceReask() {
-        guard var live = run else { return }
-        if live.reaskAt + 1 < live.reask.count {
-            live.reaskAt += 1
-            run = live
-            savePassage()
-        } else {
-            live.stage = .done
-            run = live
-            finishPassage()
-        }
+    func finishListening() {
+        guard run?.followedSecond != nil else { return }
+        dialogue.stop()
+        updateRun { $0.stage = .done }
+        finishPassage()
     }
 
     // MARK: Finishing
@@ -1668,53 +1681,61 @@ final class Store {
         turn.review = review
         record(for: turn, review: review)
 
-        var finished = Session(id: sessionID(for: .listen), language: settings.language,
-                               mode: .listen, startedAt: .now, turns: [turn], goal: 1)
-        finished.turns = [turn]
-        past.append(finished)
-        past.sort { $0.startedAt < $1.startedAt }
+        // A second dialogue the same day joins that day's listen session
+        // rather than filing another under the same id.
+        let id = sessionID(for: .listen)
+        if let i = past.lastIndex(where: { $0.id == id }) {
+            past[i].turns.append(turn)
+            past[i].goal = max(past[i].goal, past[i].turns.count)
+        } else {
+            past.append(Session(id: id, language: settings.language, mode: .listen,
+                                startedAt: .now, turns: [turn], goal: 1))
+            past.sort { $0.startedAt < $1.startedAt }
+        }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
 
+        recordHeard(Heard(on: .now, right: live.right(in: passage), asked: passage.gist.count,
+                          before: live.followedFirst, after: live.followedSecond), for: live)
         savePassage()
         session = nil
         current = turn
         phase = .passage
     }
 
-    /// One atom per gap the repair covered, right or wrong. A gap whose
-    /// question was also missed changed what the learner understood, so it
-    /// breaks; one they answered around only marked them.
+    /// A missed question breaks: the meaning didn't land. A tapped word
+    /// weakens: it was understood only once it was read. Both point at the
+    /// line they came from, so opening one teaches it in its sentence.
     private func read(of passage: Passage, run: PassageRun) -> Review {
-        let tally = run.read(of: passage)
         var atoms: [Atom] = []
-        for n in run.repair {
-            guard let line = passage.line(n), let gap = line.gap,
-                  let picked = run.gaps[n], picked < gap.options.count else { continue }
-            let chose = gap.options[picked]
-            let right = picked == gap.answerIndex
-            let brokeMeaning = passage.quiz.contains { $0.line == n && !run.got($0) }
-            let subject = right ? gap.answer : "\(gap.answer) against \(chose)"
+        for (i, q) in passage.gist.enumerated() where !run.got(i, in: passage) {
+            guard let line = passage.line(q.line) else { continue }
+            let picked = run.answers[i].map { q.options[$0] } ?? "nothing"
             atoms.append(Atom(
-                id: Atom.identify(.pronunciation, subject),
-                kind: .pronunciation,
-                verdict: right ? .kept : (brokeMeaning ? .breaks : .weakens),
-                stages: .init(
-                    locate: "Line \(n) of \(passage.lines.count).",
-                    name: right ? "\(gap.answer), correct" : "\(gap.answer), not \(chose)",
-                    fix: gap.answer,
-                    note: gap.why
-                ),
-                seed: .init(subject: subject, context: line.text, pointID: nil)
-            ))
+                id: Atom.identify(.comprehension, "\(passage.id)/\(i)"),
+                kind: .comprehension, verdict: .breaks,
+                stages: .init(locate: "Line \(q.line) of \(passage.lines.count).",
+                              name: "\(q.question) \(q.options[q.answer]), not \(picked).",
+                              fix: line.text, note: line.english),
+                seed: .init(subject: line.text, context: line.text, pointID: nil)))
         }
-        if let first = atoms.firstIndex(where: { $0.verdict.isProblem }) {
-            atoms[first].weight = .start
-        } else if !atoms.isEmpty {
-            atoms[0].weight = .start
+        for word in run.tapped {
+            guard let line = passage.lines.first(where: { $0.words.contains { $0.w == word } }),
+                  let entry = line.words.first(where: { $0.w == word }) else { continue }
+            atoms.append(Atom(
+                id: Atom.identify(.wordChoice, word),
+                kind: .wordChoice, verdict: .weakens,
+                stages: .init(locate: "Line \(line.n) of \(passage.lines.count).",
+                              name: "\(word) \(entry.py ?? "")",
+                              fix: entry.g ?? "", note: line.text),
+                seed: .init(subject: word, context: line.text, pointID: nil)))
         }
+        if !atoms.isEmpty { atoms[0].weight = .start }
+        let right = run.right(in: passage)
+        let before = run.followedFirst?.word ?? "?"
+        let after = run.followedSecond?.word ?? "?"
         return Review(
-            score: tally.asked == 0 ? 0 : tally.first * 100 / tally.asked,
-            readOfScore: run.outcome(of: passage).read,
+            score: passage.gist.isEmpty ? 0 : right * 100 / passage.gist.count,
+            readOfScore: "\(right) of \(passage.gist.count) by ear. Followed: \(before) → \(after).",
             atoms: atoms, natural: nil, respeaks: [], isDeep: true
         )
     }
@@ -1722,6 +1743,7 @@ final class Store {
     /// Off the dialogue screen. Nothing to archive — every answer was saved as
     /// it was given.
     func leavePassage() {
+        dialogue.stop()
         passage = nil
         run = nil
         current = nil

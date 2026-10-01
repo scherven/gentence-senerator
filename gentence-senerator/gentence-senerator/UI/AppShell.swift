@@ -268,6 +268,10 @@ struct ModeScreen: View {
     }
 
     private var progressLabel: String {
+        if store.phase == .passage, store.passage == nil {
+            let shelf = store.shelf
+            return "\(shelf.filter { !$0.heard.isEmpty }.count)/\(shelf.count)"
+        }
         if store.phase == .passage {
             let tally = store.tally(.listen)
             return "\(tally.done)/\(tally.goal)"
@@ -292,9 +296,9 @@ struct ModeScreen: View {
         }
     }
 
-    /// All three alike; produce in its own colour. Done: flush.
+    /// All three alike. Done: flush.
     private func variant(_ mode: Mode) -> KeyStyle.Variant {
-        store.isDone(mode) ? .spent : mode == .produce ? .primary : .neutral
+        store.isDone(mode) ? .spent : .neutral
     }
 
     private func spentStamp(_ mode: Mode) -> some View {
@@ -320,7 +324,8 @@ struct ModeScreen: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(KeyStyle(variant(mode)))
-        .disabled(spent)
+        // Listen stays open once done: it leads to the dialogue picker.
+        .disabled(spent && !(mode == .listen && store.hasDialogues))
     }
 
     /// What this produce answer can be made of, each ticked once the answer
