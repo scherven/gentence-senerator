@@ -56,6 +56,38 @@ struct ActivityLog: Codable, Hashable {
     static func ticks(_ marks: Set<Mark>) -> [Bool] { Mark.allCases.map(marks.contains) }
 }
 
+// MARK: - Scores
+
+/// Every graded translate and produce answer's score, by turn id. Kept apart
+/// from the archive for the same reason as `ActivityLog`: sessions are trimmed.
+struct ScoreLog: Codable, Hashable {
+    struct Entry: Codable, Hashable {
+        /// "yyyy-MM-dd", the day the answer was given.
+        let day: String
+        let language: Language
+        let score: Int
+    }
+
+    var turns: [String: Entry] = [:]
+
+    @discardableResult
+    mutating func add(_ turn: Turn) -> Bool {
+        guard turn.mode != .listen, let score = turn.review?.score else { return false }
+        let entry = Entry(day: Spend.key(turn.createdAt), language: turn.language, score: score)
+        guard turns[turn.id.uuidString] != entry else { return false }
+        turns[turn.id.uuidString] = entry
+        return true
+    }
+
+    /// Mean score over days in `from...through` ("yyyy-MM-dd", inclusive).
+    func average(_ language: Language, from: String = "", through: String = "9999") -> Int? {
+        let scores = turns.values
+            .filter { $0.language == language && $0.day >= from && $0.day <= through }
+            .map(\.score)
+        return scores.isEmpty ? nil : scores.reduce(0, +) / scores.count
+    }
+}
+
 // MARK: - History
 
 /// One day of the History archive, in one language: sessions and quiz rounds,

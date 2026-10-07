@@ -117,7 +117,9 @@ struct BookScreen: View {
     @ViewBuilder
     private func drills(_ plans: [QuizPlan]) -> some View {
         if !plans.isEmpty {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
+            // Five fit one row; more wrap at four.
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8),
+                                     count: plans.count == 5 ? 5 : 4),
                       spacing: 8) {
                 ForEach(plans) { plan in
                     Button { startQuiz(plan) } label: {

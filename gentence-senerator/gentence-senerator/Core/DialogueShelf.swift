@@ -50,8 +50,18 @@ struct ShelfEntry: Identifiable, Hashable {
 
 enum Shelf {
 
-    /// A dialogue last heard this many days ago is worth hearing again.
-    static let dueAfter = 7
+    /// Days until a dialogue is due again, by how many times it has been
+    /// heard: once → 1 day, twice → 3, … A listen that ended at little or
+    /// some followed starts it over.
+    static let intervals = [1, 3, 7, 14, 30]
+
+    static func dueAfter(_ history: [Heard]) -> Int {
+        guard let last = history.first else { return 0 }
+        if let after = last.after, after.rawValue <= PassageRun.Followed.some.rawValue {
+            return intervals[0]
+        }
+        return intervals[min(history.count, intervals.count) - 1]
+    }
 
     static func entries(_ passages: [Passage], runs: [String: PassageRun],
                         heard: [String: [Heard]], today: Date,
@@ -64,7 +74,7 @@ enum Shelf {
                 status = .inProgress(pass: pass(of: run))
             } else if let last = history.first {
                 let days = daysBetween(last.on, today, calendar)
-                status = days >= dueAfter ? .due(days: days) : .done(days: days)
+                status = days >= dueAfter(history) ? .due(days: days) : .done(days: days)
             } else {
                 status = .new
             }

@@ -130,4 +130,5 @@ enum Vault {
     static let pushToken = "push.token"
     static let quizLog = "quiz.log.v1" // per-entry results, per-plan rounds
     static let activity = "activity.v1" // what was done each day, for History
+    static let scores = "scores.v1" // every graded answer's score, for History averages
 }

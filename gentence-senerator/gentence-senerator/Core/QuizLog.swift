@@ -17,9 +17,11 @@ struct QuizLog: Codable, Hashable {
         var last: Date?
         /// Reached holding at some point. Makes a miss afterwards a slip.
         var held = false
+        /// When the learner said they knew it. A miss clears it.
+        var known: Date?
 
-        init(recent: [Bool] = [], last: Date? = nil, held: Bool = false) {
-            self.recent = recent; self.last = last; self.held = held
+        init(recent: [Bool] = [], last: Date? = nil, held: Bool = false, known: Date? = nil) {
+            self.recent = recent; self.last = last; self.held = held; self.known = known
         }
 
         init(from decoder: any Decoder) throws {
@@ -27,6 +29,7 @@ struct QuizLog: Codable, Hashable {
             recent = try c.decodeIfPresent([Bool].self, forKey: .recent) ?? []
             last = try c.decodeIfPresent(Date.self, forKey: .last)
             held = try c.decodeIfPresent(Bool.self, forKey: .held) ?? false
+            known = try c.decodeIfPresent(Date.self, forKey: .known)
         }
 
         var holding: Bool {
@@ -81,6 +84,14 @@ struct QuizLog: Codable, Hashable {
         e.recent = Array((e.recent + [right]).suffix(Self.keep))
         e.last = date
         if e.holding { e.held = true }
+        if !right { e.known = nil }
+        entries[id] = e
+    }
+
+    mutating func markKnown(entry id: String, at date: Date = .now) {
+        var e = entries[id] ?? EntryRecord()
+        e.known = date
+        e.last = date
         entries[id] = e
     }
 
@@ -114,7 +125,8 @@ struct QuizLog: Codable, Hashable {
         else if recent.isEmpty { standing = .never }
         else if e?.holding == true { standing = .holding }
         else { standing = .tried }
-        return EntryState(standing: standing, slipping: slipping, lastSeen: e?.last, recent: recent)
+        return EntryState(standing: standing, slipping: slipping, lastSeen: e?.last, recent: recent,
+                          known: e?.known != nil)
     }
 }
 

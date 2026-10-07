@@ -17989,5 +17989,3735 @@
     "answer": 2
    }
   ]
+ },
+ {
+  "id": "fr.q.pronouns.51",
+  "entry": "fr.pronouns.y",
+  "format": "spot-it",
+  "prompt": "Oui, j'en vais toutes les semaines.",
+  "gloss": "— Tu vas souvent à la piscine ? (I go there every week.)",
+  "why": "lieu → y",
+  "steps": [
+   {
+    "options": [
+     "Oui,",
+     "j'en",
+     "vais",
+     "toutes",
+     "les",
+     "semaines."
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "j'en",
+    "options": [
+     "je lui",
+     "je le",
+     "j'y"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.52",
+  "entry": "fr.pronouns.en",
+  "format": "spot-it",
+  "prompt": "Oui, j'ai deux.",
+  "gloss": "— Tu as des frères ? (Yes, I have two.)",
+  "why": "quantité → en",
+  "steps": [
+   {
+    "options": [
+     "Oui,",
+     "j'ai",
+     "deux."
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "j'ai",
+    "options": [
+     "j'en ai",
+     "je les ai",
+     "j'y ai"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.53",
+  "entry": "fr.pronouns.indirect",
+  "format": "spot-it",
+  "prompt": "Mes parents ? Je les téléphone chaque dimanche.",
+  "gloss": "I call them every Sunday.",
+  "why": "téléphoner à → leur",
+  "steps": [
+   {
+    "options": [
+     "Mes",
+     "parents",
+     "?",
+     "Je",
+     "les",
+     "téléphone",
+     "chaque",
+     "dimanche."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "les",
+    "options": [
+     "leurs",
+     "lui",
+     "leur"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.54",
+  "entry": "fr.pronouns.y-en",
+  "format": "pick-one",
+  "prompt": "— Il reste du pain dans le placard ? — Oui, il ＿ a encore.",
+  "why": "y avant en",
+  "steps": [
+   {
+    "options": [
+     "y",
+     "lui en",
+     "y en",
+     "en y"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.55",
+  "entry": "fr.pronouns.compound",
+  "format": "pick-one",
+  "prompt": "— Tu as vu les photos de Léa ? — Oui, je ＿ hier soir.",
+  "why": "pronom avant avoir",
+  "steps": [
+   {
+    "options": [
+     "leur ai vues",
+     "les ai vues",
+     "ai vu les",
+     "les vues ai"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.56",
+  "entry": "fr.pronouns.infinitive",
+  "format": "build",
+  "gloss": "Marc? I'm going to call him tonight.",
+  "why": "appeler qqn → le",
+  "tiles": [
+   "Marc",
+   "?",
+   "Je",
+   "vais",
+   "l'appeler",
+   "ce",
+   "soir"
+  ],
+  "decoys": [
+   "lui"
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.57",
+  "entry": "fr.pronouns.imperative",
+  "format": "build",
+  "gloss": "Your keys? Take them with you!",
+  "why": "impératif : pronom après",
+  "tiles": [
+   "Tes",
+   "clés ?",
+   "Prends-",
+   "les",
+   "avec",
+   "toi !"
+  ],
+  "decoys": [
+   "leur",
+   "moi"
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.58",
+  "entry": "fr.pronouns.imperative-neg",
+  "format": "transform",
+  "prompt": "Vas-y !",
+  "gloss": "Go on! → Don't go!",
+  "task": "→ négatif",
+  "why": "n'y va pas",
+  "accept": [
+   "N'y va pas !"
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.59",
+  "entry": "fr.pronouns.imperative-neg",
+  "format": "transform",
+  "prompt": "Parle-lui de ton projet.",
+  "task": "→ négatif",
+  "why": "pronom avant verbe",
+  "accept": [
+   "Ne lui parle pas de ton projet."
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.60",
+  "entry": "fr.pronouns.y",
+  "format": "transform",
+  "prompt": "Je pense souvent à mon voyage au Japon.",
+  "task": "à mon voyage… → pronom",
+  "why": "penser à → y",
+  "accept": [
+   "J'y pense souvent."
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.61",
+  "entry": "fr.pronouns.en",
+  "format": "transform",
+  "prompt": "Elle a acheté trois kilos de pommes.",
+  "task": "de pommes → pronom",
+  "why": "quantité → en",
+  "accept": [
+   "Elle en a acheté trois kilos."
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.62",
+  "entry": "fr.pronouns.stressed",
+  "format": "two-step",
+  "prompt": "— Tu penses encore à Julie ? — Oui, je pense souvent à ＿. Je vais ＿ écrire.",
+  "why": "penser à elle",
+  "steps": [
+   {
+    "options": [
+     "y",
+     "elle",
+     "lui"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "lui",
+     "la",
+     "y"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.63",
+  "entry": "fr.pronouns.negation",
+  "format": "two-step",
+  "prompt": "— Tu as parlé à tes parents ? — Non, je ne ＿ ai pas encore ＿.",
+  "why": "parler à → leur",
+  "steps": [
+   {
+    "options": [
+     "leur",
+     "lui",
+     "les"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "parler",
+     "parlés",
+     "parlé"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.64",
+  "entry": "fr.pronouns.reciprocal",
+  "format": "pick-one",
+  "prompt": "Depuis qu'il vit à Lyon, Marc et Léa ＿ des messages tous les soirs.",
+  "why": "se = l'un l'autre",
+  "steps": [
+   {
+    "options": [
+     "leur envoient",
+     "envoient",
+     "les envoient",
+     "s'envoient"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.negation.43",
+  "entry": "fr.negation.personne",
+  "format": "spot-it",
+  "prompt": "Je n'ai personne vu à la fête.",
+  "gloss": "I didn't see anyone at the party.",
+  "why": "personne après le participe",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "n'ai",
+     "personne",
+     "vu",
+     "à",
+     "la",
+     "fête."
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "Je n'ai vu personne à la fête.",
+     "Je n'ai pas vu personne à la fête.",
+     "Je ne personne ai vu à la fête."
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.negation.44",
+  "entry": "fr.negation.que",
+  "format": "spot-it",
+  "prompt": "Désolé, je n'ai pas que dix euros sur moi.",
+  "gloss": "Sorry, I only have ten euros on me.",
+  "why": "ne…que = seulement",
+  "steps": [
+   {
+    "options": [
+     "Désolé,",
+     "je",
+     "n'ai",
+     "pas",
+     "que",
+     "dix",
+     "euros",
+     "sur",
+     "moi."
+    ],
+    "answer": 3
+   },
+   {
+    "options": [
+     "Désolé, je n'ai rien que dix euros sur moi.",
+     "Désolé, je n'ai que de dix euros sur moi.",
+     "Désolé, je n'ai que dix euros sur moi."
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.negation.45",
+  "entry": "fr.negation.plus",
+  "format": "pick-one",
+  "prompt": "— Tu fumes toujours ? — Non, je ＿ depuis deux ans.",
+  "why": "plus = no longer",
+  "steps": [
+   {
+    "options": [
+     "ne fume jamais",
+     "ne fume plus",
+     "ne fume pas encore",
+     "ne fume rien"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.negation.46",
+  "entry": "fr.negation.jamais",
+  "format": "pick-one",
+  "prompt": "— Tu es déjà allé au Canada ? — Non, je ＿.",
+  "why": "jamais avant le participe",
+  "steps": [
+   {
+    "options": [
+     "n'y suis jamais allé",
+     "n'y suis allé jamais",
+     "ne suis jamais allé y",
+     "n'en suis jamais allé"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.negation.47",
+  "entry": "fr.negation.infinitive",
+  "format": "transform",
+  "prompt": "Je te conseille de sortir ce soir.",
+  "gloss": "I advise you not to go out tonight.",
+  "task": "→ ne pas",
+  "why": "ne pas + infinitif",
+  "accept": [
+   "Je te conseille de ne pas sortir ce soir."
+  ]
+ },
+ {
+  "id": "fr.q.negation.48",
+  "entry": "fr.negation.personne",
+  "format": "transform",
+  "prompt": "Quelqu'un m'a appelé.",
+  "task": "→ négatif",
+  "why": "personne sujet + ne",
+  "accept": [
+   "Personne ne m'a appelé.",
+   "Personne m'a appelé."
+  ]
+ },
+ {
+  "id": "fr.q.negation.49",
+  "entry": "fr.negation.compound",
+  "format": "build",
+  "gloss": "We haven't found anything yet.",
+  "why": "rien avant le participe",
+  "tiles": [
+   "On",
+   "n'a",
+   "encore",
+   "rien",
+   "trouvé"
+  ],
+  "decoys": [
+   "pas",
+   "jamais"
+  ]
+ },
+ {
+  "id": "fr.q.negation.50",
+  "entry": "fr.negation.personne",
+  "format": "two-step",
+  "prompt": "— Il reste du lait ? — Non, il n'y en a ＿, et ＿ n'a pensé à en acheter.",
+  "why": "plus · personne sujet",
+  "steps": [
+   {
+    "options": [
+     "pas",
+     "jamais",
+     "plus"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "personne",
+     "rien",
+     "aucun"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.42",
+  "entry": "fr.past.ongoing",
+  "format": "spot-it",
+  "prompt": "J'ai lu quand le téléphone a sonné.",
+  "gloss": "I was reading when the phone rang.",
+  "why": "en cours → imparfait",
+  "steps": [
+   {
+    "options": [
+     "J'ai lu",
+     "quand",
+     "le",
+     "téléphone",
+     "a sonné."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "J'ai lu",
+    "options": [
+     "Je lis",
+     "Je lisais",
+     "J'avais lu"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.43",
+  "entry": "fr.past.habit",
+  "format": "spot-it",
+  "prompt": "Quand j'étais petit, nous sommes allés en Bretagne chaque été.",
+  "gloss": "When I was little, we went to Brittany every summer.",
+  "why": "habitude → imparfait",
+  "steps": [
+   {
+    "options": [
+     "Quand",
+     "j'étais",
+     "petit,",
+     "nous",
+     "sommes allés",
+     "en",
+     "Bretagne",
+     "chaque",
+     "été."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "sommes allés",
+    "options": [
+     "irions",
+     "allions",
+     "étions allés"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.44",
+  "entry": "fr.past.duration",
+  "format": "spot-it",
+  "prompt": "J'habitais à Rome pendant trois ans, entre 2015 et 2018.",
+  "gloss": "I lived in Rome for three years, 2015–2018.",
+  "why": "durée fermée → PC",
+  "steps": [
+   {
+    "options": [
+     "J'habitais",
+     "à",
+     "Rome",
+     "pendant",
+     "trois",
+     "ans,",
+     "entre",
+     "2015",
+     "et",
+     "2018."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "J'habitais",
+    "options": [
+     "J'habite",
+     "J'avais habité",
+     "J'ai habité"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.45",
+  "entry": "fr.past.description",
+  "format": "two-step",
+  "prompt": "Hier, il ＿ beau, alors on ＿ une longue promenade.",
+  "why": "décor · événement",
+  "steps": [
+   {
+    "prompt": "faire",
+    "options": [
+     "fera",
+     "faisait",
+     "a fait"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "faire",
+    "options": [
+     "faisait",
+     "a fait",
+     "avait fait"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.46",
+  "entry": "fr.past.interruption",
+  "format": "two-step",
+  "prompt": "Nous ＿ tranquillement quand soudain la lumière ＿.",
+  "why": "en cours · interruption",
+  "steps": [
+   {
+    "prompt": "dîner",
+    "options": [
+     "dînions",
+     "avions dîné",
+     "avons dîné"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "s'éteindre",
+    "options": [
+     "s'était éteinte",
+     "s'éteignait",
+     "s'est éteinte"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.47",
+  "entry": "fr.past.pqp-before",
+  "format": "two-step",
+  "prompt": "Quand je suis arrivé à la gare, le train ＿ déjà ＿.",
+  "why": "avant un autre passé",
+  "steps": [
+   {
+    "options": [
+     "était",
+     "avait",
+     "a"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "partait",
+     "parti",
+     "partir"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.48",
+  "entry": "fr.past.pqp-form",
+  "format": "two-step",
+  "prompt": "Elle n'a pas pu entrer : elle ＿ ＿ ses clés au bureau.",
+  "why": "avais + participe",
+  "steps": [
+   {
+    "options": [
+     "était",
+     "a",
+     "avait"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "oubliée",
+     "oubliait",
+     "oublié"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.49",
+  "entry": "fr.past.state",
+  "format": "pick-one",
+  "prompt": "Quand je l'ai rencontrée, elle ＿ vingt ans.",
+  "gloss": "she was twenty",
+  "why": "âge → imparfait",
+  "steps": [
+   {
+    "options": [
+     "avait eu",
+     "eut",
+     "avait",
+     "a eu"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.past.50",
+  "entry": "fr.past.habit",
+  "format": "transform",
+  "prompt": "Tous les jours, je prends le bus.",
+  "task": "→ passé (habitude)",
+  "why": "habitude → imparfait",
+  "accept": [
+   "Tous les jours, je prenais le bus."
+  ]
+ },
+ {
+  "id": "fr.q.past.51",
+  "entry": "fr.past.sudden",
+  "format": "transform",
+  "prompt": "Je marche dans la rue quand tout à coup je vois Paul.",
+  "task": "→ passé",
+  "why": "en cours · soudain",
+  "accept": [
+   "Je marchais dans la rue quand tout à coup j'ai vu Paul."
+  ]
+ },
+ {
+  "id": "fr.q.past.52",
+  "entry": "fr.past.sequence",
+  "format": "build",
+  "gloss": "She came home, had a shower and went to bed.",
+  "why": "succession → PC",
+  "tiles": [
+   "Elle",
+   "est",
+   "rentrée,",
+   "a",
+   "pris",
+   "une",
+   "douche",
+   "et",
+   "s'est",
+   "couchée"
+  ],
+  "decoys": [
+   "rentrait",
+   "était"
+  ]
+ },
+ {
+  "id": "fr.q.relatives.39",
+  "entry": "fr.relatives.que",
+  "format": "spot-it",
+  "prompt": "Le livre qui tu m'as prêté est génial.",
+  "gloss": "The book you lent me is great.",
+  "why": "que = objet",
+  "steps": [
+   {
+    "options": [
+     "Le",
+     "livre",
+     "qui",
+     "tu",
+     "m'as",
+     "prêté",
+     "est",
+     "génial."
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "qui",
+    "options": [
+     "où",
+     "dont",
+     "que"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relatives.40",
+  "entry": "fr.relatives.ou-time",
+  "format": "spot-it",
+  "prompt": "Je me souviens du jour que je t'ai rencontré.",
+  "gloss": "I remember the day I met you.",
+  "why": "moment → où",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "me",
+     "souviens",
+     "du",
+     "jour",
+     "que",
+     "je",
+     "t'ai",
+     "rencontré."
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "que",
+    "options": [
+     "quand",
+     "où",
+     "dont"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relatives.41",
+  "entry": "fr.relatives.ou",
+  "format": "pick-one",
+  "prompt": "— On retourne au resto italien ? — Lequel ? Celui ＿ on a mangé en juin ?",
+  "why": "lieu → où",
+  "steps": [
+   {
+    "options": [
+     "où",
+     "que",
+     "qu'",
+     "dont"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relatives.42",
+  "entry": "fr.relatives.que",
+  "format": "two-step",
+  "prompt": "Le prof ＿ nous avons eu en 2020, c'est l'homme ＿ parle là-bas.",
+  "why": "objet · sujet",
+  "steps": [
+   {
+    "options": [
+     "que",
+     "où",
+     "qui"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "que",
+     "qui",
+     "dont"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relatives.43",
+  "entry": "fr.relatives.ou-time",
+  "format": "build",
+  "gloss": "It's the summer when we met.",
+  "why": "moment → où",
+  "tiles": [
+   "C'est",
+   "l'été",
+   "où",
+   "on",
+   "s'est",
+   "rencontrés"
+  ],
+  "decoys": [
+   "quand",
+   "que"
+  ]
+ },
+ {
+  "id": "fr.q.relatives.44",
+  "entry": "fr.relatives.ou",
+  "format": "transform",
+  "prompt": "Voici la maison. Mes grands-parents ont vécu dans cette maison.",
+  "task": "→ où",
+  "why": "lieu → où",
+  "accept": [
+   "Voici la maison où mes grands-parents ont vécu.",
+   "Voici la maison où ont vécu mes grands-parents."
+  ]
+ },
+ {
+  "id": "fr.q.relatives.45",
+  "entry": "fr.relatives.que",
+  "format": "transform",
+  "prompt": "Je porte la robe. Je l'ai achetée hier.",
+  "task": "→ que",
+  "why": "que + accord",
+  "accept": [
+   "Je porte la robe que j'ai achetée hier."
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.48",
+  "entry": "fr.verb-prep.reussir",
+  "format": "spot-it",
+  "prompt": "Après trois mois, il a réussi de trouver un appart.",
+  "why": "réussir à",
+  "steps": [
+   {
+    "options": [
+     "Après",
+     "trois",
+     "mois,",
+     "il",
+     "a",
+     "réussi",
+     "de",
+     "trouver",
+     "un",
+     "appart."
+    ],
+    "answer": 6
+   },
+   {
+    "prompt": "de",
+    "options": [
+     "en",
+     "à",
+     "pour"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.49",
+  "entry": "fr.verb-prep.ressembler",
+  "format": "spot-it",
+  "prompt": "Tu ressembles beaucoup ta mère.",
+  "why": "ressembler à",
+  "steps": [
+   {
+    "options": [
+     "Tu",
+     "ressembles",
+     "beaucoup",
+     "ta",
+     "mère."
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "ta",
+    "options": [
+     "avec ta",
+     "à ta",
+     "de ta"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.50",
+  "entry": "fr.verb-prep.commencer",
+  "format": "two-step",
+  "prompt": "Il a commencé ＿ pleuvoir, alors on a arrêté ＿ jouer.",
+  "why": "commencer à, arrêter de",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "par"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "pour",
+     "de",
+     "à"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.51",
+  "entry": "fr.verb-prep.essayer",
+  "format": "two-step",
+  "prompt": "J'ai essayé ＿ l'appeler, mais il refuse ＿ me répondre.",
+  "why": "essayer de, refuser de",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "pour",
+     "de"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "pour",
+     "à",
+     "de"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.52",
+  "entry": "fr.verb-prep.s-habituer",
+  "format": "two-step",
+  "prompt": "Je n'arrive pas à m'habituer ＿ froid. Je rêve ＿ soleil !",
+  "why": "s'habituer à, rêver de",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "du",
+     "le"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "au",
+     "le",
+     "du"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.53",
+  "entry": "fr.verb-prep.s-occuper",
+  "format": "pick-one",
+  "prompt": "— Qui gère les inscriptions cette année ? — Claire va ＿.",
+  "why": "s'occuper de → en",
+  "steps": [
+   {
+    "options": [
+     "s'en occuper",
+     "s'occuper",
+     "les occuper",
+     "s'y occuper"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.54",
+  "entry": "fr.verb-prep.hesiter",
+  "format": "pick-one",
+  "prompt": "N'hésite pas ＿ m'appeler si tu as besoin de quelque chose.",
+  "why": "hésiter à",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "à",
+     "en",
+     "pour"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.55",
+  "entry": "fr.verb-prep.payer",
+  "format": "pick-one",
+  "prompt": "Laisse, c'est moi qui paie ＿.",
+  "gloss": "I'm paying for the coffees.",
+  "why": "payer qqch (sans pour)",
+  "steps": [
+   {
+    "options": [
+     "les cafés",
+     "des cafés",
+     "aux cafés",
+     "pour les cafés"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.56",
+  "entry": "fr.verb-prep.apprendre",
+  "format": "build",
+  "gloss": "He's learning to swim and dreams of becoming a lifeguard.",
+  "why": "apprendre à, rêver de",
+  "tiles": [
+   "Il",
+   "apprend",
+   "à",
+   "nager",
+   "et",
+   "rêve",
+   "de",
+   "devenir",
+   "maître-nageur"
+  ],
+  "decoys": [
+   "pour",
+   "rêve à"
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.57",
+  "entry": "fr.verb-prep.telephoner",
+  "format": "transform",
+  "prompt": "J'appelle mes parents le dimanche.",
+  "task": "appeler → téléphoner",
+  "why": "téléphoner à qqn",
+  "accept": [
+   "Je téléphone à mes parents le dimanche.",
+   "Le dimanche, je téléphone à mes parents."
+  ]
+ },
+ {
+  "id": "fr.q.future.31",
+  "entry": "fr.future.quand",
+  "format": "spot-it",
+  "prompt": "Quand j'arrive à Paris, je t'appellerai.",
+  "gloss": "When I get to Paris (tomorrow), I'll call you.",
+  "why": "quand + futur",
+  "steps": [
+   {
+    "options": [
+     "Quand",
+     "j'arrive",
+     "à",
+     "Paris,",
+     "je",
+     "t'appellerai."
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "j'arrive",
+    "options": [
+     "j'arriverais",
+     "j'arrivais",
+     "j'arriverai"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.32",
+  "entry": "fr.future.attenuation",
+  "format": "spot-it",
+  "prompt": "Tu as l'air épuisé, tu devras te reposer un peu.",
+  "gloss": "You should rest a bit.",
+  "why": "conseil → conditionnel",
+  "steps": [
+   {
+    "options": [
+     "Tu",
+     "as",
+     "l'air",
+     "épuisé,",
+     "tu",
+     "devras",
+     "te",
+     "reposer",
+     "un",
+     "peu."
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "devras",
+    "options": [
+     "dois",
+     "devrait",
+     "devrais"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.33",
+  "entry": "fr.future.quand",
+  "format": "two-step",
+  "prompt": "Dès que tu ＿, on ＿ à table.",
+  "why": "dès que + futur",
+  "steps": [
+   {
+    "prompt": "arriver",
+    "options": [
+     "arrives",
+     "arriveras",
+     "arriverais"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "passer",
+    "options": [
+     "passe",
+     "passera",
+     "passerait"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.34",
+  "entry": "fr.future.futur-irr",
+  "format": "two-step",
+  "prompt": "L'an prochain, nous ＿ à Montréal et tu ＿ venir nous voir.",
+  "why": "ir- · pourr-",
+  "steps": [
+   {
+    "prompt": "aller",
+    "options": [
+     "irons",
+     "allerons",
+     "irions"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "pouvoir",
+    "options": [
+     "pourras",
+     "pourrais",
+     "pouvras"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.35",
+  "entry": "fr.future.attenuation",
+  "format": "pick-one",
+  "prompt": "Excusez-moi, vous ＿ me dire où est la gare ?",
+  "gloss": "to a stranger, politely",
+  "why": "politesse → conditionnel",
+  "steps": [
+   {
+    "options": [
+     "pourrez",
+     "pouviez",
+     "pourrais",
+     "pourriez"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.36",
+  "entry": "fr.future.quand",
+  "format": "transform",
+  "prompt": "Quand j'ai le temps, je lis.",
+  "task": "→ futur",
+  "why": "quand + futur",
+  "accept": [
+   "Quand j'aurai le temps, je lirai."
+  ]
+ },
+ {
+  "id": "fr.q.future.37",
+  "entry": "fr.future.quand",
+  "format": "build",
+  "gloss": "I'll tell you as soon as I know.",
+  "why": "dès que + futur",
+  "tiles": [
+   "Je",
+   "te",
+   "le",
+   "dirai",
+   "dès",
+   "que",
+   "je",
+   "le",
+   "saurai"
+  ],
+  "decoys": [
+   "sais"
+  ],
+  "accept": [
+   "Je te le dirai dès que je saurai"
+  ]
+ },
+ {
+  "id": "fr.q.si.31",
+  "entry": "fr.si.si-imparfait",
+  "format": "spot-it",
+  "prompt": "Si j'aurais le temps, je t'aiderais.",
+  "why": "jamais si + conditionnel",
+  "steps": [
+   {
+    "options": [
+     "Si",
+     "j'aurais",
+     "le",
+     "temps,",
+     "je",
+     "t'aiderais."
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "j'aurais",
+    "options": [
+     "j'ai",
+     "j'aurai",
+     "j'avais"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.si.32",
+  "entry": "fr.si.si-imparfait",
+  "format": "pick-one",
+  "prompt": "Franchement, si j'étais toi, je ＿ ce boulot.",
+  "why": "imparfait → conditionnel",
+  "steps": [
+   {
+    "options": [
+     "prendrais",
+     "prends",
+     "prenais",
+     "prendrai"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.si.33",
+  "entry": "fr.si.si-present",
+  "format": "pick-one",
+  "prompt": "Si tu ＿ ce soir, appelle-moi !",
+  "gloss": "If you're free tonight, call me!",
+  "why": "si + présent",
+  "steps": [
+   {
+    "options": [
+     "es libre",
+     "étais libre",
+     "serais libre",
+     "seras libre"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.si.34",
+  "entry": "fr.si.si-imparfait",
+  "format": "transform",
+  "prompt": "Je n'ai pas de voiture, donc je ne peux pas venir.",
+  "task": "→ si",
+  "why": "si + imparfait",
+  "accept": [
+   "Si j'avais une voiture, je pourrais venir.",
+   "Je pourrais venir si j'avais une voiture."
+  ]
+ },
+ {
+  "id": "fr.q.si.35",
+  "entry": "fr.si.si-imparfait",
+  "format": "build",
+  "gloss": "If we left now, we'd arrive on time.",
+  "why": "si + imparfait",
+  "tiles": [
+   "Si",
+   "on",
+   "partait",
+   "maintenant,",
+   "on",
+   "arriverait",
+   "à",
+   "l'heure"
+  ],
+  "decoys": [
+   "partirait",
+   "arrivera"
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.50",
+  "entry": "fr.subjunctive.vouloir",
+  "format": "spot-it",
+  "prompt": "Je veux que je parte tôt demain.",
+  "gloss": "I want to leave early tomorrow.",
+  "why": "même sujet → infinitif",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "veux",
+     "que je parte",
+     "tôt",
+     "demain."
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "que je parte",
+    "options": [
+     "partir",
+     "que je partirai",
+     "que je pars"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.51",
+  "entry": "fr.subjunctive.esperer",
+  "format": "spot-it",
+  "prompt": "J'espère que tu sois bien arrivé.",
+  "why": "espérer → indicatif",
+  "steps": [
+   {
+    "options": [
+     "J'espère",
+     "que",
+     "tu",
+     "sois",
+     "bien",
+     "arrivé."
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "sois",
+    "options": [
+     "es",
+     "étais",
+     "serais"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.52",
+  "entry": "fr.subjunctive.pour-que",
+  "format": "pick-one",
+  "prompt": "Je parle lentement pour que tout le monde ＿.",
+  "why": "pour que + subj.",
+  "steps": [
+   {
+    "options": [
+     "comprendra",
+     "comprenne",
+     "comprendre",
+     "comprend"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.53",
+  "entry": "fr.subjunctive.il-est",
+  "format": "pick-one",
+  "prompt": "— On part à quelle heure ? — Il est important qu'on ＿ là-bas avant midi.",
+  "why": "important que + subj.",
+  "steps": [
+   {
+    "options": [
+     "être",
+     "est",
+     "soit",
+     "sera"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.54",
+  "entry": "fr.subjunctive.vouloir",
+  "format": "two-step",
+  "prompt": "Mes parents veulent que je ＿ médecin, mais moi, je veux ＿ musicien.",
+  "why": "autre sujet, même sujet",
+  "steps": [
+   {
+    "prompt": "devenir",
+    "options": [
+     "devenir",
+     "deviens",
+     "devienne"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "que je devienne",
+     "devenir",
+     "devienne"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.55",
+  "entry": "fr.subjunctive.emotion",
+  "format": "two-step",
+  "prompt": "J'ai peur qu'il ＿ en retard. J'espère qu'il ＿ un taxi.",
+  "why": "peur subj., espérer ind.",
+  "steps": [
+   {
+    "prompt": "être",
+    "options": [
+     "soit",
+     "est",
+     "sera"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "prendre",
+    "options": [
+     "prendra",
+     "prenne",
+     "prendrait"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.56",
+  "entry": "fr.subjunctive.il-faut",
+  "format": "two-step",
+  "prompt": "Il faut que nous ＿ maintenant et que tu ＿ tes valises.",
+  "why": "faut que → subjonctif",
+  "steps": [
+   {
+    "prompt": "partir",
+    "options": [
+     "partirons",
+     "partons",
+     "partions"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "faire",
+    "options": [
+     "feras",
+     "fasses",
+     "fais"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.57",
+  "entry": "fr.subjunctive.il-faut",
+  "format": "transform",
+  "prompt": "Tu dois finir ce rapport.",
+  "task": "→ il faut que",
+  "why": "finir → finisses",
+  "accept": [
+   "Il faut que tu finisses ce rapport."
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.58",
+  "entry": "fr.subjunctive.vouloir",
+  "format": "transform",
+  "prompt": "Viens avec nous, j'aimerais bien.",
+  "task": "→ j'aimerais que",
+  "why": "aimer que + subj.",
+  "accept": [
+   "J'aimerais que tu viennes avec nous.",
+   "J'aimerais bien que tu viennes avec nous."
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.59",
+  "entry": "fr.subjunctive.emotion",
+  "format": "build",
+  "gloss": "I'm glad you can come.",
+  "why": "émotion → subj.",
+  "tiles": [
+   "Je",
+   "suis",
+   "content",
+   "que",
+   "tu",
+   "puisses",
+   "venir"
+  ],
+  "decoys": [
+   "peux"
+  ]
+ },
+ {
+  "id": "fr.q.time.43",
+  "entry": "fr.time.depuis",
+  "format": "spot-it",
+  "prompt": "J'habite ici pendant cinq ans.",
+  "gloss": "I've lived here for five years.",
+  "why": "encore vrai → depuis",
+  "steps": [
+   {
+    "options": [
+     "J'habite",
+     "ici",
+     "pendant",
+     "cinq",
+     "ans."
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "pendant",
+    "options": [
+     "pour",
+     "il y a",
+     "depuis"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.44",
+  "entry": "fr.time.il-y-a",
+  "format": "spot-it",
+  "prompt": "Je suis arrivé en France depuis deux ans.",
+  "gloss": "I arrived in France two years ago.",
+  "why": "il y a (ago)",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "suis",
+     "arrivé",
+     "en",
+     "France",
+     "depuis",
+     "deux",
+     "ans."
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "depuis",
+    "options": [
+     "dans",
+     "il y a",
+     "pendant"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.45",
+  "entry": "fr.time.en",
+  "format": "spot-it",
+  "prompt": "J'ai lu tout le roman dans deux jours.",
+  "gloss": "I read the whole novel in two days.",
+  "why": "temps nécessaire → en",
+  "steps": [
+   {
+    "options": [
+     "J'ai",
+     "lu",
+     "tout",
+     "le",
+     "roman",
+     "dans",
+     "deux",
+     "jours."
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "dans",
+    "options": [
+     "pendant",
+     "en",
+     "depuis"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.46",
+  "entry": "fr.time.ca-fait",
+  "format": "pick-one",
+  "prompt": "— Tu es là depuis quand ? — ＿ une heure que je t'attends !",
+  "why": "ça fait … que",
+  "steps": [
+   {
+    "options": [
+     "Depuis",
+     "Il fait",
+     "Pendant",
+     "Ça fait"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.47",
+  "entry": "fr.time.venir-de",
+  "format": "pick-one",
+  "prompt": "— Tu as vu Marc ? — Oui, il ＿ partir, il est encore dans la rue.",
+  "why": "venir de = just",
+  "steps": [
+   {
+    "options": [
+     "vient de",
+     "venait",
+     "va",
+     "est en train de"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.48",
+  "entry": "fr.time.il-y-a",
+  "format": "two-step",
+  "prompt": "J'ai rencontré Paul ＿ trois ans, et on est ensemble ＿ ce jour-là.",
+  "why": "il y a, depuis",
+  "steps": [
+   {
+    "options": [
+     "depuis",
+     "pendant",
+     "il y a"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "pendant",
+     "il y a",
+     "depuis"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.49",
+  "entry": "fr.time.pendant",
+  "format": "two-step",
+  "prompt": "J'ai vécu à Lyon ＿ six ans ; maintenant, j'habite à Nantes ＿ 2021.",
+  "why": "pendant fermé · depuis",
+  "steps": [
+   {
+    "options": [
+     "depuis",
+     "pendant",
+     "il y a"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "pendant",
+     "depuis",
+     "il y a"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.time.50",
+  "entry": "fr.time.depuis",
+  "format": "transform",
+  "prompt": "J'ai commencé à apprendre le français il y a deux ans.",
+  "task": "→ depuis",
+  "why": "depuis + présent",
+  "accept": [
+   "J'apprends le français depuis deux ans."
+  ]
+ },
+ {
+  "id": "fr.q.time.51",
+  "entry": "fr.time.en-train",
+  "format": "transform",
+  "prompt": "Ne me dérange pas, je travaille.",
+  "task": "→ être en train de",
+  "why": "en train de",
+  "accept": [
+   "Ne me dérange pas, je suis en train de travailler."
+  ]
+ },
+ {
+  "id": "fr.q.cest.32",
+  "entry": "fr.cest.cest-adj",
+  "format": "spot-it",
+  "prompt": "Apprendre une langue à 40 ans, il est difficile mais possible.",
+  "why": "idée → c'est",
+  "steps": [
+   {
+    "options": [
+     "Apprendre",
+     "une",
+     "langue",
+     "à",
+     "40",
+     "ans,",
+     "il est",
+     "difficile",
+     "mais",
+     "possible."
+    ],
+    "answer": 6
+   },
+   {
+    "prompt": "il est",
+    "options": [
+     "ce sont",
+     "elle est",
+     "c'est"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.cest.33",
+  "entry": "fr.cest.cest-adj",
+  "format": "pick-one",
+  "prompt": "— Je pars vivre au Japon ! — Waouh, ＿ génial !",
+  "why": "situation → c'est",
+  "steps": [
+   {
+    "options": [
+     "ça est",
+     "c'est",
+     "il est",
+     "elle est"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.cest.34",
+  "entry": "fr.cest.cest-adj",
+  "format": "pick-one",
+  "prompt": "J'ai goûté la tarte de ta mère : ＿ délicieuse !",
+  "why": "la tarte → elle",
+  "steps": [
+   {
+    "options": [
+     "c'était",
+     "c'est",
+     "elle est",
+     "il est"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.cest.35",
+  "entry": "fr.cest.cest-adj",
+  "format": "two-step",
+  "prompt": "Tu connais ma sœur ? ＿ très drôle. Et parler avec elle, ＿ toujours un plaisir.",
+  "why": "personne · idée",
+  "steps": [
+   {
+    "options": [
+     "Il est",
+     "Elle est",
+     "C'est"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "elle est",
+     "c'est",
+     "il est"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.32",
+  "entry": "fr.adjectives.mieux",
+  "format": "spot-it",
+  "prompt": "Elle parle meilleur anglais que moi.",
+  "gloss": "She speaks English better than me.",
+  "why": "verbe → mieux",
+  "steps": [
+   {
+    "options": [
+     "Elle",
+     "parle",
+     "meilleur",
+     "anglais",
+     "que",
+     "moi."
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "meilleur",
+    "options": [
+     "plus bien",
+     "meilleure",
+     "mieux"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.33",
+  "entry": "fr.adjectives.ment-slot",
+  "format": "spot-it",
+  "prompt": "J'ai fini déjà mes devoirs.",
+  "why": "adverbe avant le participe",
+  "steps": [
+   {
+    "options": [
+     "J'ai",
+     "fini",
+     "déjà",
+     "mes",
+     "devoirs."
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "Déjà j'ai fini mes devoirs.",
+     "J'ai fini mes déjà devoirs.",
+     "J'ai déjà fini mes devoirs."
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.34",
+  "entry": "fr.adjectives.autant",
+  "format": "pick-one",
+  "prompt": "Il a ＿ amis que son frère.",
+  "gloss": "as many friends as",
+  "why": "autant de + nom",
+  "steps": [
+   {
+    "options": [
+     "autant des",
+     "autant d'",
+     "aussi d'",
+     "aussi beaucoup d'"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.35",
+  "entry": "fr.adjectives.superlative",
+  "format": "pick-one",
+  "prompt": "Paris, c'est la ville ＿ de France.",
+  "gloss": "the most expensive",
+  "why": "la plus + accord",
+  "steps": [
+   {
+    "options": [
+     "plus chère",
+     "la plus cher",
+     "le plus cher",
+     "la plus chère"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.36",
+  "entry": "fr.adjectives.meilleur",
+  "format": "two-step",
+  "prompt": "Ma sœur cuisine ＿ que moi, mais mes gâteaux sont ＿ !",
+  "why": "adverbe · adjectif accordé",
+  "steps": [
+   {
+    "options": [
+     "meilleur",
+     "meilleure",
+     "mieux"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "mieux",
+     "meilleur",
+     "meilleurs"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.37",
+  "entry": "fr.adjectives.il-est-de",
+  "format": "transform",
+  "prompt": "C'est difficile de trouver un appart à Paris.",
+  "task": "→ registre écrit",
+  "why": "il est … de",
+  "accept": [
+   "Il est difficile de trouver un appart à Paris.",
+   "Il est difficile de trouver un appartement à Paris."
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.38",
+  "entry": "fr.adjectives.plus-que",
+  "format": "build",
+  "gloss": "This train is less expensive than the plane, but slower.",
+  "why": "moins … que",
+  "tiles": [
+   "Ce",
+   "train",
+   "est",
+   "moins",
+   "cher",
+   "que",
+   "l'avion,",
+   "mais",
+   "plus",
+   "lent"
+  ],
+  "decoys": [
+   "de",
+   "aussi"
+  ]
+ },
+ {
+  "id": "fr.q.adjectives.39",
+  "entry": "fr.adjectives.ment",
+  "format": "transform",
+  "prompt": "Il travaille de manière efficace.",
+  "task": "→ adverbe en -ment",
+  "why": "efficace + -ment",
+  "accept": [
+   "Il travaille efficacement."
+  ]
+ },
+ {
+  "id": "fr.q.agreement.53",
+  "entry": "fr.agreement.pronoun",
+  "format": "spot-it",
+  "prompt": "Ta lettre ? Je l'ai lu hier soir.",
+  "why": "l'(lettre) → accord",
+  "steps": [
+   {
+    "options": [
+     "Ta",
+     "lettre",
+     "?",
+     "Je",
+     "l'ai",
+     "lu",
+     "hier",
+     "soir."
+    ],
+    "answer": 5
+   },
+   {
+    "prompt": "lu",
+    "options": [
+     "lue",
+     "lues",
+     "lus"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.54",
+  "entry": "fr.agreement.que",
+  "format": "spot-it",
+  "prompt": "Les chaussures que j'ai acheté sont trop petites.",
+  "why": "COD avant → accord",
+  "steps": [
+   {
+    "options": [
+     "Les",
+     "chaussures",
+     "que",
+     "j'ai",
+     "acheté",
+     "sont",
+     "trop",
+     "petites."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "acheté",
+    "options": [
+     "achetés",
+     "achetées",
+     "achetée"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.55",
+  "entry": "fr.agreement.pronoun",
+  "format": "two-step",
+  "prompt": "Mes clés ? Je ＿ ai ＿ dans la voiture.",
+  "why": "les avant avoir",
+  "steps": [
+   {
+    "options": [
+     "leur",
+     "en",
+     "les"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "laissées",
+     "laissé",
+     "laissés"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.56",
+  "entry": "fr.agreement.vous",
+  "format": "pick-one",
+  "prompt": "Madame Dupont, vous êtes ＿ à quelle heure ?",
+  "why": "vous = une femme",
+  "steps": [
+   {
+    "options": [
+     "arrivées",
+     "arrivés",
+     "arrivé",
+     "arrivée"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.57",
+  "entry": "fr.agreement.etre-fpl",
+  "format": "pick-one",
+  "prompt": "Mes sœurs ＿ en vacances hier.",
+  "why": "être → accord",
+  "steps": [
+   {
+    "options": [
+     "ont parties",
+     "sont parties",
+     "sont partis",
+     "ont parti"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.58",
+  "entry": "fr.agreement.pronoun",
+  "format": "transform",
+  "prompt": "J'ai rangé les assiettes.",
+  "task": "les assiettes → pronom",
+  "why": "les … rangées",
+  "accept": [
+   "Je les ai rangées."
+  ]
+ },
+ {
+  "id": "fr.q.etre-avoir.48",
+  "entry": "fr.etre-avoir.sortir-etre",
+  "format": "spot-it",
+  "prompt": "J'ai sorti avec mes amis hier soir.",
+  "gloss": "I went out with friends last night.",
+  "why": "sortir seul → être",
+  "steps": [
+   {
+    "options": [
+     "J'ai",
+     "sorti",
+     "avec",
+     "mes",
+     "amis",
+     "hier",
+     "soir."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "J'ai",
+    "options": [
+     "Je suis",
+     "Je me suis",
+     "J'avais"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.etre-avoir.49",
+  "entry": "fr.etre-avoir.descendre-avoir",
+  "format": "two-step",
+  "prompt": "Ce matin, je ＿ monté au grenier et ＿ descendu les cartons.",
+  "why": "sans objet, avec objet",
+  "steps": [
+   {
+    "options": [
+     "suis",
+     "me suis",
+     "ai"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "je suis",
+     "j'ai",
+     "je me suis"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.etre-avoir.50",
+  "entry": "fr.etre-avoir.passer-avoir",
+  "format": "two-step",
+  "prompt": "Hier, je ＿ passé chez Paul, et on ＿ passé l'après-midi à jouer.",
+  "why": "passer chez → être",
+  "steps": [
+   {
+    "options": [
+     "suis",
+     "me suis",
+     "ai"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "a",
+     "s'est",
+     "est"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.etre-avoir.51",
+  "entry": "fr.etre-avoir.rentrer-avoir",
+  "format": "pick-one",
+  "prompt": "Il faisait froid, alors ＿ les plantes dans la maison.",
+  "why": "objet → avoir",
+  "steps": [
+   {
+    "options": [
+     "je suis rentré",
+     "j'ai rentré",
+     "j'étais rentré",
+     "je me suis rentré"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.etre-avoir.52",
+  "entry": "fr.etre-avoir.tomber",
+  "format": "pick-one",
+  "prompt": "Elle ＿ dans l'escalier et s'est cassé le bras.",
+  "why": "tomber → être",
+  "steps": [
+   {
+    "options": [
+     "s'est tombée",
+     "a tombé",
+     "est tombé",
+     "est tombée"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.places.37",
+  "entry": "fr.places.du",
+  "format": "pick-one",
+  "prompt": "— Tu rentres d'où, tout bronzé ? — Je rentre ＿ Portugal.",
+  "why": "le Portugal → du",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "de le",
+     "de",
+     "du"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.places.38",
+  "entry": "fr.places.des",
+  "format": "two-step",
+  "prompt": "Il est revenu ＿ Pays-Bas hier et repart ＿ Afrique lundi.",
+  "why": "les Pays-Bas · continent",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "des",
+     "du"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "à l'",
+     "en",
+     "au"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.articles.45",
+  "entry": "fr.articles.jouer",
+  "format": "spot-it",
+  "prompt": "Le samedi, je joue de foot avec mes collègues.",
+  "why": "sport → jouer à",
+  "steps": [
+   {
+    "options": [
+     "Le",
+     "samedi,",
+     "je",
+     "joue",
+     "de",
+     "foot",
+     "avec",
+     "mes",
+     "collègues."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "de",
+    "options": [
+     "au",
+     "le",
+     "du"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.articles.46",
+  "entry": "fr.articles.faire",
+  "format": "pick-one",
+  "prompt": "Depuis janvier, il fait ＿ yoga tous les matins.",
+  "why": "faire du + activité",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "au",
+     "de la",
+     "du"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.gender.43",
+  "entry": "fr.gender.eme",
+  "format": "spot-it",
+  "prompt": "Ce problème est très compliquée.",
+  "why": "le problème (m.)",
+  "steps": [
+   {
+    "options": [
+     "Ce",
+     "problème",
+     "est",
+     "très",
+     "compliquée."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "compliquée.",
+    "options": [
+     "compliqué.",
+     "compliquées.",
+     "compliqués."
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.gender.44",
+  "entry": "fr.gender.x-te",
+  "format": "spot-it",
+  "prompt": "Je te souhaite une bonne été !",
+  "why": "l'été (m.)",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "te",
+     "souhaite",
+     "une bonne",
+     "été",
+     "!"
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "une bonne",
+    "options": [
+     "une bon",
+     "un bonne",
+     "un bon"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.basics.34",
+  "entry": "fr.basics.manquer",
+  "format": "pick-one",
+  "prompt": "Ça fait trois mois que je suis à Berlin. Ma famille ＿ beaucoup.",
+  "gloss": "I miss my family a lot.",
+  "why": "le manqué = sujet",
+  "steps": [
+   {
+    "options": [
+     "me manquent",
+     "me manque",
+     "je manque",
+     "manque moi"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.basics.35",
+  "entry": "fr.basics.savoir",
+  "format": "spot-it",
+  "prompt": "Tu connais nager ?",
+  "gloss": "Can you swim?",
+  "why": "savoir-faire → savoir",
+  "steps": [
+   {
+    "options": [
+     "Tu",
+     "connais",
+     "nager",
+     "?"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "connais",
+    "options": [
+     "connaît",
+     "sais",
+     "peux"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.basics.36",
+  "entry": "fr.basics.plaire",
+  "format": "pick-one",
+  "prompt": "Ce quartier ＿ beaucoup à mes parents.",
+  "gloss": "My parents really like this neighbourhood.",
+  "why": "chose aimée = sujet",
+  "steps": [
+   {
+    "options": [
+     "aime",
+     "plaît de",
+     "plaisent",
+     "plaît"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.basics.37",
+  "entry": "fr.basics.connaitre",
+  "format": "two-step",
+  "prompt": "Tu ＿ où habite Léa ? Je ne ＿ pas bien son quartier.",
+  "why": "fait · lieu",
+  "steps": [
+   {
+    "options": [
+     "peux",
+     "sais",
+     "connais"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "sache",
+     "sais",
+     "connais"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.basics.38",
+  "entry": "fr.basics.besoin",
+  "format": "pick-one",
+  "prompt": "— Tu veux mon parapluie ? — Non merci, je n'＿ ai pas besoin.",
+  "why": "besoin de → en",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "y",
+     "en",
+     "lui"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.questions.31",
+  "entry": "fr.questions.word-final",
+  "format": "transform",
+  "prompt": "Qu'est-ce que vous faites ce week-end ?",
+  "task": "→ oral, mot à la fin",
+  "why": "que → quoi final",
+  "accept": [
+   "Vous faites quoi ce week-end ?"
+  ]
+ },
+ {
+  "id": "fr.q.questions.32",
+  "entry": "fr.questions.word-final",
+  "format": "transform",
+  "prompt": "À quelle heure est-ce que le film commence ?",
+  "task": "→ oral, mot à la fin",
+  "why": "mot interrogatif final",
+  "accept": [
+   "Le film commence à quelle heure ?"
+  ]
+ },
+ {
+  "id": "fr.q.questions.33",
+  "entry": "fr.questions.word-final",
+  "format": "spot-it",
+  "prompt": "Tu fais que ce soir ?",
+  "gloss": "What are you doing tonight?",
+  "why": "en fin → quoi",
+  "steps": [
+   {
+    "options": [
+     "Tu",
+     "fais",
+     "que",
+     "ce",
+     "soir",
+     "?"
+    ],
+    "answer": 2
+   },
+   {
+    "prompt": "que",
+    "options": [
+     "quoi",
+     "quel",
+     "qu'est-ce"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.questions.34",
+  "entry": "fr.questions.word-final",
+  "format": "build",
+  "gloss": "(casually) How much did you pay for it?",
+  "why": "combien à la fin",
+  "tiles": [
+   "Tu",
+   "l'as",
+   "payé",
+   "combien",
+   "?"
+  ],
+  "decoys": [
+   "est-ce"
+  ]
+ },
+ {
+  "id": "fr.q.register.32",
+  "entry": "fr.register.donc",
+  "format": "pick-one",
+  "prompt": "Les ventes ont baissé de 20 % ; ＿, l'entreprise réduit ses coûts.",
+  "gloss": "annual report",
+  "why": "écrit → par conséquent",
+  "steps": [
+   {
+    "options": [
+     "car",
+     "par conséquent",
+     "parce que",
+     "du coup"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.register.33",
+  "entry": "fr.register.du-coup",
+  "format": "pick-one",
+  "prompt": "Le train est annulé, ＿ je viens en voiture.",
+  "gloss": "text to a friend",
+  "why": "oral → du coup",
+  "steps": [
+   {
+    "options": [
+     "comme",
+     "puisque",
+     "car",
+     "du coup"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.register.34",
+  "entry": "fr.register.la",
+  "format": "pick-one",
+  "prompt": "＿, je suis vraiment crevé, on se voit demain ?",
+  "gloss": "Right now I'm really beat.",
+  "why": "là = maintenant",
+  "steps": [
+   {
+    "options": [
+     "Là",
+     "Voilà",
+     "Là-bas",
+     "Ici"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.register.35",
+  "entry": "fr.register.donc",
+  "format": "transform",
+  "prompt": "Il pleuvait, du coup on est restés à la maison.",
+  "task": "→ écrit (par conséquent)",
+  "why": "écrit → par conséquent",
+  "accept": [
+   "Il pleuvait ; par conséquent, nous sommes restés à la maison.",
+   "Il pleuvait ; par conséquent, nous sommes restées à la maison.",
+   "Il pleuvait ; par conséquent, on est restés à la maison.",
+   "Il pleuvait, par conséquent nous sommes restés chez nous."
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.31",
+  "entry": "fr.indefinites.tout",
+  "format": "spot-it",
+  "prompt": "Tous le monde est venu à la fête.",
+  "why": "tout le monde",
+  "steps": [
+   {
+    "options": [
+     "Tous",
+     "le",
+     "monde",
+     "est",
+     "venu",
+     "à",
+     "la",
+     "fête."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "Tous",
+    "options": [
+     "Toute",
+     "Tous les",
+     "Tout"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.32",
+  "entry": "fr.indefinites.chacun",
+  "format": "spot-it",
+  "prompt": "Chaque a son avis sur la question.",
+  "why": "seul → chacun",
+  "steps": [
+   {
+    "options": [
+     "Chaque",
+     "a",
+     "son",
+     "avis",
+     "sur",
+     "la",
+     "question."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "Chaque",
+    "options": [
+     "Chaque un",
+     "Chacune",
+     "Chacun"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.33",
+  "entry": "fr.indefinites.toute",
+  "format": "pick-one",
+  "prompt": "J'avais tellement faim que j'ai mangé ＿ la pizza !",
+  "why": "la pizza → toute",
+  "steps": [
+   {
+    "options": [
+     "toute",
+     "tout",
+     "tous",
+     "toutes"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.34",
+  "entry": "fr.indefinites.ceux",
+  "format": "pick-one",
+  "prompt": "Ces livres sont à moi, mais ＿ qui sont sur la table sont à Paul.",
+  "why": "les livres → ceux",
+  "steps": [
+   {
+    "options": [
+     "ces",
+     "celles",
+     "ceux",
+     "celui"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.35",
+  "entry": "fr.indefinites.toutes",
+  "format": "two-step",
+  "prompt": "＿ les filles sont parties, mais ＿ les garçons sont restés.",
+  "why": "accord avec le nom",
+  "steps": [
+   {
+    "options": [
+     "Tous",
+     "Toutes",
+     "Tout"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "tous",
+     "toutes",
+     "tout"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.36",
+  "entry": "fr.indefinites.certains",
+  "format": "pick-one",
+  "prompt": "＿ étudiants n'ont pas compris, d'autres si.",
+  "why": "certains + nom",
+  "steps": [
+   {
+    "options": [
+     "Certains",
+     "Des certains",
+     "Certains des",
+     "Quelques-uns"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.indefinites.37",
+  "entry": "fr.indefinites.chacun",
+  "format": "build",
+  "gloss": "Everyone brings something to eat.",
+  "why": "chacun + singulier",
+  "tiles": [
+   "Chacun",
+   "apporte",
+   "quelque",
+   "chose",
+   "à",
+   "manger"
+  ],
+  "decoys": [
+   "Chaque",
+   "apportent"
+  ]
+ },
+ {
+  "id": "fr.q.reported.32",
+  "entry": "fr.reported.si",
+  "format": "spot-it",
+  "prompt": "Il m'a demandé est-ce que je venais.",
+  "gloss": "He asked me if I was coming.",
+  "why": "oui/non → si",
+  "steps": [
+   {
+    "options": [
+     "Il",
+     "m'a",
+     "demandé",
+     "est-ce que",
+     "je",
+     "venais."
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "est-ce que",
+    "options": [
+     "si",
+     "ce que",
+     "que"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.reported.33",
+  "entry": "fr.reported.ce-que",
+  "format": "spot-it",
+  "prompt": "Je ne sais pas qu'est-ce qu'il veut.",
+  "why": "indirect → ce que",
+  "steps": [
+   {
+    "options": [
+     "Je",
+     "ne",
+     "sais",
+     "pas",
+     "qu'est-ce qu'il",
+     "veut."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "qu'est-ce qu'il",
+    "options": [
+     "que il",
+     "ce qu'il",
+     "qu'il"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.reported.34",
+  "entry": "fr.reported.ce-que",
+  "format": "pick-one",
+  "prompt": "Raconte-moi ＿ s'est passé hier soir.",
+  "why": "sujet → ce qui",
+  "steps": [
+   {
+    "options": [
+     "qu'est-ce qui",
+     "qui",
+     "ce qui",
+     "ce que"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.reported.35",
+  "entry": "fr.reported.si",
+  "format": "transform",
+  "prompt": "Elle me demande : « Tu as faim ? »",
+  "task": "→ discours indirect",
+  "why": "oui/non → si",
+  "accept": [
+   "Elle me demande si j'ai faim."
+  ]
+ },
+ {
+  "id": "fr.q.reported.36",
+  "entry": "fr.reported.wh",
+  "format": "transform",
+  "prompt": "Il me demande : « Pourquoi est-ce que tu pars ? »",
+  "task": "→ discours indirect",
+  "why": "pas d'est-ce que",
+  "accept": [
+   "Il me demande pourquoi je pars."
+  ]
+ },
+ {
+  "id": "fr.q.reported.37",
+  "entry": "fr.reported.ce-que",
+  "format": "build",
+  "gloss": "I don't know what he wants.",
+  "why": "indirect → ce que",
+  "tiles": [
+   "Je",
+   "ne",
+   "sais",
+   "pas",
+   "ce",
+   "qu'il",
+   "veut"
+  ],
+  "decoys": [
+   "qu'est-ce"
+  ]
+ },
+ {
+  "id": "fr.q.reported.38",
+  "entry": "fr.reported.si",
+  "format": "two-step",
+  "prompt": "Il m'a dit ＿ il était malade et m'a demandé ＿ je pouvais l'aider.",
+  "why": "que · si",
+  "steps": [
+   {
+    "options": [
+     "ce qu'",
+     "si",
+     "qu'"
+    ],
+    "answer": 2
+   },
+   {
+    "options": [
+     "ce que",
+     "que",
+     "si"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.voice.32",
+  "entry": "fr.voice.passive",
+  "format": "spot-it",
+  "prompt": "La lettre a été écrit par ma grand-mère.",
+  "why": "passif → accord",
+  "steps": [
+   {
+    "options": [
+     "La",
+     "lettre",
+     "a",
+     "été",
+     "écrit",
+     "par",
+     "ma",
+     "grand-mère."
+    ],
+    "answer": 4
+   },
+   {
+    "prompt": "écrit",
+    "options": [
+     "écrire",
+     "écrits",
+     "écrite"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.voice.33",
+  "entry": "fr.voice.on",
+  "format": "spot-it",
+  "prompt": "J'ai été dit d'attendre ici.",
+  "gloss": "I was told to wait here.",
+  "why": "passif impossible → on",
+  "steps": [
+   {
+    "options": [
+     "J'ai",
+     "été",
+     "dit",
+     "d'attendre",
+     "ici."
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "On m'a dit d'attendre ici.",
+     "Il m'a été dit attendre ici.",
+     "J'ai été dite d'attendre ici."
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.voice.34",
+  "entry": "fr.voice.par",
+  "format": "pick-one",
+  "prompt": "Ce tableau a été peint ＿ Monet en 1872.",
+  "why": "agent → par",
+  "steps": [
+   {
+    "options": [
+     "avec",
+     "par",
+     "pour",
+     "de"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.voice.35",
+  "entry": "fr.voice.passive",
+  "format": "transform",
+  "prompt": "On a volé mon vélo hier.",
+  "task": "→ passif",
+  "why": "être + participe",
+  "accept": [
+   "Mon vélo a été volé hier.",
+   "Hier, mon vélo a été volé."
+  ]
+ },
+ {
+  "id": "fr.q.voice.36",
+  "entry": "fr.voice.par",
+  "format": "transform",
+  "prompt": "Le directeur a annulé la réunion.",
+  "task": "→ passif",
+  "why": "accord + par",
+  "accept": [
+   "La réunion a été annulée par le directeur."
+  ]
+ },
+ {
+  "id": "fr.q.voice.37",
+  "entry": "fr.voice.passive",
+  "format": "build",
+  "gloss": "The bridge was built in 1890.",
+  "why": "a été + participe",
+  "tiles": [
+   "Le",
+   "pont",
+   "a",
+   "été",
+   "construit",
+   "en",
+   "1890"
+  ],
+  "decoys": [
+   "est",
+   "par"
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.31",
+  "entry": "fr.gerondif.avant-de",
+  "format": "spot-it",
+  "prompt": "Avant de tu pars, ferme la fenêtre.",
+  "why": "même sujet → de",
+  "steps": [
+   {
+    "options": [
+     "Avant",
+     "de tu pars,",
+     "ferme",
+     "la",
+     "fenêtre."
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "de tu pars,",
+    "options": [
+     "de partir,",
+     "de tu partir,",
+     "que tu pars,"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.32",
+  "entry": "fr.gerondif.how",
+  "format": "pick-one",
+  "prompt": "Elle a perdu dix kilos ＿ du sport tous les jours.",
+  "why": "manière → gérondif",
+  "steps": [
+   {
+    "options": [
+     "faisant",
+     "pour faisant",
+     "en faire",
+     "en faisant"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.33",
+  "entry": "fr.gerondif.simul",
+  "format": "transform",
+  "prompt": "Il mange et il regarde la télé.",
+  "task": "→ gérondif",
+  "why": "en + -ant",
+  "accept": [
+   "Il mange en regardant la télé.",
+   "Il regarde la télé en mangeant."
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.34",
+  "entry": "fr.gerondif.avant-de",
+  "format": "transform",
+  "prompt": "Lave-toi les mains, puis mange.",
+  "task": "→ avant de",
+  "why": "avant de + infinitif",
+  "accept": [
+   "Lave-toi les mains avant de manger.",
+   "Avant de manger, lave-toi les mains."
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.35",
+  "entry": "fr.gerondif.simul",
+  "format": "build",
+  "gloss": "I met her while waiting for the bus.",
+  "why": "en + -ant",
+  "tiles": [
+   "Je",
+   "l'ai",
+   "rencontrée",
+   "en",
+   "attendant",
+   "le",
+   "bus"
+  ],
+  "decoys": [
+   "pendant"
+  ]
+ },
+ {
+  "id": "fr.q.connectors.32",
+  "entry": "fr.connectors.car",
+  "format": "spot-it",
+  "prompt": "Car il pleuvait, on a annulé le pique-nique.",
+  "why": "car jamais en tête",
+  "steps": [
+   {
+    "options": [
+     "Car",
+     "il",
+     "pleuvait,",
+     "on",
+     "a",
+     "annulé",
+     "le",
+     "pique-nique."
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "Car",
+    "options": [
+     "Alors",
+     "Donc",
+     "Comme"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.connectors.33",
+  "entry": "fr.connectors.puisque",
+  "format": "pick-one",
+  "prompt": "— Je n'ai pas envie de sortir. — ＿ tu es fatiguée, reste à la maison !",
+  "why": "raison connue → puisque",
+  "steps": [
+   {
+    "options": [
+     "Donc",
+     "Car",
+     "Alors que",
+     "Puisque"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "fr.q.connectors.34",
+  "entry": "fr.connectors.car",
+  "format": "pick-one",
+  "prompt": "Je ne pourrai pas assister à la réunion, ＿ je serai en déplacement.",
+  "gloss": "email to a manager",
+  "why": "car = parce que",
+  "steps": [
+   {
+    "options": [
+     "car",
+     "donc",
+     "alors",
+     "comme"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.connectors.35",
+  "entry": "fr.connectors.comme",
+  "format": "build",
+  "gloss": "As it was late, we took a taxi.",
+  "why": "comme en tête",
+  "tiles": [
+   "Comme",
+   "il",
+   "était",
+   "tard,",
+   "on",
+   "a",
+   "pris",
+   "un",
+   "taxi"
+  ],
+  "decoys": [
+   "Car"
+  ]
+ },
+ {
+  "id": "fr.q.connectors.36",
+  "entry": "fr.connectors.comme",
+  "format": "transform",
+  "prompt": "On a pris un taxi parce qu'il était tard.",
+  "task": "→ comme",
+  "why": "comme en tête",
+  "accept": [
+   "Comme il était tard, on a pris un taxi."
+  ]
+ },
+ {
+  "id": "fr.q.connectors.37",
+  "entry": "fr.connectors.comme",
+  "format": "two-step",
+  "prompt": "＿ il n'y avait plus de pain, je suis allé à la boulangerie, ＿ on recevait des amis.",
+  "why": "comme devant, car après",
+  "steps": [
+   {
+    "options": [
+     "Car",
+     "Comme",
+     "Donc"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "comme",
+     "car",
+     "donc"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relief.31",
+  "entry": "fr.relief.cest-que",
+  "format": "spot-it",
+  "prompt": "C'est à Lyon où il habite, pas en banlieue.",
+  "why": "c'est … que",
+  "steps": [
+   {
+    "options": [
+     "C'est",
+     "à",
+     "Lyon",
+     "où",
+     "il",
+     "habite,",
+     "pas",
+     "en",
+     "banlieue."
+    ],
+    "answer": 3
+   },
+   {
+    "prompt": "où",
+    "options": [
+     "que",
+     "dont",
+     "qu'"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relief.32",
+  "entry": "fr.relief.cest-qui",
+  "format": "transform",
+  "prompt": "Paul a cassé la vitre.",
+  "task": "→ c'est … qui (Paul)",
+  "why": "c'est … qui",
+  "accept": [
+   "C'est Paul qui a cassé la vitre."
+  ]
+ },
+ {
+  "id": "fr.q.relief.33",
+  "entry": "fr.relief.cest-que",
+  "format": "transform",
+  "prompt": "Je l'ai rencontrée à Rome.",
+  "task": "→ c'est … que (à Rome)",
+  "why": "c'est … que",
+  "accept": [
+   "C'est à Rome que je l'ai rencontrée."
+  ]
+ },
+ {
+  "id": "fr.q.relief.34",
+  "entry": "fr.relief.cest-qui",
+  "format": "two-step",
+  "prompt": "C'est nous ＿ ＿ organisé la fête.",
+  "why": "accord avec nous",
+  "steps": [
+   {
+    "options": [
+     "qui",
+     "qu'",
+     "que"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "avons",
+     "a",
+     "ont"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.relief.35",
+  "entry": "fr.relief.cest-que",
+  "format": "build",
+  "gloss": "It's tomorrow we're leaving, not today.",
+  "why": "c'est … que",
+  "tiles": [
+   "C'est",
+   "demain",
+   "qu'on",
+   "part,",
+   "pas",
+   "aujourd'hui"
+  ],
+  "decoys": [
+   "où"
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.65",
+  "entry": "fr.pronouns.y-en",
+  "format": "build",
+  "gloss": "— Any bread left? — Yes, there's still some.",
+  "why": "y avant en",
+  "tiles": [
+   "Oui,",
+   "il",
+   "y",
+   "en",
+   "a",
+   "encore"
+  ],
+  "decoys": [
+   "lui",
+   "en y"
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.66",
+  "entry": "fr.pronouns.negation",
+  "format": "build",
+  "gloss": "I didn't tell him anything.",
+  "why": "pronom avant avoir",
+  "tiles": [
+   "Je",
+   "ne",
+   "lui",
+   "ai",
+   "rien",
+   "dit"
+  ],
+  "decoys": [
+   "pas",
+   "le"
+  ]
+ },
+ {
+  "id": "fr.q.subjunctive.60",
+  "entry": "fr.subjunctive.il-faut",
+  "format": "build",
+  "gloss": "You need to know the truth.",
+  "why": "savoir → sache",
+  "tiles": [
+   "Il",
+   "faut",
+   "que",
+   "tu",
+   "saches",
+   "la",
+   "vérité"
+  ],
+  "decoys": [
+   "sais"
+  ]
+ },
+ {
+  "id": "fr.q.time.52",
+  "entry": "fr.time.depuis",
+  "format": "build",
+  "gloss": "How long have you been waiting?",
+  "why": "depuis + présent",
+  "tiles": [
+   "Tu",
+   "attends",
+   "depuis",
+   "combien",
+   "de",
+   "temps",
+   "?"
+  ],
+  "decoys": [
+   "pendant",
+   "as attendu"
+  ],
+  "accept": [
+   "Depuis combien de temps tu attends ?"
+  ]
+ },
+ {
+  "id": "fr.q.relatives.46",
+  "entry": "fr.relatives.que",
+  "format": "build",
+  "gloss": "The film we saw yesterday was rubbish.",
+  "why": "que = objet",
+  "tiles": [
+   "Le",
+   "film",
+   "qu'on",
+   "a",
+   "vu",
+   "hier",
+   "était",
+   "nul"
+  ],
+  "decoys": [
+   "qui",
+   "où"
+  ]
+ },
+ {
+  "id": "fr.q.agreement.59",
+  "entry": "fr.agreement.refl",
+  "format": "build",
+  "gloss": "My sisters got up early.",
+  "why": "se → accord",
+  "tiles": [
+   "Mes",
+   "sœurs",
+   "se",
+   "sont",
+   "levées",
+   "tôt"
+  ],
+  "decoys": [
+   "ont",
+   "levé"
+  ]
+ },
+ {
+  "id": "fr.q.verb-prep.58",
+  "entry": "fr.verb-prep.decider",
+  "format": "build",
+  "gloss": "We decided to sell the car.",
+  "why": "décider de",
+  "tiles": [
+   "On",
+   "a",
+   "décidé",
+   "de",
+   "vendre",
+   "la",
+   "voiture"
+  ],
+  "decoys": [
+   "à",
+   "pour"
+  ]
+ },
+ {
+  "id": "fr.q.future.38",
+  "entry": "fr.future.futur-irr",
+  "format": "build",
+  "gloss": "We'll see each other when you're back.",
+  "why": "quand + futur",
+  "tiles": [
+   "On",
+   "se",
+   "verra",
+   "quand",
+   "tu",
+   "seras",
+   "rentré"
+  ],
+  "decoys": [
+   "es",
+   "voira"
+  ]
+ },
+ {
+  "id": "fr.q.relatives.47",
+  "entry": "fr.relatives.ou",
+  "format": "two-step",
+  "prompt": "C'est le parc ＿ on se promenait, et le banc ＿ tu vois là, c'était notre banc.",
+  "why": "lieu · objet",
+  "steps": [
+   {
+    "options": [
+     "qui",
+     "où",
+     "que"
+    ],
+    "answer": 1
+   },
+   {
+    "options": [
+     "qui",
+     "que",
+     "où"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.si.36",
+  "entry": "fr.si.si-present",
+  "format": "two-step",
+  "prompt": "Si tu ＿ maintenant, tu ＿ le dernier bus.",
+  "why": "présent → futur",
+  "steps": [
+   {
+    "prompt": "partir",
+    "options": [
+     "pars",
+     "partais",
+     "partiras"
+    ],
+    "answer": 0
+   },
+   {
+    "prompt": "avoir",
+    "options": [
+     "auras",
+     "aurais",
+     "as"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "fr.q.agreement.60",
+  "entry": "fr.agreement.que",
+  "format": "two-step",
+  "prompt": "Les photos que j'ai ＿ ? Je les ai ＿ à ta mère.",
+  "why": "COD avant → accord",
+  "steps": [
+   {
+    "prompt": "prendre",
+    "options": [
+     "pris",
+     "prises",
+     "prise"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "montrer",
+    "options": [
+     "montré",
+     "montrés",
+     "montrées"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "fr.q.future.39",
+  "entry": "fr.future.attenuation",
+  "format": "two-step",
+  "prompt": "Bonjour, je ＿ un café, s'il vous plaît. Et vous ＿ m'apporter l'addition ?",
+  "gloss": "in a café, politely",
+  "why": "politesse → conditionnel",
+  "steps": [
+   {
+    "prompt": "vouloir",
+    "options": [
+     "voudrai",
+     "voudrais",
+     "veux"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "pouvoir",
+    "options": [
+     "pouviez",
+     "pourriez",
+     "pourrez"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.pronouns.67",
+  "entry": "fr.pronouns.en",
+  "format": "two-step",
+  "prompt": "— Tu as besoin de ton vélo ce week-end ? — Non, je n'＿ ai pas besoin. Tu peux ＿ prendre.",
+  "why": "en · le (objet)",
+  "steps": [
+   {
+    "options": [
+     "en",
+     "y",
+     "le"
+    ],
+    "answer": 0
+   },
+   {
+    "options": [
+     "en",
+     "le",
+     "lui"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "fr.q.gerondif.36",
+  "entry": "fr.gerondif.how",
+  "format": "two-step",
+  "prompt": "On apprend une langue ＿ beaucoup, et on la garde ＿ régulièrement.",
+  "why": "en + -ant",
+  "steps": [
+   {
+    "prompt": "lire",
+    "options": [
+     "en lire",
+     "en lisant",
+     "lisant"
+    ],
+    "answer": 1
+   },
+   {
+    "prompt": "pratiquer",
+    "options": [
+     "en pratiquant",
+     "pratiquer",
+     "pour pratiquant"
+    ],
+    "answer": 0
+   }
+  ]
  }
 ]

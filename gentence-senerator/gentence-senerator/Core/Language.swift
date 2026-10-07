@@ -42,6 +42,14 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
         }
     }
 
+    /// Listen is ChinesePod dialogues; German and French have none yet.
+    var modes: [Mode] {
+        switch self {
+        case .mandarin: return Mode.allCases
+        case .german, .french: return [.translate, .produce]
+        }
+    }
+
     var levelSystem: String {
         switch self {
         case .mandarin: return "HSK"

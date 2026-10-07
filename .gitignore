@@ -75,3 +75,7 @@ gentence-senerator/gentence-senerator/.DS_Store
 # ChinesePod dialogues: not ours to publish. Built by tools/chinesepod_listen.py.
 tools/chinesepod/
 gentence-senerator/gentence-senerator/Dialogues/
+
+# Personal notes and decks
+notes*.txt
+*.apkg

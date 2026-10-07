@@ -35,7 +35,7 @@ struct ShelfTests {
         var run = PassageRun(passageID: "half", language: .mandarin, startedOn: "")
         run.stage = .read
         let shelf = Shelf.entries(ps, runs: ["half": run],
-                                  heard: ["recent": [ShelfTests.heard(2)],
+                                  heard: ["recent": [ShelfTests.heard(2), ShelfTests.heard(5)],
                                           "due-9": [ShelfTests.heard(9)],
                                           "due-20": [ShelfTests.heard(20)]],
                                   today: ShelfTests.today, calendar: ShelfTests.calendar)
@@ -45,14 +45,24 @@ struct ShelfTests {
         #expect(shelf.last?.status == .done(days: 2))
     }
 
-    /// Due is a line, not a gradient: six days is done, seven is due.
-    @Test func dueFromSevenDays() {
-        let ps = [ShelfTests.passage("a", seconds: 40, lesson: 1), ShelfTests.passage("b", seconds: 40, lesson: 2)]
+    /// Heard once: due the next day. Twice: after three. A listen that ended
+    /// at "some" starts over at one day.
+    @Test func dueAfterGrowsWithEachListen() {
+        let ps = ["once", "twice-2", "twice-3", "lost"].enumerated().map {
+            ShelfTests.passage($0.element, seconds: 40, lesson: $0.offset)
+        }
+        let lost = Heard(on: ShelfTests.daysAgo(1), right: 1, asked: 3, before: .little, after: .some)
         let shelf = Shelf.entries(ps, runs: [:],
-                                  heard: ["a": [ShelfTests.heard(6)], "b": [ShelfTests.heard(7)]],
+                                  heard: ["once": [ShelfTests.heard(1)],
+                                          "twice-2": [ShelfTests.heard(2), ShelfTests.heard(9)],
+                                          "twice-3": [ShelfTests.heard(3), ShelfTests.heard(9)],
+                                          "lost": [lost, ShelfTests.heard(9), ShelfTests.heard(20)]],
                                   today: ShelfTests.today, calendar: ShelfTests.calendar)
-        #expect(shelf.first { $0.id == "a" }?.status == .done(days: 6))
-        #expect(shelf.first { $0.id == "b" }?.status == .due(days: 7))
+        let status = { (id: String) in shelf.first { $0.id == id }?.status }
+        #expect(status("once") == .due(days: 1))
+        #expect(status("twice-2") == .done(days: 2))
+        #expect(status("twice-3") == .due(days: 3))
+        #expect(status("lost") == .due(days: 1))
     }
 
     /// The newest listen is the one the row reports, whatever order they were saved in.

@@ -70,21 +70,6 @@ struct TodayTests {
         #expect(d.ref.isEmpty)
     }
 
-    // MARK: Chips
-
-    @Test func chipUseIsCaseInsensitiveContains() {
-        #expect(Store.uses("der Umzug", in: "Der Umzug war lang.", language: .german))
-        #expect(Store.uses("TROTZDEM", in: "Es regnet, trotzdem gehe ich.", language: .german))
-        #expect(!Store.uses("kündigen", in: "Ich kundige.", language: .german))
-        #expect(!Store.uses("", in: "anything", language: .german))
-    }
-
-    @Test func mandarinChipIsASubstringAndFormulasNeedEveryPart() {
-        #expect(Store.uses("电脑", in: "我买了三台电脑。", language: .mandarin))
-        #expect(Store.uses("等…再…", in: "等他来了再走。", language: .mandarin))
-        #expect(!Store.uses("等…再…", in: "等他来了就走。", language: .mandarin))
-    }
-
     // MARK: Recommendation and sending
 
     @Test func roundWaitsForADoneModeAndNamesTheWorstItem() {

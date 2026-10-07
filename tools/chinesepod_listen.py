@@ -23,7 +23,8 @@ Each stage caches per lesson; Ctrl-C and rerun resumes. Needs ffmpeg and
 mlx-whisper.
 """
 
-import argparse, difflib, glob, json, os, re, signal, subprocess, sys
+import argparse
+import difflib, glob, json, os, re, signal, subprocess, sys
 
 import numpy as np
 
@@ -44,13 +45,15 @@ ENRICH = """
     {"speaker": "A", "english": "...",
      "words": [{"w": "你好", "py": "nǐ hǎo", "g": "hello"}, {"w": "，"}, ...]}
   ],
-  "gist": [{"q": "How much is sent?", "options": ["¥1,000", "¥10,000", "¥100,000"],
-            "answer": 1, "line": 4}],
+  "gist": [{"q": "她转了多少钱？", "en": "How much does she send?",
+            "options": ["一千块", "一万块", "十万块"], "answer": 1, "line": 7}],
   "chunks": ["转账", "手续费"]
 }
 lines: in the order spoken; a line's text is its words joined. Punctuation is
 a word with no py. py is contextual (tone sandhi on 一/不, neutral tones, 儿
-merged). line in gist is 1-based. chunks are words that appear in the lines.
+merged). line in gist is 1-based. gist questions and options are Chinese at the
+lesson's level, en is the question in English; no question may give away
+another's answer. chunks are words that appear in the lines.
 """
 
 STOPPING = False
@@ -189,6 +192,8 @@ def check(n, enr):
             errs.append(f"gist {q['q']!r}: answer out of range")
         if not (1 <= q["line"] <= len(enr["lines"])):
             errs.append(f"gist {q['q']!r}: line out of range")
+        if not re.search(r"[\u4e00-\u9fff]", q["q"]) or not q.get("en"):
+            errs.append(f"gist {q['q']!r}: question must be Chinese, with `en`")
     text = "".join(w["w"] for l in enr["lines"] for w in l["words"])
     for c in enr["chunks"]:
         if c not in text:
@@ -312,8 +317,8 @@ def stage_build(src, bundle):
             "setup": enr["setup"],
             "speakers": [{"id": k, "name": v} for k, v in enr["speakers"].items()],
             "lines": lines,
-            "gist": [{"question": q["q"], "options": q["options"], "answer": q["answer"],
-                      "line": q["line"]} for q in enr["gist"]],
+            "gist": [{"question": q["q"], "english": q.get("en"), "options": q["options"],
+                      "answer": q["answer"], "line": q["line"]} for q in enr["gist"]],
             "chunks": enr["chunks"],
         })
         report.append(f"{n} {title}: {len(lines)} lines"
