@@ -1,8 +1,8 @@
 import Foundation
 import os
 
-/// `book-<language>.json` and `quiz-<language>.json`, loaded on first use and
-/// cached. Fails soft: a missing or broken file is an empty book or no items,
+/// `book-<language>.json`, `quiz-<language>.json` and the rest of the quiz
+/// data, loaded on first use and cached. Fails soft: a missing or broken file is an empty book or no items,
 /// logged. One bad item is dropped, not the file.
 @MainActor
 final class BookLibrary {
@@ -35,10 +35,44 @@ final class BookLibrary {
 
     func items(for language: Language) -> [QuizItem] {
         if let i = banks[language] { return i }
-        let raw = Self.data("quiz-\(language.rawValue)", in: bundle).map(Self.decodeItems) ?? []
+        // Written tests, then the ones made from the vocab lists.
+        let raw = ["quiz", "gen"].flatMap { kind in
+            Self.data("\(kind)-\(language.rawValue)", in: bundle).map(Self.decodeItems) ?? []
+        }
         let i = Self.usable(raw, in: book(for: language))
         banks[language] = i
         return i
+    }
+
+    private var rulesBanks: [Language: [QuizItem]] = [:]
+
+    /// `rules-<language>.json`: the rules quizzes, one per entry.
+    func rules(for language: Language) -> [QuizItem] {
+        if let i = rulesBanks[language] { return i }
+        let raw = Self.data("rules-\(language.rawValue)", in: bundle).map(Self.decodeItems) ?? []
+        let i = Self.usable(raw, in: book(for: language))
+        rulesBanks[language] = i
+        return i
+    }
+
+    private var conceptRows: [Concept]?
+    private var wordIndex: [Language: [String: VocabWord]] = [:]
+
+    /// `concepts.json`: one meaning in all three languages.
+    func concepts() -> [Concept] {
+        if let c = conceptRows { return c }
+        let c = Self.data("concepts", in: bundle)
+            .flatMap { try? JSONDecoder().decode([Concept].self, from: $0) } ?? []
+        conceptRows = c
+        return c
+    }
+
+    /// A vocab word by its form, for the cards that show one.
+    func word(_ w: String, in language: Language) -> VocabWord? {
+        if let index = wordIndex[language] { return index[w] }
+        let index = Dictionary(words(for: language).map { ($0.w, $0) }, uniquingKeysWith: { a, _ in a })
+        wordIndex[language] = index
+        return index[w]
     }
 
     // MARK: Pure

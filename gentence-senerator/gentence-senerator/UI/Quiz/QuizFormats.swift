@@ -503,3 +503,108 @@ struct QuizCheckButton: View {
 extension Array {
     subscript(ifAny i: Int) -> Element? { indices.contains(i) ? self[i] : nil }
 }
+
+// MARK: Card
+
+/// Front; a tap turns it; then ✗ or ✓, by key or by swipe. The learner's
+/// mark is the score.
+struct CardQuiz: View {
+    let c: QuizFormatContext
+    @State private var turned = false
+    @State private var knew: Bool?
+    @State private var drag: CGFloat = 0
+
+    var body: some View {
+        VStack(spacing: 0) {
+            card
+                .padding(.top, 8)
+                .offset(x: turned ? drag : 0)
+                .rotationEffect(.degrees(turned ? Double(drag) / 40 : 0))
+                .gesture(swipe)
+            Spacer(minLength: 16)
+            HStack(spacing: 10) {
+                mark(false)
+                mark(true)
+            }
+            .frame(height: 96)
+            .opacity(turned ? 1 : 0.35)
+        }
+    }
+
+    private var card: some View {
+        Button { if !turned { withAnimation(.easeOut(duration: 0.15)) { turned = true } } } label: {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(c.item.prompt ?? "")
+                    .font(face(c.item.prompt, size: 34, bold: true))
+                    .foregroundStyle(Theme.C.ink)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(3)
+                if turned {
+                    Rectangle().fill(Theme.C.seam2).frame(height: Theme.M.hair)
+                    Text(c.item.accept.first ?? "")
+                        .font(face(c.item.accept.first, size: 26))
+                        .foregroundStyle(Theme.C.ink)
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(3)
+                    if let g = c.item.gloss {
+                        Text(g).font(Theme.F.mono(13)).foregroundStyle(Theme.C.carbon)
+                    }
+                    if let say = c.item.speak {
+                        TinyButton(title: "Hear") { c.speak(say) }
+                    }
+                } else {
+                    Text("TAP TO TURN").font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 120)
+                }
+            }
+            .foregroundStyle(Theme.C.ink)
+            .frame(maxWidth: .infinity, minHeight: 260, alignment: .topLeading)
+            .padding(.vertical, 22).padding(.horizontal, 16)
+            .background(Theme.C.stock)
+            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+            .background(Rectangle().fill(Theme.C.seam2).offset(x: 3, y: 3))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(turned ? "" : "Turns the card")
+    }
+
+    /// English on a Mandarin card reads in the serif, not the CJK face.
+    private func face(_ text: String?, size: CGFloat, bold: Bool = false) -> Font {
+        let cjk = (text ?? "").unicodeScalars.contains { (0x3000...0x9FFF).contains($0.value) }
+        return ThemeState.shared.language == .mandarin && !cjk
+            ? Theme.F.serif(size, bold: bold) : Theme.F.target(size: size, bold: bold)
+    }
+
+    private func mark(_ right: Bool) -> some View {
+        let variant: KeyStyle.Variant = switch knew {
+        case .none: .neutral
+        case .some(let k): k == right ? (right ? .right : .wrong) : .dim
+        }
+        return Button { choose(right) } label: {
+            Text(right ? "✓" : "✗")
+                .font(Theme.F.mono(34, bold: true))
+                .foregroundStyle(knew == nil ? (right ? Theme.C.good : Theme.C.bad) : Theme.C.ink)
+        }
+        .buttonStyle(KeyStyle(variant, expand: true, dimsWhenDisabled: false))
+        .disabled(!turned || knew != nil)
+        .accessibilityLabel(right ? "Knew it" : "Didn't")
+    }
+
+    private var swipe: some Gesture {
+        DragGesture()
+            .onChanged { if turned, knew == nil { drag = $0.translation.width } }
+            .onEnded { v in
+                withAnimation(.snappy) { drag = 0 }
+                guard turned, knew == nil, abs(v.translation.width) > 70 else { return }
+                choose(v.translation.width > 0)
+            }
+    }
+
+    private func choose(_ right: Bool) {
+        guard turned, knew == nil else { return }
+        knew = right
+        c.answer(QuizRound.score(c.item, knew: right))
+    }
+}

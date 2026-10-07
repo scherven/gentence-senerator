@@ -11,6 +11,7 @@ struct BookScreen: View {
             VStack(alignment: .leading, spacing: 14) {
                 tally(index)
                 drills(index.book.drills)
+                EndlessBar(store: store)
                 chapters(index)
             }
             .padding(.horizontal, Theme.M.gap)
@@ -234,6 +235,15 @@ struct BookScreen: View {
 }
 
 extension Language {
+    /// On a key: DE, FR, 中文.
+    var short: String {
+        switch self {
+        case .mandarin: return "中文"
+        case .german:   return "DE"
+        case .french:   return "FR"
+        }
+    }
+
     /// The pill: what the language calls itself.
     var native: String {
         switch self {

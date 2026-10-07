@@ -8,6 +8,7 @@ struct AppShell: View {
     @State private var paths: [RootTab: [LessonRequest]] = [:]
     @State private var bookRoutes: [BookRoute] = []
     @State private var quiz: QuizPlan?
+    @State private var allLanguages = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,7 +44,10 @@ struct AppShell: View {
             }
             store.pathBeforeTap = nil
         }
+        .environment(\.startAllLanguages) { allLanguages = true }
+        .fullScreenCover(isPresented: $allLanguages) { AllLanguagesScreen(store: store) }
         .onChange(of: quiz?.id) { _, open in store.quizOpen = open != nil }
+        .onChange(of: allLanguages) { _, open in store.quizOpen = open }
         .onChange(of: store.settings.language) { bookRoutes = [] }
         .onChange(of: store.settings.language, initial: true) { _, language in
             ThemeState.shared.language = language
@@ -287,6 +291,7 @@ struct ModeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 ForEach(store.settings.language.modes) { modeKey($0) }
+                WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
                 GradingPanel(store: store)
@@ -698,6 +703,42 @@ struct WrittenRows: View {
                 }
             }
         }
+    }
+}
+
+/// This language's word deck and the one across all three, with what's due.
+struct WordsRow: View {
+    let store: Store
+    @Environment(\.startQuiz) private var startQuiz
+    @Environment(\.startAllLanguages) private var startAllLanguages
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Words")
+            HStack(spacing: Theme.M.gapTight) {
+                key("Words · \(store.settings.language.short)", due: store.wordsDue) {
+                    startQuiz(VocabDrill.plan(store.settings.language))
+                }
+                key("All languages", due: store.conceptsDue) { startAllLanguages() }
+            }
+        }
+    }
+
+    private func key(_ title: String, due: Int, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title.uppercased()).font(Theme.F.label).tracking(0.6)
+                    .lineLimit(2).multilineTextAlignment(.leading)
+                Spacer(minLength: 4)
+                Text("\(due)").font(Theme.F.meta)
+                    .foregroundStyle(due > 0 ? Theme.C.accent : Theme.C.ink3)
+            }
+            .foregroundStyle(Theme.C.ink)
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .topLeading)
+        }
+        .buttonStyle(KeyStyle(.neutral))
+        .accessibilityLabel("\(title), \(due) due")
     }
 }
 

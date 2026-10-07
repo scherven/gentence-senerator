@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Curriculum/book-<lang>.json and quiz-<lang>.json against the
+"""Validate Curriculum/book-<lang>.json and the quiz files (quiz-, gen-, rules-<lang>.json) against the
 contract in Core/Book.swift and Core/Quiz.swift. Exits nonzero on any error.
 
     python3 tools/check_book.py [--upto N] [mandarin german french]
@@ -25,6 +25,7 @@ RULES = {
     "tone-tap":  ((1, 4), (4, 5), False, False),
     "sort":      ((4, 12), (2, 4), False, False),
     "transform": ((0, 0), None, False, True),
+    "card":      ((0, 0), None, False, True),
 }
 
 
@@ -36,6 +37,9 @@ def check(lang, upto=None):
         return [f"{lang}: missing {book_path.name}"], warn
     book = json.loads(book_path.read_text())
     items = json.loads(quiz_path.read_text()) if quiz_path.exists() else []
+    # Tests made from the vocab lists by tools/build_generated.py count as tests.
+    gen_path = CUR / f"gen-{lang}.json"
+    items += json.loads(gen_path.read_text()) if gen_path.exists() else []
     point_level = {g["id"]: g["level"] for g in json.loads((CUR / f"grammar-{lang}.json").read_text())}
     points = set(point_level)
 
@@ -88,47 +92,17 @@ def check(lang, upto=None):
     per_chapter = collections.Counter()
     per_chapter_format = collections.defaultdict(set)
     for it in items:
-        iid = it.get("id", "")
-        if iid in seen:
-            errs.append(f"duplicate item {iid}")
-        seen.add(iid)
-        eid = it.get("entry")
-        if eid not in entries:
-            errs.append(f"{iid}: unknown entry {eid!r}")
+        if not check_item(it, entries, seen, errs, warn):
             continue
-        f = it.get("format")
-        if f not in RULES:
-            errs.append(f"{iid}: bad format {f!r}")
-            continue
-        (smin, smax), opts, tiles, accept = RULES[f]
-        steps = it.get("steps", [])
-        if not smin <= len(steps) <= smax:
-            errs.append(f"{iid}: {f} needs {smin}-{smax} steps, has {len(steps)}")
-        for i, s in enumerate(steps):
-            o = s.get("options", [])
-            if opts and not opts[0] <= len(o) <= opts[1]:
-                errs.append(f"{iid}: step {i} needs {opts[0]}-{opts[1]} options, has {len(o)}")
-            if not isinstance(s.get("answer"), int) or not 0 <= s["answer"] < len(o):
-                errs.append(f"{iid}: step {i} answer out of range")
-            if len(set(o)) != len(o):
-                errs.append(f"{iid}: step {i} duplicate options")
-        if f == "sort" and len({tuple(s.get("options", [])) for s in steps}) > 1:
-            errs.append(f"{iid}: sort steps must share buckets")
-        if tiles and len(it.get("tiles", [])) < 2:
-            errs.append(f"{iid}: build needs 2+ tiles")
-        if accept and not it.get("accept"):
-            errs.append(f"{iid}: transform needs accept")
-        if f == "transform" and not it.get("task"):
-            errs.append(f"{iid}: transform needs task")
-        if f in ("pick-one", "flip", "two-step") and GAP not in (it.get("prompt") or ""):
-            errs.append(f"{iid}: {f} prompt needs a {GAP} gap")
-        if f == "tone-tap" and not it.get("speak"):
-            errs.append(f"{iid}: tone-tap needs speak")
-        why = it.get("why")
-        if why and len(why.split()) > 4:
-            warn.append(f"{iid}: why longer than 3 words: {why!r}")
-        per_chapter[chapter_of[eid]] += 1
-        per_chapter_format[chapter_of[eid]].add(f)
+        per_chapter[chapter_of[it["entry"]]] += 1
+        per_chapter_format[chapter_of[it["entry"]]].add(it["format"])
+
+    # Rules quizzes: one per entry, made by tools/build_rules.py. Not counted
+    # toward a chapter's 30, which is about sentences.
+    rules_path = CUR / f"rules-{lang}.json"
+    rules = json.loads(rules_path.read_text()) if rules_path.exists() else []
+    for it in rules:
+        check_item(it, entries, seen, errs, warn)
 
     point_entries = collections.defaultdict(list)
     for eid, e in entries.items():
@@ -151,6 +125,52 @@ def check(lang, upto=None):
         if missing:
             errs.append(f"{cid}: formats with no items: {sorted(missing)}")
     return errs, warn
+
+
+def check_item(it, entries, seen, errs, warn):
+    """Appends this item's problems; False when it can't be counted at all."""
+    iid = it.get("id", "")
+    if iid in seen:
+        errs.append(f"duplicate item {iid}")
+    seen.add(iid)
+    eid = it.get("entry")
+    if eid not in entries:
+        errs.append(f"{iid}: unknown entry {eid!r}")
+        return False
+    f = it.get("format")
+    if f not in RULES:
+        errs.append(f"{iid}: bad format {f!r}")
+        return False
+    (smin, smax), opts, tiles, accept = RULES[f]
+    steps = it.get("steps", [])
+    if not smin <= len(steps) <= smax:
+        errs.append(f"{iid}: {f} needs {smin}-{smax} steps, has {len(steps)}")
+    for i, s in enumerate(steps):
+        o = s.get("options", [])
+        if opts and not opts[0] <= len(o) <= opts[1]:
+            errs.append(f"{iid}: step {i} needs {opts[0]}-{opts[1]} options, has {len(o)}")
+        if not isinstance(s.get("answer"), int) or not 0 <= s["answer"] < len(o):
+            errs.append(f"{iid}: step {i} answer out of range")
+        if len(set(o)) != len(o):
+            errs.append(f"{iid}: step {i} duplicate options")
+    if f == "sort" and len({tuple(s.get("options", [])) for s in steps}) > 1:
+        errs.append(f"{iid}: sort steps must share buckets")
+    if tiles and len(it.get("tiles", [])) < 2:
+        errs.append(f"{iid}: build needs 2+ tiles")
+    if accept and not it.get("accept"):
+        errs.append(f"{iid}: {f} needs accept")
+    if f == "transform" and not it.get("task"):
+        errs.append(f"{iid}: transform needs task")
+    if f in ("pick-one", "flip", "two-step") and GAP not in (it.get("prompt") or ""):
+        errs.append(f"{iid}: {f} prompt needs a {GAP} gap")
+    if f == "tone-tap" and not it.get("speak"):
+        errs.append(f"{iid}: tone-tap needs speak")
+    why = it.get("why")
+    if why and len(why.split()) > 4:
+        warn.append(f"{iid}: why longer than 3 words: {why!r}")
+    if f == "card" and not it.get("prompt"):
+        errs.append(f"{iid}: card needs a prompt")
+    return True
 
 
 def main():

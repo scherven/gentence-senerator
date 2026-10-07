@@ -38,8 +38,10 @@ actor Anthropic {
     }
 
     private let session: URLSession
-    /// The worker refuses any other.
+    /// The worker refuses any other but `topUpModel`.
     private let model = "claude-opus-5"
+    /// Writes new quiz items: cheaper, and good enough for them.
+    static let topUpModel = "claude-sonnet-5-5"
 
     init(session: URLSession = .shared) {
         self.session = session
@@ -57,13 +59,14 @@ actor Anthropic {
     /// Batches refuse `fallbacks`, so a batched request that trips a safety
     /// classifier comes back as a refusal and is left ungraded.
     nonisolated func params(cachedSystem: String, user: String, schema: [String: Any]?,
-                            effort: Effort, maxTokens: Int, batched: Bool = false) -> [String: Any] {
+                            effort: Effort, maxTokens: Int, batched: Bool = false,
+                            model: String? = nil) -> [String: Any] {
         var outputConfig: [String: Any] = ["effort": effort.rawValue]
         if let schema {
             outputConfig["format"] = ["type": "json_schema", "schema": schema]
         }
         var body: [String: Any] = [
-            "model": model,
+            "model": model ?? self.model,
             "max_tokens": maxTokens,
             "system": [[
                 "type": "text",
@@ -109,10 +112,11 @@ actor Anthropic {
               user: String,
               schema: [String: Any]? = nil,
               effort: Effort = .medium,
-              maxTokens: Int = 8000) async throws -> Reply {
+              maxTokens: Int = 8000,
+              model: String? = nil) async throws -> Reply {
 
         let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
-                          effort: effort, maxTokens: maxTokens)
+                          effort: effort, maxTokens: maxTokens, model: model)
         let data = try await data(for: try request("messages", body: body))
 
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
@@ -148,10 +152,11 @@ actor Anthropic {
                             user: String,
                             schema: [String: Any],
                             effort: Effort = .medium,
-                            maxTokens: Int = 8000) async throws -> (T, Usage) {
+                            maxTokens: Int = 8000,
+                            model: String? = nil) async throws -> (T, Usage) {
 
         let reply = try await send(cachedSystem: cachedSystem, user: user,
-                                   schema: schema, effort: effort, maxTokens: maxTokens)
+                                   schema: schema, effort: effort, maxTokens: maxTokens, model: model)
         return (try Self.decode(T.self, from: reply), reply.usage)
     }
 

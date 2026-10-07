@@ -19,6 +19,7 @@ struct QuizFormatView: View {
         case .toneTap:   ToneTapQuiz(c: context)
         case .sort:      SortQuiz(c: context)
         case .transform: TransformQuiz(c: context)
+        case .card:      CardQuiz(c: context)
         }
     }
 }

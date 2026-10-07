@@ -11,6 +11,7 @@ struct DayScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
                 GradingPanel(store: store)

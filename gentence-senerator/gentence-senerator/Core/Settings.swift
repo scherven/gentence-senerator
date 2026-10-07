@@ -27,12 +27,15 @@ struct Spend: Codable, Hashable {
         var input = 0, output = 0, cacheRead = 0, cacheWrite = 0
         /// The same four, sent through the Batch API at half price.
         var batchInput = 0, batchOutput = 0, batchCacheRead = 0, batchCacheWrite = 0
+        /// Quiz top-ups, on Sonnet 5.5, already in dollars.
+        var topUps = 0.0
 
         /// Opus 5: $5/MTok in, $25/MTok out. Cache reads are a tenth of input,
         /// writes a quarter more, so both fall out of the input price.
         var dollars: Double {
             Self.price(input, output, cacheRead, cacheWrite)
                 + Self.price(batchInput, batchOutput, batchCacheRead, batchCacheWrite) / 2
+                + topUps
         }
 
         private static func price(_ i: Int, _ o: Int, _ r: Int, _ w: Int) -> Double {
@@ -54,6 +57,16 @@ struct Spend: Codable, Hashable {
             d.cacheRead += usage.cacheReadTokens
             d.cacheWrite += usage.cacheWriteTokens
         }
+        days[key] = d
+    }
+
+    /// Sonnet 5.5: $2/MTok in, $10/MTok out; cache reads a tenth of input,
+    /// writes a quarter more.
+    mutating func addTopUp(_ usage: Anthropic.Usage, on day: Date = .now) {
+        let key = Spend.key(day)
+        var d = days[key] ?? Day()
+        d.topUps += (Double(usage.inputTokens) * 2 + Double(usage.outputTokens) * 10
+                     + Double(usage.cacheReadTokens) * 0.2 + Double(usage.cacheWriteTokens) * 2.5) / 1_000_000
         days[key] = d
     }
 
@@ -82,6 +95,7 @@ extension Spend.Day {
         batchOutput = try c.decodeIfPresent(Int.self, forKey: .batchOutput) ?? 0
         batchCacheRead = try c.decodeIfPresent(Int.self, forKey: .batchCacheRead) ?? 0
         batchCacheWrite = try c.decodeIfPresent(Int.self, forKey: .batchCacheWrite) ?? 0
+        topUps = try c.decodeIfPresent(Double.self, forKey: .topUps) ?? 0
     }
 }
 
@@ -129,6 +143,9 @@ enum Vault {
     /// This device's APNs token, as hex.
     static let pushToken = "push.token"
     static let quizLog = "quiz.log.v1" // per-entry results, per-plan rounds
+    static let endlessMixes = "quiz.endless.v1" // last endless mix, per language
+    static let topUps = "quiz.topups.v1" // items the model wrote, per language
+    static let askedItems = "quiz.asked.v1" // item ids answered at least once, per language
     static let activity = "activity.v1" // what was done each day, for History
     static let scores = "scores.v1" // every graded answer's score, for History averages
 }

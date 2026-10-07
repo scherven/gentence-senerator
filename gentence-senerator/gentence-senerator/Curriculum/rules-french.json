@@ -1,0 +1,1715 @@
+[
+ {
+  "id": "rule.fr.etre-avoir.aller",
+  "entry": "fr.etre-avoir.aller",
+  "format": "flip",
+  "prompt": "aller → ＿",
+  "gloss": "go",
+  "why": "suis allé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.venir",
+  "entry": "fr.etre-avoir.venir",
+  "format": "flip",
+  "prompt": "venir → ＿",
+  "gloss": "come",
+  "why": "suis venu",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.arriver",
+  "entry": "fr.etre-avoir.arriver",
+  "format": "flip",
+  "prompt": "arriver → ＿",
+  "gloss": "arrive",
+  "why": "suis arrivé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.partir",
+  "entry": "fr.etre-avoir.partir",
+  "format": "flip",
+  "prompt": "partir → ＿",
+  "gloss": "leave",
+  "why": "suis parti",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.entrer",
+  "entry": "fr.etre-avoir.entrer",
+  "format": "flip",
+  "prompt": "entrer → ＿",
+  "gloss": "go in",
+  "why": "suis entré",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.rester",
+  "entry": "fr.etre-avoir.rester",
+  "format": "flip",
+  "prompt": "rester → ＿",
+  "gloss": "stay",
+  "why": "suis resté",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.tomber",
+  "entry": "fr.etre-avoir.tomber",
+  "format": "flip",
+  "prompt": "tomber → ＿",
+  "gloss": "fall",
+  "why": "suis tombé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.naitre",
+  "entry": "fr.etre-avoir.naitre",
+  "format": "flip",
+  "prompt": "naître → ＿",
+  "gloss": "be born",
+  "why": "suis né",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.mourir",
+  "entry": "fr.etre-avoir.mourir",
+  "format": "flip",
+  "prompt": "mourir → ＿",
+  "gloss": "die",
+  "why": "suis mort",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.devenir",
+  "entry": "fr.etre-avoir.devenir",
+  "format": "flip",
+  "prompt": "devenir → ＿",
+  "gloss": "become",
+  "why": "suis devenu",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.revenir",
+  "entry": "fr.etre-avoir.revenir",
+  "format": "flip",
+  "prompt": "revenir → ＿",
+  "gloss": "come back",
+  "why": "suis revenu",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.se-lever",
+  "entry": "fr.etre-avoir.se-lever",
+  "format": "flip",
+  "prompt": "se lever → ＿",
+  "gloss": "get up · every reflexive",
+  "why": "me suis levé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.sortir-etre",
+  "entry": "fr.etre-avoir.sortir-etre",
+  "format": "flip",
+  "prompt": "sortir → ＿",
+  "gloss": "go out",
+  "why": "suis sorti",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.sortir-avoir",
+  "entry": "fr.etre-avoir.sortir-avoir",
+  "format": "flip",
+  "prompt": "sortir → ＿",
+  "gloss": "take out + object",
+  "why": "ai sorti",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.monter-etre",
+  "entry": "fr.etre-avoir.monter-etre",
+  "format": "flip",
+  "prompt": "monter → ＿",
+  "gloss": "go up",
+  "why": "suis monté",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.monter-avoir",
+  "entry": "fr.etre-avoir.monter-avoir",
+  "format": "flip",
+  "prompt": "monter → ＿",
+  "gloss": "carry up + object",
+  "why": "ai monté",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.descendre-etre",
+  "entry": "fr.etre-avoir.descendre-etre",
+  "format": "flip",
+  "prompt": "descendre → ＿",
+  "gloss": "go down",
+  "why": "suis descendu",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.descendre-avoir",
+  "entry": "fr.etre-avoir.descendre-avoir",
+  "format": "flip",
+  "prompt": "descendre → ＿",
+  "gloss": "bring down + object",
+  "why": "ai descendu",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.passer-etre",
+  "entry": "fr.etre-avoir.passer-etre",
+  "format": "flip",
+  "prompt": "passer → ＿",
+  "gloss": "drop by",
+  "why": "suis passé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.passer-avoir",
+  "entry": "fr.etre-avoir.passer-avoir",
+  "format": "flip",
+  "prompt": "passer → ＿",
+  "gloss": "spend (time) + object",
+  "why": "ai passé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.rentrer-etre",
+  "entry": "fr.etre-avoir.rentrer-etre",
+  "format": "flip",
+  "prompt": "rentrer → ＿",
+  "gloss": "come home",
+  "why": "suis rentré",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.rentrer-avoir",
+  "entry": "fr.etre-avoir.rentrer-avoir",
+  "format": "flip",
+  "prompt": "rentrer → ＿",
+  "gloss": "bring in + object",
+  "why": "ai rentré",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.retourner-etre",
+  "entry": "fr.etre-avoir.retourner-etre",
+  "format": "flip",
+  "prompt": "retourner → ＿",
+  "gloss": "go back",
+  "why": "suis retourné",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.retourner-avoir",
+  "entry": "fr.etre-avoir.retourner-avoir",
+  "format": "flip",
+  "prompt": "retourner → ＿",
+  "gloss": "turn over + object",
+  "why": "ai retourné",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.marcher",
+  "entry": "fr.etre-avoir.marcher",
+  "format": "flip",
+  "prompt": "marcher → ＿",
+  "gloss": "walk",
+  "why": "ai marché",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.courir",
+  "entry": "fr.etre-avoir.courir",
+  "format": "flip",
+  "prompt": "courir → ＿",
+  "gloss": "run",
+  "why": "ai couru",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.voyager",
+  "entry": "fr.etre-avoir.voyager",
+  "format": "flip",
+  "prompt": "voyager → ＿",
+  "gloss": "travel",
+  "why": "ai voyagé",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.quitter",
+  "entry": "fr.etre-avoir.quitter",
+  "format": "flip",
+  "prompt": "quitter → ＿",
+  "gloss": "leave (a place)",
+  "why": "ai quitté",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.etre-avoir.etre",
+  "entry": "fr.etre-avoir.etre",
+  "format": "flip",
+  "prompt": "être → ＿",
+  "gloss": "be",
+  "why": "ai été",
+  "steps": [
+   {
+    "options": [
+     "ÊTRE",
+     "AVOIR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.commencer",
+  "entry": "fr.verb-prep.commencer",
+  "format": "pick-one",
+  "prompt": "commencer ＿ + inf.",
+  "gloss": "start to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.aider",
+  "entry": "fr.verb-prep.aider",
+  "format": "pick-one",
+  "prompt": "aider ＿ + inf.",
+  "gloss": "help to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.apprendre",
+  "entry": "fr.verb-prep.apprendre",
+  "format": "pick-one",
+  "prompt": "apprendre ＿ + inf.",
+  "gloss": "learn to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.reussir",
+  "entry": "fr.verb-prep.reussir",
+  "format": "pick-one",
+  "prompt": "réussir ＿ + inf.",
+  "gloss": "manage to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.hesiter",
+  "entry": "fr.verb-prep.hesiter",
+  "format": "pick-one",
+  "prompt": "hésiter ＿ + inf.",
+  "gloss": "hesitate to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.s-habituer",
+  "entry": "fr.verb-prep.s-habituer",
+  "format": "pick-one",
+  "prompt": "s'habituer ＿ + inf.",
+  "gloss": "get used to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.penser",
+  "entry": "fr.verb-prep.penser",
+  "format": "pick-one",
+  "prompt": "penser ＿ + qn",
+  "gloss": "think about",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.inviter",
+  "entry": "fr.verb-prep.inviter",
+  "format": "pick-one",
+  "prompt": "inviter ＿ + inf.",
+  "gloss": "invite to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.se-mettre",
+  "entry": "fr.verb-prep.se-mettre",
+  "format": "pick-one",
+  "prompt": "se mettre ＿ + inf.",
+  "gloss": "start to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.repondre",
+  "entry": "fr.verb-prep.repondre",
+  "format": "pick-one",
+  "prompt": "répondre ＿ + qn",
+  "gloss": "answer",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.telephoner",
+  "entry": "fr.verb-prep.telephoner",
+  "format": "pick-one",
+  "prompt": "téléphoner ＿ + qn",
+  "gloss": "call",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.ressembler",
+  "entry": "fr.verb-prep.ressembler",
+  "format": "pick-one",
+  "prompt": "ressembler ＿ + qn",
+  "gloss": "look like",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.finir",
+  "entry": "fr.verb-prep.finir",
+  "format": "pick-one",
+  "prompt": "finir ＿ + inf.",
+  "gloss": "finish",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.essayer",
+  "entry": "fr.verb-prep.essayer",
+  "format": "pick-one",
+  "prompt": "essayer ＿ + inf.",
+  "gloss": "try to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.decider",
+  "entry": "fr.verb-prep.decider",
+  "format": "pick-one",
+  "prompt": "décider ＿ + inf.",
+  "gloss": "decide to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.arreter",
+  "entry": "fr.verb-prep.arreter",
+  "format": "pick-one",
+  "prompt": "arrêter ＿ + inf.",
+  "gloss": "stop",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.oublier",
+  "entry": "fr.verb-prep.oublier",
+  "format": "pick-one",
+  "prompt": "oublier ＿ + inf.",
+  "gloss": "forget to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.refuser",
+  "entry": "fr.verb-prep.refuser",
+  "format": "pick-one",
+  "prompt": "refuser ＿ + inf.",
+  "gloss": "refuse to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.accepter",
+  "entry": "fr.verb-prep.accepter",
+  "format": "pick-one",
+  "prompt": "accepter ＿ + inf.",
+  "gloss": "agree to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.choisir",
+  "entry": "fr.verb-prep.choisir",
+  "format": "pick-one",
+  "prompt": "choisir ＿ + inf.",
+  "gloss": "choose to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.eviter",
+  "entry": "fr.verb-prep.eviter",
+  "format": "pick-one",
+  "prompt": "éviter ＿ + inf.",
+  "gloss": "avoid",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.se-souvenir",
+  "entry": "fr.verb-prep.se-souvenir",
+  "format": "pick-one",
+  "prompt": "se souvenir ＿ + qc",
+  "gloss": "remember",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.s-occuper",
+  "entry": "fr.verb-prep.s-occuper",
+  "format": "pick-one",
+  "prompt": "s'occuper ＿ + qc",
+  "gloss": "take care of",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.rever",
+  "entry": "fr.verb-prep.rever",
+  "format": "pick-one",
+  "prompt": "rêver ＿ + inf.",
+  "gloss": "dream of",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.regarder",
+  "entry": "fr.verb-prep.regarder",
+  "format": "pick-one",
+  "prompt": "regarder ＿ + qc",
+  "gloss": "look at",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.ecouter",
+  "entry": "fr.verb-prep.ecouter",
+  "format": "pick-one",
+  "prompt": "écouter ＿ + qc",
+  "gloss": "listen to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.attendre",
+  "entry": "fr.verb-prep.attendre",
+  "format": "pick-one",
+  "prompt": "attendre ＿ + qc",
+  "gloss": "wait for",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.chercher",
+  "entry": "fr.verb-prep.chercher",
+  "format": "pick-one",
+  "prompt": "chercher ＿ + qc",
+  "gloss": "look for",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.vouloir",
+  "entry": "fr.verb-prep.vouloir",
+  "format": "pick-one",
+  "prompt": "vouloir ＿ + inf.",
+  "gloss": "want to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.pouvoir",
+  "entry": "fr.verb-prep.pouvoir",
+  "format": "pick-one",
+  "prompt": "pouvoir ＿ + inf.",
+  "gloss": "can",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.devoir",
+  "entry": "fr.verb-prep.devoir",
+  "format": "pick-one",
+  "prompt": "devoir ＿ + inf.",
+  "gloss": "must",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.aimer",
+  "entry": "fr.verb-prep.aimer",
+  "format": "pick-one",
+  "prompt": "aimer ＿ + inf.",
+  "gloss": "like to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.esperer",
+  "entry": "fr.verb-prep.esperer",
+  "format": "pick-one",
+  "prompt": "espérer ＿ + inf.",
+  "gloss": "hope to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.preferer",
+  "entry": "fr.verb-prep.preferer",
+  "format": "pick-one",
+  "prompt": "préférer ＿ + inf.",
+  "gloss": "prefer to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.savoir",
+  "entry": "fr.verb-prep.savoir",
+  "format": "pick-one",
+  "prompt": "savoir ＿ + inf.",
+  "gloss": "know how to",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.payer",
+  "entry": "fr.verb-prep.payer",
+  "format": "pick-one",
+  "prompt": "payer ＿ + qc",
+  "gloss": "pay for",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.content",
+  "entry": "fr.verb-prep.content",
+  "format": "pick-one",
+  "prompt": "être content ＿ + inf.",
+  "gloss": "happy to, sorry to (adj.)",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.capable",
+  "entry": "fr.verb-prep.capable",
+  "format": "pick-one",
+  "prompt": "être capable ＿ + inf.",
+  "gloss": "able to (adj.)",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.verb-prep.pret",
+  "entry": "fr.verb-prep.pret",
+  "format": "pick-one",
+  "prompt": "être prêt ＿ + inf.",
+  "gloss": "ready to, used to (adj.)",
+  "steps": [
+   {
+    "options": [
+     "à",
+     "de",
+     "Ø"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.a-city",
+  "entry": "fr.places.a-city",
+  "format": "pick-one",
+  "prompt": "＿ + city",
+  "gloss": "to · in",
+  "why": "à Lyon",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.a-island",
+  "entry": "fr.places.a-island",
+  "format": "pick-one",
+  "prompt": "＿ + small island",
+  "gloss": "to · in",
+  "why": "à Cuba",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.en-f",
+  "entry": "fr.places.en-f",
+  "format": "pick-one",
+  "prompt": "＿ + feminine country",
+  "gloss": "to · in",
+  "why": "en France",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.en-vowel",
+  "entry": "fr.places.en-vowel",
+  "format": "pick-one",
+  "prompt": "＿ + vowel",
+  "gloss": "to · in",
+  "why": "en Iran",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.en-continent",
+  "entry": "fr.places.en-continent",
+  "format": "pick-one",
+  "prompt": "＿ + continent",
+  "gloss": "to · in",
+  "why": "en Asie",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.au",
+  "entry": "fr.places.au",
+  "format": "pick-one",
+  "prompt": "＿ + masculine country",
+  "gloss": "to · in",
+  "why": "au Japon",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.aux",
+  "entry": "fr.places.aux",
+  "format": "pick-one",
+  "prompt": "＿ + plural country",
+  "gloss": "to · in",
+  "why": "aux États-Unis",
+  "steps": [
+   {
+    "options": [
+     "au",
+     "aux",
+     "en",
+     "à"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.de-city",
+  "entry": "fr.places.de-city",
+  "format": "pick-one",
+  "prompt": "＿ + city",
+  "gloss": "from",
+  "why": "de Paris",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "des",
+     "du"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.de-f",
+  "entry": "fr.places.de-f",
+  "format": "pick-one",
+  "prompt": "＿ + feminine or vowel",
+  "gloss": "from",
+  "why": "de France · d'Iran",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "des",
+     "du"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.du",
+  "entry": "fr.places.du",
+  "format": "pick-one",
+  "prompt": "＿ + masculine country",
+  "gloss": "from",
+  "why": "du Japon",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "des",
+     "du"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.places.des",
+  "entry": "fr.places.des",
+  "format": "pick-one",
+  "prompt": "＿ + plural country",
+  "gloss": "from",
+  "why": "des États-Unis",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "des",
+     "du"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.age",
+  "entry": "fr.gender.age",
+  "format": "flip",
+  "prompt": "＿ -age",
+  "why": "le fromage, le voyage",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ment",
+  "entry": "fr.gender.ment",
+  "format": "flip",
+  "prompt": "＿ -ment",
+  "why": "le moment, le document",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.eau",
+  "entry": "fr.gender.eau",
+  "format": "flip",
+  "prompt": "＿ -eau",
+  "why": "le bureau, le gâteau",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.isme",
+  "entry": "fr.gender.isme",
+  "format": "flip",
+  "prompt": "＿ -isme",
+  "why": "le tourisme",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.eme",
+  "entry": "fr.gender.eme",
+  "format": "flip",
+  "prompt": "＿ -ème",
+  "why": "le problème, le système",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.oir",
+  "entry": "fr.gender.oir",
+  "format": "flip",
+  "prompt": "＿ -oir",
+  "why": "le soir, le couloir",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ier",
+  "entry": "fr.gender.ier",
+  "format": "flip",
+  "prompt": "＿ -ier",
+  "why": "le papier, le quartier",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.tion",
+  "entry": "fr.gender.tion",
+  "format": "flip",
+  "prompt": "＿ -tion, -sion",
+  "why": "la question, la télévision",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.te",
+  "entry": "fr.gender.te",
+  "format": "flip",
+  "prompt": "＿ -té",
+  "why": "la liberté, la santé",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ure",
+  "entry": "fr.gender.ure",
+  "format": "flip",
+  "prompt": "＿ -ure",
+  "why": "la voiture, la culture",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ette",
+  "entry": "fr.gender.ette",
+  "format": "flip",
+  "prompt": "＿ -ette",
+  "why": "la baguette, la fourchette",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ence",
+  "entry": "fr.gender.ence",
+  "format": "flip",
+  "prompt": "＿ -ence, -ance",
+  "why": "la différence, la chance",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ee",
+  "entry": "fr.gender.ee",
+  "format": "flip",
+  "prompt": "＿ -ée",
+  "why": "la soirée, l'idée",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.ie",
+  "entry": "fr.gender.ie",
+  "format": "flip",
+  "prompt": "＿ -ie",
+  "why": "la boulangerie, la vie",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.eur",
+  "entry": "fr.gender.eur",
+  "format": "flip",
+  "prompt": "＿ -eur (feeling, quality)",
+  "why": "la couleur, la peur",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-age",
+  "entry": "fr.gender.x-age",
+  "format": "flip",
+  "prompt": "＿ -age",
+  "why": "la plage, la page, l'image",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-eau",
+  "entry": "fr.gender.x-eau",
+  "format": "flip",
+  "prompt": "＿ -eau",
+  "why": "l'eau, la peau",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-ee",
+  "entry": "fr.gender.x-ee",
+  "format": "flip",
+  "prompt": "＿ -ée",
+  "why": "le musée, le lycée",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-te",
+  "entry": "fr.gender.x-te",
+  "format": "flip",
+  "prompt": "＿ -té",
+  "why": "l'été, le côté",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-ence",
+  "entry": "fr.gender.x-ence",
+  "format": "flip",
+  "prompt": "＿ -ence",
+  "why": "le silence",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-eur",
+  "entry": "fr.gender.x-eur",
+  "format": "flip",
+  "prompt": "＿ -eur",
+  "why": "le bonheur, le moteur",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.fr.gender.x-eme",
+  "entry": "fr.gender.x-eme",
+  "format": "flip",
+  "prompt": "＿ -ème",
+  "why": "la crème",
+  "steps": [
+   {
+    "options": [
+     "le",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ }
+]

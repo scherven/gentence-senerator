@@ -31,10 +31,9 @@ const DIRECT_AFTER_MS = 20 * 60 * 1000;
 // (24h) and will never end here either.
 const GIVE_UP_MS = 26 * 3600 * 1000;
 const INVITE = "invite:";
-// The only model the app uses, and its largest max_tokens: anything else
-// through the proxy is someone else's traffic.
-const MODEL = "claude-opus-5";
-const MAX_TOKENS = 32000;
+// The models the app uses, each with its largest max_tokens: anything else
+// through the proxy is someone else's traffic. Sonnet writes quiz top-ups.
+const MODELS = { "claude-opus-5": 32000, "claude-sonnet-5-5": 16000 };
 const BETA = "server-side-fallback-2026-07-01";
 
 export default {
@@ -137,8 +136,8 @@ async function admit(request, env) {
 }
 
 function allowed(params) {
-  return params && params.model === MODEL
-    && Number.isInteger(params.max_tokens) && params.max_tokens <= MAX_TOKENS;
+  const cap = params && MODELS[params.model];
+  return !!cap && Number.isInteger(params.max_tokens) && params.max_tokens <= cap;
 }
 
 // /anthropic/v1/<path>: one message, or reading a batch the app was handed.

@@ -1,0 +1,4137 @@
+[
+ {
+  "id": "rule.de.verb-prep.auf-warten",
+  "entry": "de.verb-prep.auf-warten",
+  "format": "two-step",
+  "prompt": "warten ＿ + ＿",
+  "gloss": "wait for",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "vor",
+     "auf",
+     "für",
+     "über"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-sich-freuen",
+  "entry": "de.verb-prep.auf-sich-freuen",
+  "format": "two-step",
+  "prompt": "sich freuen ＿ + ＿",
+  "gloss": "look forward to",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "zu",
+     "mit",
+     "auf",
+     "bei"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-achten",
+  "entry": "de.verb-prep.auf-achten",
+  "format": "two-step",
+  "prompt": "achten ＿ + ＿",
+  "gloss": "pay attention to",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "aus",
+     "für",
+     "mit",
+     "auf"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-aufpassen",
+  "entry": "de.verb-prep.auf-aufpassen",
+  "format": "two-step",
+  "prompt": "aufpassen ＿ + ＿",
+  "gloss": "look after",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "bei",
+     "vor",
+     "von"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-sich-vorbereiten",
+  "entry": "de.verb-prep.auf-sich-vorbereiten",
+  "format": "two-step",
+  "prompt": "sich vorbereiten ＿ + ＿",
+  "gloss": "prepare for",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "unter",
+     "von",
+     "an",
+     "auf"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-sich-verlassen",
+  "entry": "de.verb-prep.auf-sich-verlassen",
+  "format": "two-step",
+  "prompt": "sich verlassen ＿ + ＿",
+  "gloss": "rely on",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "unter",
+     "für",
+     "aus"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-antworten",
+  "entry": "de.verb-prep.auf-antworten",
+  "format": "two-step",
+  "prompt": "antworten ＿ + ＿",
+  "gloss": "reply to",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "unter",
+     "von",
+     "auf",
+     "vor"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.auf-bestehen",
+  "entry": "de.verb-prep.auf-bestehen",
+  "format": "two-step",
+  "prompt": "bestehen ＿ + ＿",
+  "gloss": "insist on",
+  "why": "auf + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "um",
+     "in",
+     "mit"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-denken",
+  "entry": "de.verb-prep.an-denken",
+  "format": "two-step",
+  "prompt": "denken ＿ + ＿",
+  "gloss": "think of",
+  "why": "an + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "auf",
+     "mit",
+     "unter"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-sich-erinnern",
+  "entry": "de.verb-prep.an-sich-erinnern",
+  "format": "two-step",
+  "prompt": "sich erinnern ＿ + ＿",
+  "gloss": "remember",
+  "why": "an + AKK",
+  "steps": [
+   {
+    "options": [
+     "unter",
+     "an",
+     "nach",
+     "in"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-glauben",
+  "entry": "de.verb-prep.an-glauben",
+  "format": "two-step",
+  "prompt": "glauben ＿ + ＿",
+  "gloss": "believe in",
+  "why": "an + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "um",
+     "für",
+     "aus"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-sich-gewoehnen",
+  "entry": "de.verb-prep.an-sich-gewoehnen",
+  "format": "two-step",
+  "prompt": "sich gewöhnen ＿ + ＿",
+  "gloss": "get used to",
+  "why": "an + AKK",
+  "steps": [
+   {
+    "options": [
+     "bei",
+     "in",
+     "von",
+     "an"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-teilnehmen",
+  "entry": "de.verb-prep.an-teilnehmen",
+  "format": "two-step",
+  "prompt": "teilnehmen ＿ + ＿",
+  "gloss": "take part in",
+  "why": "an + DAT",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "zu",
+     "nach",
+     "vor"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-arbeiten",
+  "entry": "de.verb-prep.an-arbeiten",
+  "format": "two-step",
+  "prompt": "arbeiten ＿ + ＿",
+  "gloss": "work on",
+  "why": "an + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "vor",
+     "nach",
+     "an"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.an-zweifeln",
+  "entry": "de.verb-prep.an-zweifeln",
+  "format": "two-step",
+  "prompt": "zweifeln ＿ + ＿",
+  "gloss": "doubt",
+  "why": "an + DAT",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "an",
+     "mit",
+     "vor"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.ueber-sprechen",
+  "entry": "de.verb-prep.ueber-sprechen",
+  "format": "two-step",
+  "prompt": "sprechen ＿ + ＿",
+  "gloss": "talk about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "bei",
+     "über",
+     "vor"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.ueber-sich-freuen",
+  "entry": "de.verb-prep.ueber-sich-freuen",
+  "format": "two-step",
+  "prompt": "sich freuen ＿ + ＿",
+  "gloss": "be glad about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "aus",
+     "von",
+     "über",
+     "nach"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.ueber-sich-aergern",
+  "entry": "de.verb-prep.ueber-sich-aergern",
+  "format": "two-step",
+  "prompt": "sich ärgern ＿ + ＿",
+  "gloss": "be annoyed about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "aus",
+     "über",
+     "mit",
+     "für"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.ueber-nachdenken",
+  "entry": "de.verb-prep.ueber-nachdenken",
+  "format": "two-step",
+  "prompt": "nachdenken ＿ + ＿",
+  "gloss": "think about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "aus",
+     "über",
+     "für"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.ueber-sich-beschweren",
+  "entry": "de.verb-prep.ueber-sich-beschweren",
+  "format": "two-step",
+  "prompt": "sich beschweren ＿ + ＿",
+  "gloss": "complain about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "in",
+     "mit",
+     "zu"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-sich-interessieren",
+  "entry": "de.verb-prep.fuer-sich-interessieren",
+  "format": "two-step",
+  "prompt": "sich interessieren ＿ + ＿",
+  "gloss": "be interested in",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "in",
+     "bei",
+     "für",
+     "von"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-danken",
+  "entry": "de.verb-prep.fuer-danken",
+  "format": "two-step",
+  "prompt": "danken ＿ + ＿",
+  "gloss": "thank for",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "vor",
+     "nach",
+     "aus"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-sich-entscheiden",
+  "entry": "de.verb-prep.fuer-sich-entscheiden",
+  "format": "two-step",
+  "prompt": "sich entscheiden ＿ + ＿",
+  "gloss": "decide on",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "von",
+     "für",
+     "mit",
+     "in"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-sich-entschuldigen",
+  "entry": "de.verb-prep.fuer-sich-entschuldigen",
+  "format": "two-step",
+  "prompt": "sich entschuldigen ＿ + ＿",
+  "gloss": "apologise for",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "in",
+     "für",
+     "aus"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-sorgen",
+  "entry": "de.verb-prep.fuer-sorgen",
+  "format": "two-step",
+  "prompt": "sorgen ＿ + ＿",
+  "gloss": "take care of",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "von",
+     "bei",
+     "nach"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.fuer-halten",
+  "entry": "de.verb-prep.fuer-halten",
+  "format": "two-step",
+  "prompt": "halten ＿ + ＿",
+  "gloss": "take for",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "an",
+     "aus",
+     "nach"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.von-halten",
+  "entry": "de.verb-prep.von-halten",
+  "format": "two-step",
+  "prompt": "halten ＿ + ＿",
+  "gloss": "think of",
+  "why": "von + DAT",
+  "steps": [
+   {
+    "options": [
+     "unter",
+     "von",
+     "vor",
+     "in"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.von-traeumen",
+  "entry": "de.verb-prep.von-traeumen",
+  "format": "two-step",
+  "prompt": "träumen ＿ + ＿",
+  "gloss": "dream of",
+  "why": "von + DAT",
+  "steps": [
+   {
+    "options": [
+     "um",
+     "von",
+     "an",
+     "für"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.von-abhaengen",
+  "entry": "de.verb-prep.von-abhaengen",
+  "format": "two-step",
+  "prompt": "abhängen ＿ + ＿",
+  "gloss": "depend on",
+  "why": "von + DAT",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "von",
+     "vor",
+     "aus"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.von-erzaehlen",
+  "entry": "de.verb-prep.von-erzaehlen",
+  "format": "two-step",
+  "prompt": "erzählen ＿ + ＿",
+  "gloss": "tell about",
+  "why": "von + DAT",
+  "steps": [
+   {
+    "options": [
+     "in",
+     "von",
+     "vor",
+     "nach"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.mit-anfangen",
+  "entry": "de.verb-prep.mit-anfangen",
+  "format": "two-step",
+  "prompt": "anfangen ＿ + ＿",
+  "gloss": "start on",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "nach",
+     "zu",
+     "für",
+     "mit"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.mit-aufhoeren",
+  "entry": "de.verb-prep.mit-aufhoeren",
+  "format": "two-step",
+  "prompt": "aufhören ＿ + ＿",
+  "gloss": "stop",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "zu",
+     "mit",
+     "um",
+     "nach"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.mit-telefonieren",
+  "entry": "de.verb-prep.mit-telefonieren",
+  "format": "two-step",
+  "prompt": "telefonieren ＿ + ＿",
+  "gloss": "be on the phone with",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "um",
+     "vor",
+     "nach"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.mit-sich-beschaeftigen",
+  "entry": "de.verb-prep.mit-sich-beschaeftigen",
+  "format": "two-step",
+  "prompt": "sich beschäftigen ＿ + ＿",
+  "gloss": "deal with",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "bei",
+     "auf",
+     "mit",
+     "nach"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.mit-rechnen",
+  "entry": "de.verb-prep.mit-rechnen",
+  "format": "two-step",
+  "prompt": "rechnen ＿ + ＿",
+  "gloss": "expect",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "an",
+     "bei",
+     "in"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.zu-halten",
+  "entry": "de.verb-prep.zu-halten",
+  "format": "two-step",
+  "prompt": "halten ＿ + ＿",
+  "gloss": "stand by",
+  "why": "zu + DAT",
+  "steps": [
+   {
+    "options": [
+     "unter",
+     "um",
+     "in",
+     "zu"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.zu-gehoeren",
+  "entry": "de.verb-prep.zu-gehoeren",
+  "format": "two-step",
+  "prompt": "gehören ＿ + ＿",
+  "gloss": "be part of",
+  "why": "zu + DAT",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "aus",
+     "nach",
+     "zu"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.zu-einladen",
+  "entry": "de.verb-prep.zu-einladen",
+  "format": "two-step",
+  "prompt": "einladen ＿ + ＿",
+  "gloss": "invite to",
+  "why": "zu + DAT",
+  "steps": [
+   {
+    "options": [
+     "nach",
+     "von",
+     "unter",
+     "zu"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.zu-passen",
+  "entry": "de.verb-prep.zu-passen",
+  "format": "two-step",
+  "prompt": "passen ＿ + ＿",
+  "gloss": "go with",
+  "why": "zu + DAT",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "in",
+     "zu",
+     "unter"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.zu-gratulieren",
+  "entry": "de.verb-prep.zu-gratulieren",
+  "format": "two-step",
+  "prompt": "gratulieren ＿ + ＿",
+  "gloss": "congratulate on",
+  "why": "zu + DAT",
+  "steps": [
+   {
+    "options": [
+     "nach",
+     "zu",
+     "unter",
+     "an"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.nach-fragen",
+  "entry": "de.verb-prep.nach-fragen",
+  "format": "two-step",
+  "prompt": "fragen ＿ + ＿",
+  "gloss": "ask about",
+  "why": "nach + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "bei",
+     "unter",
+     "nach"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.nach-suchen",
+  "entry": "de.verb-prep.nach-suchen",
+  "format": "two-step",
+  "prompt": "suchen ＿ + ＿",
+  "gloss": "look for",
+  "why": "nach + DAT",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "bei",
+     "unter",
+     "nach"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.nach-riechen",
+  "entry": "de.verb-prep.nach-riechen",
+  "format": "two-step",
+  "prompt": "riechen ＿ + ＿",
+  "gloss": "smell of",
+  "why": "nach + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "nach",
+     "unter",
+     "in"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.vor-angst-haben",
+  "entry": "de.verb-prep.vor-angst-haben",
+  "format": "two-step",
+  "prompt": "Angst haben ＿ + ＿",
+  "gloss": "be afraid of",
+  "why": "vor + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "für",
+     "in",
+     "vor"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.vor-warnen",
+  "entry": "de.verb-prep.vor-warnen",
+  "format": "two-step",
+  "prompt": "warnen ＿ + ＿",
+  "gloss": "warn about",
+  "why": "vor + DAT",
+  "steps": [
+   {
+    "options": [
+     "vor",
+     "unter",
+     "über",
+     "auf"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.um-sich-kuemmern",
+  "entry": "de.verb-prep.um-sich-kuemmern",
+  "format": "two-step",
+  "prompt": "sich kümmern ＿ + ＿",
+  "gloss": "look after",
+  "why": "um + AKK",
+  "steps": [
+   {
+    "options": [
+     "in",
+     "aus",
+     "um",
+     "mit"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.um-bitten",
+  "entry": "de.verb-prep.um-bitten",
+  "format": "two-step",
+  "prompt": "bitten ＿ + ＿",
+  "gloss": "ask for",
+  "why": "um + AKK",
+  "steps": [
+   {
+    "options": [
+     "bei",
+     "aus",
+     "um",
+     "in"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.um-sich-bewerben",
+  "entry": "de.verb-prep.um-sich-bewerben",
+  "format": "two-step",
+  "prompt": "sich bewerben ＿ + ＿",
+  "gloss": "apply for",
+  "why": "um + AKK",
+  "steps": [
+   {
+    "options": [
+     "um",
+     "zu",
+     "aus",
+     "mit"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.bei-sich-bedanken",
+  "entry": "de.verb-prep.bei-sich-bedanken",
+  "format": "two-step",
+  "prompt": "sich bedanken ＿ + ＿",
+  "gloss": "thank (someone)",
+  "why": "bei + DAT",
+  "steps": [
+   {
+    "options": [
+     "in",
+     "mit",
+     "bei",
+     "auf"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.unter-leiden",
+  "entry": "de.verb-prep.unter-leiden",
+  "format": "two-step",
+  "prompt": "leiden ＿ + ＿",
+  "gloss": "suffer from",
+  "why": "unter + DAT",
+  "steps": [
+   {
+    "options": [
+     "aus",
+     "von",
+     "unter",
+     "bei"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.aus-bestehen",
+  "entry": "de.verb-prep.aus-bestehen",
+  "format": "two-step",
+  "prompt": "bestehen ＿ + ＿",
+  "gloss": "consist of",
+  "why": "aus + DAT",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "nach",
+     "aus",
+     "zu"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.verb-prep.in-sich-verlieben",
+  "entry": "de.verb-prep.in-sich-verlieben",
+  "format": "two-step",
+  "prompt": "sich verlieben ＿ + ＿",
+  "gloss": "fall in love with",
+  "why": "in + AKK",
+  "steps": [
+   {
+    "options": [
+     "zu",
+     "mit",
+     "in",
+     "um"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.auf-stolz",
+  "entry": "de.noun-adj-prep.auf-stolz",
+  "format": "two-step",
+  "prompt": "stolz ＿ + ＿",
+  "gloss": "proud of",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "über",
+     "um",
+     "auf"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.auf-neugierig",
+  "entry": "de.noun-adj-prep.auf-neugierig",
+  "format": "two-step",
+  "prompt": "neugierig ＿ + ＿",
+  "gloss": "curious about",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "mit",
+     "auf",
+     "über"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.auf-gespannt",
+  "entry": "de.noun-adj-prep.auf-gespannt",
+  "format": "two-step",
+  "prompt": "gespannt ＿ + ＿",
+  "gloss": "eager to see",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "um",
+     "auf",
+     "zu",
+     "nach"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.fuer-zustaendig",
+  "entry": "de.noun-adj-prep.fuer-zustaendig",
+  "format": "two-step",
+  "prompt": "zuständig ＿ + ＿",
+  "gloss": "responsible for (a job)",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "bei",
+     "von",
+     "vor"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.fuer-verantwortlich",
+  "entry": "de.noun-adj-prep.fuer-verantwortlich",
+  "format": "two-step",
+  "prompt": "verantwortlich ＿ + ＿",
+  "gloss": "responsible for",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "auf",
+     "zu",
+     "über"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.von-abhaengig",
+  "entry": "de.noun-adj-prep.von-abhaengig",
+  "format": "two-step",
+  "prompt": "abhängig ＿ + ＿",
+  "gloss": "dependent on",
+  "why": "von + DAT",
+  "steps": [
+   {
+    "options": [
+     "vor",
+     "über",
+     "mit",
+     "von"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.mit-zufrieden",
+  "entry": "de.noun-adj-prep.mit-zufrieden",
+  "format": "two-step",
+  "prompt": "zufrieden ＿ + ＿",
+  "gloss": "happy with",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "auf",
+     "mit",
+     "nach",
+     "unter"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.an-interessiert",
+  "entry": "de.noun-adj-prep.an-interessiert",
+  "format": "two-step",
+  "prompt": "interessiert ＿ + ＿",
+  "gloss": "interested in",
+  "why": "an + DAT",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "an",
+     "um",
+     "aus"
+    ],
+    "answer": 1,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.ueber-froh",
+  "entry": "de.noun-adj-prep.ueber-froh",
+  "format": "two-step",
+  "prompt": "froh ＿ + ＿",
+  "gloss": "glad about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "unter",
+     "in",
+     "aus"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.nach-frage",
+  "entry": "de.noun-adj-prep.nach-frage",
+  "format": "two-step",
+  "prompt": "die Frage ＿ + ＿",
+  "gloss": "the question of",
+  "why": "nach + DAT",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "vor",
+     "von",
+     "nach"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.nach-sehnsucht",
+  "entry": "de.noun-adj-prep.nach-sehnsucht",
+  "format": "two-step",
+  "prompt": "die Sehnsucht ＿ + ＿",
+  "gloss": "longing for",
+  "why": "nach + DAT",
+  "steps": [
+   {
+    "options": [
+     "nach",
+     "zu",
+     "in",
+     "auf"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.fuer-grund",
+  "entry": "de.noun-adj-prep.fuer-grund",
+  "format": "two-step",
+  "prompt": "der Grund ＿ + ＿",
+  "gloss": "the reason for",
+  "why": "für + AKK",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "über",
+     "bei",
+     "für"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.an-interesse",
+  "entry": "de.noun-adj-prep.an-interesse",
+  "format": "two-step",
+  "prompt": "das Interesse ＿ + ＿",
+  "gloss": "interest in",
+  "why": "an + DAT",
+  "steps": [
+   {
+    "options": [
+     "an",
+     "in",
+     "nach",
+     "auf"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.vor-angst",
+  "entry": "de.noun-adj-prep.vor-angst",
+  "format": "two-step",
+  "prompt": "die Angst ＿ + ＿",
+  "gloss": "fear of",
+  "why": "vor + DAT",
+  "steps": [
+   {
+    "options": [
+     "vor",
+     "über",
+     "um",
+     "in"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.auf-lust",
+  "entry": "de.noun-adj-prep.auf-lust",
+  "format": "two-step",
+  "prompt": "die Lust ＿ + ＿",
+  "gloss": "feel like",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "zu",
+     "von",
+     "auf",
+     "mit"
+    ],
+    "answer": 2,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.mit-problem",
+  "entry": "de.noun-adj-prep.mit-problem",
+  "format": "two-step",
+  "prompt": "das Problem ＿ + ＿",
+  "gloss": "trouble with",
+  "why": "mit + DAT",
+  "steps": [
+   {
+    "options": [
+     "mit",
+     "für",
+     "auf",
+     "unter"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.auf-antwort",
+  "entry": "de.noun-adj-prep.auf-antwort",
+  "format": "two-step",
+  "prompt": "die Antwort ＿ + ＿",
+  "gloss": "the answer to",
+  "why": "auf + AKK",
+  "steps": [
+   {
+    "options": [
+     "für",
+     "nach",
+     "aus",
+     "auf"
+    ],
+    "answer": 3,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.noun-adj-prep.ueber-diskussion",
+  "entry": "de.noun-adj-prep.ueber-diskussion",
+  "format": "two-step",
+  "prompt": "die Diskussion ＿ + ＿",
+  "gloss": "the discussion about",
+  "why": "über + AKK",
+  "steps": [
+   {
+    "options": [
+     "über",
+     "vor",
+     "von",
+     "in"
+    ],
+    "answer": 0,
+    "prompt": "preposition"
+   },
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0,
+    "prompt": "case"
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.aus",
+  "entry": "de.fixed-preps.aus",
+  "format": "flip",
+  "prompt": "aus + ＿",
+  "gloss": "from, out of",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.bei",
+  "entry": "de.fixed-preps.bei",
+  "format": "flip",
+  "prompt": "bei + ＿",
+  "gloss": "at, near",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.mit",
+  "entry": "de.fixed-preps.mit",
+  "format": "flip",
+  "prompt": "mit + ＿",
+  "gloss": "with, by",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.nach",
+  "entry": "de.fixed-preps.nach",
+  "format": "flip",
+  "prompt": "nach + ＿",
+  "gloss": "after, to",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.seit",
+  "entry": "de.fixed-preps.seit",
+  "format": "flip",
+  "prompt": "seit + ＿",
+  "gloss": "since, for",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.von",
+  "entry": "de.fixed-preps.von",
+  "format": "flip",
+  "prompt": "von + ＿",
+  "gloss": "from, of",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.zu",
+  "entry": "de.fixed-preps.zu",
+  "format": "flip",
+  "prompt": "zu + ＿",
+  "gloss": "to",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.gegenueber",
+  "entry": "de.fixed-preps.gegenueber",
+  "format": "flip",
+  "prompt": "gegenüber + ＿",
+  "gloss": "opposite",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.ausser",
+  "entry": "de.fixed-preps.ausser",
+  "format": "flip",
+  "prompt": "außer + ＿",
+  "gloss": "except",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.durch",
+  "entry": "de.fixed-preps.durch",
+  "format": "flip",
+  "prompt": "durch + ＿",
+  "gloss": "through",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.fuer",
+  "entry": "de.fixed-preps.fuer",
+  "format": "flip",
+  "prompt": "für + ＿",
+  "gloss": "for",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.gegen",
+  "entry": "de.fixed-preps.gegen",
+  "format": "flip",
+  "prompt": "gegen + ＿",
+  "gloss": "against",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.ohne",
+  "entry": "de.fixed-preps.ohne",
+  "format": "flip",
+  "prompt": "ohne + ＿",
+  "gloss": "without",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.fixed-preps.um",
+  "entry": "de.fixed-preps.um",
+  "format": "flip",
+  "prompt": "um + ＿",
+  "gloss": "around, at",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.gehen",
+  "entry": "de.perfekt-aux.gehen",
+  "format": "flip",
+  "prompt": "gehen: ＿",
+  "gloss": "motion",
+  "why": "ist gegangen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.fahren",
+  "entry": "de.perfekt-aux.fahren",
+  "format": "flip",
+  "prompt": "fahren: ＿",
+  "gloss": "motion",
+  "why": "ist gefahren",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.fahren-object",
+  "entry": "de.perfekt-aux.fahren-object",
+  "format": "flip",
+  "prompt": "fahren + object: ＿",
+  "gloss": "with an object",
+  "why": "hat … gefahren",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.fliegen",
+  "entry": "de.perfekt-aux.fliegen",
+  "format": "flip",
+  "prompt": "fliegen: ＿",
+  "gloss": "motion",
+  "why": "ist geflogen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.kommen",
+  "entry": "de.perfekt-aux.kommen",
+  "format": "flip",
+  "prompt": "kommen: ＿",
+  "gloss": "motion",
+  "why": "ist gekommen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.reisen",
+  "entry": "de.perfekt-aux.reisen",
+  "format": "flip",
+  "prompt": "reisen: ＿",
+  "gloss": "motion",
+  "why": "ist gereist",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.umziehen",
+  "entry": "de.perfekt-aux.umziehen",
+  "format": "flip",
+  "prompt": "umziehen: ＿",
+  "gloss": "motion",
+  "why": "ist umgezogen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.aufstehen",
+  "entry": "de.perfekt-aux.aufstehen",
+  "format": "flip",
+  "prompt": "aufstehen: ＿",
+  "gloss": "change of state",
+  "why": "ist aufgestanden",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.einschlafen",
+  "entry": "de.perfekt-aux.einschlafen",
+  "format": "flip",
+  "prompt": "einschlafen: ＿",
+  "gloss": "change of state",
+  "why": "ist eingeschlafen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.aufwachen",
+  "entry": "de.perfekt-aux.aufwachen",
+  "format": "flip",
+  "prompt": "aufwachen: ＿",
+  "gloss": "change of state",
+  "why": "ist aufgewacht",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.sterben",
+  "entry": "de.perfekt-aux.sterben",
+  "format": "flip",
+  "prompt": "sterben: ＿",
+  "gloss": "change of state",
+  "why": "ist gestorben",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.werden",
+  "entry": "de.perfekt-aux.werden",
+  "format": "flip",
+  "prompt": "werden: ＿",
+  "gloss": "change of state",
+  "why": "ist geworden",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.sein",
+  "entry": "de.perfekt-aux.sein",
+  "format": "flip",
+  "prompt": "sein: ＿",
+  "gloss": "sein · bleiben",
+  "why": "ist gewesen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.bleiben",
+  "entry": "de.perfekt-aux.bleiben",
+  "format": "flip",
+  "prompt": "bleiben: ＿",
+  "gloss": "sein · bleiben",
+  "why": "ist geblieben",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.passieren",
+  "entry": "de.perfekt-aux.passieren",
+  "format": "flip",
+  "prompt": "passieren: ＿",
+  "gloss": "happen",
+  "why": "ist passiert",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.begegnen",
+  "entry": "de.perfekt-aux.begegnen",
+  "format": "flip",
+  "prompt": "begegnen: ＿",
+  "gloss": "meet by chance",
+  "why": "ist begegnet",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.arbeiten",
+  "entry": "de.perfekt-aux.arbeiten",
+  "format": "flip",
+  "prompt": "arbeiten: ＿",
+  "gloss": "most verbs",
+  "why": "hat gearbeitet",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.schlafen",
+  "entry": "de.perfekt-aux.schlafen",
+  "format": "flip",
+  "prompt": "schlafen: ＿",
+  "gloss": "no change of place",
+  "why": "hat geschlafen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.anfangen",
+  "entry": "de.perfekt-aux.anfangen",
+  "format": "flip",
+  "prompt": "anfangen: ＿",
+  "gloss": "most verbs",
+  "why": "hat angefangen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.aufhoeren",
+  "entry": "de.perfekt-aux.aufhoeren",
+  "format": "flip",
+  "prompt": "aufhören: ＿",
+  "gloss": "most verbs",
+  "why": "hat aufgehört",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.sich-beeilen",
+  "entry": "de.perfekt-aux.sich-beeilen",
+  "format": "flip",
+  "prompt": "sich beeilen: ＿",
+  "gloss": "reflexive",
+  "why": "hat sich beeilt",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.treffen",
+  "entry": "de.perfekt-aux.treffen",
+  "format": "flip",
+  "prompt": "treffen: ＿",
+  "gloss": "with an object",
+  "why": "hat getroffen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.vergessen",
+  "entry": "de.perfekt-aux.vergessen",
+  "format": "flip",
+  "prompt": "vergessen: ＿",
+  "gloss": "with an object",
+  "why": "hat vergessen",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.perfekt-aux.regnen",
+  "entry": "de.perfekt-aux.regnen",
+  "format": "flip",
+  "prompt": "regnen: ＿",
+  "gloss": "weather",
+  "why": "hat geregnet",
+  "steps": [
+   {
+    "options": [
+     "HABEN",
+     "SEIN"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-freuen",
+  "entry": "de.reflexive.sich-freuen",
+  "format": "flip",
+  "prompt": "sich freuen: ＿",
+  "gloss": "be glad",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-waschen",
+  "entry": "de.reflexive.sich-waschen",
+  "format": "flip",
+  "prompt": "sich waschen: ＿",
+  "gloss": "wash",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-die-haende-waschen",
+  "entry": "de.reflexive.sich-die-haende-waschen",
+  "format": "flip",
+  "prompt": "sich die Hände waschen: ＿",
+  "gloss": "wash one's hands",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-erinnern",
+  "entry": "de.reflexive.sich-erinnern",
+  "format": "flip",
+  "prompt": "sich erinnern: ＿",
+  "gloss": "remember",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-beeilen",
+  "entry": "de.reflexive.sich-beeilen",
+  "format": "flip",
+  "prompt": "sich beeilen: ＿",
+  "gloss": "hurry",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-setzen",
+  "entry": "de.reflexive.sich-setzen",
+  "format": "flip",
+  "prompt": "sich setzen: ＿",
+  "gloss": "sit down",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-treffen",
+  "entry": "de.reflexive.sich-treffen",
+  "format": "flip",
+  "prompt": "sich treffen: ＿",
+  "gloss": "meet",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-vorstellen",
+  "entry": "de.reflexive.sich-vorstellen",
+  "format": "flip",
+  "prompt": "sich vorstellen: ＿",
+  "gloss": "introduce oneself",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-etwas-vorstellen",
+  "entry": "de.reflexive.sich-etwas-vorstellen",
+  "format": "flip",
+  "prompt": "sich etwas vorstellen: ＿",
+  "gloss": "imagine",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-anziehen",
+  "entry": "de.reflexive.sich-anziehen",
+  "format": "flip",
+  "prompt": "sich anziehen: ＿",
+  "gloss": "get dressed",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-etwas-anziehen",
+  "entry": "de.reflexive.sich-etwas-anziehen",
+  "format": "flip",
+  "prompt": "sich etwas anziehen: ＿",
+  "gloss": "put something on",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-aergern",
+  "entry": "de.reflexive.sich-aergern",
+  "format": "flip",
+  "prompt": "sich ärgern: ＿",
+  "gloss": "be annoyed",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-fuehlen",
+  "entry": "de.reflexive.sich-fuehlen",
+  "format": "flip",
+  "prompt": "sich fühlen: ＿",
+  "gloss": "feel",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-kuemmern",
+  "entry": "de.reflexive.sich-kuemmern",
+  "format": "flip",
+  "prompt": "sich kümmern: ＿",
+  "gloss": "look after",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-entscheiden",
+  "entry": "de.reflexive.sich-entscheiden",
+  "format": "flip",
+  "prompt": "sich entscheiden: ＿",
+  "gloss": "decide",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-verlieben",
+  "entry": "de.reflexive.sich-verlieben",
+  "format": "flip",
+  "prompt": "sich verlieben: ＿",
+  "gloss": "fall in love",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-ausruhen",
+  "entry": "de.reflexive.sich-ausruhen",
+  "format": "flip",
+  "prompt": "sich ausruhen: ＿",
+  "gloss": "rest",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-langweilen",
+  "entry": "de.reflexive.sich-langweilen",
+  "format": "flip",
+  "prompt": "sich langweilen: ＿",
+  "gloss": "be bored",
+  "why": "mich",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-etwas-wuenschen",
+  "entry": "de.reflexive.sich-etwas-wuenschen",
+  "format": "flip",
+  "prompt": "sich etwas wünschen: ＿",
+  "gloss": "wish for",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-etwas-leisten",
+  "entry": "de.reflexive.sich-etwas-leisten",
+  "format": "flip",
+  "prompt": "sich etwas leisten: ＿",
+  "gloss": "afford",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-etwas-merken",
+  "entry": "de.reflexive.sich-etwas-merken",
+  "format": "flip",
+  "prompt": "sich etwas merken: ＿",
+  "gloss": "remember, note",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.reflexive.sich-die-zaehne-putzen",
+  "entry": "de.reflexive.sich-die-zaehne-putzen",
+  "format": "flip",
+  "prompt": "sich die Zähne putzen: ＿",
+  "gloss": "brush one's teeth",
+  "why": "mir",
+  "steps": [
+   {
+    "options": [
+     "AKK",
+     "DAT"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.separable.anrufen",
+  "entry": "de.separable.anrufen",
+  "format": "card",
+  "prompt": "anrufen",
+  "gloss": "call",
+  "accept": [
+   "ruft … an · hat angerufen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.aufstehen",
+  "entry": "de.separable.aufstehen",
+  "format": "card",
+  "prompt": "aufstehen",
+  "gloss": "get up",
+  "accept": [
+   "steht … auf · ist aufgestanden"
+  ]
+ },
+ {
+  "id": "rule.de.separable.einkaufen",
+  "entry": "de.separable.einkaufen",
+  "format": "card",
+  "prompt": "einkaufen",
+  "gloss": "shop",
+  "accept": [
+   "kauft … ein · hat eingekauft"
+  ]
+ },
+ {
+  "id": "rule.de.separable.mitkommen",
+  "entry": "de.separable.mitkommen",
+  "format": "card",
+  "prompt": "mitkommen",
+  "gloss": "come along",
+  "accept": [
+   "kommt … mit · ist mitgekommen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.fernsehen",
+  "entry": "de.separable.fernsehen",
+  "format": "card",
+  "prompt": "fernsehen",
+  "gloss": "watch TV",
+  "accept": [
+   "sieht … fern · hat ferngesehen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.abholen",
+  "entry": "de.separable.abholen",
+  "format": "card",
+  "prompt": "abholen",
+  "gloss": "pick up",
+  "accept": [
+   "holt … ab · hat abgeholt"
+  ]
+ },
+ {
+  "id": "rule.de.separable.anfangen",
+  "entry": "de.separable.anfangen",
+  "format": "card",
+  "prompt": "anfangen",
+  "gloss": "begin",
+  "accept": [
+   "fängt … an · hat angefangen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.aufhoeren",
+  "entry": "de.separable.aufhoeren",
+  "format": "card",
+  "prompt": "aufhören",
+  "gloss": "stop",
+  "accept": [
+   "hört … auf · hat aufgehört"
+  ]
+ },
+ {
+  "id": "rule.de.separable.aufmachen",
+  "entry": "de.separable.aufmachen",
+  "format": "card",
+  "prompt": "aufmachen",
+  "gloss": "open",
+  "accept": [
+   "macht … auf · hat aufgemacht"
+  ]
+ },
+ {
+  "id": "rule.de.separable.zumachen",
+  "entry": "de.separable.zumachen",
+  "format": "card",
+  "prompt": "zumachen",
+  "gloss": "close",
+  "accept": [
+   "macht … zu · hat zugemacht"
+  ]
+ },
+ {
+  "id": "rule.de.separable.einsteigen",
+  "entry": "de.separable.einsteigen",
+  "format": "card",
+  "prompt": "einsteigen",
+  "gloss": "get on",
+  "accept": [
+   "steigt … ein · ist eingestiegen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.aussteigen",
+  "entry": "de.separable.aussteigen",
+  "format": "card",
+  "prompt": "aussteigen",
+  "gloss": "get off",
+  "accept": [
+   "steigt … aus · ist ausgestiegen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.umsteigen",
+  "entry": "de.separable.umsteigen",
+  "format": "card",
+  "prompt": "umsteigen",
+  "gloss": "change (trains)",
+  "accept": [
+   "steigt … um · ist umgestiegen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.vorhaben",
+  "entry": "de.separable.vorhaben",
+  "format": "card",
+  "prompt": "vorhaben",
+  "gloss": "plan",
+  "accept": [
+   "hat … vor · hat vorgehabt"
+  ]
+ },
+ {
+  "id": "rule.de.separable.stattfinden",
+  "entry": "de.separable.stattfinden",
+  "format": "card",
+  "prompt": "stattfinden",
+  "gloss": "take place",
+  "accept": [
+   "findet … statt · hat stattgefunden"
+  ]
+ },
+ {
+  "id": "rule.de.separable.einladen",
+  "entry": "de.separable.einladen",
+  "format": "card",
+  "prompt": "einladen",
+  "gloss": "invite",
+  "accept": [
+   "lädt … ein · hat eingeladen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.ankommen",
+  "entry": "de.separable.ankommen",
+  "format": "card",
+  "prompt": "ankommen",
+  "gloss": "arrive",
+  "accept": [
+   "kommt … an · ist angekommen"
+  ]
+ },
+ {
+  "id": "rule.de.separable.kennenlernen",
+  "entry": "de.separable.kennenlernen",
+  "format": "card",
+  "prompt": "kennenlernen",
+  "gloss": "get to know",
+  "accept": [
+   "lernt … kennen · hat kennengelernt"
+  ]
+ },
+ {
+  "id": "rule.de.separable.aufraeumen",
+  "entry": "de.separable.aufraeumen",
+  "format": "card",
+  "prompt": "aufräumen",
+  "gloss": "tidy up",
+  "accept": [
+   "räumt … auf · hat aufgeräumt"
+  ]
+ },
+ {
+  "id": "rule.de.separable.wiederholen",
+  "entry": "de.separable.wiederholen",
+  "format": "card",
+  "prompt": "wiederholen",
+  "gloss": "repeat: never separates",
+  "accept": [
+   "wiederholt · hat wiederholt"
+  ]
+ },
+ {
+  "id": "rule.de.gender.ung",
+  "entry": "de.gender.ung",
+  "format": "pick-one",
+  "prompt": "＿ -ung",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.heit-keit",
+  "entry": "de.gender.heit-keit",
+  "format": "pick-one",
+  "prompt": "＿ -heit · -keit",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.schaft",
+  "entry": "de.gender.schaft",
+  "format": "pick-one",
+  "prompt": "＿ -schaft",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ion",
+  "entry": "de.gender.ion",
+  "format": "pick-one",
+  "prompt": "＿ -ion",
+  "gloss": "almost always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.taet",
+  "entry": "de.gender.taet",
+  "format": "pick-one",
+  "prompt": "＿ -tät",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ie",
+  "entry": "de.gender.ie",
+  "format": "pick-one",
+  "prompt": "＿ -ie",
+  "gloss": "almost always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ei",
+  "entry": "de.gender.ei",
+  "format": "pick-one",
+  "prompt": "＿ -ei",
+  "gloss": "almost always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ik",
+  "entry": "de.gender.ik",
+  "format": "pick-one",
+  "prompt": "＿ -ik",
+  "gloss": "mostly",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ur",
+  "entry": "de.gender.ur",
+  "format": "pick-one",
+  "prompt": "＿ -ur",
+  "gloss": "mostly",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.e",
+  "entry": "de.gender.e",
+  "format": "pick-one",
+  "prompt": "＿ -e",
+  "gloss": "mostly; der Name, das Auge",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ling",
+  "entry": "de.gender.ling",
+  "format": "pick-one",
+  "prompt": "＿ -ling",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ismus",
+  "entry": "de.gender.ismus",
+  "format": "pick-one",
+  "prompt": "＿ -ismus",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ist",
+  "entry": "de.gender.ist",
+  "format": "pick-one",
+  "prompt": "＿ -ist",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ig",
+  "entry": "de.gender.ig",
+  "format": "pick-one",
+  "prompt": "＿ -ig",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.er-person",
+  "entry": "de.gender.er-person",
+  "format": "pick-one",
+  "prompt": "＿ -er (person)",
+  "gloss": "someone who does it",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.time",
+  "entry": "de.gender.time",
+  "format": "pick-one",
+  "prompt": "＿ days · months · seasons",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.chen-lein",
+  "entry": "de.gender.chen-lein",
+  "format": "pick-one",
+  "prompt": "＿ -chen · -lein",
+  "gloss": "always, even das Mädchen",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ment",
+  "entry": "de.gender.ment",
+  "format": "pick-one",
+  "prompt": "＿ -ment",
+  "gloss": "mostly; der Moment",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.um",
+  "entry": "de.gender.um",
+  "format": "pick-one",
+  "prompt": "＿ -um",
+  "gloss": "mostly",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.ge",
+  "entry": "de.gender.ge",
+  "format": "pick-one",
+  "prompt": "＿ Ge-",
+  "gloss": "mostly",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.gender.infinitive",
+  "entry": "de.gender.infinitive",
+  "format": "pick-one",
+  "prompt": "＿ infinitive as noun",
+  "gloss": "always",
+  "steps": [
+   {
+    "options": [
+     "der",
+     "die",
+     "das"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.weil",
+  "entry": "de.connectors.weil",
+  "format": "pick-one",
+  "prompt": "weil → ＿",
+  "gloss": "because",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.dass",
+  "entry": "de.connectors.dass",
+  "format": "pick-one",
+  "prompt": "dass → ＿",
+  "gloss": "that",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.obwohl",
+  "entry": "de.connectors.obwohl",
+  "format": "pick-one",
+  "prompt": "obwohl → ＿",
+  "gloss": "although",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.wenn",
+  "entry": "de.connectors.wenn",
+  "format": "pick-one",
+  "prompt": "wenn → ＿",
+  "gloss": "if; whenever",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.als",
+  "entry": "de.connectors.als",
+  "format": "pick-one",
+  "prompt": "als → ＿",
+  "gloss": "when (once, in the past)",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.ob",
+  "entry": "de.connectors.ob",
+  "format": "pick-one",
+  "prompt": "ob → ＿",
+  "gloss": "whether",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.damit",
+  "entry": "de.connectors.damit",
+  "format": "pick-one",
+  "prompt": "damit → ＿",
+  "gloss": "so that",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.um-zu",
+  "entry": "de.connectors.um-zu",
+  "format": "pick-one",
+  "prompt": "um … zu → ＿",
+  "gloss": "in order to",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.bevor",
+  "entry": "de.connectors.bevor",
+  "format": "pick-one",
+  "prompt": "bevor → ＿",
+  "gloss": "before",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.nachdem",
+  "entry": "de.connectors.nachdem",
+  "format": "pick-one",
+  "prompt": "nachdem → ＿",
+  "gloss": "after",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.waehrend",
+  "entry": "de.connectors.waehrend",
+  "format": "pick-one",
+  "prompt": "während → ＿",
+  "gloss": "while",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.deshalb",
+  "entry": "de.connectors.deshalb",
+  "format": "pick-one",
+  "prompt": "deshalb → ＿",
+  "gloss": "that's why",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.trotzdem",
+  "entry": "de.connectors.trotzdem",
+  "format": "pick-one",
+  "prompt": "trotzdem → ＿",
+  "gloss": "anyway",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.sonst",
+  "entry": "de.connectors.sonst",
+  "format": "pick-one",
+  "prompt": "sonst → ＿",
+  "gloss": "otherwise",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.denn",
+  "entry": "de.connectors.denn",
+  "format": "pick-one",
+  "prompt": "denn → ＿",
+  "gloss": "because",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.aber",
+  "entry": "de.connectors.aber",
+  "format": "pick-one",
+  "prompt": "aber → ＿",
+  "gloss": "but",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.sondern",
+  "entry": "de.connectors.sondern",
+  "format": "pick-one",
+  "prompt": "sondern → ＿",
+  "gloss": "but rather (after nicht)",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.indem",
+  "entry": "de.connectors.indem",
+  "format": "pick-one",
+  "prompt": "indem → ＿",
+  "gloss": "by (doing)",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.sodass",
+  "entry": "de.connectors.sodass",
+  "format": "pick-one",
+  "prompt": "sodass → ＿",
+  "gloss": "so that (result)",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.falls",
+  "entry": "de.connectors.falls",
+  "format": "pick-one",
+  "prompt": "falls → ＿",
+  "gloss": "in case",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.sofern",
+  "entry": "de.connectors.sofern",
+  "format": "pick-one",
+  "prompt": "sofern → ＿",
+  "gloss": "provided that",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.es-sei-denn",
+  "entry": "de.connectors.es-sei-denn",
+  "format": "pick-one",
+  "prompt": "es sei denn → ＿",
+  "gloss": "unless",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.folglich",
+  "entry": "de.connectors.folglich",
+  "format": "pick-one",
+  "prompt": "folglich · infolgedessen · somit → ＿",
+  "gloss": "consequently",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.waehrend-contrast",
+  "entry": "de.connectors.waehrend-contrast",
+  "format": "pick-one",
+  "prompt": "während (contrast) → ＿",
+  "gloss": "whereas",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.wohingegen",
+  "entry": "de.connectors.wohingegen",
+  "format": "pick-one",
+  "prompt": "wohingegen → ＿",
+  "gloss": "whereas",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.so-auch",
+  "entry": "de.connectors.so-auch",
+  "format": "pick-one",
+  "prompt": "so … auch → ＿",
+  "gloss": "however (much)",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.wenngleich",
+  "entry": "de.connectors.wenngleich",
+  "format": "pick-one",
+  "prompt": "wenngleich → ＿",
+  "gloss": "even though",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.zumal",
+  "entry": "de.connectors.zumal",
+  "format": "pick-one",
+  "prompt": "zumal → ＿",
+  "gloss": "especially since",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.hingegen",
+  "entry": "de.connectors.hingegen",
+  "format": "pick-one",
+  "prompt": "hingegen → ＿",
+  "gloss": "on the other hand",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.immerhin",
+  "entry": "de.connectors.immerhin",
+  "format": "pick-one",
+  "prompt": "immerhin → ＿",
+  "gloss": "at least",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.vielmehr",
+  "entry": "de.connectors.vielmehr",
+  "format": "pick-one",
+  "prompt": "vielmehr → ＿",
+  "gloss": "rather",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.dessen-ungeachtet",
+  "entry": "de.connectors.dessen-ungeachtet",
+  "format": "pick-one",
+  "prompt": "dessen ungeachtet → ＿",
+  "gloss": "regardless of that",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.demzufolge",
+  "entry": "de.connectors.demzufolge",
+  "format": "pick-one",
+  "prompt": "demzufolge → ＿",
+  "gloss": "accordingly",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.de.connectors.dahingehend",
+  "entry": "de.connectors.dahingehend",
+  "format": "pick-one",
+  "prompt": "dahingehend, dass → ＿",
+  "gloss": "to the effect that",
+  "steps": [
+   {
+    "options": [
+     "infinitive",
+     "no change",
+     "verb last",
+     "verb second"
+    ],
+    "answer": 2
+   }
+  ]
+ }
+]

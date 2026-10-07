@@ -11,6 +11,8 @@ enum BookRoute: Hashable {
 extension EnvironmentValues {
     /// Starts a quiz over whatever is on screen. Set by the shell.
     @Entry var startQuiz: (QuizPlan) -> Void = { _ in }
+    /// Opens the ALL LANGUAGES deck. Set by the shell.
+    @Entry var startAllLanguages: () -> Void = {}
 }
 
 enum BookColour {

@@ -1664,7 +1664,8 @@
    ],
    "formats": [
     "sort",
-    "flip"
+    "flip",
+    "pick-one"
    ]
   },
   {

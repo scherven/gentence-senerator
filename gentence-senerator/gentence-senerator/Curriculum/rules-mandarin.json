@@ -1,0 +1,2469 @@
+[
+ {
+  "id": "rule.zh.measure.zhang",
+  "entry": "zh.measure.zhang",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "paper, tables, beds, tickets",
+  "why": "zhāng",
+  "steps": [
+   {
+    "options": [
+     "块",
+     "道",
+     "张",
+     "匹"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.pian",
+  "entry": "zh.measure.pian",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "slices, tablets, leaves",
+  "why": "piàn",
+  "steps": [
+   {
+    "options": [
+     "片",
+     "辆",
+     "遍",
+     "所"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.tiao",
+  "entry": "zh.measure.tiao",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "roads, rivers, fish, trousers",
+  "why": "tiáo",
+  "steps": [
+   {
+    "options": [
+     "座",
+     "遍",
+     "条",
+     "名"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.gen",
+  "entry": "zh.measure.gen",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "bananas, hairs, sticks",
+  "why": "gēn",
+  "steps": [
+   {
+    "options": [
+     "架",
+     "遍",
+     "个",
+     "根"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.zhi-pen",
+  "entry": "zh.measure.zhi-pen",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "pens",
+  "why": "zhī",
+  "steps": [
+   {
+    "options": [
+     "匹",
+     "瓶",
+     "杯",
+     "支"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ben",
+  "entry": "zh.measure.ben",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "books, dictionaries",
+  "why": "běn",
+  "steps": [
+   {
+    "options": [
+     "首",
+     "碗",
+     "本",
+     "座"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.feng",
+  "entry": "zh.measure.feng",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "letters, emails",
+  "why": "fēng",
+  "steps": [
+   {
+    "options": [
+     "封",
+     "匹",
+     "支",
+     "把"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.fen",
+  "entry": "zh.measure.fen",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "newspapers, jobs, portions",
+  "why": "fèn",
+  "steps": [
+   {
+    "options": [
+     "位",
+     "座",
+     "份",
+     "件"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.tai",
+  "entry": "zh.measure.tai",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "computers, TVs, machines",
+  "why": "tái",
+  "steps": [
+   {
+    "options": [
+     "颗",
+     "台",
+     "支",
+     "家"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.liang",
+  "entry": "zh.measure.liang",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "cars, bikes, buses",
+  "why": "liàng",
+  "steps": [
+   {
+    "options": [
+     "辆",
+     "场",
+     "头",
+     "下"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.jia-plane",
+  "entry": "zh.measure.jia-plane",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "planes, pianos",
+  "why": "jià",
+  "steps": [
+   {
+    "options": [
+     "道",
+     "所",
+     "架",
+     "块"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.bu",
+  "entry": "zh.measure.bu",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "phones, films",
+  "why": "bù",
+  "steps": [
+   {
+    "options": [
+     "双",
+     "条",
+     "瓶",
+     "部"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.wei",
+  "entry": "zh.measure.wei",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "people, politely",
+  "why": "wèi",
+  "steps": [
+   {
+    "options": [
+     "遍",
+     "朵",
+     "位",
+     "本"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.kou",
+  "entry": "zh.measure.kou",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "members of a household",
+  "why": "kǒu",
+  "steps": [
+   {
+    "options": [
+     "杯",
+     "口",
+     "封",
+     "间"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ming",
+  "entry": "zh.measure.ming",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "students, staff",
+  "why": "míng",
+  "steps": [
+   {
+    "options": [
+     "封",
+     "遍",
+     "支",
+     "名"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.zhi-animal",
+  "entry": "zh.measure.zhi-animal",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "cats, birds, one of a pair",
+  "why": "zhī",
+  "steps": [
+   {
+    "options": [
+     "家",
+     "座",
+     "遍",
+     "只"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.tou",
+  "entry": "zh.measure.tou",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "cows, pigs",
+  "why": "tóu",
+  "steps": [
+   {
+    "options": [
+     "头",
+     "双",
+     "架",
+     "颗"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.pi",
+  "entry": "zh.measure.pi",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "horses",
+  "why": "pǐ",
+  "steps": [
+   {
+    "options": [
+     "名",
+     "匹",
+     "张",
+     "条"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ci",
+  "entry": "zh.measure.ci",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "times, occurrences",
+  "why": "cì",
+  "steps": [
+   {
+    "options": [
+     "把",
+     "次",
+     "张",
+     "双"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.bian",
+  "entry": "zh.measure.bian",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "times through, start to finish",
+  "why": "biàn",
+  "steps": [
+   {
+    "options": [
+     "头",
+     "遍",
+     "名",
+     "朵"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.tang",
+  "entry": "zh.measure.tang",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "trips there and back",
+  "why": "tàng",
+  "steps": [
+   {
+    "options": [
+     "把",
+     "支",
+     "件",
+     "趟"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.xia",
+  "entry": "zh.measure.xia",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "a quick go, a knock",
+  "why": "xià",
+  "steps": [
+   {
+    "options": [
+     "颗",
+     "下",
+     "棵",
+     "场"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.jian-clothes",
+  "entry": "zh.measure.jian-clothes",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "tops, coats, matters",
+  "why": "jiàn",
+  "steps": [
+   {
+    "options": [
+     "件",
+     "所",
+     "首",
+     "座"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.shuang",
+  "entry": "zh.measure.shuang",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "pairs: shoes, chopsticks",
+  "why": "shuāng",
+  "steps": [
+   {
+    "options": [
+     "架",
+     "趟",
+     "双",
+     "间"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.zuo",
+  "entry": "zh.measure.zuo",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "mountains, bridges, buildings",
+  "why": "zuò",
+  "steps": [
+   {
+    "options": [
+     "道",
+     "位",
+     "座",
+     "根"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.jia-shop",
+  "entry": "zh.measure.jia-shop",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "shops, companies, restaurants",
+  "why": "jiā",
+  "steps": [
+   {
+    "options": [
+     "碗",
+     "家",
+     "本",
+     "次"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.jian-room",
+  "entry": "zh.measure.jian-room",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "rooms",
+  "why": "jiān",
+  "steps": [
+   {
+    "options": [
+     "间",
+     "部",
+     "节",
+     "台"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.suo",
+  "entry": "zh.measure.suo",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "schools, universities",
+  "why": "suǒ",
+  "steps": [
+   {
+    "options": [
+     "次",
+     "棵",
+     "杯",
+     "所"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.bei",
+  "entry": "zh.measure.bei",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "a cup or glass of",
+  "why": "bēi",
+  "steps": [
+   {
+    "options": [
+     "杯",
+     "封",
+     "辆",
+     "颗"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ping",
+  "entry": "zh.measure.ping",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "a bottle of",
+  "why": "píng",
+  "steps": [
+   {
+    "options": [
+     "趟",
+     "名",
+     "封",
+     "瓶"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.wan",
+  "entry": "zh.measure.wan",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "a bowl of",
+  "why": "wǎn",
+  "steps": [
+   {
+    "options": [
+     "只",
+     "碗",
+     "座",
+     "支"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ba",
+  "entry": "zh.measure.ba",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "chairs, umbrellas, keys",
+  "why": "bǎ",
+  "steps": [
+   {
+    "options": [
+     "碗",
+     "双",
+     "把",
+     "名"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ke",
+  "entry": "zh.measure.ke",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "trees",
+  "why": "kē",
+  "steps": [
+   {
+    "options": [
+     "棵",
+     "家",
+     "首",
+     "次"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.duo",
+  "entry": "zh.measure.duo",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "flowers, clouds",
+  "why": "duǒ",
+  "steps": [
+   {
+    "options": [
+     "下",
+     "朵",
+     "颗",
+     "瓶"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.shou",
+  "entry": "zh.measure.shou",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "songs, poems",
+  "why": "shǒu",
+  "steps": [
+   {
+    "options": [
+     "所",
+     "首",
+     "根",
+     "座"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.jie",
+  "entry": "zh.measure.jie",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "class periods",
+  "why": "jié",
+  "steps": [
+   {
+    "options": [
+     "块",
+     "颗",
+     "节",
+     "辆"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.chang",
+  "entry": "zh.measure.chang",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "matches, showings, rain",
+  "why": "chǎng",
+  "steps": [
+   {
+    "options": [
+     "位",
+     "间",
+     "朵",
+     "场"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.dao",
+  "entry": "zh.measure.dao",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "dishes, exam questions",
+  "why": "dào",
+  "steps": [
+   {
+    "options": [
+     "个",
+     "棵",
+     "道",
+     "家"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.kuai",
+  "entry": "zh.measure.kuai",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "chunks, cake, watches, yuan",
+  "why": "kuài",
+  "steps": [
+   {
+    "options": [
+     "趟",
+     "块",
+     "瓶",
+     "所"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.zhong",
+  "entry": "zh.measure.zhong",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "kinds",
+  "why": "zhǒng",
+  "steps": [
+   {
+    "options": [
+     "部",
+     "座",
+     "架",
+     "种"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ge",
+  "entry": "zh.measure.ge",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "the fallback: people, questions, months",
+  "why": "gè",
+  "steps": [
+   {
+    "options": [
+     "架",
+     "座",
+     "个",
+     "匹"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.measure.ke-round",
+  "entry": "zh.measure.ke-round",
+  "format": "pick-one",
+  "prompt": "一＿",
+  "gloss": "stars, teeth, sweets, small round things",
+  "why": "kē",
+  "steps": [
+   {
+    "options": [
+     "颗",
+     "碗",
+     "下",
+     "台"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.bu-action",
+  "entry": "zh.negation.bu-action",
+  "format": "flip",
+  "prompt": "＿去",
+  "gloss": "won't, doesn't",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.mei-action",
+  "entry": "zh.negation.mei-action",
+  "format": "flip",
+  "prompt": "＿去",
+  "gloss": "didn't",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.mei-you",
+  "entry": "zh.negation.mei-you",
+  "format": "flip",
+  "prompt": "＿有",
+  "gloss": "don't have, there isn't",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.bu-shi",
+  "entry": "zh.negation.bu-shi",
+  "format": "flip",
+  "prompt": "＿是",
+  "gloss": "isn't",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.bu-state",
+  "entry": "zh.negation.bu-state",
+  "format": "flip",
+  "prompt": "＿知道 · 不喜欢",
+  "gloss": "knowing, liking",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.bu-adj",
+  "entry": "zh.negation.bu-adj",
+  "format": "flip",
+  "prompt": "＿贵",
+  "gloss": "even about the past",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.bu-modal",
+  "entry": "zh.negation.bu-modal",
+  "format": "flip",
+  "prompt": "＿会 · 不能 · 不想",
+  "gloss": "can't, won't, don't want",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.mei-guo",
+  "entry": "zh.negation.mei-guo",
+  "format": "flip",
+  "prompt": "＿去过",
+  "gloss": "never have",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.mei-result",
+  "entry": "zh.negation.mei-result",
+  "format": "flip",
+  "prompt": "＿听懂",
+  "gloss": "didn't",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.budebu",
+  "entry": "zh.negation.budebu",
+  "format": "flip",
+  "prompt": "＿得不",
+  "gloss": "have no choice but to",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.negation.meiyou-bu",
+  "entry": "zh.negation.meiyou-bu",
+  "format": "flip",
+  "prompt": "＿有…不",
+  "gloss": "every single one",
+  "steps": [
+   {
+    "options": [
+     "不",
+     "没"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.quanli",
+  "entry": "zh.adv-idioms.quanli",
+  "format": "card",
+  "prompt": "全力以赴",
+  "gloss": "quán lì yǐ fù",
+  "speak": "全力以赴",
+  "accept": [
+   "go all out"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.jianchi",
+  "entry": "zh.adv-idioms.jianchi",
+  "format": "card",
+  "prompt": "坚持不懈",
+  "gloss": "jiānchí búxiè",
+  "speak": "坚持不懈",
+  "accept": [
+   "keep at it"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.bantu",
+  "entry": "zh.adv-idioms.bantu",
+  "format": "card",
+  "prompt": "半途而废",
+  "gloss": "bàntú ér fèi",
+  "speak": "半途而废",
+  "accept": [
+   "give up halfway"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.renshan",
+  "entry": "zh.adv-idioms.renshan",
+  "format": "card",
+  "prompt": "人山人海",
+  "gloss": "rén shān rén hǎi",
+  "speak": "人山人海",
+  "accept": [
+   "huge crowds"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.luoyi",
+  "entry": "zh.adv-idioms.luoyi",
+  "format": "card",
+  "prompt": "络绎不绝",
+  "gloss": "luòyì bù jué",
+  "speak": "络绎不绝",
+  "accept": [
+   "an unbroken stream"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.quzhi",
+  "entry": "zh.adv-idioms.quzhi",
+  "format": "card",
+  "prompt": "屈指可数",
+  "gloss": "qūzhǐ kě shǔ",
+  "speak": "屈指可数",
+  "accept": [
+   "only a handful"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.zhengfen",
+  "entry": "zh.adv-idioms.zhengfen",
+  "format": "card",
+  "prompt": "争分夺秒",
+  "gloss": "zhēng fēn duó miǎo",
+  "speak": "争分夺秒",
+  "accept": [
+   "race against the clock"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.rixin",
+  "entry": "zh.adv-idioms.rixin",
+  "format": "card",
+  "prompt": "日新月异",
+  "gloss": "rì xīn yuè yì",
+  "speak": "日新月异",
+  "accept": [
+   "changing by the day"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.zhuanyan",
+  "entry": "zh.adv-idioms.zhuanyan",
+  "format": "card",
+  "prompt": "转眼之间",
+  "gloss": "zhuǎnyǎn zhījiān",
+  "speak": "转眼之间",
+  "accept": [
+   "in the blink of an eye"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.taotao",
+  "entry": "zh.adv-idioms.taotao",
+  "format": "card",
+  "prompt": "滔滔不绝",
+  "gloss": "tāotāo bù jué",
+  "speak": "滔滔不绝",
+  "accept": [
+   "talk non-stop"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.zhiyan",
+  "entry": "zh.adv-idioms.zhiyan",
+  "format": "card",
+  "prompt": "直言不讳",
+  "gloss": "zhíyán bú huì",
+  "speak": "直言不讳",
+  "accept": [
+   "speak bluntly"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.zhiwu",
+  "entry": "zh.adv-idioms.zhiwu",
+  "format": "card",
+  "prompt": "支支吾吾",
+  "gloss": "zhīzhīwūwū",
+  "speak": "支支吾吾",
+  "accept": [
+   "hem and haw"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.pozai",
+  "entry": "zh.adv-idioms.pozai",
+  "format": "card",
+  "prompt": "迫在眉睫",
+  "gloss": "pò zài méi jié",
+  "speak": "迫在眉睫",
+  "accept": [
+   "extremely urgent"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.shushou",
+  "entry": "zh.adv-idioms.shushou",
+  "format": "card",
+  "prompt": "束手无策",
+  "gloss": "shù shǒu wú cè",
+  "speak": "束手无策",
+  "accept": [
+   "at a total loss"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.jubu",
+  "entry": "zh.adv-idioms.jubu",
+  "format": "card",
+  "prompt": "举步维艰",
+  "gloss": "jǔ bù wéi jiān",
+  "speak": "举步维艰",
+  "accept": [
+   "every step a struggle"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.jieran",
+  "entry": "zh.adv-idioms.jieran",
+  "format": "card",
+  "prompt": "截然不同",
+  "gloss": "jiérán bùtóng",
+  "speak": "截然不同",
+  "accept": [
+   "completely different"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.datong",
+  "entry": "zh.adv-idioms.datong",
+  "format": "card",
+  "prompt": "大同小异",
+  "gloss": "dàtóng xiǎoyì",
+  "speak": "大同小异",
+  "accept": [
+   "much the same"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms.xiangfu",
+  "entry": "zh.adv-idioms.xiangfu",
+  "format": "card",
+  "prompt": "相辅相成",
+  "gloss": "xiāng fǔ xiāng chéng",
+  "speak": "相辅相成",
+  "accept": [
+   "complement each other"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.niaoyu",
+  "entry": "zh.adv-idioms-more.niaoyu",
+  "format": "card",
+  "prompt": "鸟语花香",
+  "gloss": "niǎo yǔ huā xiāng",
+  "speak": "鸟语花香",
+  "accept": [
+   "birdsong and blossom"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.wanlai",
+  "entry": "zh.adv-idioms-more.wanlai",
+  "format": "card",
+  "prompt": "万籁俱寂",
+  "gloss": "wàn lài jù jì",
+  "speak": "万籁俱寂",
+  "accept": [
+   "utter silence"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.meibu",
+  "entry": "zh.adv-idioms-more.meibu",
+  "format": "card",
+  "prompt": "美不胜收",
+  "gloss": "měi bú shèng shōu",
+  "speak": "美不胜收",
+  "accept": [
+   "more beauty than one can take in"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.quanheng",
+  "entry": "zh.adv-idioms-more.quanheng",
+  "format": "card",
+  "prompt": "权衡利弊",
+  "gloss": "quánhéng lìbì",
+  "speak": "权衡利弊",
+  "accept": [
+   "weigh pros and cons"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.xunxu",
+  "entry": "zh.adv-idioms-more.xunxu",
+  "format": "card",
+  "prompt": "循序渐进",
+  "gloss": "xúnxù jiànjìn",
+  "speak": "循序渐进",
+  "accept": [
+   "step by step"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.yinshi",
+  "entry": "zh.adv-idioms-more.yinshi",
+  "format": "card",
+  "prompt": "因势利导",
+  "gloss": "yīn shì lì dǎo",
+  "speak": "因势利导",
+  "accept": [
+   "guide things along their course"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.yiyi",
+  "entry": "zh.adv-idioms-more.yiyi",
+  "format": "card",
+  "prompt": "一意孤行",
+  "gloss": "yí yì gū xíng",
+  "speak": "一意孤行",
+  "accept": [
+   "go one's own way regardless"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.sheben",
+  "entry": "zh.adv-idioms-more.sheben",
+  "format": "card",
+  "prompt": "舍本逐末",
+  "gloss": "shě běn zhú mò",
+  "speak": "舍本逐末",
+  "accept": [
+   "neglect the root for the branches"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.yinye",
+  "entry": "zh.adv-idioms-more.yinye",
+  "format": "card",
+  "prompt": "因噎废食",
+  "gloss": "yīn yē fèi shí",
+  "speak": "因噎废食",
+  "accept": [
+   "give up eating for fear of choking"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.degao",
+  "entry": "zh.adv-idioms-more.degao",
+  "format": "card",
+  "prompt": "德高望重",
+  "gloss": "dé gāo wàng zhòng",
+  "speak": "德高望重",
+  "accept": [
+   "respected for virtue"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.pingyi",
+  "entry": "zh.adv-idioms-more.pingyi",
+  "format": "card",
+  "prompt": "平易近人",
+  "gloss": "píngyì jìn rén",
+  "speak": "平易近人",
+  "accept": [
+   "approachable"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.shencang",
+  "entry": "zh.adv-idioms-more.shencang",
+  "format": "card",
+  "prompt": "深藏不露",
+  "gloss": "shēn cáng bú lù",
+  "speak": "深藏不露",
+  "accept": [
+   "hides his talents"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.shuidao",
+  "entry": "zh.adv-idioms-more.shuidao",
+  "format": "card",
+  "prompt": "水到渠成",
+  "gloss": "shuǐ dào qú chéng",
+  "speak": "水到渠成",
+  "accept": [
+   "success follows naturally"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.shiyu",
+  "entry": "zh.adv-idioms-more.shiyu",
+  "format": "card",
+  "prompt": "事与愿违",
+  "gloss": "shì yǔ yuàn wéi",
+  "speak": "事与愿违",
+  "accept": [
+   "turns out against one's wishes"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-idioms-more.gongkui",
+  "entry": "zh.adv-idioms-more.gongkui",
+  "format": "card",
+  "prompt": "功亏一篑",
+  "gloss": "gōng kuī yí kuì",
+  "speak": "功亏一篑",
+  "accept": [
+   "fail at the last hurdle"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.hua",
+  "entry": "zh.adv-word-building.hua",
+  "format": "card",
+  "prompt": "—化",
+  "gloss": "huà",
+  "speak": "化",
+  "accept": [
+   "-ise, -isation"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.xing",
+  "entry": "zh.adv-word-building.xing",
+  "format": "card",
+  "prompt": "—性",
+  "gloss": "xìng",
+  "speak": "性",
+  "accept": [
+   "-ness, -ity"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.wu",
+  "entry": "zh.adv-word-building.wu",
+  "format": "card",
+  "prompt": "无—",
+  "gloss": "wú",
+  "speak": "无",
+  "accept": [
+   "without"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.fei",
+  "entry": "zh.adv-word-building.fei",
+  "format": "card",
+  "prompt": "非—",
+  "gloss": "fēi",
+  "speak": "非",
+  "accept": [
+   "non-"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.chao",
+  "entry": "zh.adv-word-building.chao",
+  "format": "card",
+  "prompt": "超—",
+  "gloss": "chāo",
+  "speak": "超",
+  "accept": [
+   "super-, over-"
+  ]
+ },
+ {
+  "id": "rule.zh.adv-word-building.fan",
+  "entry": "zh.adv-word-building.fan",
+  "format": "card",
+  "prompt": "反—",
+  "gloss": "fǎn",
+  "speak": "反",
+  "accept": [
+   "anti-, counter-"
+  ]
+ },
+ {
+  "id": "rule.zh.structures.deng-zai",
+  "entry": "zh.structures.deng-zai",
+  "format": "pick-one",
+  "prompt": "等…＿…",
+  "gloss": "not until …, then",
+  "why": "děng… zài…",
+  "steps": [
+   {
+    "options": [
+     "不如说",
+     "再",
+     "就是",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.yi-jiu",
+  "entry": "zh.structures.yi-jiu",
+  "format": "pick-one",
+  "prompt": "一…＿…",
+  "gloss": "as soon as",
+  "why": "yī… jiù…",
+  "steps": [
+   {
+    "options": [
+     "就",
+     "但是",
+     "是因为",
+     "否则"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.lian-dou",
+  "entry": "zh.structures.lian-dou",
+  "format": "pick-one",
+  "prompt": "连…＿…",
+  "gloss": "even",
+  "why": "lián… dōu…",
+  "steps": [
+   {
+    "options": [
+     "而且",
+     "二来",
+     "以外",
+     "都"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.suiran-danshi",
+  "entry": "zh.structures.suiran-danshi",
+  "format": "pick-one",
+  "prompt": "虽然…＿…",
+  "gloss": "although … still",
+  "why": "suīrán… dànshì…",
+  "steps": [
+   {
+    "options": [
+     "但是",
+     "以来",
+     "越",
+     "就没有"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.shi-de",
+  "entry": "zh.structures.shi-de",
+  "format": "pick-one",
+  "prompt": "是…＿…",
+  "gloss": "stress when, where, how",
+  "why": "shì… de",
+  "steps": [
+   {
+    "options": [
+     "一边",
+     "的",
+     "反而",
+     "才"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.budan-erqie",
+  "entry": "zh.structures.budan-erqie",
+  "format": "pick-one",
+  "prompt": "不但…＿…",
+  "gloss": "not only … but also",
+  "why": "búdàn… érqiě…",
+  "steps": [
+   {
+    "options": [
+     "不然",
+     "而",
+     "而且",
+     "才"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.yue-yue",
+  "entry": "zh.structures.yue-yue",
+  "format": "pick-one",
+  "prompt": "越…＿…",
+  "gloss": "the more … the more",
+  "why": "yuè… yuè…",
+  "steps": [
+   {
+    "options": [
+     "就没有",
+     "越",
+     "但",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.zhiyao-jiu",
+  "entry": "zh.structures.zhiyao-jiu",
+  "format": "pick-one",
+  "prompt": "只要…＿…",
+  "gloss": "as long as",
+  "why": "zhǐyào… jiù…",
+  "steps": [
+   {
+    "options": [
+     "以来",
+     "以外",
+     "就",
+     "不然"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.zhiyou-cai",
+  "entry": "zh.structures.zhiyou-cai",
+  "format": "pick-one",
+  "prompt": "只有…＿…",
+  "gloss": "only if",
+  "why": "zhǐyǒu… cái…",
+  "steps": [
+   {
+    "options": [
+     "而且",
+     "以来",
+     "才",
+     "何况"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.chule-yiwai",
+  "entry": "zh.structures.chule-yiwai",
+  "format": "pick-one",
+  "prompt": "除了…＿…",
+  "gloss": "besides (还) · except (都)",
+  "why": "chúle… yǐwài",
+  "steps": [
+   {
+    "options": [
+     "否则",
+     "以来",
+     "才",
+     "以外"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.xian-zai",
+  "entry": "zh.structures.xian-zai",
+  "format": "pick-one",
+  "prompt": "先…＿…",
+  "gloss": "first … then",
+  "why": "xiān… zài…",
+  "steps": [
+   {
+    "options": [
+     "更是",
+     "二来",
+     "但",
+     "再"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.yinwei-suoyi",
+  "entry": "zh.structures.yinwei-suoyi",
+  "format": "pick-one",
+  "prompt": "因为…＿…",
+  "gloss": "because … so",
+  "why": "yīnwèi… suǒyǐ…",
+  "steps": [
+   {
+    "options": [
+     "是因为",
+     "来说",
+     "就没有",
+     "所以"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.ruguo-jiu",
+  "entry": "zh.structures.ruguo-jiu",
+  "format": "pick-one",
+  "prompt": "如果…＿…",
+  "gloss": "if … then",
+  "why": "rúguǒ… jiù…",
+  "steps": [
+   {
+    "options": [
+     "就",
+     "二则",
+     "才",
+     "就是"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.yibian",
+  "entry": "zh.structures.yibian",
+  "format": "pick-one",
+  "prompt": "一边…＿…",
+  "gloss": "while",
+  "why": "yìbiān… yìbiān…",
+  "steps": [
+   {
+    "options": [
+     "一边",
+     "否则",
+     "而且",
+     "以外"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.you-you",
+  "entry": "zh.structures.you-you",
+  "format": "pick-one",
+  "prompt": "又…＿…",
+  "gloss": "both … and",
+  "why": "yòu… yòu…",
+  "steps": [
+   {
+    "options": [
+     "否则",
+     "又",
+     "反而",
+     "二则"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.kuaiyao-le",
+  "entry": "zh.structures.kuaiyao-le",
+  "format": "pick-one",
+  "prompt": "快要…＿…",
+  "gloss": "about to",
+  "why": "kuàiyào… le",
+  "steps": [
+   {
+    "options": [
+     "了",
+     "就是",
+     "要么",
+     "又"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.cong-dao",
+  "entry": "zh.structures.cong-dao",
+  "format": "pick-one",
+  "prompt": "从…＿…",
+  "gloss": "from … to",
+  "why": "cóng… dào…",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "都",
+     "到",
+     "就没有"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.tai-le",
+  "entry": "zh.structures.tai-le",
+  "format": "pick-one",
+  "prompt": "太…＿…",
+  "gloss": "too, so",
+  "why": "tài… le",
+  "steps": [
+   {
+    "options": [
+     "二来",
+     "了",
+     "就",
+     "反而"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.haishi-ba",
+  "entry": "zh.structures.haishi-ba",
+  "format": "pick-one",
+  "prompt": "还是…＿…",
+  "gloss": "had better",
+  "why": "háishi… ba",
+  "steps": [
+   {
+    "options": [
+     "吧",
+     "才",
+     "二则",
+     "再"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.bushi-ma",
+  "entry": "zh.structures.bushi-ma",
+  "format": "pick-one",
+  "prompt": "不是…＿…",
+  "gloss": "isn't it …?",
+  "why": "búshì… ma",
+  "steps": [
+   {
+    "options": [
+     "以外",
+     "吗",
+     "反而",
+     "又"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.dui-laishuo",
+  "entry": "zh.structures.dui-laishuo",
+  "format": "pick-one",
+  "prompt": "对…＿…",
+  "gloss": "for someone",
+  "why": "duì… láishuō",
+  "steps": [
+   {
+    "options": [
+     "来说",
+     "都",
+     "二则",
+     "又"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.structures.buguan-dou",
+  "entry": "zh.structures.buguan-dou",
+  "format": "pick-one",
+  "prompt": "不管…＿…",
+  "gloss": "no matter",
+  "why": "bùguǎn… dōu…",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "二则",
+     "都",
+     "才"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.jiran-jiu",
+  "entry": "zh.linked.jiran-jiu",
+  "format": "pick-one",
+  "prompt": "既然…＿…",
+  "gloss": "since (as we both know) …, then",
+  "why": "jìrán … jiù",
+  "steps": [
+   {
+    "options": [
+     "就",
+     "但",
+     "而",
+     "所以"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.jishi-ye",
+  "entry": "zh.linked.jishi-ye",
+  "format": "pick-one",
+  "prompt": "即使…＿…",
+  "gloss": "even if",
+  "why": "jíshǐ … yě",
+  "steps": [
+   {
+    "options": [
+     "也",
+     "否则",
+     "不然",
+     "二来"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.jiushi-ye",
+  "entry": "zh.linked.jiushi-ye",
+  "format": "pick-one",
+  "prompt": "就是…＿…",
+  "gloss": "even if, as it's said aloud",
+  "why": "jiùshì … yě",
+  "steps": [
+   {
+    "options": [
+     "但是",
+     "再",
+     "也",
+     "到"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.jinguan",
+  "entry": "zh.linked.jinguan",
+  "format": "pick-one",
+  "prompt": "尽管…＿…",
+  "gloss": "even though",
+  "why": "jǐnguǎn … dànshì",
+  "steps": [
+   {
+    "options": [
+     "来说",
+     "何况",
+     "但是",
+     "一边"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.bushi-ershi",
+  "entry": "zh.linked.bushi-ershi",
+  "format": "pick-one",
+  "prompt": "不是…＿…",
+  "gloss": "not A but B",
+  "why": "búshì … érshì",
+  "steps": [
+   {
+    "options": [
+     "来说",
+     "不然",
+     "而是",
+     "到"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.bushi-jiushi",
+  "entry": "zh.linked.bushi-jiushi",
+  "format": "pick-one",
+  "prompt": "不是…＿…",
+  "gloss": "either … or",
+  "why": "búshì … jiùshì",
+  "steps": [
+   {
+    "options": [
+     "又",
+     "不然",
+     "就是",
+     "而且"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.ji-you",
+  "entry": "zh.linked.ji-you",
+  "format": "pick-one",
+  "prompt": "既…＿…",
+  "gloss": "both … and",
+  "why": "jì … yòu",
+  "steps": [
+   {
+    "options": [
+     "二来",
+     "来说",
+     "又",
+     "但"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.yifangmian",
+  "entry": "zh.linked.yifangmian",
+  "format": "pick-one",
+  "prompt": "一方面…＿…",
+  "gloss": "on the one hand … on the other",
+  "why": "yì fāngmiàn … lìng yì fāngmiàn",
+  "steps": [
+   {
+    "options": [
+     "到",
+     "另一方面",
+     "但是",
+     "也"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.yidan-jiu",
+  "entry": "zh.linked.yidan-jiu",
+  "format": "pick-one",
+  "prompt": "一旦…＿…",
+  "gloss": "once (it happens), then",
+  "why": "yídàn … jiù",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "一边",
+     "就",
+     "以外"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.napa-ye",
+  "entry": "zh.linked.napa-ye",
+  "format": "pick-one",
+  "prompt": "哪怕…＿…",
+  "gloss": "even if (the most extreme case)",
+  "why": "nǎpà … yě",
+  "steps": [
+   {
+    "options": [
+     "不如",
+     "所以",
+     "也",
+     "以外"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.budan-faner",
+  "entry": "zh.linked.budan-faner",
+  "format": "pick-one",
+  "prompt": "不但不…＿…",
+  "gloss": "not only not …, but the opposite",
+  "why": "búdàn bù … fǎn'ér",
+  "steps": [
+   {
+    "options": [
+     "不如",
+     "否则",
+     "反而",
+     "更是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.zai-ye",
+  "entry": "zh.linked.zai-ye",
+  "format": "pick-one",
+  "prompt": "再…＿…",
+  "gloss": "however …, still",
+  "why": "zài … yě",
+  "steps": [
+   {
+    "options": [
+     "反而",
+     "要么",
+     "也",
+     "更是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.meiyou-jiu-meiyou",
+  "entry": "zh.linked.meiyou-jiu-meiyou",
+  "format": "pick-one",
+  "prompt": "没有…＿…",
+  "gloss": "without A, no B",
+  "why": "méiyǒu … jiù méiyǒu",
+  "steps": [
+   {
+    "options": [
+     "不然",
+     "但是",
+     "也",
+     "就没有"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.linked.zicong-yilai",
+  "entry": "zh.linked.zicong-yilai",
+  "format": "pick-one",
+  "prompt": "自从…＿…",
+  "gloss": "ever since",
+  "why": "zìcóng … yǐlái",
+  "steps": [
+   {
+    "options": [
+     "但",
+     "就没有",
+     "都",
+     "以来"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.yaome",
+  "entry": "zh.adv-conditions.yaome",
+  "format": "pick-one",
+  "prompt": "要么…＿…",
+  "gloss": "either … or, one must be taken",
+  "why": "yàome… yàome…",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "否则",
+     "都",
+     "要么"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.chufei-cai",
+  "entry": "zh.adv-conditions.chufei-cai",
+  "format": "pick-one",
+  "prompt": "除非…＿…",
+  "gloss": "only if",
+  "why": "chúfēi… cái…",
+  "steps": [
+   {
+    "options": [
+     "才",
+     "也不",
+     "而且",
+     "都"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.chufei-fouze",
+  "entry": "zh.adv-conditions.chufei-fouze",
+  "format": "pick-one",
+  "prompt": "除非…＿…",
+  "gloss": "unless",
+  "why": "chúfēi… fǒuzé…",
+  "steps": [
+   {
+    "options": [
+     "就没有",
+     "否则",
+     "到",
+     "而且"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.fanshi-dou",
+  "entry": "zh.adv-conditions.fanshi-dou",
+  "format": "pick-one",
+  "prompt": "凡是…＿…",
+  "gloss": "every … without exception",
+  "why": "fánshì… dōu…",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "一边",
+     "都",
+     "更是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.feide-cai",
+  "entry": "zh.adv-conditions.feide-cai",
+  "format": "pick-one",
+  "prompt": "非得…＿…",
+  "gloss": "nothing short of … will do",
+  "why": "fēiděi… cái…",
+  "steps": [
+   {
+    "options": [
+     "但",
+     "二来",
+     "是因为",
+     "才"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.ren-ye",
+  "entry": "zh.adv-conditions.ren-ye",
+  "format": "pick-one",
+  "prompt": "任…＿…",
+  "gloss": "no matter how",
+  "why": "rèn… yě…",
+  "steps": [
+   {
+    "options": [
+     "而",
+     "到",
+     "就没有",
+     "也"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-conditions.xingkui-buran",
+  "entry": "zh.adv-conditions.xingkui-buran",
+  "format": "pick-one",
+  "prompt": "幸亏…＿…",
+  "gloss": "luckily …, otherwise",
+  "why": "xìngkuī…, bùrán…",
+  "steps": [
+   {
+    "options": [
+     "就是",
+     "一边",
+     "不然",
+     "而"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.jiusuan-ye",
+  "entry": "zh.adv-concession.jiusuan-ye",
+  "format": "pick-one",
+  "prompt": "就算…＿…",
+  "gloss": "even if (spoken)",
+  "why": "jiùsuàn… yě…",
+  "steps": [
+   {
+    "options": [
+     "也不",
+     "但",
+     "也",
+     "反而"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.zongran-ye",
+  "entry": "zh.adv-concession.zongran-ye",
+  "format": "pick-one",
+  "prompt": "纵然…＿…",
+  "gloss": "even if (formal)",
+  "why": "zòngrán…, yě…",
+  "steps": [
+   {
+    "options": [
+     "一边",
+     "何况",
+     "就没有",
+     "也"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.suishuo-dan",
+  "entry": "zh.adv-concession.suishuo-dan",
+  "format": "pick-one",
+  "prompt": "虽说…＿…",
+  "gloss": "granted …, but",
+  "why": "suīshuō…, dàn…",
+  "steps": [
+   {
+    "options": [
+     "就",
+     "也不",
+     "但",
+     "是因为"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.bieshuo-dou",
+  "entry": "zh.adv-concession.bieshuo-dou",
+  "format": "pick-one",
+  "prompt": "别说…＿…",
+  "gloss": "let alone",
+  "why": "biéshuō…, …dōu…",
+  "steps": [
+   {
+    "options": [
+     "反而",
+     "都",
+     "所以",
+     "而"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.shangqie-hekuang",
+  "entry": "zh.adv-concession.shangqie-hekuang",
+  "format": "pick-one",
+  "prompt": "尚且…＿…",
+  "gloss": "even … so all the more",
+  "why": "shàngqiě…, hékuàng…",
+  "steps": [
+   {
+    "options": [
+     "不如",
+     "何况",
+     "不然",
+     "到"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-concession.bujin-gengshi",
+  "entry": "zh.adv-concession.bujin-gengshi",
+  "format": "pick-one",
+  "prompt": "不仅…＿…",
+  "gloss": "not just … but above all",
+  "why": "bùjǐn… gèngshì…",
+  "steps": [
+   {
+    "options": [
+     "到",
+     "一边",
+     "所以",
+     "更是"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.ningke-yebu",
+  "entry": "zh.adv-reasons.ningke-yebu",
+  "format": "pick-one",
+  "prompt": "宁可…＿…",
+  "gloss": "would rather … than",
+  "why": "nìngkě… yě bù…",
+  "steps": [
+   {
+    "options": [
+     "都",
+     "再",
+     "也不",
+     "所以"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.yuqi-buru",
+  "entry": "zh.adv-reasons.yuqi-buru",
+  "format": "pick-one",
+  "prompt": "与其…＿…",
+  "gloss": "rather than … better to",
+  "why": "yǔqí… bùrú…",
+  "steps": [
+   {
+    "options": [
+     "二来",
+     "不如",
+     "来说",
+     "都"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.yuqishuo-buru",
+  "entry": "zh.adv-reasons.yuqishuo-buru",
+  "format": "pick-one",
+  "prompt": "与其说…＿…",
+  "gloss": "less … than",
+  "why": "yǔqí shuō… bùrú shuō…",
+  "steps": [
+   {
+    "options": [
+     "不然",
+     "但",
+     "不如说",
+     "但是"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.zhisuoyi",
+  "entry": "zh.adv-reasons.zhisuoyi",
+  "format": "pick-one",
+  "prompt": "之所以…＿…",
+  "gloss": "the reason … is that",
+  "why": "zhīsuǒyǐ… shì yīnwèi…",
+  "steps": [
+   {
+    "options": [
+     "要么",
+     "越",
+     "而且",
+     "是因为"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.yilai-erlai",
+  "entry": "zh.adv-reasons.yilai-erlai",
+  "format": "pick-one",
+  "prompt": "一来…＿…",
+  "gloss": "for one thing …, for another",
+  "why": "yīlái…, èrlái…",
+  "steps": [
+   {
+    "options": [
+     "不如说",
+     "二来",
+     "又",
+     "就没有"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.yize-erze",
+  "entry": "zh.adv-reasons.yize-erze",
+  "format": "pick-one",
+  "prompt": "一则…＿…",
+  "gloss": "firstly …, secondly (written)",
+  "why": "yīzé…, èrzé…",
+  "steps": [
+   {
+    "options": [
+     "二来",
+     "都",
+     "而是",
+     "二则"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.zh.adv-reasons.yin-er",
+  "entry": "zh.adv-reasons.yin-er",
+  "format": "pick-one",
+  "prompt": "因…＿…",
+  "gloss": "because of … (written)",
+  "why": "yīn… ér…",
+  "steps": [
+   {
+    "options": [
+     "而",
+     "二则",
+     "就没有",
+     "何况"
+    ],
+    "answer": 0
+   }
+  ]
+ }
+]

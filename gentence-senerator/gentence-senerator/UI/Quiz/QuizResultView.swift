@@ -183,6 +183,10 @@ struct QuizResultView: View {
                 t = t + Text((step.prompt ?? "") + " ") + pair(a.given[ifAny: i] ?? "", expected[ifAny: i] ?? "", false)
             }
             return t
+        case .card:
+            return Text(item.prompt ?? "").foregroundColor(Theme.C.ink)
+                + Text(" → ").foregroundColor(Theme.C.ink3)
+                + Text(expected.first ?? "").bold().foregroundColor(Theme.C.good)
         case .build, .transform:
             return Text(a.given.first ?? "").strikethrough().foregroundColor(Theme.C.bad)
                 + Text(" → ") + Text(expected.first ?? "").foregroundColor(Theme.C.good)

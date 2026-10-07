@@ -25,6 +25,9 @@ enum QuizFormat: String, Codable, Hashable, CaseIterable {
     case sort
     /// Rewrite `prompt` as `task` says; typed, checked against `accept`.
     case transform
+    /// A flashcard: `prompt` on the front, `accept[0]` on the back with
+    /// `gloss` under it. Turned, then marked right or wrong by the learner.
+    case card
 
     /// Which item fields a format needs. `tools/check_book.py` mirrors this.
     struct Rules {
@@ -44,6 +47,7 @@ enum QuizFormat: String, Codable, Hashable, CaseIterable {
         case .toneTap:   return Rules(steps: 1...4, options: 4...5)
         case .sort:      return Rules(steps: 4...12, options: 2...4)
         case .transform: return Rules(steps: 0...0, accept: true)
+        case .card:      return Rules(steps: 0...0, accept: true)
         }
     }
 }
@@ -114,11 +118,24 @@ struct QuizPlan: Identifiable, Codable, Hashable {
     /// Empty means every format.
     var formats: [QuizFormat] = []
     var count: Int = 20
+    /// Draws on the rules quizzes (`rules-<lang>.json`) instead of the tests.
+    var rules = false
+    /// Set: no end, items keep coming from these sources.
+    var mix: Mix?
+
+    /// What an endless quiz draws on. Chapter ids, as tests and as rules.
+    struct Mix: Codable, Hashable {
+        var tests: [String] = []
+        var rules: [String] = []
+        var words = false
+
+        var isEmpty: Bool { tests.isEmpty && rules.isEmpty && !words }
+    }
 
     init(id: String, name: String, chapters: [String] = [],
-         formats: [QuizFormat] = [], count: Int = 20) {
+         formats: [QuizFormat] = [], count: Int = 20, rules: Bool = false, mix: Mix? = nil) {
         self.id = id; self.name = name; self.chapters = chapters
-        self.formats = formats; self.count = count
+        self.formats = formats; self.count = count; self.rules = rules; self.mix = mix
     }
 
     init(from decoder: Decoder) throws {
@@ -128,5 +145,17 @@ struct QuizPlan: Identifiable, Codable, Hashable {
         chapters = try c.decodeIfPresent([String].self, forKey: .chapters) ?? []
         formats = try c.decodeIfPresent([QuizFormat].self, forKey: .formats) ?? []
         count = try c.decodeIfPresent(Int.self, forKey: .count) ?? 20
+        rules = try c.decodeIfPresent(Bool.self, forKey: .rules) ?? false
+        mix = try c.decodeIfPresent(Mix.self, forKey: .mix)
     }
+
+    var endless: Bool { mix != nil }
+
+    /// A chapter's rules round: one item per entry.
+    static func rules(for chapter: Chapter) -> QuizPlan {
+        QuizPlan(id: chapter.id + ".rules", name: chapter.name, chapters: [chapter.id], rules: true)
+    }
+
+    /// Plan id of a language's endless quiz.
+    static func endlessID(_ language: Language) -> String { "\(language.rawValue).endless" }
 }
