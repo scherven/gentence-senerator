@@ -1,7 +1,7 @@
 import Foundation
 
-/// Transport for the Messages API. There is no official Anthropic SDK for
-/// Swift, so this speaks the REST endpoint directly.
+/// Transport for the Messages API, through the worker, which adds the key.
+/// There is no official Anthropic SDK for Swift, so this speaks REST directly.
 actor Anthropic {
 
     enum Effort: String { case low, medium, high, xhigh, max }
@@ -21,15 +21,12 @@ actor Anthropic {
     }
 
     enum Failure: LocalizedError {
-        case noKey
         case http(Int, String)
         case malformed(String)
         case refused(String)
 
         var errorDescription: String? {
             switch self {
-            case .noKey:
-                return "No API key. Add Key.anthropicKey in key.swift."
             case .http(let code, let body):
                 return "Request failed (\(code)). \(body)"
             case .malformed(let detail):
@@ -40,12 +37,11 @@ actor Anthropic {
         }
     }
 
-    private let key: String
     private let session: URLSession
+    /// The worker refuses any other.
     private let model = "claude-opus-5"
 
-    init(key: String, session: URLSession = .shared) {
-        self.key = key
+    init(session: URLSession = .shared) {
         self.session = session
     }
 
@@ -84,11 +80,9 @@ actor Anthropic {
 
     nonisolated private func request(_ path: String, method: String = "POST",
                                      body: [String: Any]? = nil) throws -> URLRequest {
-        var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/\(path)")!)
+        var request = URLRequest(url: Worker.url("/anthropic/v1/\(path)"))
         request.httpMethod = method
-        request.setValue(key, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-        request.setValue("server-side-fallback-2026-07-01", forHTTPHeaderField: "anthropic-beta")
+        Worker.authorize(&request)
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         if let body { request.httpBody = try Schemas.data(body) }
         // Long enough for a high-effort reply that sends nothing until it is done.
@@ -116,8 +110,6 @@ actor Anthropic {
               schema: [String: Any]? = nil,
               effort: Effort = .medium,
               maxTokens: Int = 8000) async throws -> Reply {
-
-        guard !key.isEmpty else { throw Failure.noKey }
 
         let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
                           effort: effort, maxTokens: maxTokens)
@@ -225,8 +217,9 @@ actor Anthropic {
 
     func batchResults(_ batch: Batch) async throws -> [BatchResult] {
         guard let url = batch.resultsURL else { throw Failure.malformed("batch has no results yet") }
+        // results_url points at api.anthropic.com; the worker serves the same path.
         var request = try request("", method: "GET")
-        request.url = url
+        request.url = Worker.url("/anthropic" + url.path)
         return Self.results(from: try await data(for: request))
     }
 

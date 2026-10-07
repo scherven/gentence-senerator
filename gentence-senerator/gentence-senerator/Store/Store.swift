@@ -137,7 +137,7 @@ final class Store {
     let dialogue = DialoguePlayer()
 
     init(tutor: Tutor, speech: SpeechIO? = nil,
-         pronunciation: Pronunciation = Pronunciation(key: Key.azureKey, region: Key.azureRegion)) {
+         pronunciation: Pronunciation = Pronunciation()) {
         self.pronunciation = pronunciation
         self.tutor = tutor
         self.speech = speech
@@ -1277,12 +1277,11 @@ final class Store {
     /// a job submitted before the device had a token. False when it could
     /// not, so the next pump tries again.
     private func watch(_ batchID: String, job: UUID, label: String) async -> Bool {
-        guard let token = UserDefaults.standard.string(forKey: Vault.pushToken),
-              let url = URL(string: Key.graderURL + "/watch") else { return false }
-        var request = URLRequest(url: url)
+        guard let token = UserDefaults.standard.string(forKey: Vault.pushToken) else { return false }
+        var request = URLRequest(url: Worker.url("/watch"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         request.httpBody = try? JSONSerialization.data(
             withJSONObject: ["batch": batchID, "job": job.uuidString, "token": token, "label": label,
                              "sandbox": Sender.sandbox])
@@ -1379,11 +1378,11 @@ final class Store {
 
     /// What the worker graded directly for a batch, if it stepped in.
     private func directResults(_ batchID: String) async -> Direct {
-        guard var parts = URLComponents(string: Key.graderURL + "/results") else { return .none }
+        guard var parts = URLComponents(string: Worker.base + "/results") else { return .none }
         parts.queryItems = [URLQueryItem(name: "batch", value: batchID)]
         guard let url = parts.url else { return .none }
         var request = URLRequest(url: url)
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
               let code = (response as? HTTPURLResponse)?.statusCode else { return .none }
         switch code {

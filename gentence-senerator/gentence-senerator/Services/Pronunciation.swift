@@ -1,6 +1,6 @@
 import Foundation
 
-/// Azure pronunciation assessment.
+/// Azure pronunciation assessment, through the worker, which adds the key.
 ///
 /// Feature parity is uneven and the gaps are load-bearing: phoneme *names* come
 /// back only for en-US and zh-CN, and prosody only for en-US. German and French
@@ -8,16 +8,9 @@ import Foundation
 /// and no name.
 struct Pronunciation {
 
-    let key: String
-    let region: String
-
-    var isConfigured: Bool { !key.isEmpty && !region.isEmpty }
-
     /// `reference` is what the learner should have said — the played sentence
     /// in listen mode, their own confirmed words otherwise.
     func assess(wav: URL, reference: String, locale: String) async throws -> PronunciationResult? {
-        guard isConfigured else { return nil }
-
         let config: [String: Any] = [
             "ReferenceText": reference,
             "GradingSystem": "HundredMark",
@@ -26,8 +19,7 @@ struct Pronunciation {
         ]
         let configData = try JSONSerialization.data(withJSONObject: config)
 
-        var url = URLComponents(string:
-            "https://\(region).stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1")!
+        var url = URLComponents(url: Worker.url("/azure/pronounce"), resolvingAgainstBaseURL: false)!
         url.queryItems = [
             URLQueryItem(name: "language", value: locale),
             URLQueryItem(name: "format", value: "detailed")
@@ -35,7 +27,7 @@ struct Pronunciation {
 
         var request = URLRequest(url: url.url!)
         request.httpMethod = "POST"
-        request.setValue(key, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+        Worker.authorize(&request)
         request.setValue("audio/wav; codecs=audio/pcm; samplerate=16000",
                          forHTTPHeaderField: "Content-Type")
         request.setValue(configData.base64EncodedString(),

@@ -11,12 +11,19 @@ crons = ["*/2 * * * *"]
 binding = "STATE"
 id = "be87c6ff51174dc8933b05a20b02579a"
 
+# Per invite code: enough for a day's set being written, not for bulk use.
+[[ratelimits]]
+name = "PER_INVITE"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
+
 [vars]
 APNS_TEAM_ID = "SM7F898GQH"
 APNS_TOPIC = "com.technaplex.gentence-senerator"
+AZURE_REGION = "eastus"
 
 # Secrets, set with `wrangler secret put`, never written here:
-#   ANTHROPIC_KEY   the same key as Key.anthropicKey
+#   ANTHROPIC_KEY   a key in a workspace with a monthly spend limit
+#   AZURE_KEY       Azure Speech key for AZURE_REGION
 #   APNS_KEY        the whole AuthKey_XXXX.p8, PEM header lines included
 #   APNS_KEY_ID     the ten-character key id
-#   WATCH_SECRET    shared with the app; guards /watch

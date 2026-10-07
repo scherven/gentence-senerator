@@ -79,3 +79,6 @@ gentence-senerator/gentence-senerator/Dialogues/
 # Personal notes and decks
 notes*.txt
 *.apkg
+
+# Keys moved out of the app; the worker holds them now.
+secrets/

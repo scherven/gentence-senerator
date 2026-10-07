@@ -81,10 +81,10 @@ final class Sender: NSObject, URLSessionDataDelegate, @unchecked Sendable {
     }
 
     private static func request(job: UUID, token: String?, label: String) -> URLRequest {
-        var request = URLRequest(url: URL(string: Key.graderURL + "/submit")!)
+        var request = URLRequest(url: Worker.url("/submit"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         request.setValue(job.uuidString, forHTTPHeaderField: "x-job-id")
         request.setValue(label, forHTTPHeaderField: "x-label")
         if let token { request.setValue(token, forHTTPHeaderField: "x-token") }

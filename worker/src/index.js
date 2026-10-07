@@ -12,6 +12,10 @@
 // two languages out at once that is exactly the case that happens.
 // The cron runs every two minutes because listing keys is capped at 1,000 a
 // day on the free tier.
+//
+// The app holds no keys. It sends an invite code (`x-invite`), minted with
+// invite.sh into `invite:<code>`; the worker adds the Anthropic and Azure
+// keys and forwards. Deleting the KV key revokes the code within a minute.
 
 const WATCH = "watch:";
 // The batch a job became, so a resent job returns it instead of paying twice.
@@ -26,18 +30,36 @@ const DIRECT_AFTER_MS = 20 * 60 * 1000;
 // A batch that has not ended in this long has expired on Anthropic's side
 // (24h) and will never end here either.
 const GIVE_UP_MS = 26 * 3600 * 1000;
+const INVITE = "invite:";
+// The only model the app uses, and its largest max_tokens: anything else
+// through the proxy is someone else's traffic.
+const MODEL = "claude-opus-5";
+const MAX_TOKENS = 32000;
+const BETA = "server-side-fallback-2026-07-01";
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/health") {
+      const { keys } = await env.STATE.list({ prefix: WATCH });
+      return Response.json({ watching: keys.length });
+    }
+    const who = await admit(request, env);
+    if (who instanceof Response) return who;
+    console.log(`${who.name} ${request.method} ${url.pathname}`);
+
+    if (request.method === "GET" && url.pathname === "/check") {
+      return Response.json({ name: who.name });
+    }
+    if (url.pathname.startsWith("/anthropic/")) return anthropic(request, env, url);
+    if (request.method === "POST" && url.pathname === "/azure/pronounce") {
+      return azure(request, env, url);
+    }
     // The app's background upload lands here: create the batch and watch it
     // in one step, so a batch can never exist without being watched. The
     // phone's upload can be retried by iOS at any point, so the job id makes
     // it idempotent.
     if (request.method === "POST" && url.pathname === "/submit") {
-      if (request.headers.get("x-watch-secret") !== env.WATCH_SECRET) {
-        return new Response("no", { status: 401 });
-      }
       const job = request.headers.get("x-job-id");
       if (!job) return new Response("x-job-id", { status: 400 });
       const token = request.headers.get("x-token") || null;
@@ -48,6 +70,8 @@ export default {
       if (existing) return Response.json({ batch: existing, resent: true });
 
       const body = await request.text();
+      const bad = (JSON.parse(body).requests || []).find((r) => !allowed(r.params));
+      if (bad) return new Response("model or max_tokens", { status: 403 });
       const created = await fetch("https://api.anthropic.com/v1/messages/batches", {
         method: "POST",
         headers: {
@@ -71,9 +95,6 @@ export default {
       return Response.json({ batch, watched: !!token });
     }
     if (request.method === "POST" && url.pathname === "/watch") {
-      if (request.headers.get("x-watch-secret") !== env.WATCH_SECRET) {
-        return new Response("no", { status: 401 });
-      }
       // `label` names the session in the push — "Mandarin produce" — since two
       // languages can be out at once and "1 graded" alone says neither.
       // `job` is optional: the app's late /watch doesn't send it, and the push
@@ -89,19 +110,12 @@ export default {
     // What the worker graded directly for a batch: 404 if it didn't step in,
     // 202 while it is grading, else the results file.
     if (request.method === "GET" && url.pathname === "/results") {
-      if (request.headers.get("x-watch-secret") !== env.WATCH_SECRET) {
-        return new Response("no", { status: 401 });
-      }
       const batch = url.searchParams.get("batch");
       if (!batch) return new Response("batch", { status: 400 });
       const stored = await env.STATE.get(RES + batch);
       if (!stored) return new Response("none", { status: 404 });
       if (stored.startsWith('{"pending"')) return new Response("grading", { status: 202 });
       return new Response(stored, { headers: { "content-type": "application/x-ndjson" } });
-    }
-    if (url.pathname === "/health") {
-      const { keys } = await env.STATE.list({ prefix: WATCH });
-      return Response.json({ watching: keys.length });
     }
     return new Response("not found", { status: 404 });
   },
@@ -110,6 +124,69 @@ export default {
     ctx.waitUntil(poll(env));
   },
 };
+
+// The invite on the request, or the response refusing it.
+async function admit(request, env) {
+  const code = request.headers.get("x-invite")?.trim().toUpperCase();
+  if (!code) return new Response("invite", { status: 401 });
+  const invite = await env.STATE.get(INVITE + code, { type: "json", cacheTtl: 60 });
+  if (!invite) return new Response("invite", { status: 401 });
+  const { success } = await env.PER_INVITE.limit({ key: code });
+  if (!success) return new Response("slow down", { status: 429 });
+  return { code, name: invite.name || code };
+}
+
+function allowed(params) {
+  return params && params.model === MODEL
+    && Number.isInteger(params.max_tokens) && params.max_tokens <= MAX_TOKENS;
+}
+
+// /anthropic/v1/<path>: one message, or reading a batch the app was handed.
+async function anthropic(request, env, url) {
+  const path = url.pathname.slice("/anthropic".length);
+  const message = request.method === "POST" && path === "/v1/messages";
+  const batch = request.method === "GET"
+    && /^\/v1\/messages\/batches\/[A-Za-z0-9_]+(\/results)?$/.test(path);
+  if (!message && !batch) return new Response("not found", { status: 404 });
+
+  const headers = { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01" };
+  let body;
+  if (message) {
+    body = await request.text();
+    let params;
+    try { params = JSON.parse(body); } catch { return new Response("json", { status: 400 }); }
+    if (!allowed(params)) return new Response("model or max_tokens", { status: 403 });
+    headers["content-type"] = "application/json";
+    headers["anthropic-beta"] = BETA;
+  }
+  const r = await fetch(`https://api.anthropic.com${path}`, { method: request.method, headers, body });
+  return new Response(r.body, {
+    status: r.status,
+    headers: { "content-type": r.headers.get("content-type") || "application/json" },
+  });
+}
+
+async function azure(request, env, url) {
+  const target = new URL(
+    `https://${env.AZURE_REGION}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1`);
+  for (const name of ["language", "format"]) {
+    const value = url.searchParams.get(name);
+    if (value) target.searchParams.set(name, value);
+  }
+  const r = await fetch(target, {
+    method: "POST",
+    headers: {
+      "Ocp-Apim-Subscription-Key": env.AZURE_KEY.trim(),
+      "content-type": request.headers.get("content-type") || "audio/wav",
+      "pronunciation-assessment": request.headers.get("pronunciation-assessment") || "",
+    },
+    body: request.body,
+  });
+  return new Response(r.body, {
+    status: r.status,
+    headers: { "content-type": r.headers.get("content-type") || "application/json" },
+  });
+}
 
 async function poll(env) {
   const { keys } = await env.STATE.list({ prefix: WATCH });
