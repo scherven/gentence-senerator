@@ -79,3 +79,4 @@ gentence-senerator/gentence-senerator/Dialogues/
 # Personal notes and decks
 notes*.txt
 *.apkg
+secrets/key.swift
