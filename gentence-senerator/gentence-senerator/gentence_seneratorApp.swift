@@ -28,6 +28,7 @@ struct GentenceApp: App {
                 } else {
                     InviteScreen {
                         invited = true
+                        Push.ask()
                         Task { await store.wake() }
                     }
                 }

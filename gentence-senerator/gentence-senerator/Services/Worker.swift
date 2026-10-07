@@ -17,8 +17,10 @@ enum Worker {
 
     /// Keeps `code` if the worker accepts it.
     static func redeem(_ code: String) async -> Bool {
-        let code = code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        guard !code.isEmpty else { return false }
+        // Codes are XXXX-XXXX; accept them typed with or without the dash.
+        let bare = code.uppercased().filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
+        guard bare.count == 8 else { return false }
+        let code = "\(bare.prefix(4))-\(bare.suffix(4))"
         var request = URLRequest(url: url("/check"))
         request.setValue(code, forHTTPHeaderField: "x-invite")
         request.timeoutInterval = 20
