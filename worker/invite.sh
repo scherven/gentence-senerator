@@ -7,13 +7,14 @@ set -euo pipefail
 cd "$(dirname "$0")"
 kv() { npx wrangler kv key "$@" --binding STATE --remote; }
 
-npx wrangler whoami 2>/dev/null | grep -q "You are logged in" || npx wrangler login
+npx wrangler whoami 2>/dev/null | grep "You are logged in" >/dev/null || npx wrangler login
 
 case "${1:-}" in
   new)
     name="${2:?name}"
     # No 0/O/1/I: it gets read off a message and typed.
-    code=$(LC_ALL=C tr -dc 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' </dev/urandom | head -c 8)
+    # A finite read: cutting off an endless /dev/urandom pipe trips pipefail.
+    code=$(head -c 1024 /dev/urandom | LC_ALL=C tr -dc 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' | cut -c1-8)
     code="${code:0:4}-${code:4:4}"
     kv put "invite:$code" "{\"name\":\"$name\",\"made\":\"$(date +%F)\"}" >/dev/null
     echo "$code  $name"
