@@ -34,8 +34,37 @@ struct QuizFormatContext {
     var entryGloss: String? = nil
     /// The entry's fixed words (等…再… → 等, 再), highlighted in a correction.
     var structure: [String] = []
+    /// The rule behind the answer, shown once it is answered.
+    var rule: String = ""
+    /// Options stay covered until tapped, so the answer is recalled first.
+    var coversOptions = false
 
     var done: Bool { revealed != nil }
+}
+
+/// The empty middle of a format: the rule appears there once answered, in
+/// the colour of the answer.
+struct QuizRule: View {
+    let c: QuizFormatContext
+    /// Takes the free height, as the spacer it replaces did.
+    var fills = true
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if fills { Spacer(minLength: 0) }
+            if let revealed = c.revealed, !c.rule.isEmpty {
+                Text(c.rule)
+                    .font(Theme.F.mono(18, bold: true))
+                    .foregroundStyle(revealed.right ? Theme.C.good : Theme.C.bad)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.vertical, 8)
+                    .transition(.opacity)
+            }
+            if fills { Spacer(minLength: 0) }
+        }
+        .frame(maxWidth: .infinity, maxHeight: fills ? .infinity : nil)
+    }
 }
 
 // MARK: - Shared pieces

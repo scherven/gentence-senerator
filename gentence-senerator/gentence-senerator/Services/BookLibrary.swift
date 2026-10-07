@@ -22,6 +22,17 @@ final class BookLibrary {
         return b
     }
 
+    private var vocab: [Language: [VocabWord]] = [:]
+
+    /// `vocab-<language>.json`; empty when it isn't shipped.
+    func words(for language: Language) -> [VocabWord] {
+        if let v = vocab[language] { return v }
+        let v = Self.data("vocab-\(language.rawValue)", in: bundle)
+            .flatMap { try? JSONDecoder().decode([VocabWord].self, from: $0) } ?? []
+        vocab[language] = v
+        return v
+    }
+
     func items(for language: Language) -> [QuizItem] {
         if let i = banks[language] { return i }
         let raw = Self.data("quiz-\(language.rawValue)", in: bundle).map(Self.decodeItems) ?? []

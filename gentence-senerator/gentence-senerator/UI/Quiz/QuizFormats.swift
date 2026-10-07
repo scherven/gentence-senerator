@@ -16,6 +16,7 @@ private func gloss(_ s: String?) -> some View {
 struct PickOneQuiz: View {
     let c: QuizFormatContext
     @State private var picked: Int?
+    @State private var uncovered = false
 
     private var step: QuizItem.Step { c.item.steps[0] }
 
@@ -26,12 +27,28 @@ struct PickOneQuiz: View {
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
             gloss(c.item.gloss)
-            Spacer()
+            QuizRule(c: c)
             QuizOptions(options: step.options, picked: picked, answer: step.answer, done: c.done) { i in
                 picked = i
                 c.answer(QuizRound.score(c.item, picks: [i]))
             }
+            .opacity(covered ? 0 : 1)
+            .overlay { if covered { cover } }
         }
+    }
+
+    private var covered: Bool { c.coversOptions && !uncovered && !c.done }
+
+    /// Over the options, their size: think of it, then tap to check.
+    private var cover: some View {
+        Button { withAnimation(.easeOut(duration: 0.15)) { uncovered = true } } label: {
+            Text("TAP FOR OPTIONS")
+                .font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .overlay(Rectangle().strokeBorder(Theme.C.ink3, style: StrokeStyle(lineWidth: 1, dash: [4, 4])))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(PressDim())
     }
 
     private var fill: QuizGapFill? {
@@ -57,7 +74,7 @@ struct FlipQuiz: View {
                 .offset(x: drag)
                 .rotationEffect(.degrees(-2 + Double(drag) / 30))
                 .gesture(swipe)
-            Spacer()
+            QuizRule(c: c)
             HStack(spacing: 10) {
                 half(0, label: "‹ " + step.options[0])
                 half(1, label: step.options[1] + " ›")
@@ -135,7 +152,7 @@ struct TwoStepQuiz: View {
             quizGapText(c.item.prompt ?? "", fills).font(Theme.F.target(size: 24))
             gloss(c.item.gloss ?? c.entryGloss)
             QuizStepLine(steps: steps, results: results)
-            Spacer()
+            QuizRule(c: c)
             QuizOptions(options: steps[at].options,
                        picked: c.done ? picks[ifAny: at] : nil,
                        answer: steps[at].answer, done: c.done) { i in
@@ -184,7 +201,7 @@ struct SpotItQuiz: View {
                 }
             }
             StepTicks(count: c.item.steps.count, results: results)
-            Spacer()
+            QuizRule(c: c)
             if !picks.isEmpty {
                 QuizOptions(options: fix.options, picked: c.done ? picks[ifAny: 1] : nil,
                            answer: fix.answer, done: c.done) { i in
@@ -223,7 +240,7 @@ struct ToneTapQuiz: View {
             .buttonStyle(QuizKey())
             .frame(height: 84)
             gloss(c.item.gloss)
-            Spacer()
+            QuizRule(c: c)
             ForEach(Array(c.item.steps.enumerated()), id: \.offset) { s, step in
                 HStack(spacing: 8) {
                     Text(step.prompt ?? "")
@@ -275,6 +292,7 @@ struct SortQuiz: View {
                 }
             }
             if c.done {
+                QuizRule(c: c, fills: false)
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(steps.indices, id: \.self) { i in
@@ -384,7 +402,7 @@ struct BuildQuiz: View {
                     }
                 }
             }
-            Spacer()
+            QuizRule(c: c)
             if !c.done {
                 QuizCheckButton(enabled: QuizRound.canCheck(c.item, placed: placed.count)) {
                     c.answer(QuizRound.score(c.item, tiles: placed.map { bank[$0] }))
@@ -437,7 +455,7 @@ struct TransformQuiz: View {
                 Text(QuizRound.expected(c.item).first ?? "")
                     .font(Theme.F.target).foregroundStyle(Theme.C.good)
             }
-            Spacer()
+            QuizRule(c: c)
             if !c.done {
                 QuizCheckButton(enabled: !typed.trimmingCharacters(in: .whitespaces).isEmpty, action: check)
             }

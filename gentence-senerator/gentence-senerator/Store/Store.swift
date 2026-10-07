@@ -251,14 +251,41 @@ final class Store {
             }
             return (passes, 3)
         }
+        if mode == .listen, hasDialogues {
+            return (today(.listen)?.completedCount ?? 0, listenGoal)
+        }
         guard let session = today(mode) else { return (0, settings.dailyGoal) }
         return (session.completedCount, session.goal)
+    }
+
+    /// One new dialogue and one review a day, each while there is one to do.
+    var listenGoal: Int {
+        let state = passageState[settings.language.rawValue] ?? PassageState()
+        let todayKey = Spend.key(.now)
+        var newToday = 0, reviewsToday = 0
+        for history in state.heard.values {
+            let sorted = history.sorted { $0.on < $1.on }
+            for (i, h) in sorted.enumerated() where Spend.key(h.on) == todayKey {
+                if i == 0 { newToday += 1 } else { reviewsToday += 1 }
+            }
+        }
+        let statuses = shelf.map(\.status)
+        let wantsNew = newToday > 0 || statuses.contains { if case .new = $0 { true } else { false } }
+        let wantsReview = reviewsToday > 0 || statuses.contains { if case .due = $0 { true } else { false } }
+        let slots = max(1, (wantsNew ? 1 : 0) + (wantsReview ? 1 : 0))
+        return max(slots, today(.listen)?.completedCount ?? 0)
+    }
+
+    /// Heard before: a review, which can skip the read-along.
+    var isReview: Bool {
+        guard let run else { return false }
+        return !(passageState[run.language.rawValue]?.heard[run.passageID] ?? []).isEmpty
     }
 
     func isDone(_ mode: Mode) -> Bool { today(mode)?.isComplete ?? false }
 
     /// Three of each and the day is over. The main screen becomes the summary.
-    var dayComplete: Bool { Mode.allCases.allSatisfy(isDone) }
+    var dayComplete: Bool { settings.language.modes.allSatisfy(isDone) }
 
     /// The turns one review covers. One, except in produce graded before each
     /// answer was graded alone: there the review landed on the last answer of
@@ -465,7 +492,8 @@ final class Store {
     func begin(_ mode: Mode) async {
         // Listen stays open past the day's one: the picker is how another
         // dialogue gets chosen.
-        guard !isDone(mode) || (mode == .listen && hasDialogues) else { return }
+        guard settings.language.modes.contains(mode),
+              !isDone(mode) || (mode == .listen && hasDialogues) else { return }
         settings.mode = mode
         knowledge = [:]
         path = []
@@ -1052,10 +1080,11 @@ final class Store {
                 // graded it directly: its results come first, and while it is
                 // still grading, the cancelled batch is left alone.
                 var results: [Anthropic.BatchResult]?
+                var direct = false
                 if Store.pastSwitch(job) {
                     switch await directResults(batchID) {
                     case .pending: put(job); continue
-                    case .ready(let direct): results = direct
+                    case .ready(let graded): results = graded; direct = true
                     case .none: break
                     }
                 }
@@ -1063,7 +1092,7 @@ final class Store {
                     results = try await tutor.api.batchResults(batch)
                 }
                 if let results {
-                    ingest(results, into: job)
+                    ingest(results, into: job, batched: !direct)
                     job.graded = results.filter { $0.reply != nil }.count
                     job.failed = results.count - job.graded
                     job.state = .done
@@ -1221,18 +1250,20 @@ final class Store {
         record(for: graded, review: review)
         reached(review, in: graded)
         shelve(lessons)
+        if scores.add(graded) { Vault.save(scores, Vault.scores) }
     }
 
     /// Reviews into the archive, in the order the answers were given.
     /// Idempotent: an answer already reviewed is skipped, so a crash halfway
     /// through costs nothing on the next pass.
-    private func ingest(_ results: [Anthropic.BatchResult], into job: GradingJob) {
+    /// `batched` false when the worker graded it with ordinary calls, at full price.
+    private func ingest(_ results: [Anthropic.BatchResult], into job: GradingJob, batched: Bool) {
         let byID = Dictionary(results.map { ($0.customID, $0) }, uniquingKeysWith: { a, _ in a })
         for exchange in job.exchanges {
             guard let result = byID[exchange.customID], let reply = result.reply else { continue }
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
-            note(reply.usage, batched: true)
+            note(reply.usage, batched: batched)
             guard let (review, lessons) = try? Tutor.read(reply, turn: last,
                                                            history: Array(turns.dropLast()))
             else { continue }
@@ -1313,6 +1344,10 @@ final class Store {
         let ids = job.exchanges.compactMap(\.turnIDs.last)
             .filter { archived($0)?.review != nil }
         guard let first = ids.first, let turn = archived(first) else { return }
+        if let i = jobs.firstIndex(where: { $0.id == job.id }), jobs[i].readAt == nil {
+            jobs[i].readAt = .now
+            saveJobs()
+        }
         session = nil
         knowledge = [:]
         path = []
@@ -1655,6 +1690,14 @@ final class Store {
         playBlind()
     }
 
+    /// A review that went well ends after the first pass.
+    func finishReview() {
+        guard isReview, let followed = run?.followedFirst else { return }
+        dialogue.stop()
+        updateRun { $0.followedSecond = followed; $0.stage = .done }
+        finishPassage()
+    }
+
     func finishListening() {
         guard run?.followedSecond != nil else { return }
         dialogue.stop()
@@ -1684,18 +1727,20 @@ final class Store {
         // A second dialogue the same day joins that day's listen session
         // rather than filing another under the same id.
         let id = sessionID(for: .listen)
+        recordHeard(Heard(on: .now, right: live.right(in: passage), asked: passage.gist.count,
+                          before: live.followedFirst, after: live.followedSecond), for: live)
         if let i = past.lastIndex(where: { $0.id == id }) {
             past[i].turns.append(turn)
-            past[i].goal = max(past[i].goal, past[i].turns.count)
         } else {
             past.append(Session(id: id, language: settings.language, mode: .listen,
                                 startedAt: .now, turns: [turn], goal: 1))
             past.sort { $0.startedAt < $1.startedAt }
         }
+        // Heard is recorded first, so the goal counts this one as done.
+        if let i = past.lastIndex(where: { $0.id == id }) {
+            past[i].goal = max(listenGoal, past[i].turns.count)
+        }
         Vault.save(Array(past.suffix(120)), Vault.sessions)
-
-        recordHeard(Heard(on: .now, right: live.right(in: passage), asked: passage.gist.count,
-                          before: live.followedFirst, after: live.followedSecond), for: live)
         savePassage()
         session = nil
         current = turn
@@ -2187,18 +2232,33 @@ final class Store {
     }
 
     func round(for plan: QuizPlan) -> QuizRound {
+        if VocabDrill.isVocab(plan) {
+            let language = settings.language
+            // The lists stop at HSK 6 and B2.
+            return VocabDrill.round(words: books.words(for: language), language: language,
+                                    maxBand: min(settings.level, language == .mandarin ? 6 : 4)) {
+                self.quizLog.state(of: $0)
+            }
+        }
         let book = book
         let points = pointLevels
         let entries = Dictionary(book.chapters.flatMap(\.entries).map { ($0.id, $0) },
                                  uniquingKeysWith: { a, _ in a })
         return QuizRound.assemble(
             plan: plan, book: book, bank: quizItems, maxLevel: settings.level + 1,
+            minLevel: settings.level,
             levelOf: { id in entries[id]?.effectiveLevel { points[$0] } ?? 1 }
         ) { id in
             entries[id].map(self.state(of:)) ?? self.quizLog.state(of: id)
         }
     }
 
+
+    /// A word the learner says they knew: it stays away for months.
+    func markKnown(_ entry: String) {
+        quizLog.markKnown(entry: entry)
+        Vault.save(quizLog, Vault.quizLog)
+    }
 
     /// Answered items move their entries; a finished round counts to its plan.
     func finish(_ round: QuizRound) {
@@ -2249,9 +2309,28 @@ final class Store {
         let shown = visibleBook
         let bank = quizItems
         var book = shown
-        // A drill with nothing at this level goes with its chapters.
-        book.drills = shown.drills.filter { !QuizRound.candidates(plan: $0, book: shown, bank: bank).isEmpty }
-        var chapters = book.chapters
+        // A drill with nothing at this level goes with its chapters; so does
+        // one whose every entry is below it (ÊTRE / AVOIR at B1), unless some
+        // of it is being missed.
+        let level = settings.level
+        let points = pointLevels
+        let entries = Dictionary(shown.chapters.flatMap(\.entries).map { ($0.id, $0) },
+                                 uniquingKeysWith: { a, _ in a })
+        book.drills = shown.drills.filter { plan in
+            QuizRound.candidates(plan: plan, book: shown, bank: bank).contains { item in
+                guard let entry = entries[item.entry] else { return false }
+                return entry.effectiveLevel(pointLevel: { points[$0] }) >= level
+                    || QuizRound.missing(self.state(of: entry))
+            }
+        }
+        // Chapters wholly below the learner's level go to the back.
+        let current = book.chapters.filter { chapter in
+            chapter.entries.contains { $0.effectiveLevel(pointLevel: { points[$0] }) >= level }
+        }
+        var chapters = current + book.chapters.filter { c in !current.contains { $0.id == c.id } }
+        if !books.words(for: settings.language).isEmpty {
+            book.drills.append(VocabDrill.plan(settings.language))
+        }
         var noted: [String: Textbook.Entry] = [:]
         if let extra = Textbook.notedChapter(
             language: settings.language, sections: textbook(scope: .mine),
@@ -2389,6 +2468,23 @@ final class Store {
             }
         }
         if changed { Vault.save(activity, Vault.activity) }
+
+        var scored = false
+        for turn in (past + holds.values.map(\.session)).flatMap(\.turns) {
+            scored = scores.add(turn) || scored
+        }
+        if scored { Vault.save(scores, Vault.scores) }
+    }
+
+    // MARK: Scores
+
+    private(set) var scores: ScoreLog = Vault.load(ScoreLog.self, Vault.scores) ?? ScoreLog()
+
+    /// Mean score in the current language over `from...through`, by calendar day.
+    func averageScore(from: Date = .distantPast, through: Date = .now) -> Int? {
+        scores.average(settings.language,
+                       from: from == .distantPast ? "" : Spend.key(from),
+                       through: Spend.key(through))
     }
 
     func activity(on day: Date) -> Set<ActivityLog.Mark> {
@@ -2409,7 +2505,7 @@ final class Store {
         let names = Dictionary(book.chapters.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
         return HistoryDay.build(archive: archive, quizzes: quizLog.plans,
                                 language: settings.language, today: Spend.key(.now)) {
-            names[$0] ?? "Quiz"
+            names[$0] ?? (VocabDrill.isVocab(QuizPlan(id: $0, name: "")) ? "Words" : "Quiz")
         }
     }
 
@@ -2624,9 +2720,11 @@ final class Store {
     nonisolated static let todayOrder: [Mode] = [.produce, .translate, .listen]
 
     /// The first mode not yet done today.
-    var nextMode: Mode? { Store.todayOrder.first { !isDone($0) } }
+    var nextMode: Mode? {
+        Store.todayOrder.first { settings.language.modes.contains($0) && !isDone($0) }
+    }
 
-    var modesDoneToday: Int { Mode.allCases.filter(isDone).count }
+    var modesDoneToday: Int { settings.language.modes.filter(isDone).count }
 
     /// One answer the learner wrote today.
     struct Written: Identifiable, Hashable {
@@ -2710,32 +2808,10 @@ final class Store {
         return nil
     }
 
-    /// What in a sentence shows the stretch was used: its name, and the heads
-    /// of the book entries under it (warten, 了, 等…再…).
-    func markers(of point: GrammarPoint) -> [String] {
-        [point.name] + book.chapters.flatMap(\.entries)
-            .filter { $0.point == point.id }.map(\.head)
-    }
-
     /// The stretch's lesson, on the current path.
     func openLesson(for point: GrammarPoint) {
         let request = ruleRequest(for: point)
         open(seed: request.seed, kind: request.kind)
-    }
-
-    /// Whether `text` contains `chip`. Case-insensitive; Mandarin is a plain
-    /// substring. A formula (等…再…) needs every part.
-    nonisolated static func uses(_ chip: String, in text: String, language: Language) -> Bool {
-        let parts = chip.replacingOccurrences(of: "...", with: "…")
-            .components(separatedBy: "…")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-        guard !parts.isEmpty else { return false }
-        return parts.allSatisfy { part in
-            language == .mandarin
-                ? text.contains(part)
-                : text.range(of: part, options: .caseInsensitive) != nil
-        }
     }
 
     /// Character ranges where two sentences differ, token by token: words for

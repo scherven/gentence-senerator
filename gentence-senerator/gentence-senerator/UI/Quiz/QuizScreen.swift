@@ -82,7 +82,9 @@ struct QuizScreen: View {
                 answer: { answer($0) },
                 speak: { store.speakQuiz($0) },
                 entryGloss: entry(of: item)?.gloss,
-                structure: QuizRound.structure(of: entry(of: item)?.head)))
+                structure: QuizRound.structure(of: entry(of: item)?.head),
+                rule: note(item),
+                coversOptions: VocabDrill.isVocab(plan)))
                 .id(item.id)
                 .padding(.top, 36)
                 .frame(maxHeight: .infinity, alignment: .top)
@@ -108,20 +110,39 @@ struct QuizScreen: View {
     }
 
     @ViewBuilder private var footer: some View {
-        if let r = revealed {
-            Button { next() } label: {
-                HStack {
-                    Text(r.right ? "" : (item.why ?? ""))
-                    Spacer()
-                    Text("NEXT ›")
-                }
-                .font(Theme.F.meta)
-                .foregroundStyle(Theme.C.ink2)
-                .frame(maxHeight: .infinity)
-                .contentShape(Rectangle())
+        HStack {
+            // Words only: before answering, or after a right answer.
+            if VocabDrill.isVocab(plan), revealed?.right ?? true {
+                TinyButton(title: "Knew it") { knewIt() }
             }
-            .buttonStyle(PressDim())
+            if revealed != nil {
+                Button { next() } label: {
+                    HStack {
+                        Spacer()
+                        Text("NEXT ›").font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                    }
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PressDim())
+            } else {
+                Spacer()
+            }
         }
+    }
+
+    /// Counts as right, keeps the word away for months, moves on.
+    private func knewIt() {
+        if round.answers[index] == nil {
+            round.answer(index, QuizRound.Answer(steps: [true], given: ["knew it"]))
+        }
+        store.markKnown(item.entry)
+        next()
+    }
+
+    /// The item's own `why`, else the entry it tests.
+    private func note(_ item: QuizItem) -> String {
+        item.why ?? entry(of: item)?.head ?? ""
     }
 
     // MARK: Flow
@@ -130,10 +151,12 @@ struct QuizScreen: View {
         guard round.answers[index] == nil else { return }
         round.answer(index, a)
         if item.format == .toneTap, let s = item.speak, !a.right { store.speakQuiz(s) }
-        guard a.right else { return }
+        // Words wait on the learner, so "Knew it" can still be tapped.
+        guard a.right, !VocabDrill.isVocab(plan) else { return }
         let at = index
         Task {
-            try? await Task.sleep(for: .milliseconds(650))
+            // Long enough to read the rule.
+            try? await Task.sleep(for: .milliseconds(note(item).isEmpty ? 650 : 1400))
             if index == at, !finished { next() }
         }
     }

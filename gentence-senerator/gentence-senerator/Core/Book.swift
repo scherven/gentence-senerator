@@ -74,6 +74,8 @@ struct EntryState: Hashable {
     var lastSeen: Date?
     /// Most recent last, at most 8.
     var recent: [Bool]
+    /// Marked as known (vocab): comes back much later.
+    var known = false
 }
 
 extension Chapter.Entry {

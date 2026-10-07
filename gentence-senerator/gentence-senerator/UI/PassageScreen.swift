@@ -14,6 +14,10 @@ struct PassageScreen: View {
     @State private var glossed: Passage.Word?
     /// Lines with their English open.
     @State private var english: Set<Int> = []
+    /// The read-along, reopened from the rail after the run is done.
+    @State private var rereading = false
+    /// Questions with their English showing.
+    @State private var questionEnglish: Set<Int> = []
 
     var body: some View {
         if let passage = store.passage, let run = store.run {
@@ -23,11 +27,12 @@ struct PassageScreen: View {
                         VStack(alignment: .leading, spacing: Theme.M.gap) {
                             TypedLink("All dialogues", colour: Theme.C.ink3, chevron: false) {
                                 glossed = nil
+                                rereading = false
                                 store.backToPicker()
                             }
                             .id("top")
                             stages(run)
-                            switch run.stage {
+                            switch shown(run) {
                             case .first:  first(passage, run)
                             case .read:   reading(passage, run, scroller: scroller)
                             case .second: second(passage, run)
@@ -37,11 +42,12 @@ struct PassageScreen: View {
                         .padding(Theme.M.gap)
                     }
                     // Each pass starts at its top, not wherever the last one was left.
-                    .onChange(of: run.stage) { _, _ in scroller.scrollTo("top", anchor: .top) }
+                    .onChange(of: shown(run)) { _, _ in scroller.scrollTo("top", anchor: .top) }
                 }
-                if run.stage == .read, let glossed { gloss(glossed) }
+                if shown(run) == .read, let glossed { gloss(glossed) }
             }
             .onDisappear { store.stopDialogue() }
+            .onChange(of: passage.id) { rereading = false; questionEnglish = [] }
         } else {
             DialoguePicker(store: store)
         }
@@ -52,19 +58,35 @@ struct PassageScreen: View {
     private static let rail: [(PassageRun.Stage, String)] =
         [(.first, "Listen"), (.read, "Read"), (.second, "Listen"), (.done, "Done")]
 
+    /// The stage on screen: the run's, unless the read-along was reopened.
+    private func shown(_ run: PassageRun) -> PassageRun.Stage {
+        rereading && run.stage == .done ? .read : run.stage
+    }
+
+    /// READ goes back to the read-along once it is behind you.
     private func stages(_ run: PassageRun) -> some View {
-        HStack(spacing: 0) {
+        let at = shown(run)
+        return HStack(spacing: 0) {
             ForEach(Array(PassageScreen.rail.enumerated()), id: \.offset) { index, step in
-                let here = step.0 == run.stage
+                let here = step.0 == at
                 let past = PassageScreen.rail.firstIndex { $0.0 == run.stage }.map { index < $0 } ?? false
-                Text(step.1.uppercased())
-                    .font(Theme.F.label)
-                    .tracking(Theme.M.caps)
-                    .foregroundStyle(here ? Theme.C.onAccent : (past ? Theme.C.ink2 : Theme.C.ink3))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 7)
-                    .background(here ? Theme.C.accent : Theme.C.sunk)
-                    .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                let reopens = step.0 == .read && past && !here
+                Button {
+                    glossed = nil
+                    if run.stage == .done { rereading = true } else { store.toReading() }
+                } label: {
+                    Text(step.1.uppercased())
+                        .font(Theme.F.label)
+                        .tracking(Theme.M.caps)
+                        .underline(reopens, color: Theme.C.ink2)
+                        .foregroundStyle(here ? Theme.C.onAccent : (past ? Theme.C.ink2 : Theme.C.ink3))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 7)
+                        .background(here ? Theme.C.accent : Theme.C.sunk)
+                        .overlay(Rectangle().stroke(Theme.C.seam, lineWidth: Theme.M.hair))
+                }
+                .buttonStyle(PressDim())
+                .disabled(!reopens)
             }
         }
     }
@@ -92,9 +114,21 @@ struct PassageScreen: View {
                 Spacer()
             }
             ModuleLabel(text: "What did you catch?")
-            ForEach(passage.gist.indices, id: \.self) { i in question(passage, run, i) }
+            // One at a time: seeing a later question could answer an earlier one.
+            ForEach(passage.gist.indices.filter { $0 == 0 || run.answers[$0 - 1] != nil },
+                    id: \.self) { i in question(passage, run, i) }
             followed(run.followedFirst)
-            ActionKey("Read along", enabled: run.canRead(passage)) { store.toReading() }
+            // A review you followed well ends here; the read-along stays open.
+            if store.isReview, let f = run.followedFirst, f.rawValue >= PassageRun.Followed.most.rawValue,
+               run.canRead(passage) {
+                ActionKey("Finish") { store.finishReview() }
+                HStack {
+                    Spacer()
+                    TypedLink("Read along anyway", colour: Theme.C.ink3) { store.toReading() }
+                }
+            } else {
+                ActionKey("Read along", enabled: run.canRead(passage)) { store.toReading() }
+            }
         }
     }
 
@@ -108,12 +142,26 @@ struct PassageScreen: View {
         let choices = passage.choices(for: i)
         let picked = run.answers[i].map(choices.slot(of:))
         return VStack(alignment: .leading, spacing: Theme.M.gapTight) {
-            Text(passage.gist[i].question).font(Theme.F.body)
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text(passage.gist[i].question).font(Theme.F.target(size: 18))
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                if passage.gist[i].english != nil {
+                    TypedLink("EN", colour: questionEnglish.contains(i) ? Theme.C.accent : Theme.C.ink3,
+                              chevron: false) {
+                        if questionEnglish.contains(i) { questionEnglish.remove(i) }
+                        else { questionEnglish.insert(i) }
+                    }
+                }
+            }
+            if questionEnglish.contains(i), let english = passage.gist[i].english {
+                Text(english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
+            }
             ForEach(Array(choices.options.enumerated()), id: \.offset) { slot, option in
                 Button { if picked == nil { store.answerGist(i, option: choices.order[slot]) } } label: {
                     HStack(spacing: 10) {
                         Text(String(UnicodeScalar(65 + slot)!)).font(Theme.F.meta).opacity(0.7)
-                        Text(option).font(Theme.F.bodyTight)
+                        Text(option).font(Theme.F.target(size: 16))
                         Spacer(minLength: 0)
                     }
                     .padding(Theme.M.padTight)
@@ -170,7 +218,11 @@ struct PassageScreen: View {
             TinyButton(title: "0.8×") { store.playLines(from: 1, through: passage.lines.count, rate: 0.8) }
             Spacer()
         }
-        ActionKey("Listen again") { glossed = nil; store.toSecondListen() }
+        if rereading {
+            ActionKey("Back to results") { glossed = nil; store.stopDialogue(); rereading = false }
+        } else {
+            ActionKey("Listen again") { glossed = nil; store.toSecondListen() }
+        }
     }
 
     private func spoken(_ passage: Passage, _ line: Passage.Line, run: PassageRun,
@@ -299,7 +351,7 @@ struct PassageScreen: View {
             }
         }
 
-        MainButton(title: "Done") { store.backToPicker() }
+        MainButton(title: "Done") { rereading = false; store.backToPicker() }
     }
 
     private func meter(_ label: String, _ value: PassageRun.Followed?, colour: Color) -> some View {

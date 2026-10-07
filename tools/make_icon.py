@@ -53,16 +53,21 @@ def render(ground, shadow, face, cursor):
     return px
 
 
-def png(pixels):
-    raw = b"".join(b"\x00" + bytes(pixels[y * S * 4:(y + 1) * S * 4]) for y in range(S))
+def png(pixels, alpha):
+    # Only the dark icon may be transparent; an alpha channel on the others
+    # can leave the notification icon blank.
+    if not alpha:
+        pixels = b"".join(bytes(pixels[i:i + 3]) for i in range(0, len(pixels), 4))
+    n = 4 if alpha else 3
+    raw = b"".join(b"\x00" + bytes(pixels[y * S * n:(y + 1) * S * n]) for y in range(S))
     chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", S, S, 8, 6, 0, 0, 0))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", S, S, 8, 6 if alpha else 2, 0, 0, 0))
             + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
 
 
 def main():
     for name, colours in VARIANTS.items():
-        (OUT / name).write_bytes(png(render(*colours)))
+        (OUT / name).write_bytes(png(render(*colours), alpha=colours[0] is None))
     contents = json.loads((OUT / "Contents.json").read_text())
     for image in contents["images"]:
         look = next((a["value"] for a in image.get("appearances", [])), "light")

@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// One month, an ink pad. Dark: translate, produce and a quiz all done. Light:
-/// some. Three ticks per cell say which, in that order.
+/// some. Three ticks per cell say which, in that order; the day's average
+/// score sits top right. Averages for the week, month and all time below.
 struct ActivityCalendar: View {
     let store: Store
     /// Days ("yyyy-MM-dd") that have an archive block to scroll to.
@@ -44,6 +45,30 @@ struct ActivityCalendar: View {
                     }
                 }
             }
+            averages
+        }
+    }
+
+    /// Last seven days, the month on show, everything.
+    private var averages: some View {
+        let weekStart = cal.date(byAdding: .day, value: -6, to: .now) ?? .now
+        let monthEnd = cal.date(byAdding: DateComponents(month: 1, day: -1), to: month) ?? month
+        return HStack(spacing: Theme.M.gap) {
+            average("7 days", store.averageScore(from: weekStart))
+            average(month.formatted(.dateTime.month(.abbreviated)),
+                    store.averageScore(from: month, through: monthEnd))
+            average("All", store.averageScore())
+            Spacer(minLength: 0)
+        }
+        .padding(.top, 6)
+    }
+
+    private func average(_ label: String, _ score: Int?) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 5) {
+            Text(label.uppercased()).font(Theme.F.label).tracking(Theme.M.caps)
+                .foregroundStyle(Theme.C.ink3)
+            Text(score.map(String.init) ?? "—").font(Theme.F.mono(15, bold: true))
+                .foregroundStyle(score.map(Theme.band) ?? Theme.C.ink3)
         }
     }
 
@@ -77,6 +102,14 @@ struct ActivityCalendar: View {
                     .font(Theme.F.mono(11))
                     .foregroundStyle(shade == .all ? Theme.C.ink : Theme.C.ink2)
                     .padding(.leading, 4).padding(.top, 2)
+            }
+            .overlay(alignment: .topTrailing) {
+                if let score = store.averageScore(from: day, through: day) {
+                    Text("\(score)")
+                        .font(Theme.F.mono(10, bold: true))
+                        .foregroundStyle(Theme.band(score))
+                        .padding(.trailing, 4).padding(.top, 3)
+                }
             }
             .overlay(alignment: .bottom) {
                 if !marks.isEmpty { ticks(marks) }

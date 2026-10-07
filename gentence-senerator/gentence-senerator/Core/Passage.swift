@@ -56,7 +56,9 @@ struct Passage: Codable, Hashable, Identifiable {
     }
 
     struct Question: Codable, Hashable {
+        /// In Chinese; `english` behind a toggle.
         let question: String
+        var english: String? = nil
         let options: [String]
         let answer: Int
         /// The line carrying the answer.

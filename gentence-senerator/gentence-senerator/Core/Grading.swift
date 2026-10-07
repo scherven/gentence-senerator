@@ -30,6 +30,8 @@ struct GradingJob: Codable, Identifiable, Hashable {
     /// is what the next job's return time is estimated from.
     var sentAt: Date?
     var returnedAt: Date?
+    /// When its reviews were first opened.
+    var readAt: Date?
 
     enum State: String, Codable, Hashable {
         /// Not yet a batch: waiting to be handed over, or with iOS until there
@@ -85,6 +87,7 @@ extension GradingJob {
         error = try c.decodeIfPresent(String.self, forKey: .error)
         sentAt = try c.decodeIfPresent(Date.self, forKey: .sentAt)
         returnedAt = try c.decodeIfPresent(Date.self, forKey: .returnedAt)
+        readAt = try c.decodeIfPresent(Date.self, forKey: .readAt)
     }
 }
 

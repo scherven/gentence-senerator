@@ -329,7 +329,9 @@
    ],
    "formats": [
     "flip",
-    "two-step"
+    "two-step",
+    "pick-one",
+    "spot-it"
    ]
   },
   {
@@ -467,7 +469,10 @@
    ],
    "formats": [
     "pick-one",
-    "two-step"
+    "two-step",
+    "build",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -694,7 +699,8 @@
    ],
    "formats": [
     "sort",
-    "flip"
+    "flip",
+    "spot-it"
    ]
   },
   {
@@ -868,7 +874,10 @@
    ],
    "formats": [
     "build",
-    "pick-one"
+    "pick-one",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -989,7 +998,9 @@
    "formats": [
     "build",
     "transform",
-    "pick-one"
+    "pick-one",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -1401,7 +1412,11 @@
    ],
    "formats": [
     "pick-one",
-    "flip"
+    "flip",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -1533,7 +1548,8 @@
     }
    ],
    "formats": [
-    "pick-one"
+    "pick-one",
+    "two-step"
    ]
   },
   {
@@ -1679,7 +1695,8 @@
     }
    ],
    "formats": [
-    "pick-one"
+    "pick-one",
+    "spot-it"
    ]
   },
   {
@@ -1790,7 +1807,11 @@
    ],
    "formats": [
     "flip",
-    "pick-one"
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -1891,7 +1912,11 @@
     }
    ],
    "formats": [
-    "pick-one"
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -2047,7 +2072,11 @@
    ],
    "formats": [
     "flip",
-    "pick-one"
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -2241,7 +2270,10 @@
    ],
    "formats": [
     "pick-one",
-    "transform"
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -2306,7 +2338,10 @@
     }
    ],
    "formats": [
-    "flip"
+    "flip",
+    "pick-one",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -2463,7 +2498,9 @@
    "formats": [
     "pick-one",
     "flip",
-    "build"
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -2574,7 +2611,10 @@
    ],
    "formats": [
     "pick-one",
-    "build"
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -2659,7 +2699,8 @@
    "formats": [
     "pick-one",
     "build",
-    "transform"
+    "transform",
+    "spot-it"
    ]
   },
   {
@@ -2954,7 +2995,10 @@
    ],
    "formats": [
     "pick-one",
-    "flip"
+    "flip",
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -3021,7 +3065,10 @@
    "formats": [
     "pick-one",
     "flip",
-    "transform"
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -3106,7 +3153,9 @@
    "formats": [
     "pick-one",
     "two-step",
-    "transform"
+    "transform",
+    "build",
+    "spot-it"
    ]
   },
   {
@@ -3191,7 +3240,9 @@
    "formats": [
     "pick-one",
     "transform",
-    "build"
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -3267,7 +3318,8 @@
    "formats": [
     "pick-one",
     "transform",
-    "build"
+    "build",
+    "spot-it"
    ]
   },
   {
@@ -3342,7 +3394,10 @@
    ],
    "formats": [
     "pick-one",
-    "transform"
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
    ]
   },
   {
@@ -3494,7 +3549,11 @@
    ],
    "formats": [
     "pick-one",
-    "flip"
+    "flip",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
    ]
   },
   {
@@ -3561,7 +3620,9 @@
    "formats": [
     "pick-one",
     "build",
-    "transform"
+    "transform",
+    "two-step",
+    "spot-it"
    ]
   },
   {

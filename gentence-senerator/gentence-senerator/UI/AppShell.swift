@@ -286,7 +286,8 @@ struct ModeScreen: View {
     private var start: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
-                ForEach(Mode.allCases) { modeKey($0) }
+                ForEach(store.settings.language.modes) { modeKey($0) }
+                SpentToday(store: store)
                 WrittenToday(store: store)
                 GradingPanel(store: store)
                 RecommendedRound(store: store)
@@ -328,36 +329,10 @@ struct ModeScreen: View {
         .disabled(spent && !(mode == .listen && store.hasDialogues))
     }
 
-    /// What this produce answer can be made of, each ticked once the answer
-    /// uses it. The stretch only on the prompt written for it.
-    @ViewBuilder
-    private var chips: some View {
-        let answer = store.phase == .recording ? store.draft : typing
-        let language = store.current?.language ?? store.settings.language
-        let stretch = store.stretch.flatMap { $0.id == store.current?.prompt.pointID ? $0 : nil }
-        let words = store.plan.words.have + store.plan.words.new
-        if stretch != nil || !words.isEmpty {
-            Flow(spacing: 6, lineSpacing: 6) {
-                if let stretch {
-                    Ingredient(text: stretch.name, caps: true,
-                               used: store.markers(of: stretch).contains {
-                                   Store.uses($0, in: answer, language: language)
-                               })
-                }
-                ForEach(words, id: \.self) { word in
-                    Ingredient(text: word, used: Store.uses(word, in: answer, language: language))
-                }
-            }
-            .foregroundStyle(Theme.C.ink2)
-        }
-    }
-
     private var attempt: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 prompt
-
-                if store.settings.mode == .produce { chips }
 
                 if store.phase == .recording {
                     VStack(alignment: .leading, spacing: Theme.M.gapTight) {
@@ -463,8 +438,12 @@ struct ModeScreen: View {
             MainButton(title: "Submit", enabled: !store.draft.isEmpty) {
                 Task { await store.submit() }
             }
-            TinyButton(title: store.current?.attempt.wasTyped == true
-                       ? "Change it" : "Say it again") { store.reRecord() }
+            let typed = store.current?.attempt.wasTyped == true
+            TinyButton(title: typed ? "Change it" : "Say it again") {
+                // A typed answer goes back with its text, to be fixed rather than retyped.
+                if typed { typing = store.draft }
+                store.reRecord()
+            }
             Spacer()
         }
         .padding(Theme.M.gap)
@@ -629,10 +608,8 @@ struct GradingPanel: View {
         }
     }
 
-    /// The language only once there is more than one out.
     private func status(_ job: GradingJob) -> String {
-        let mixed = Set(store.todaysJobs.map(\.language)).count > 1
-        return (mixed ? "\(job.language.flag) " : "") + store.status(of: job)
+        "\(job.language.flag) " + store.status(of: job)
     }
 
     private func row(_ job: GradingJob, ruled: Bool) -> some View {
@@ -655,7 +632,7 @@ struct GradingPanel: View {
                     TinyButton(title: "Send now") { Task { await store.sendNow(job) } }
                 }
                 if ready {
-                    TypedLink("Read") { store.read(job) }
+                    TypedLink(job.readAt == nil ? "Read" : "Read again") { store.read(job) }
                 } else if job.state == .grading {
                     // Fills toward the switch to direct grading.
                     TimelineView(.periodic(from: .now, by: 10)) { _ in
@@ -670,30 +647,12 @@ struct GradingPanel: View {
     }
 }
 
-/// One thing a produce answer is made of: the stretch (CAPS mono) or a word
-/// in the language (target face, its own case, which `Tag` would lose). Ticked
-/// once used. Takes the ink of the key it sits on.
-struct Ingredient: View {
-    let text: String
-    var caps = false
-    var used = false
+/// Every language's calls today, in dollars.
+struct SpentToday: View {
+    let store: Store
 
     var body: some View {
-        HStack(spacing: 4) {
-            if used {
-                Text("✓").font(Theme.F.mono(11, bold: true)).foregroundStyle(Theme.C.good)
-            }
-            Text(caps ? text.uppercased() : text)
-                .font(caps ? Theme.F.label : Theme.F.target(size: 14))
-                .tracking(caps ? Theme.M.caps : 0)
-                .lineLimit(1)
-        }
-        .padding(.horizontal, 6).padding(.vertical, 2)
-        .overlay {
-            Rectangle().strokeBorder(used ? AnyShapeStyle(Theme.C.good)
-                                          : AnyShapeStyle(.foreground.opacity(0.6)),
-                                     lineWidth: Theme.M.hair)
-        }
+        ModuleLabel(text: "Spent today", trailing: String(format: "$%.2f", store.spentToday))
     }
 }
 

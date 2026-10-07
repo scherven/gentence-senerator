@@ -183,10 +183,12 @@ extension QuizRound {
     ///
     /// Entries above `maxLevel` are left out. Entries at `maxLevel` (the
     /// learner's level + 1) make at most one item in `stretchOneIn`, unless
-    /// there is too little below it to fill the round.
+    /// there is too little below it to fill the round. Entries below
+    /// `minLevel` (the learner's level) come only when they are being missed,
+    /// or when nothing else can fill the round.
     static func assemble<R: RandomNumberGenerator>(
         plan: QuizPlan, book: Book, bank: [QuizItem],
-        maxLevel: Int = .max, levelOf: (String) -> Int = { _ in 1 },
+        maxLevel: Int = .max, minLevel: Int = 1, levelOf: (String) -> Int = { _ in 1 },
         state: (String) -> EntryState, now: Date = .now,
         using rng: inout R
     ) -> QuizRound {
@@ -204,8 +206,12 @@ extension QuizRound {
         let cap = count / stretchOneIn
         var picked: [QuizItem] = []
         var rest: [QuizItem] = []
+        var below: [QuizItem] = []
         var stretch = 0
         for item in ranked where picked.count < count {
+            if levelOf(item.entry) < minLevel, !missing(state(item.entry)) {
+                below.append(item); continue
+            }
             if levelOf(item.entry) >= maxLevel {
                 guard stretch < cap else { rest.append(item); continue }
                 stretch += 1
@@ -213,6 +219,7 @@ extension QuizRound {
             picked.append(item)
         }
         picked += rest.prefix(count - picked.count)
+        picked += below.prefix(count - picked.count)
         let sides = sides(book)
         let items = arrange(picked).map { fixingSides(shuffledOptions($0, using: &rng), sides) }
         return QuizRound(plan: plan, items: items, started: now)
@@ -285,11 +292,17 @@ extension QuizRound {
     }
 
     static func assemble(plan: QuizPlan, book: Book, bank: [QuizItem],
-                         maxLevel: Int = .max, levelOf: (String) -> Int = { _ in 1 },
+                         maxLevel: Int = .max, minLevel: Int = 1,
+                         levelOf: (String) -> Int = { _ in 1 },
                          state: (String) -> EntryState, now: Date = .now) -> QuizRound {
         var rng = SystemRandomNumberGenerator()
-        return assemble(plan: plan, book: book, bank: bank, maxLevel: maxLevel, levelOf: levelOf,
-                        state: state, now: now, using: &rng)
+        return assemble(plan: plan, book: book, bank: bank, maxLevel: maxLevel, minLevel: minLevel,
+                        levelOf: levelOf, state: state, now: now, using: &rng)
+    }
+
+    /// Slipping, or the last answer was wrong: worth asking whatever its level.
+    static func missing(_ s: EntryState) -> Bool {
+        s.slipping || s.recent.last == false
     }
 
     /// Level + 1 gets at most one item in this many, rounded down.
