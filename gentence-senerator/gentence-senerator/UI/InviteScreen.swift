@@ -3,6 +3,8 @@ import SwiftUI
 /// First launch only: the code that lets this install use the worker. Eight
 /// cells; the eighth character sends it.
 struct InviteScreen: View {
+    /// False while the opening plays: the keyboard waits for it.
+    var ready: Bool
     var redeemed: () -> Void
 
     @State private var code = ""
@@ -36,6 +38,7 @@ struct InviteScreen: View {
         .padding(.horizontal, Theme.M.gap * 2)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .paper()
+        .onChange(of: ready, initial: true) { _, ready in if ready { focused = true } }
     }
 
     private func cell(_ i: Int) -> some View {
@@ -96,22 +99,17 @@ private struct CodeField: UIViewRepresentable {
 
     func updateUIView(_ field: Field, context: Context) {
         if field.text != text { field.text = text }
-        if focused, !field.isFirstResponder, field.window != nil { field.becomeFirstResponder() }
+        if focused, !field.isFirstResponder { field.take(tries: 20) }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
     final class Field: UITextField {
-        override func didMoveToWindow() {
-            super.didMoveToWindow()
-            take(tries: 20)
-        }
-
         /// At launch the window can't take the keyboard yet; keep asking for
         /// a couple of seconds.
-        private func take(tries: Int) {
-            guard window != nil, !isFirstResponder, tries > 0 else { return }
-            if becomeFirstResponder() { return }
+        func take(tries: Int) {
+            guard !isFirstResponder, tries > 0 else { return }
+            if window != nil, becomeFirstResponder() { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.take(tries: tries - 1) }
         }
     }

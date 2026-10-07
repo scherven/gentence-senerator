@@ -26,7 +26,7 @@ struct GentenceApp: App {
                 if invited {
                     AppShell(store: store)
                 } else {
-                    InviteScreen {
+                    InviteScreen(ready: !opening) {
                         invited = true
                         Push.ask()
                         Task { await store.wake() }
@@ -43,6 +43,7 @@ struct GentenceApp: App {
             case .active:
                 guard invited else { break }
                 Task { await store.wake() }
+                Task { if await Worker.revoked() { invited = false } }
             case .background:
                 store.sleep()
                 // A session finished with no signal is sent the moment the

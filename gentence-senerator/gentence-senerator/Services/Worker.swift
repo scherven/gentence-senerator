@@ -15,6 +15,19 @@ enum Worker {
         if let invite { request.setValue(invite, forHTTPHeaderField: "x-invite") }
     }
 
+    /// True, and the code forgotten, if the worker no longer takes it.
+    /// Offline or rate-limited is not revoked.
+    static func revoked() async -> Bool {
+        guard let invite else { return false }
+        var request = URLRequest(url: url("/check"))
+        request.setValue(invite, forHTTPHeaderField: "x-invite")
+        request.timeoutInterval = 15
+        guard let (_, response) = try? await URLSession.shared.data(for: request),
+              (response as? HTTPURLResponse)?.statusCode == 401 else { return false }
+        UserDefaults.standard.removeObject(forKey: inviteKey)
+        return true
+    }
+
     /// Keeps `code` if the worker accepts it.
     static func redeem(_ code: String) async -> Bool {
         // Codes are XXXX-XXXX; accept them typed with or without the dash.
