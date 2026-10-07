@@ -25,7 +25,13 @@ case "${1:-}" in
     done
     ;;
   revoke)
-    kv delete "invite:${2:?code}"
+    # Deleting a key that doesn't exist succeeds silently, so check first.
+    code=$(echo "${2:?code}" | tr '[:lower:]' '[:upper:]')
+    if ! kv get "invite:$code" >/dev/null 2>&1; then
+      echo "no such code: $code" >&2; exit 1
+    fi
+    kv delete "invite:$code" >/dev/null
+    echo "revoked $code"
     ;;
   *) sed -n 2,5p "$0"; exit 1 ;;
 esac
