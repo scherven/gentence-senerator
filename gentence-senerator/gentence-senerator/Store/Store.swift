@@ -819,7 +819,7 @@ final class Store {
         do {
             install(try await makeTurn())
         } catch {
-            phase = .failed(error.localizedDescription)
+            phase = .failed(Plain.message(error, "next prompt"))
         }
     }
 
@@ -953,7 +953,7 @@ final class Store {
         } catch {
             // Not a dead end: the answer can still be typed, and the session
             // goes on.
-            speechTrouble = error.localizedDescription
+            speechTrouble = Plain.message(error, "start recording")
             phase = .ready
         }
     }
@@ -1043,7 +1043,7 @@ final class Store {
             hold()
             phase = .reviewing
         } catch {
-            phase = .failed(error.localizedDescription)
+            phase = .failed(Plain.message(error, "review"))
         }
     }
 
@@ -1166,7 +1166,7 @@ final class Store {
                     }
                 }
             } catch {
-                job.error = error.localizedDescription
+                job.error = Plain.message(error, "batch results")
             }
             put(job)
         }
@@ -1237,7 +1237,7 @@ final class Store {
             await pump()
         } catch {
             if var now = jobs.first(where: { $0.id == job.id }) {
-                now.error = online ? error.localizedDescription : "Still no connection."
+                now.error = online ? Plain.message(error, "send now") : "Still no connection."
                 put(now)
             }
         }
@@ -1265,7 +1265,7 @@ final class Store {
             job.watched = accepted.watched
             job.error = nil
         case .failure(let error):
-            job.error = error.localizedDescription
+            job.error = Plain.message(error, "upload")
         }
         put(job)
     }
@@ -1298,7 +1298,7 @@ final class Store {
                 land(review, lessons, on: last)
             } catch {
                 if var now = jobs.first(where: { $0.id == job.id }) {
-                    now.error = error.localizedDescription
+                    now.error = Plain.message(error, "regrade")
                     put(now)
                 }
             }
@@ -1971,7 +1971,7 @@ final class Store {
                 if let usage { self.note(usage) }
                 self.shelve([lesson])
             } catch {
-                self.lessonErrors[key] = error.localizedDescription
+                self.lessonErrors[key] = Plain.message(error, "lesson")
             }
             self.loadingLesson.remove(key)
             self.coreLoads[key] = nil
@@ -2000,7 +2000,7 @@ final class Store {
                     self.shelve([full])
                 }
             } catch {
-                self.lessonErrors[key] = error.localizedDescription
+                self.lessonErrors[key] = Plain.message(error, "practice")
             }
             self.practiceLoads[key] = nil
         }
@@ -2117,7 +2117,7 @@ final class Store {
         } catch {
             asked[context, default: []].append(
                 AskItem(id: UUID().uuidString, question: question,
-                        answer: "Couldn't answer that: \(error.localizedDescription)",
+                        answer: Store.couldNotAnswer(Plain.message(error, "ask")),
                         atoms: [])
             )
         }
@@ -2138,6 +2138,7 @@ final class Store {
             note(usage)
             return verdict
         } catch {
+            Plain.note(error, "drill check")
             return Tutor.DrillVerdict(correct: false, note: Store.uncheckable)
         }
     }
@@ -2523,6 +2524,7 @@ final class Store {
             topUps[language.rawValue, default: []] += kept
             Vault.save(topUps, Vault.topUps)
         } catch {
+            Plain.note(error, "top-up")
             Vault.save(spend, Vault.spend)
             topUpFailed[chapter.id] = .now
         }
@@ -2882,6 +2884,11 @@ final class Store {
 
     /// The verdict `grade(_:against:)` returns when the model could not be reached.
     static let uncheckable = "Couldn't check that."
+
+    /// The ask panel's failure line, with the reason when there is one.
+    static func couldNotAnswer(_ why: String) -> String {
+        why == Plain.unknown ? "Couldn't answer that." : "Couldn't answer that. " + why
+    }
 
     /// Where a finding sits in what was said, and its fix as wrong → right.
     struct Span: Equatable {
@@ -3267,6 +3274,7 @@ final class Store {
             }
             hold()
         } catch {
+            Plain.note(error, "another question")
             speechTrouble = "Couldn't write another question."
         }
     }

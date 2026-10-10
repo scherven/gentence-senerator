@@ -37,8 +37,8 @@ final class Voice: NSObject, SpeechIO {
             switch self {
             case .denied:
                 return "Microphone or speech access is off. Turn it on in Settings."
-            case .unavailable(let locale):
-                return "Can't recognise \(locale). May need a connection."
+            case .unavailable:
+                return "Speech recognition unavailable."
             }
         }
     }
