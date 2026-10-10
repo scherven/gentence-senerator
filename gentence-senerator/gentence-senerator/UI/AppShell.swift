@@ -230,6 +230,11 @@ struct ModeScreen: View {
         .onChange(of: store.reading.isEmpty) { _, idle in
             if !idle { showingSettings = false }
         }
+        // A half-typed answer belongs to its session, not the next one.
+        .onChange(of: store.session?.id) {
+            typing = ""
+            showGloss = false
+        }
     }
 
     private var isIdle: Bool { store.phase == .idle }
@@ -431,7 +436,15 @@ struct ModeScreen: View {
         }
     }
 
+    /// Scrolls, so a long answer cannot push Submit under the keyboard.
     private var confirm: some View {
+        ScrollView {
+            confirmBody
+        }
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    private var confirmBody: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             dimmedPrompt
             TextField("", text: $store.draft, axis: .vertical)

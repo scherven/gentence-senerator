@@ -20,6 +20,18 @@ struct PassageScreen: View {
     @State private var questionEnglish: Set<Int> = []
 
     var body: some View {
+        content
+            // Outside the branch: the screen outlives each dialogue while the
+            // picker shows, so the next one starts with nothing open.
+            .onChange(of: store.passage?.id, initial: true) {
+                glossed = nil
+                english = []
+                rereading = false
+                questionEnglish = []
+            }
+    }
+
+    @ViewBuilder private var content: some View {
         if let passage = store.passage, let run = store.run {
             VStack(spacing: 0) {
                 ScrollViewReader { scroller in
@@ -47,7 +59,6 @@ struct PassageScreen: View {
                 if shown(run) == .read, let glossed { gloss(glossed) }
             }
             .onDisappear { store.stopDialogue() }
-            .onChange(of: passage.id) { rereading = false; questionEnglish = [] }
         } else {
             DialoguePicker(store: store)
         }
@@ -195,21 +206,20 @@ struct PassageScreen: View {
 
     // MARK: Pass 2
 
+    /// Nothing here reads the playhead: it moves thirty times a second, and
+    /// only the views drawing it — each word, each line's tint, the scroll
+    /// follower — should redraw with it.
     @ViewBuilder
     private func reading(_ passage: Passage, _ run: PassageRun, scroller: ScrollViewProxy) -> some View {
-        let now = store.dialogue.now
-        let playing = now.flatMap(passage.line(at:))?.n
         LedgerSheet {
             ForEach(passage.lines) { line in
-                spoken(passage, line, run: run, now: now, current: line.n == playing,
-                       ruled: line.n != passage.lines.last?.n)
+                spoken(passage, line, run: run, ruled: line.n != passage.lines.last?.n)
                     .id(line.n)
             }
         }
-        .onChange(of: playing) { _, n in
-            guard let n else { return }
+        .background(PlayingLine(passage: passage, dialogue: store.dialogue) { n in
             withAnimation(.easeOut(duration: 0.2)) { scroller.scrollTo(n, anchor: .center) }
-        }
+        })
         HStack(spacing: 6) {
             TinyButton(title: store.dialogue.isPlaying ? "Stop" : "Play all") {
                 if store.dialogue.isPlaying { store.stopDialogue() }
@@ -226,7 +236,7 @@ struct PassageScreen: View {
     }
 
     private func spoken(_ passage: Passage, _ line: Passage.Line, run: PassageRun,
-                        now: Double?, current: Bool, ruled: Bool) -> some View {
+                        ruled: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 10) {
                 Tag(passage.name(of: line.speaker), .tinted(colour(passage.voice(of: line.speaker))))
@@ -239,7 +249,7 @@ struct PassageScreen: View {
             }
             Flow(spacing: 2, lineSpacing: 6) {
                 ForEach(Array(line.words.enumerated()), id: \.offset) { _, word in
-                    token(word, lit: lit(word, now), tapped: run.tapped.contains(word.w))
+                    token(word, tapped: run.tapped.contains(word.w))
                 }
             }
             if english.contains(line.n) {
@@ -248,34 +258,14 @@ struct PassageScreen: View {
         }
         .padding(Theme.M.padTight)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(current ? Theme.C.accent.opacity(0.08) : .clear)
+        .background(LineTint(passage: passage, line: line, dialogue: store.dialogue))
         .overlay(alignment: .bottom) {
             if ruled { Rectangle().fill(Theme.C.seam).frame(height: Theme.M.hair) }
         }
     }
 
-    private func lit(_ word: Passage.Word, _ now: Double?) -> Bool {
-        guard let now, let start = word.start, let end = word.end else { return false }
-        return now >= start && now < end + 0.04
-    }
-
-    /// Pinyin over the characters. Punctuation keeps an empty pinyin row so
-    /// everything on a line shares a baseline.
-    private func token(_ word: Passage.Word, lit: Bool, tapped: Bool) -> some View {
-        let body = VStack(spacing: 0) {
-            Text(word.py ?? " ")
-                .font(Theme.F.mono(10))
-                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink3)
-                .lineLimit(1)
-                .fixedSize()
-            Text(word.w)
-                .font(Theme.F.target(size: 20))
-                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink)
-                .underline(tapped, color: Theme.C.warn)
-                .fixedSize()
-        }
-        .padding(.horizontal, 1)
-        .background(lit ? Theme.C.accent : .clear)
+    private func token(_ word: Passage.Word, tapped: Bool) -> some View {
+        let body = SpokenToken(word: word, tapped: tapped, dialogue: store.dialogue)
         return Group {
             if word.isPunctuation {
                 body
@@ -351,7 +341,7 @@ struct PassageScreen: View {
             }
         }
 
-        MainButton(title: "Done") { rereading = false; store.backToPicker() }
+        MainButton(title: "Done") { glossed = nil; rereading = false; store.backToPicker() }
     }
 
     private func meter(_ label: String, _ value: PassageRun.Followed?, colour: Color) -> some View {
@@ -398,10 +388,7 @@ struct PassageScreen: View {
                                 .offset(x: g.size.width * (s.lowerBound - span.lowerBound) / length)
                         }
                     }
-                    if let now = store.dialogue.now {
-                        Rectangle().fill(Theme.C.accent).frame(width: 2, height: 34)
-                            .offset(x: g.size.width * min(1, max(0, (now - span.lowerBound) / length)))
-                    }
+                    Playhead(dialogue: store.dialogue, span: span, width: g.size.width)
                 }
                 .frame(maxHeight: .infinity)
             }
@@ -422,5 +409,80 @@ struct PassageScreen: View {
 
     private func colour(_ voice: Int) -> Color {
         [Theme.C.ink2, Theme.C.carbon, Theme.C.good, Theme.C.warn][voice % 4]
+    }
+}
+
+// MARK: - Playhead readers
+//
+// The only views that read `DialoguePlayer.now`, so a tick redraws them and
+// not the screen around them.
+
+/// Pinyin over the characters, lit while spoken. Punctuation keeps an empty
+/// pinyin row so everything on a line shares a baseline.
+private struct SpokenToken: View {
+    let word: Passage.Word
+    let tapped: Bool
+    let dialogue: DialoguePlayer
+
+    private var lit: Bool {
+        guard let now = dialogue.now, let start = word.start, let end = word.end else { return false }
+        return now >= start && now < end + 0.04
+    }
+
+    var body: some View {
+        let lit = lit
+        VStack(spacing: 0) {
+            Text(word.py ?? " ")
+                .font(Theme.F.mono(10))
+                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink3)
+                .lineLimit(1)
+                .fixedSize()
+            Text(word.w)
+                .font(Theme.F.target(size: 20))
+                .foregroundStyle(lit ? Theme.C.onAccent : Theme.C.ink)
+                .underline(tapped, color: Theme.C.warn)
+                .fixedSize()
+        }
+        .padding(.horizontal, 1)
+        .background(lit ? Theme.C.accent : .clear)
+    }
+}
+
+/// The line being spoken, tinted.
+private struct LineTint: View {
+    let passage: Passage
+    let line: Passage.Line
+    let dialogue: DialoguePlayer
+
+    var body: some View {
+        let current = dialogue.now.flatMap(passage.line(at:))?.n == line.n
+        Rectangle().fill(current ? Theme.C.accent.opacity(0.08) : .clear)
+    }
+}
+
+/// Hears the spoken line change, for the read-along to follow it.
+private struct PlayingLine: View {
+    let passage: Passage
+    let dialogue: DialoguePlayer
+    let moved: (Int) -> Void
+
+    var body: some View {
+        let playing = dialogue.now.flatMap(passage.line(at:))?.n
+        Color.clear
+            .onChange(of: playing) { _, n in if let n { moved(n) } }
+    }
+}
+
+private struct Playhead: View {
+    let dialogue: DialoguePlayer
+    let span: ClosedRange<Double>
+    let width: CGFloat
+
+    var body: some View {
+        if let now = dialogue.now {
+            let length = span.upperBound - span.lowerBound
+            Rectangle().fill(Theme.C.accent).frame(width: 2, height: 34)
+                .offset(x: width * min(1, max(0, (now - span.lowerBound) / length)))
+        }
     }
 }

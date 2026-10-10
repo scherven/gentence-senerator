@@ -92,9 +92,7 @@ struct FlipQuiz: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 22).padding(.horizontal, 16)
-        .background(Theme.C.surface)
-        .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-        .background(Rectangle().fill(Theme.C.seam2).offset(y: 3))
+        .hardCard(fill: Theme.C.surface, drop: CGSize(width: 0, height: 3))
     }
 
     private func half(_ i: Int, label: String) -> some View {
@@ -187,7 +185,7 @@ struct SpotItQuiz: View {
         let fix = c.item.steps[1]
         VStack(alignment: .leading, spacing: 18) {
             gloss(c.item.gloss)
-            QuizFlow(spacing: 6) {
+            Flow(spacing: 6, lineSpacing: 6, alignment: .top) {
                 ForEach(Array(tokens.options.enumerated()), id: \.offset) { i, token in
                     Button {
                         guard picks.isEmpty else { return }
@@ -355,7 +353,7 @@ struct BuildQuiz: View {
             if let p = c.item.gloss ?? c.item.prompt {
                 Text(p).font(Theme.F.target(size: 18))
             }
-            QuizFlow(spacing: 8) {
+            Flow(spacing: 8, lineSpacing: 8, alignment: .top) {
                 ForEach(placed, id: \.self) { i in
                     Button { if !c.done { placed.removeAll { $0 == i } } } label: { tile(bank[i]) }
                         .buttonStyle(QuizKey(look: slotLook))
@@ -376,7 +374,7 @@ struct BuildQuiz: View {
             if c.done, c.revealed?.right == false {
                 // The right order as tiles, the structure's own words filled
                 // so the pattern stands out from the rest of the sentence.
-                QuizFlow(spacing: 6) {
+                Flow(spacing: 6, lineSpacing: 6, alignment: .top) {
                     ForEach(Array(c.item.tiles.enumerated()), id: \.offset) { _, t in
                         let key = QuizRound.isStructure(t, c.structure)
                         tile(t)
@@ -388,7 +386,7 @@ struct BuildQuiz: View {
                 }
             }
 
-            QuizFlow(spacing: 8) {
+            Flow(spacing: 8, lineSpacing: 8, alignment: .top) {
                 ForEach(bank.indices, id: \.self) { i in
                     if placed.contains(i) {
                         tile(bank[i]).foregroundStyle(.clear)
@@ -434,8 +432,7 @@ struct TransformQuiz: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text(c.item.prompt ?? "").font(Theme.F.target(size: 22))
                 Text(c.item.task ?? "").font(Theme.F.label).foregroundStyle(Theme.C.accent)
-                BuildQuiz(c: QuizFormatContext(item: build, revealed: c.revealed,
-                                               answer: c.answer, speak: c.speak))
+                BuildQuiz(c: c.with(item: build))
             }
         } else {
             typing
@@ -561,9 +558,7 @@ struct CardQuiz: View {
             .foregroundStyle(Theme.C.ink)
             .frame(maxWidth: .infinity, minHeight: 260, alignment: .topLeading)
             .padding(.vertical, 22).padding(.horizontal, 16)
-            .background(Theme.C.stock)
-            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-            .background(Rectangle().fill(Theme.C.seam2).offset(x: 3, y: 3))
+            .hardCard(fill: Theme.C.stock, drop: CGSize(width: 3, height: 3))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

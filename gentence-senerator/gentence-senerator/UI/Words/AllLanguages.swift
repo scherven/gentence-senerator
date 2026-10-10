@@ -95,9 +95,7 @@ struct AllLanguagesScreen: View {
                 }
             }
         }
-        .background(Theme.C.stock)
-        .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
-        .background(Rectangle().fill(Theme.C.seam2).offset(x: 3, y: 3))
+        .hardCard(fill: Theme.C.stock, drop: CGSize(width: 3, height: 3))
         .id(concept.id)
         .accessibilityAction(named: "Show next") { reveal() }
     }
@@ -193,12 +191,15 @@ struct AllLanguagesScreen: View {
                 .overlay(Rectangle().strokeBorder(colour, lineWidth: Theme.M.hair))
         }
         .buttonStyle(PressDim())
+        .disabled(marks.count == ConceptDeck.ring.count)
         .accessibilityLabel("\(language.name): \(right ? "knew it" : "didn't")")
     }
 
     // MARK: Flow
 
     private func mark(_ language: Language, _ right: Bool) {
+        // Recorded already, and moving on: a late tap would count it twice.
+        guard marks.count < ConceptDeck.ring.count else { return }
         commit()
         marks[language] = right
         guard marks.count == ConceptDeck.ring.count else { return }

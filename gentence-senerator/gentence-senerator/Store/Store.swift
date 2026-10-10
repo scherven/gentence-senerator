@@ -2138,9 +2138,7 @@ final class Store {
             note(usage)
             return verdict
         } catch {
-            return Tutor.DrillVerdict(
-                correct: false, note: "Couldn't check that."
-            )
+            return Tutor.DrillVerdict(correct: false, note: Store.uncheckable)
         }
     }
 

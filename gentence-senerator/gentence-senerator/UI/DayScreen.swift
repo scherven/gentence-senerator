@@ -9,6 +9,7 @@ struct DayScreen: View {
     @State private var expanded: String?
 
     var body: some View {
+        let findings = store.todayFindings
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 WordsRow(store: store)
@@ -16,8 +17,8 @@ struct DayScreen: View {
                 WrittenToday(store: store)
                 GradingPanel(store: store)
                 tally
-                section("To fix", store.todayFindings.filter(\.isProblem))
-                section("Got right", store.todayFindings.filter { !$0.isProblem })
+                section("To fix", findings.filter(\.isProblem))
+                section("Got right", findings.filter { !$0.isProblem })
             }
             .padding(Theme.M.gap)
         }

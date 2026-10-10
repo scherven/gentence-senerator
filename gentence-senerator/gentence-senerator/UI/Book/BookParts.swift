@@ -147,15 +147,3 @@ struct BookTag: View {
         Tag(text, .tinted(colour))
     }
 }
-
-/// The swipe back survives a hidden navigation bar.
-extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        interactivePopGestureRecognizer?.delegate = self
-    }
-
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        viewControllers.count > 1
-    }
-}

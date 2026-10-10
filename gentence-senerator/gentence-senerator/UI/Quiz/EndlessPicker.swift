@@ -5,6 +5,8 @@ struct EndlessBar: View {
     let store: Store
     @Environment(\.startQuiz) private var startQuiz
     @State private var picking = false
+    /// Chosen in the sheet, started once it is gone: one cover at a time.
+    @State private var pending: QuizPlan.Mix?
 
     var body: some View {
         let mix = store.endlessMix.flatMap { $0.isEmpty ? nil : $0 }
@@ -18,15 +20,15 @@ struct EndlessBar: View {
                 TinyButton(title: "Change") { picking = true }
             }
         }
-        .sheet(isPresented: $picking) {
+        .sheet(isPresented: $picking, onDismiss: {
+            guard let mix = pending else { return }
+            pending = nil
+            startQuiz(store.endlessPlan(mix))
+        }) {
             EndlessPicker(store: store) { mix in
-                picking = false
                 store.saveEndlessMix(mix)
-                // After the sheet is gone: one cover at a time.
-                Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(350))
-                    startQuiz(store.endlessPlan(mix))
-                }
+                pending = mix
+                picking = false
             }
         }
     }

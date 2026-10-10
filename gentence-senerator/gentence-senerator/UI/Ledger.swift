@@ -2,6 +2,9 @@ import SwiftUI
 
 // Shared components for "Typescript & Ledger". Tokens are in `Theme.swift`.
 // Everything is square: hairlines, hard offset shadows, no radius, no blur.
+//
+// App-wide: every `UINavigationController` keeps its swipe back with the bar
+// hidden — see the extension at the end of this file.
 
 // MARK: - Type helpers
 
@@ -996,5 +999,85 @@ extension View {
         self
             .background(Theme.C.ground.ignoresSafeArea())
             .overlay { Grain() }
+    }
+}
+
+// MARK: - Layout
+
+/// Left-to-right, wrapping. Items on a line are centred on it, or top-aligned.
+struct Flow: Layout {
+    var spacing: CGFloat = 4
+    var lineSpacing: CGFloat = 4
+    var alignment: VerticalAlignment = .center
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.width ?? .infinity
+        let lines = arrange(subviews, width: width)
+        let height = lines.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(lines.count - 1, 0))
+        let used = lines.map(\.width).max() ?? 0
+        return CGSize(width: proposal.width ?? used, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for line in arrange(subviews, width: bounds.width) {
+            var x = bounds.minX
+            for i in line.items {
+                let size = subviews[i].sizeThatFits(.unspecified)
+                let drop = alignment == .top ? 0 : (line.height - size.height) / 2
+                subviews[i].place(at: CGPoint(x: x, y: y + drop),
+                                  proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            }
+            y += line.height + lineSpacing
+        }
+    }
+
+    private struct Line { var items: [Int] = []; var width: CGFloat = 0; var height: CGFloat = 0 }
+
+    private func arrange(_ subviews: Subviews, width: CGFloat) -> [Line] {
+        var lines: [Line] = []
+        var line = Line()
+        for i in subviews.indices {
+            let size = subviews[i].sizeThatFits(.unspecified)
+            let needed = line.items.isEmpty ? size.width : line.width + spacing + size.width
+            if needed > width, !line.items.isEmpty {
+                lines.append(line)
+                line = Line()
+            }
+            line.width = line.items.isEmpty ? size.width : line.width + spacing + size.width
+            line.height = max(line.height, size.height)
+            line.items.append(i)
+        }
+        if !line.items.isEmpty { lines.append(line) }
+        return lines
+    }
+}
+
+// MARK: - Cards
+
+extension View {
+    /// A plain card: fill, seam2 hairline, seam2 hard drop. `IndexCard` is
+    /// the ruled one.
+    func hardCard(fill: Color, drop: CGSize) -> some View {
+        background(fill)
+            .overlay(Rectangle().stroke(Theme.C.seam2, lineWidth: Theme.M.hair))
+            .background(Rectangle().fill(Theme.C.seam2).offset(drop))
+    }
+}
+
+// MARK: - Navigation
+
+/// The swipe back survives a hidden navigation bar. Every screen hides the
+/// bar for its own `pageHeader`, so this is app-wide on purpose: each
+/// navigation controller is its own pop-gesture delegate.
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        viewControllers.count > 1
     }
 }

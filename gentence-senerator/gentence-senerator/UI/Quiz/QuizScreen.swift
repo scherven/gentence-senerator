@@ -11,7 +11,10 @@ struct QuizScreen: View {
     var openEntry: ((String, String) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
+    /// Dealt on appear, not in `init`: the cover's content is rebuilt with
+    /// every redraw of the shell behind it.
     @State private var round: QuizRound
+    @State private var dealt = false
     @State private var index = 0
     @State private var shownAt = Date.now
     @State private var finished = false
@@ -23,14 +26,15 @@ struct QuizScreen: View {
         let plan = VocabDrill.isVocab(plan) ? store.endlessPlan(QuizPlan.Mix(words: true)) : plan
         _plan = State(initialValue: plan)
         self.openEntry = openEntry
-        let r = store.round(for: plan)
-        _round = State(initialValue: r)
-        _before = State(initialValue: Self.held(store, r))
+        _round = State(initialValue: QuizRound(plan: plan, items: [], started: .now))
+        _before = State(initialValue: [:])
     }
 
     var body: some View {
         Group {
-            if finished {
+            if !dealt {
+                Color.clear
+            } else if finished {
                 QuizResultView(round: round, record: store.record(of: plan), book: store.book,
                                chapters: chapters.map { ($0, before[$0.id] ?? 0, store.held(in: $0)) },
                                again: again, done: { dismiss() },
@@ -48,6 +52,13 @@ struct QuizScreen: View {
             }
         }
         .paper()
+        .onAppear {
+            guard !dealt else { return }
+            round = store.round(for: plan)
+            before = Self.held(store, round)
+            shownAt = .now
+            dealt = true
+        }
     }
 
     // MARK: Runner
