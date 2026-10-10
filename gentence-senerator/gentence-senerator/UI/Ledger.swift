@@ -433,6 +433,8 @@ struct ModuleLabel: View {
                 .tracking(1.1)
                 .foregroundStyle(Theme.C.ink2)
                 .lineLimit(1)
+                // The rule gives way first.
+                .layoutPriority(1)
             DoubleRule()
             if let trailing {
                 Text(trailing).font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
@@ -807,7 +809,7 @@ struct LedgerRow<Entry: View, Trailing: View>: View {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 if let number { NumberTag(number: number, colour: colour) }
                 Text(account.uppercased())
-                    .font(Theme.F.label)
+                    .font(Theme.F.account)
                     .tracking(0.6)
                     .foregroundStyle(colour)
                     .lineLimit(2)
@@ -815,7 +817,8 @@ struct LedgerRow<Entry: View, Trailing: View>: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 12)
-            .frame(width: accountWidth, alignment: .leading)
+            .frame(width: accountWidth * Theme.F.growth(11, mono: true, upTo: Theme.F.accountCap),
+                   alignment: .leading)
 
             HStack(spacing: 2.5) {
                 Rectangle().fill(Theme.C.margin).frame(width: 0.75)
@@ -931,10 +934,11 @@ struct SquareToggle<Label: View>: View {
     }
 
     private func half(_ word: String, live: Bool) -> some View {
-        Text(word)
-            .font(Theme.F.label).tracking(Theme.M.caps)
+        let grow = Theme.F.growth(11, mono: true, upTo: Theme.F.accountCap)
+        return Text(word)
+            .font(Theme.F.account).tracking(Theme.M.caps)
             .foregroundStyle(live ? Theme.C.onInverse : Theme.C.ink3)
-            .frame(width: 40, height: 28)
+            .frame(width: 40 * grow, height: 28 * grow)
             .background(live ? Theme.C.inverse : Theme.C.surface)
     }
 }

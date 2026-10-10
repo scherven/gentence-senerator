@@ -156,7 +156,7 @@ struct TabBar: View {
                 Button { tab = item } label: {
                     HStack(spacing: 4) {
                         Text(item.title)
-                            .font(Theme.F.mono(12, bold: on))
+                            .font(Theme.F.mono(12, bold: on, upTo: 1.4))
                             .tracking(1.2)
                             .foregroundStyle(on ? Theme.C.ink : Theme.C.ink3)
                             .overlay(alignment: .bottom) {

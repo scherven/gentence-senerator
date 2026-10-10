@@ -136,10 +136,11 @@ struct ReviewScreen: View {
                                             @ViewBuilder content: () -> Content) -> some View {
         HStack(alignment: .top, spacing: 0) {
             Text(tag.uppercased())
-                .font(Theme.F.label)
+                .font(Theme.F.account)
                 .tracking(0.6)
                 .foregroundStyle(Theme.C.ink2)
-                .frame(width: 62, alignment: .leading)
+                .frame(width: 62 * Theme.F.growth(11, mono: true, upTo: Theme.F.accountCap),
+                       alignment: .leading)
                 .padding(.top, 6)
             HStack(spacing: 2.5) {
                 Rectangle().fill(Theme.C.margin).frame(width: 0.75)
@@ -150,7 +151,7 @@ struct ReviewScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 10)
                 // Clear of the stamp.
-                .padding(.trailing, first && review != nil ? 64 : 0)
+                .padding(.trailing, first && review != nil ? 64 * Theme.F.growth(26, mono: true) : 0)
                 .padding(.bottom, last ? 0 : 12)
         }
         .fixedSize(horizontal: false, vertical: true)
