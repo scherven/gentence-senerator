@@ -12,6 +12,16 @@ struct GradingTests {
              review: nil, exchangeID: exchange)
     }
 
+    /// Watched is what the worker says the upload carried; a resend says
+    /// nothing, and unwatched makes the app ask.
+    @Test func anUploadIsWatchedOnlyWhenTheWorkerSaysSo() {
+        let watched = Sender.Accepted(Data(#"{"batch":"b1","watched":true}"#.utf8))
+        let resent = Sender.Accepted(Data(#"{"batch":"b1","resent":true}"#.utf8))
+        #expect(watched?.batch == "b1" && watched?.watched == true)
+        #expect(resent?.batch == "b1" && resent?.watched == false)
+        #expect(Sender.Accepted(Data("nope".utf8)) == nil)
+    }
+
     /// Every produce answer is its own review — including a session held from
     /// before, whose answers share one exchange id.
     @Test func produceIsOneTurnEach() {

@@ -547,8 +547,8 @@ struct LessonHost: View {
                     answers: store.asked[request.cacheKey] ?? [],
                     isAsking: store.asking.contains(request.cacheKey)
                 )
-            } else if let error = store.lessonError {
-                Trouble(message: error) { }
+            } else if let error = store.lessonErrors[request.cacheKey] {
+                Trouble(message: error) { store.retryLesson(request) }
             } else {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
                     Text(request.seed.subject)

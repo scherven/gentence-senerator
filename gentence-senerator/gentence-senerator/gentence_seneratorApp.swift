@@ -49,13 +49,35 @@ struct GentenceApp: App {
                 // A session finished with no signal is sent the moment the
                 // phone is put away, if the network has come back by then.
                 guard store.hasUnsent else { break }
-                let task = UIApplication.shared.beginBackgroundTask()
-                Task {
-                    await store.pump()
-                    UIApplication.shared.endBackgroundTask(task)
-                }
+                BackgroundSend.start(store)
             default: break
             }
         }
+    }
+}
+
+/// The pump, for as long as iOS allows once the app is put away. When the
+/// time runs out the pump is cancelled and the task ended, rather than the app
+/// being killed with it open.
+@MainActor private final class BackgroundSend {
+    private var id = UIBackgroundTaskIdentifier.invalid
+
+    static func start(_ store: Store) {
+        let send = BackgroundSend()
+        let work = Task { await store.pump(backgroundOnly: true) }
+        send.id = UIApplication.shared.beginBackgroundTask {
+            work.cancel()
+            send.end()
+        }
+        Task {
+            await work.value
+            send.end()
+        }
+    }
+
+    private func end() {
+        guard id != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(id)
+        id = .invalid
     }
 }

@@ -95,6 +95,10 @@ actor Anthropic {
 
     private func data(for request: URLRequest) async throws -> Data {
         let (data, response) = try await session.data(for: request)
+        return try Self.checked(data, response)
+    }
+
+    private static func checked(_ data: Data, _ response: URLResponse) throws -> Data {
         guard let http = response as? HTTPURLResponse else {
             throw Failure.malformed("no HTTP response")
         }
@@ -103,6 +107,38 @@ actor Anthropic {
             throw Failure.http(http.statusCode, String(detail.prefix(400)))
         }
         return data
+    }
+
+    /// Limited, overloaded or briefly down: worth another go.
+    static let transient: Set<Int> = [429, 500, 502, 503, 529]
+    /// The connection dropped, not timed out — a timeout already waited
+    /// ten minutes.
+    private static let dropped: Set<URLError.Code> = [.networkConnectionLost, .notConnectedToInternet]
+    private static let tries = 3
+
+    /// `data(for:)` for a live call, tried again on a transient failure:
+    /// after `retry-after` when the server sends one, else a jittered pause
+    /// that grows. Twenty seconds at most — past that, the learner's Try
+    /// again is the better retry.
+    private func dataRetrying(for request: URLRequest) async throws -> Data {
+        var attempt = 1
+        while true {
+            let wait: Double?
+            do {
+                let (data, response) = try await session.data(for: request)
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                guard attempt < Self.tries, Self.transient.contains(code) else {
+                    return try Self.checked(data, response)
+                }
+                wait = (response as? HTTPURLResponse)?
+                    .value(forHTTPHeaderField: "retry-after").flatMap(Double.init)
+            } catch let error as URLError where attempt < Self.tries && Self.dropped.contains(error.code) {
+                wait = nil
+            }
+            let pause = min(wait ?? Double(attempt) * Double.random(in: 1...2), 20)
+            try await Task.sleep(for: .seconds(pause))
+            attempt += 1
+        }
     }
 
     /// One call. `schema` constrains the reply to valid JSON; `cachedSystem` is
@@ -117,7 +153,7 @@ actor Anthropic {
 
         let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
                           effort: effort, maxTokens: maxTokens, model: model)
-        let data = try await data(for: try request("messages", body: body))
+        let data = try await dataRetrying(for: try request("messages", body: body))
 
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw Failure.malformed("not a JSON object")
@@ -207,6 +243,8 @@ actor Anthropic {
         var failed: Int
         var processing: Int
         var resultsURL: URL?
+        /// Of `failed`: only the worker cancels, when it steps in to grade.
+        var canceled = 0
     }
 
     /// One result line. `reply` is nil when the request errored or expired.
@@ -265,7 +303,8 @@ actor Anthropic {
             succeeded: n("succeeded"),
             failed: n("errored") + n("expired") + n("canceled"),
             processing: n("processing"),
-            resultsURL: (object["results_url"] as? String).flatMap(URL.init(string:))
+            resultsURL: (object["results_url"] as? String).flatMap(URL.init(string:)),
+            canceled: n("canceled")
         )
     }
 

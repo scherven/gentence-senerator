@@ -40,7 +40,9 @@ final class Store {
     /// instead of asking for the same thing twice.
     private var coreLoads: [String: Task<Void, Never>] = [:]
     private var practiceLoads: [String: Task<Void, Never>] = [:]
-    private(set) var lessonError: String?
+    /// Why a lesson did not load, by `LessonRequest.cacheKey`: one lesson's
+    /// failure is not another's.
+    private(set) var lessonErrors: [String: String] = [:]
     /// Lessons, in the order they were written, so the shelf can be capped.
     private var lessonOrder: [String] = []
 
@@ -1102,7 +1104,9 @@ final class Store {
     /// counts what is graded, and reads in whatever has finished. Safe to call
     /// as often as liked; a failure in one job or one step is retried on the
     /// next call and never stops the others.
-    func pump() async {
+    /// `backgroundOnly`: submit and read what came back, nothing slow — iOS
+    /// gives the app seconds once it is put away.
+    func pump(backgroundOnly: Bool = false) async {
         guard !pumping else { return }
         pumping = true
         defer { pumping = false }
@@ -1111,7 +1115,7 @@ final class Store {
             guard var job = jobs.first(where: { $0.id == id }), job.state != .done else { continue }
             do {
                 if job.batchID == nil {
-                    if !job.uploading { try submit(&job) }
+                    if !job.uploading, mayUpload(job.id) { try submit(&job) }
                     put(job)
                     continue
                 }
@@ -1134,7 +1138,15 @@ final class Store {
                     switch await directResults(batchID) {
                     case .pending: put(job); continue
                     case .ready(let graded): results = graded; direct = true
-                    case .none: break
+                    case .none, .unknown:
+                        // Cancelled means the worker stepped in, whatever this
+                        // answer said: a stale 404 or a dropped request is not
+                        // a reason to read the cancelled batch and pay twice.
+                        // A quarter of an hour on, its results are not coming.
+                        if batch.canceled > 0,
+                           Date.now < Store.switchAt(job).addingTimeInterval(Store.directGrace) {
+                            put(job); continue
+                        }
                     }
                 }
                 if results == nil, batch.ended {
@@ -1162,12 +1174,14 @@ final class Store {
         // A failed answer gets one second attempt on its own, outside the
         // batch — where the refusal fallback is allowed. After that it waits
         // for Retry.
-        for id in jobs.map(\.id) {
+        // Detached: each is a slow live call, and the pump has other
+        // languages' batches to read in. `regrading` keeps it to one at a time.
+        for id in jobs.map(\.id) where !backgroundOnly {
             guard var job = jobs.first(where: { $0.id == id }),
                   job.state == .done, !job.retried, hasFailures(job) else { continue }
             job.retried = true
             put(job)
-            await gradeMissing(of: job)
+            Task { await gradeMissing(of: job) }
         }
 
         // Done jobs stay a day and a half, so the screen can still say what
@@ -1215,11 +1229,11 @@ final class Store {
         defer { sendingNow.remove(job.id) }
         do {
             guard let body = try body(of: job) else { return }
-            let batch = try await sender.sendNow(
+            let accepted = try await sender.sendNow(
                 job: job.id, body: body,
                 token: UserDefaults.standard.string(forKey: Vault.pushToken),
                 label: label(of: job))
-            submitted(job.id, .success(batch))
+            submitted(job.id, .success(accepted))
             await pump()
         } catch {
             if var now = jobs.first(where: { $0.id == job.id }) {
@@ -1232,9 +1246,10 @@ final class Store {
     /// The uploader's answer, possibly delivered with the app in the
     /// background. Saved before anything else: this is the only record of
     /// which batch the answers became.
-    private func submitted(_ id: UUID, _ result: Result<String, Error>) {
+    private func submitted(_ id: UUID, _ result: Result<Sender.Accepted, Error>) {
         guard var job = jobs.first(where: { $0.id == id }) else { return }
         job.uploading = false
+        noteUpload(id, result)
         // Sent both ways: the second answer is the same batch, or a failure
         // that no longer matters.
         if job.batchID != nil {
@@ -1242,11 +1257,12 @@ final class Store {
             return
         }
         switch result {
-        case .success(let batch):
-            job.batchID = batch
+        case .success(let accepted):
+            job.batchID = accepted.batch
             job.state = .grading
             job.sentAt = .now
-            job.watched = UserDefaults.standard.string(forKey: Vault.pushToken) != nil
+            // What the upload carried, not what has arrived since.
+            job.watched = accepted.watched
             job.error = nil
         case .failure(let error):
             job.error = error.localizedDescription
@@ -1423,7 +1439,34 @@ final class Store {
         now >= switchAt(job)
     }
 
-    enum Direct { case none, pending, ready([Anthropic.BatchResult]) }
+    /// `none`: the worker did not step in, as far as it says. `unknown`: no
+    /// usable answer — offline, limited, a timeout.
+    enum Direct { case none, unknown, pending, ready([Anthropic.BatchResult]) }
+
+    /// How long past the switch a cancelled batch waits for the worker's
+    /// direct results before it is read as it stands.
+    nonisolated static let directGrace: TimeInterval = 15 * 60
+
+    /// Uploads turned down, by job: when the next may go, and how many in a
+    /// row have failed. In memory — a relaunch tries again.
+    private var uploadHolds: [UUID: (next: Date, failures: Int)] = [:]
+
+    private func mayUpload(_ id: UUID) -> Bool {
+        (uploadHolds[id]?.next ?? .distantPast) <= .now
+    }
+
+    /// A malformed or refused request fails the same way every time, so it
+    /// is not sent again this launch. Anything else waits, longer each time,
+    /// so a limit is not spent on retries.
+    private func noteUpload(_ id: UUID, _ result: Result<Sender.Accepted, Error>) {
+        guard case .failure(let error) = result else { uploadHolds[id] = nil; return }
+        let failures = (uploadHolds[id]?.failures ?? 0) + 1
+        var next = Date.now.addingTimeInterval(min(60 * pow(2, Double(failures - 1)), 30 * 60))
+        if case Sender.Failure.rejected(let code, _) = error, code == 400 || code == 403 {
+            next = .distantFuture
+        }
+        uploadHolds[id] = (next, failures)
+    }
 
     /// What the worker graded directly for a batch, if it stepped in.
     private func directResults(_ batchID: String) async -> Direct {
@@ -1433,11 +1476,12 @@ final class Store {
         var request = URLRequest(url: url)
         Worker.authorize(&request)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let code = (response as? HTTPURLResponse)?.statusCode else { return .none }
+              let code = (response as? HTTPURLResponse)?.statusCode else { return .unknown }
         switch code {
         case 200: return .ready(Anthropic.results(from: data))
         case 202: return .pending
-        default: return .none
+        case 404: return .none
+        default: return .unknown
         }
     }
 
@@ -1896,6 +1940,12 @@ final class Store {
     }
 
     /// A lesson the learner asked for: the rule, then the practice behind it.
+    /// Try again, from the lesson's own error.
+    func retryLesson(_ request: LessonRequest) {
+        lessonErrors[request.cacheKey] = nil
+        Task { await load(request) }
+    }
+
     private func load(_ request: LessonRequest) async {
         await loadCore(request)
         guard lessons[request.cacheKey] != nil else { return }
@@ -1913,7 +1963,7 @@ final class Store {
         }
 
         loadingLesson.insert(key)
-        lessonError = nil
+        lessonErrors[key] = nil
         let task = Task { [weak self] in
             guard let self else { return }
             do {
@@ -1921,7 +1971,7 @@ final class Store {
                 if let usage { self.note(usage) }
                 self.shelve([lesson])
             } catch {
-                self.lessonError = error.localizedDescription
+                self.lessonErrors[key] = error.localizedDescription
             }
             self.loadingLesson.remove(key)
             self.coreLoads[key] = nil
@@ -1950,7 +2000,7 @@ final class Store {
                     self.shelve([full])
                 }
             } catch {
-                self.lessonError = error.localizedDescription
+                self.lessonErrors[key] = error.localizedDescription
             }
             self.practiceLoads[key] = nil
         }
