@@ -54,7 +54,7 @@ enum QuizFormat: String, Codable, Hashable, CaseIterable {
 
 /// One question. Loaded from `Curriculum/quiz-<language>.json`, a flat array.
 struct QuizItem: Identifiable, Codable, Hashable {
-    let id: String
+    var id: String
     /// The `Chapter.Entry.id` it tests. Results move that entry.
     var entry: String
     var format: QuizFormat

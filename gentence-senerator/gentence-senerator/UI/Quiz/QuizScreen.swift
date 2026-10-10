@@ -133,13 +133,15 @@ struct QuizScreen: View {
         }
     }
 
-    /// Counts as right, keeps the word away for months, moves on.
+    /// Counts as right, keeps the word away for months, moves on. Through
+    /// `answer`, so endless records it like any other.
     private func knewIt() {
-        if round.answers[index] == nil {
-            round.answer(index, QuizRound.Answer(steps: [true], given: ["knew it"]))
-        }
         store.markKnown(item.entry)
-        next()
+        guard revealed == nil else { next(); return }
+        let card = item.format == .card
+        answer(QuizRound.Answer(steps: [true], given: ["knew it"]))
+        // A card moves on by itself.
+        if !card { next() }
     }
 
     /// The item's own `why`, else the entry it tests.
@@ -149,7 +151,7 @@ struct QuizScreen: View {
 
     // MARK: Flow
 
-    private func isWord(_ item: QuizItem) -> Bool { item.entry.hasPrefix("vocab.") }
+    private func isWord(_ item: QuizItem) -> Bool { item.entry.hasPrefix(VocabWord.entryPrefix) }
 
     /// `3 / 20`; endless: answered and the share right.
     private var counter: String {

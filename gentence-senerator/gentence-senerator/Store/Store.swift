@@ -2417,19 +2417,23 @@ final class Store {
         let key = settings.language.rawValue
         var asked = askedItems[key] ?? []
         let before = asked.count
-        for item in items { asked.insert(String(item.id.split(separator: "~").first ?? "")) }
+        // Only top-ups read this, and they never ask about words.
+        for item in items where !item.entry.hasPrefix(VocabWord.entryPrefix) {
+            asked.insert(String(item.id.split(separator: "~").first ?? ""))
+        }
         guard asked.count != before else { return }
         askedItems[key] = asked
         Vault.save(askedItems, Vault.askedItems)
     }
 
     /// Chapters among `ids` (empty: none) down to their last few unseen tests
-    /// get more, written in the background. One at a time per chapter; a
-    /// failure waits `TopUp.retryAfter`.
+    /// get more, written in the background. One at a time per chapter, and
+    /// two chapters at most at once; a failure waits `TopUp.retryAfter`.
     func topUpIfLow(_ ids: [String]) {
         let asked = askedItems[settings.language.rawValue] ?? []
         let bank = quizItems
         for chapter in book.chapters where ids.contains(chapter.id) && !TopUp.formats(chapter).isEmpty {
+            guard toppingUp.count < Store.topUpsAtOnce else { break }
             guard !toppingUp.contains(chapter.id),
                   Date.now.timeIntervalSince(topUpFailed[chapter.id] ?? .distantPast) > TopUp.retryAfter
             else { continue }
@@ -2440,6 +2444,8 @@ final class Store {
             Task { await topUp(chapter) }
         }
     }
+
+    private static let topUpsAtOnce = 2
 
     private func topUp(_ chapter: Chapter) async {
         let language = settings.language
@@ -2545,9 +2551,14 @@ final class Store {
     func finish(_ round: QuizRound) {
         // Endless rounds were recorded answer by answer.
         guard !round.plan.endless else { return }
-        noteAsked(zip(round.items, round.answers).filter { $0.1 != nil }.map(\.0))
+        let answered = zip(round.items, round.answers).filter { $0.1 != nil }.map(\.0)
+        noteAsked(answered)
         if !round.plan.rules, !VocabDrill.isVocab(round.plan) {
-            topUpIfLow(round.plan.chapters)
+            // No chapter list is every chapter: the ones this round reached.
+            let chapters = round.plan.chapters.isEmpty
+                ? Array(Set(answered.compactMap { book.chapter(of: $0.entry)?.id }))
+                : round.plan.chapters
+            topUpIfLow(chapters)
         }
         quizLog.record(round, planKey: planKey(round.plan))
         Vault.save(quizLog, Vault.quizLog)

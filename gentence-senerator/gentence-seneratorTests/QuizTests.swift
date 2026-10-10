@@ -84,6 +84,25 @@ struct QuizTests {
         #expect(QuizRound.shuffledOptions(flip, using: &rng) == flip)
     }
 
+    /// Other keyboards' apostrophes and a CJK keyboard's full-width forms.
+    @Test func normaliseFoldsQuotesAndWidth() {
+        #expect(QuizRound.normalise("j‘en ai") == QuizRound.normalise("j'en ai"))
+        #expect(QuizRound.normalise("jʼen ai") == "j'en ai")
+        #expect(QuizRound.normalise("３点") == QuizRound.normalise("3点"))
+    }
+
+    /// The copy is the item, whatever fields it grows.
+    @Test func againKeepsEveryField() {
+        let item = QuizItem(id: "x", entry: "e", format: .transform, prompt: "p", gloss: "g",
+                            task: "t", speak: "s", why: "w", accept: ["a"])
+        var round = QuizRound(plan: QuizPlan(id: "p", name: "P", count: 1), items: [item],
+                              started: .now)
+        round.again(0, after: 0)
+        var expected = item
+        expected.id = "x~1"
+        #expect(round.items[1] == expected)
+    }
+
     @Test func missingArraysDecodeEmpty() throws {
         let item = try JSONDecoder().decode(QuizItem.self, from: Data("""
             {"id": "x", "entry": "e", "format": "transform"}

@@ -45,10 +45,7 @@ struct QuizRound: Identifiable, Hashable {
     mutating func again(_ index: Int, after gap: Int) {
         guard items.indices.contains(index) else { return }
         var copy = items[index]
-        copy = QuizItem(id: copy.id + "~\(items.count)", entry: copy.entry, format: copy.format,
-                        prompt: copy.prompt, gloss: copy.gloss, task: copy.task, speak: copy.speak,
-                        why: copy.why, steps: copy.steps, tiles: copy.tiles, decoys: copy.decoys,
-                        accept: copy.accept)
+        copy.id += "~\(items.count)"
         let at = min(index + 1 + gap, items.count)
         items.insert(copy, at: at)
         answers.insert(nil, at: at)
@@ -59,14 +56,7 @@ struct QuizRound: Identifiable, Hashable {
     var isComplete: Bool { !items.isEmpty && answers.allSatisfy { $0 != nil } }
 
     /// Right answers in a row, counting back from the latest.
-    var streak: Int {
-        var n = 0
-        for a in answers.compactMap({ $0 }).reversed() {
-            guard a.right else { break }
-            n += 1
-        }
-        return n
-    }
+    var streak: Int { answers.compactMap { $0?.right }.trailingRun }
 
     func seconds(at now: Date = .now) -> Int {
         max(0, Int((ended ?? now).timeIntervalSince(started)))
@@ -150,7 +140,9 @@ extension QuizRound {
     /// space (none next to CJK), punctuation off. Apostrophes and hyphens stay:
     /// they are part of "j'en" and "donne-le-moi".
     static func normalise(_ s: String) -> String {
-        var t = s.lowercased().replacingOccurrences(of: "’", with: "'")
+        // NFKC folds full-width forms from a CJK keyboard (３点 → 3点).
+        var t = s.precomposedStringWithCompatibilityMapping.lowercased()
+        for quote in ["’", "‘", "ʼ", "`"] { t = t.replacingOccurrences(of: quote, with: "'") }
         t = String(String.UnicodeScalarView(t.unicodeScalars.map {
             $0 == "'" || $0 == "-" || !CharacterSet.punctuationCharacters.contains($0) ? $0 : " "
         }))

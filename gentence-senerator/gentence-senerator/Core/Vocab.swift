@@ -13,7 +13,10 @@ struct VocabWord: Codable, Hashable {
     var skip: Bool?
 
     /// Quiz entry id: per language, so the log needs no prefix.
-    func entry(_ language: Language) -> String { "vocab.\(language.rawValue).\(w)" }
+    func entry(_ language: Language) -> String { "\(Self.entryPrefix)\(language.rawValue).\(w)" }
+
+    /// What every word's entry id starts with.
+    static let entryPrefix = "vocab."
 
     /// The article, if it can be asked as a choice.
     var askableArticle: String? {
@@ -47,23 +50,60 @@ enum VocabDrill {
     static func isVocab(_ plan: QuizPlan) -> Bool { plan.id.hasSuffix(suffix) }
 
     /// Days until a word comes back, by right answers in a row.
-    static let intervals: [Double] = [0, 1, 3, 7, 21, 60]
+    static let intervals = [0, 1, 3, 7, 21, 60]
     /// Days a word marked as known stays away.
-    static let knownInterval: Double = 180
+    static let knownInterval = 180
     /// New words in a round with reviews waiting.
     static let newPerRound = 8
 
-    static func streak(_ s: EntryState) -> Int {
-        var n = 0
-        for right in s.recent.reversed() { guard right else { break }; n += 1 }
-        return n
-    }
-
+    /// Known outranks a miss before it: the learner said so since. Day-aligned,
+    /// as `Progress.Encounter` is — a one-day word answered in the evening is
+    /// due the next morning.
     static func isDue(_ s: EntryState, now: Date) -> Bool {
         guard let seen = s.lastSeen, !s.recent.isEmpty || s.known else { return false }
-        if s.recent.last == false { return true }
-        let days = s.known ? knownInterval : intervals[min(streak(s), intervals.count - 1)]
-        return now.timeIntervalSince(seen) >= days * 86_400
+        if !s.known, s.recent.last == false { return true }
+        let days = s.known ? knownInterval : intervals[min(s.streak, intervals.count - 1)]
+        let calendar = Calendar.current
+        guard let due = calendar.date(byAdding: .day, value: days,
+                                      to: calendar.startOfDay(for: seen)) else { return false }
+        return now >= due
+    }
+
+    /// Due words, missed first, then the longest unseen.
+    static func dueOrder(_ words: [VocabWord], language: Language,
+                         state: (String) -> EntryState, now: Date) -> [VocabWord] {
+        words.filter { isDue(state($0.entry(language)), now: now) }
+            .sorted { a, b in
+                let sa = state(a.entry(language)), sb = state(b.entry(language))
+                let ma = !sa.known && sa.recent.last == false
+                let mb = !sb.known && sb.recent.last == false
+                if ma != mb { return ma }
+                return (sa.lastSeen ?? now) < (sb.lastSeen ?? now)
+            }
+    }
+
+    /// Never-seen words up to `maxBand`, lowest band first, shuffled within it.
+    static func newWords<R: RandomNumberGenerator>(
+        _ words: [VocabWord], language: Language, maxBand: Int,
+        state: (String) -> EntryState, using rng: inout R
+    ) -> [VocabWord] {
+        let fresh = words.filter {
+            let s = state($0.entry(language))
+            return $0.band <= maxBand && s.recent.isEmpty && !s.known
+        }
+        return Dictionary(grouping: fresh, by: \.band).sorted { $0.key < $1.key }
+            .flatMap { $0.value.shuffled(using: &rng) }
+    }
+
+    /// Seen words up to `maxBand`, longest unseen first. Known ones stay away.
+    static func oldestSeen(_ words: [VocabWord], language: Language, maxBand: Int,
+                           state: (String) -> EntryState, excluding taken: Set<String>,
+                           now: Date) -> [VocabWord] {
+        words.filter {
+            let s = state($0.entry(language))
+            return $0.band <= maxBand && !s.recent.isEmpty && !s.known && !taken.contains($0.w)
+        }
+        .sorted { (state($0.entry(language)).lastSeen ?? now) < (state($1.entry(language)).lastSeen ?? now) }
     }
 
     /// Due words first (missed, then most overdue), then new words from the
@@ -74,25 +114,14 @@ enum VocabDrill {
         using rng: inout R
     ) -> QuizRound {
         let usable = words.filter { $0.skip != true && $0.en?.isEmpty == false }
-        let due = usable.filter { isDue(state($0.entry(language)), now: now) }
-            .sorted { a, b in
-                let sa = state(a.entry(language)), sb = state(b.entry(language))
-                if (sa.recent.last == false) != (sb.recent.last == false) { return sa.recent.last == false }
-                return (sa.lastSeen ?? now) < (sb.lastSeen ?? now)
-            }
-        let fresh = usable.filter {
-            let s = state($0.entry(language))
-            return $0.band <= maxBand && s.recent.isEmpty && !s.known
-        }
-        let newWords = Dictionary(grouping: fresh, by: \.band).sorted { $0.key < $1.key }
-            .flatMap { $0.value.shuffled(using: &rng) }
-        var picked = Array(due.prefix(count - min(newPerRound, newWords.count)))
-        picked += newWords.prefix(count - picked.count)
+        let due = dueOrder(usable, language: language, state: state, now: now)
+        let fresh = newWords(usable, language: language, maxBand: maxBand, state: state, using: &rng)
+        var picked = Array(due.prefix(count - min(newPerRound, fresh.count)))
+        picked += fresh.prefix(count - picked.count)
         // Nothing due or new: the oldest-seen words up to the band.
         if picked.count < count {
-            let seen = Set(picked.map(\.w))
-            picked += usable.filter { $0.band <= maxBand && !seen.contains($0.w) }
-                .sorted { (state($0.entry(language)).lastSeen ?? now) < (state($1.entry(language)).lastSeen ?? now) }
+            picked += oldestSeen(usable, language: language, maxBand: maxBand, state: state,
+                                 excluding: Set(picked.map(\.w)), now: now)
                 .prefix(count - picked.count)
         }
         // Word → meaning and meaning → word take turns.
@@ -139,30 +168,16 @@ enum VocabDrill {
         let usable = words.filter {
             $0.skip != true && $0.en?.isEmpty == false && !asked.contains($0.entry(language))
         }
-        var picked = usable.filter { isDue(state($0.entry(language)), now: now) }
-            .sorted { a, b in
-                let sa = state(a.entry(language)), sb = state(b.entry(language))
-                if (sa.recent.last == false) != (sb.recent.last == false) { return sa.recent.last == false }
-                return (sa.lastSeen ?? now) < (sb.lastSeen ?? now)
-            }
-            .prefix(count).map { $0 }
+        var picked = Array(dueOrder(usable, language: language, state: state, now: now).prefix(count))
         if picked.count < count {
-            let fresh = usable.filter {
-                let s = state($0.entry(language))
-                return $0.band <= maxBand && s.recent.isEmpty && !s.known
-            }
-            let newWords = Dictionary(grouping: fresh, by: \.band).sorted { $0.key < $1.key }
-                .flatMap { $0.value.shuffled(using: &rng) }
-            let taken = Set(picked.map(\.w))
-            let old = usable.filter {
-                let s = state($0.entry(language))
-                return $0.band <= maxBand && !s.recent.isEmpty && !s.known && !taken.contains($0.w)
-            }
-            .sorted { (state($0.entry(language)).lastSeen ?? now) < (state($1.entry(language)).lastSeen ?? now) }
+            let fresh = newWords(usable, language: language, maxBand: maxBand, state: state,
+                                 using: &rng)
+            let old = oldestSeen(usable, language: language, maxBand: maxBand, state: state,
+                                 excluding: Set(picked.map(\.w)), now: now)
             var n = 0, o = 0
-            while picked.count < count, n < newWords.count || o < old.count {
-                let wantNew = (picked.count % 3 == 0 && n < newWords.count) || o >= old.count
-                if wantNew { picked.append(newWords[n]); n += 1 } else { picked.append(old[o]); o += 1 }
+            while picked.count < count, n < fresh.count || o < old.count {
+                let wantNew = (picked.count % 3 == 0 && n < fresh.count) || o >= old.count
+                if wantNew { picked.append(fresh[n]); n += 1 } else { picked.append(old[o]); o += 1 }
             }
         }
         return picked.enumerated().map { i, w in

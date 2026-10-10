@@ -76,6 +76,14 @@ struct EntryState: Hashable {
     var recent: [Bool]
     /// Marked as known (vocab): comes back much later.
     var known = false
+
+    /// Right answers in a row, counting back from the latest.
+    var streak: Int { recent.trailingRun }
+}
+
+extension BidirectionalCollection where Element == Bool {
+    /// Trues in a row at the end.
+    var trailingRun: Int { reversed().prefix { $0 }.count }
 }
 
 extension Chapter.Entry {

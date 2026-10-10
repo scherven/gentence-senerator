@@ -36,6 +36,42 @@ struct VocabTests {
         #expect(VocabDrill.isDue(log.state(of: "k"), now: Self.now))
     }
 
+    /// Knew it, after a miss, is the newer word on it.
+    @Test func knownAfterAMissStaysAway() {
+        var log = QuizLog()
+        log.record(entry: "k", right: false, at: Self.now.addingTimeInterval(-86_400))
+        log.markKnown(entry: "k", at: Self.now)
+        #expect(!VocabDrill.isDue(log.state(of: "k"), now: Self.now.addingTimeInterval(86_400)))
+    }
+
+    /// A one-day word answered late in the evening is due the next morning.
+    @Test func intervalsAreWholeDays() {
+        let calendar = Calendar.current
+        let evening = calendar.date(bySettingHour: 21, minute: 0, second: 0, of: Self.now)!
+        let morning = calendar.date(byAdding: .hour, value: 11, to: evening)!
+        var log = QuizLog()
+        log.record(entry: "a", right: true, at: evening)
+        #expect(!VocabDrill.isDue(log.state(of: "a"), now: evening.addingTimeInterval(3600)))
+        #expect(VocabDrill.isDue(log.state(of: "a"), now: morning))
+    }
+
+    /// Nothing due or new: the fill is the oldest seen, never the known.
+    @Test func theFillLeavesKnownWordsAlone() {
+        let few = Array(Self.words.prefix(5))
+        var log = QuizLog()
+        let long = Self.now.addingTimeInterval(-90 * 86_400)
+        log.markKnown(entry: few[0].entry(.german), at: long)
+        for w in few.dropFirst() {
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
+        }
+        var rng = QuizTests.Seeded(state: 1)
+        let round = VocabDrill.round(words: few, language: .german, maxBand: 1,
+                                     state: { log.state(of: $0) }, now: Self.now, using: &rng)
+        #expect(round.items.count == 4)
+        #expect(!round.items.contains { $0.entry == few[0].entry(.german) })
+    }
+
     @Test func missedWordsComeFirstAndNewOnesStayInBand() {
         var log = QuizLog()
         let missed = Self.words[5].entry(.german)
@@ -79,9 +115,9 @@ struct VocabTests {
     /// Endless words: what's due, then new words one in three.
     @Test func endlessWordsMixNewAndOld() {
         var log = QuizLog()
-        let day = 86_400.0
+        // Seen today, so a one-day word is not due yet.
         for w in Self.words.prefix(12) {
-            log.record(entry: w.entry(.german), right: true, at: Self.now.addingTimeInterval(-0.5 * day))
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
         }
         log.record(entry: Self.words[0].entry(.german), right: false, at: Self.now)
         var rng = QuizTests.Seeded(state: 9)
