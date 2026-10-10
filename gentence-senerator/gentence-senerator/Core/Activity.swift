@@ -72,7 +72,7 @@ struct ScoreLog: Codable, Hashable {
 
     @discardableResult
     mutating func add(_ turn: Turn) -> Bool {
-        guard turn.mode != .listen, let score = turn.review?.score else { return false }
+        guard turn.mode.isScored, let score = turn.review?.score else { return false }
         let entry = Entry(day: Spend.key(turn.createdAt), language: turn.language, score: score)
         guard turns[turn.id.uuidString] != entry else { return false }
         turns[turn.id.uuidString] = entry

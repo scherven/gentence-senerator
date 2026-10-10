@@ -9,7 +9,13 @@ final class Store {
 
     // MARK: Persisted
 
-    var settings = Settings() { didSet { Vault.save(settings, Vault.settings) } }
+    var settings = Settings() {
+        didSet {
+            Vault.save(settings, Vault.settings)
+            if oldValue.prefersTyping != settings.prefersTyping
+                || oldValue.offerStretch != settings.offerStretch { rewriteUnstarted() }
+        }
+    }
     private(set) var progress = Progress()
     private(set) var spend = Spend()
     private(set) var past: [Session] = []
@@ -197,7 +203,7 @@ final class Store {
         for session in unfinished { file(session) }
         past.sort { $0.startedAt < $1.startedAt }
         for key in stale.keys { holds[key] = nil }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         Vault.save(holds, Vault.holds)
         // A session left part-way is still worth grading: those answers were
         // given, and nobody is going to finish them now.
@@ -359,8 +365,31 @@ final class Store {
         } else {
             past.append(finished)
         }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         if activity.add(finished) { Vault.save(activity, Vault.activity) }
+    }
+
+    /// The archive as it is on disk: trimmed here too, so History does not
+    /// show more than the next launch will.
+    private func saveArchive() {
+        if past.count > Store.archiveLimit { past.removeFirst(past.count - Store.archiveLimit) }
+        Vault.save(past, Vault.sessions)
+    }
+
+    private static let archiveLimit = 120
+
+    /// The archive plus today's live and held sessions, each once. Today's
+    /// can also be archived; the live or held copy is the newer.
+    private var everySession: [Session] {
+        var sessions = past
+        for live in Mode.allCases.compactMap({ today($0) }) {
+            if let i = sessions.firstIndex(where: { $0.id == live.id }) {
+                sessions[i] = live
+            } else {
+                sessions.append(live)
+            }
+        }
+        return sessions
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
@@ -438,6 +467,23 @@ final class Store {
         next.levelChangedAt = .now
         settings = next
         refreshPlan()
+        rewriteUnstarted()
+    }
+
+    /// Sets written ahead for a level, stretch or way of answering the learner
+    /// has just changed. Unstarted only — anything begun holds answers.
+    private func rewriteUnstarted() {
+        var dropped = false
+        for mode in [Mode.translate, .produce] {
+            let key = Store.holdKey(settings.language, mode)
+            if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
+               held.session.id != session?.id {
+                holds[key] = nil
+                dropped = true
+            }
+        }
+        if dropped { Vault.save(holds, Vault.holds) }
+        Task { await prepareDay() }
     }
 
     /// What the evidence says about the level. Nil is stay — most of the time,
@@ -468,11 +514,11 @@ final class Store {
     private func recentTurns(_ n: Int) -> [Turn] {
         var seen: Set<UUID> = []
         let since = settings.levelChangedAt ?? .distantPast
-        let sessions = past + Mode.allCases.compactMap { today($0) }
-        let turns = sessions
+        let turns = everySession
             .filter { $0.language == settings.language }
             .flatMap(\.turns)
-            .filter { $0.review != nil && $0.createdAt >= since && seen.insert($0.id).inserted }
+            .filter { $0.mode.isScored && $0.review != nil && $0.createdAt >= since
+                && seen.insert($0.id).inserted }
             .sorted { $0.createdAt < $1.createdAt }
         return Array(turns.suffix(n))
     }
@@ -591,7 +637,8 @@ final class Store {
                 else { return }
                 // Started by hand while this was being written: that one owns
                 // the slot, and this set goes unused.
-                guard self.holds[key] == nil, self.session?.id != draft.id else { return }
+                guard self.holds[key] == nil, self.session?.id != draft.id,
+                      draft.level == self.settings.level else { return }
                 var planned = draft
                 planned.planned = prompts
                 // The goal may have moved while this was being written.
@@ -1009,12 +1056,14 @@ final class Store {
             change(&session!.turns[index])
             hold()
         }
+        var archived = false
         for s in past.indices {
             if let t = past[s].turns.firstIndex(where: { $0.id == id }) {
                 change(&past[s].turns[t])
-                Vault.save(Array(past.suffix(120)), Vault.sessions)
+                archived = true
             }
         }
+        if archived { saveArchive() }
         // A reopened session is held and archived at once.
         for key in holds.keys where session?.id != holds[key]?.session.id {
             if let t = holds[key]?.session.turns.firstIndex(where: { $0.id == id }) {
@@ -1124,7 +1173,7 @@ final class Store {
         // Done jobs stay a day and a half, so the screen can still say what
         // came back.
         let cutoff = Date.now.addingTimeInterval(-36 * 3600)
-        jobs.removeAll { $0.state == .done && $0.createdAt < cutoff }
+        jobs.removeAll { $0.state == .done && ($0.returnedAt ?? $0.createdAt) < cutoff }
         saveJobs()
     }
 
@@ -1723,7 +1772,12 @@ final class Store {
         )
         let review = read(of: passage, run: live)
         turn.review = review
-        record(for: turn, review: review)
+        // A missed gist question is a whole line, and only hearing it again
+        // tests it — the shelf brings the dialogue back. Woven into a written
+        // sentence it could never come back wrong. Tapped words schedule.
+        var schedulable = review
+        schedulable.atoms.removeAll { $0.kind == .comprehension }
+        record(for: turn, review: schedulable)
 
         // A second dialogue the same day joins that day's listen session
         // rather than filing another under the same id.
@@ -1741,7 +1795,7 @@ final class Store {
         if let i = past.lastIndex(where: { $0.id == id }) {
             past[i].goal = max(listenGoal, past[i].turns.count)
         }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         savePassage()
         session = nil
         current = turn
@@ -2164,7 +2218,7 @@ final class Store {
     func textbook(scope: Textbook.Scope, search: String = "") -> [Textbook.Section] {
         let language = settings.language
         let pack = LanguagePacks.pack(for: language)
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.assemble(
             language: language, kinds: pack.kinds, points: pack.points,
             noted: Textbook.noted(in: sessions, language: language),
@@ -2586,7 +2640,7 @@ final class Store {
 
     /// The learner's own sentences where this point was noted, newest first.
     func noted(point: String) -> [Textbook.Noted] {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.noted(in: sessions, language: settings.language)
             .filter { $0.atom.seed.pointID == point }
             .sorted { $0.at > $1.at }
@@ -2594,7 +2648,7 @@ final class Store {
 
     /// The learner's own sentences that used this point, newest first.
     func uses(point: String) -> [Textbook.Use] {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.uses(of: point, in: sessions, language: settings.language)
     }
 
@@ -2745,7 +2799,7 @@ final class Store {
     /// A recurring point's lesson. The latest finding it came from when one
     /// is still archived, so the lesson keeps its sentence; else its subject.
     func open(_ encounter: Progress.Encounter) {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         let atom = sessions.sorted { $0.startedAt > $1.startedAt }.lazy
             .flatMap(\.turns)
             .compactMap { $0.review?.atoms.first { $0.id == encounter.atomID } }
