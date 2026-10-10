@@ -16,9 +16,14 @@ struct BookDataTests {
         #expect(book.chapters.count >= 12)
         #expect(book.drills.count == 4)
 
-        let url = try #require(Self.bundle.url(forResource: "quiz-\(language.rawValue)",
-                                               withExtension: "json"))
-        let raw = try #require(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [Any])
-        #expect(library.items(for: language).count == raw.count)
+        // Every written and generated item survives loading.
+        var shipped = 0
+        for kind in ["quiz", "gen"] {
+            let url = try #require(Self.bundle.url(forResource: "\(kind)-\(language.rawValue)",
+                                                   withExtension: "json"))
+            let raw = try #require(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [Any])
+            shipped += raw.count
+        }
+        #expect(library.items(for: language).count == shipped)
     }
 }
