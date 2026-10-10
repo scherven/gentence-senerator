@@ -146,6 +146,7 @@ enum Vault {
     static let endlessMixes = "quiz.endless.v1" // last endless mix, per language
     static let topUps = "quiz.topups.v1" // items the model wrote, per language
     static let askedItems = "quiz.asked.v1" // item ids answered at least once, per language
+    static let conceptEdits = "words.edits.v1" // the learner's own word for a meaning, by concept and language
     static let activity = "activity.v1" // what was done each day, for History
     static let scores = "scores.v1" // every graded answer's score, for History averages
 }

@@ -2428,7 +2428,32 @@ final class Store {
         }
     }
 
-    var concepts: [Concept] { books.concepts() }
+    /// The shipped rows with the learner's own words in.
+    var concepts: [Concept] { books.concepts().map(edited) }
+
+    /// Concept id → language → the word the learner typed over the list's.
+    private(set) var conceptEdits: [String: [String: String]] =
+        Vault.load([String: [String: String]].self, Vault.conceptEdits) ?? [:]
+
+    private func edited(_ concept: Concept) -> Concept {
+        var out = concept
+        for (code, word) in conceptEdits[concept.id] ?? [:] {
+            if let language = Language(rawValue: code) { out = out.with(language, word) }
+        }
+        return out
+    }
+
+    /// Retypes one side of a meaning; empty puts the list's word back. The
+    /// new word has its own schedule, as any word does.
+    func retype(_ concept: Concept, _ language: Language, _ word: String) -> Concept {
+        let typed = word.trimmingCharacters(in: .whitespacesAndNewlines)
+        let original = books.concepts().first { $0.id == concept.id }?.word(language)
+        var edits = conceptEdits[concept.id] ?? [:]
+        edits[language.rawValue] = typed.isEmpty || typed == original ? nil : typed
+        conceptEdits[concept.id] = edits.isEmpty ? nil : edits
+        Vault.save(conceptEdits, Vault.conceptEdits)
+        return concept.with(language, edits[language.rawValue] ?? original ?? typed)
+    }
 
     var conceptsDue: Int { ConceptDeck.dueCount(concepts) { self.quizLog.state(of: $0) } }
 

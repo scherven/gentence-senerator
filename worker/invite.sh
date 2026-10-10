@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 kv() { npx wrangler kv key "$@" --binding STATE --remote; }
 
-npx wrangler whoami 2>/dev/null | grep "You are logged in" >/dev/null || npx wrangler login
+# npx wrangler whoami 2>/dev/null | grep "You are logged in" >/dev/null || npx wrangler login
 
 case "${1:-}" in
   new)

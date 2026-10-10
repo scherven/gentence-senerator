@@ -18,6 +18,12 @@ struct Concept: Codable, Hashable, Identifiable {
         case .mandarin: return zh
         }
     }
+
+    /// The same meaning with one language's word swapped.
+    func with(_ language: Language, _ word: String) -> Concept {
+        Concept(en: en, de: language == .german ? word : de, fr: language == .french ? word : fr,
+                zh: language == .mandarin ? word : zh)
+    }
 }
 
 /// The ALL LANGUAGES deck. The front turns DE → FR → 中文 → EN card by card.

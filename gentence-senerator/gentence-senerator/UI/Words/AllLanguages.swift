@@ -2,7 +2,8 @@ import SwiftUI
 
 /// The ALL LANGUAGES deck: one meaning, four sides. Tap to show the next
 /// side; once all are up, ✗ or ✓ on each language, and the card moves on.
-/// Twenty cards, or none at the end with ∞.
+/// No end: STOP shows the tally. Holding a word retypes it, for
+/// when the list paired the wrong one.
 struct AllLanguagesScreen: View {
     let store: Store
 
@@ -13,15 +14,17 @@ struct AllLanguagesScreen: View {
     @State private var turnBase = Int.random(in: 0..<ConceptDeck.fronts.count)
     @State private var shown = 1
     @State private var marks: [Language: Bool] = [:]
-    @State private var endless = false
     @State private var finished = false
     /// Per language: right, marked.
     @State private var tally: [Language: (right: Int, total: Int)] = [:]
-
-    static let roundSize = 20
+    /// The side being retyped, and what is typed so far.
+    @State private var editing: Language?
+    @State private var draft = ""
+    @FocusState private var typing: Bool
 
     var body: some View {
         Group {
+            // Past the last card only when the deck ran dry.
             if finished || (index >= cards.count && !cards.isEmpty) {
                 summary
             } else if cards.isEmpty {
@@ -35,7 +38,7 @@ struct AllLanguagesScreen: View {
             }
         }
         .paper()
-        .onAppear { if cards.isEmpty { cards = store.nextConcepts(asked: [], count: Self.roundSize) } }
+        .onAppear { if cards.isEmpty { cards = store.nextConcepts(asked: [], count: 12) } }
     }
 
     private var concept: Concept { cards[index] }
@@ -48,29 +51,23 @@ struct AllLanguagesScreen: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Button { stop() } label: {
-                    Text(endless ? "STOP" : "✕").font(Theme.F.mono(endless ? 12 : 16, bold: endless))
+                    Text("STOP").font(Theme.F.mono(12, bold: true))
                         .frame(minWidth: 44, minHeight: 44, alignment: .leading)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(PressDim())
-                .accessibilityLabel(endless ? "Stop" : "Quit")
+                .accessibilityLabel("Stop")
                 Spacer()
-                Text(endless ? "\(index)" : "\(index + 1) / \(cards.count)").font(Theme.F.mono(13))
+                Text("\(index)").font(Theme.F.mono(13))
                 Spacer()
-                Button { endless = true } label: {
-                    Text("∞").font(Theme.F.mono(16, bold: true))
-                        .foregroundStyle(endless ? Theme.C.accent : Theme.C.ink)
-                        .frame(width: 44, height: 44, alignment: .trailing)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(PressDim())
-                .disabled(endless)
-                .accessibilityLabel("Keep going without an end")
+                // Balances STOP so the count sits centred.
+                Color.clear.frame(width: 44, height: 44)
             }
             .foregroundStyle(Theme.C.ink)
             card
             Spacer(minLength: 0)
-            Text(allShown ? "MARK EACH" : "TAP · SAY IT FIRST")
+            Text(editing != nil ? "RETURN TO KEEP · EMPTY PUTS IT BACK"
+                 : allShown ? "MARK EACH · HOLD A WORD TO RETYPE" : "TAP · SAY IT FIRST")
                 .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 8)
@@ -84,6 +81,7 @@ struct AllLanguagesScreen: View {
     }
 
     private func reveal() {
+        if editing != nil { commit(); return }
         guard !allShown else { return }
         withAnimation(.easeOut(duration: 0.12)) { shown += 1 }
     }
@@ -115,11 +113,24 @@ struct AllLanguagesScreen: View {
                     switch face {
                     case .en:
                         Text(concept.en).font(Theme.F.serif(20, italic: true)).foregroundStyle(Theme.C.ink2)
+                    case .language(let language) where editing == language:
+                        TextField("", text: $draft)
+                            .font(Theme.F.target(size: 24, bold: true, for: language))
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .submitLabel(.done)
+                            .focused($typing)
+                            .onSubmit { commit() }
+                            .overlay(alignment: .bottom) {
+                                Rectangle().fill(Theme.C.accent).frame(height: 1.5).offset(y: 4)
+                            }
                     case .language(let language):
                         let word = store.vocabWord(concept.word(language), in: language)
                         Text(word?.shown(language) ?? concept.word(language))
                             .font(Theme.F.target(size: 24, bold: true, for: language))
                             .minimumScaleFactor(0.5).lineLimit(2)
+                            .onLongPressGesture { retype(language) }
+                            .accessibilityAction(named: "Retype") { retype(language) }
                         if let py = word?.py {
                             Text(py).font(Theme.F.mono(12)).foregroundStyle(Theme.C.carbon)
                         }
@@ -133,6 +144,19 @@ struct AllLanguagesScreen: View {
         }
         .padding(.horizontal, 12)
         .frame(minHeight: 76)
+    }
+
+    private func retype(_ language: Language) {
+        draft = concept.word(language)
+        editing = language
+        typing = true
+    }
+
+    private func commit() {
+        guard let language = editing else { return }
+        cards[index] = store.retype(concept, language, draft)
+        editing = nil
+        typing = false
     }
 
     private func label(_ face: ConceptDeck.Face) -> String {
@@ -175,6 +199,7 @@ struct AllLanguagesScreen: View {
     // MARK: Flow
 
     private func mark(_ language: Language, _ right: Bool) {
+        commit()
         marks[language] = right
         guard marks.count == ConceptDeck.ring.count else { return }
         let done = concept
@@ -194,7 +219,7 @@ struct AllLanguagesScreen: View {
     private func advance() {
         marks = [:]
         shown = 1
-        if endless, index + 3 >= cards.count {
+        if index + 3 >= cards.count {
             cards += store.nextConcepts(asked: Set(cards.map(\.id)), count: 10)
         }
         index += 1
@@ -233,12 +258,11 @@ struct AllLanguagesScreen: View {
     }
 
     private func again() {
-        cards = store.nextConcepts(asked: [], count: Self.roundSize)
+        cards = store.nextConcepts(asked: [], count: 12)
         index = 0
         shown = 1
         marks = [:]
         tally = [:]
-        endless = false
         finished = false
         turnBase = Int.random(in: 0..<ConceptDeck.fronts.count)
     }

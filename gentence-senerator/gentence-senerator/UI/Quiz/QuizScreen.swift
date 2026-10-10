@@ -5,7 +5,7 @@ import SwiftUI
 /// screen dismisses itself first.
 struct QuizScreen: View {
     let store: Store
-    /// What was started. ∞ on a words round swaps in an endless plan.
+    /// What was started. A words round is always endless.
     @State private var plan: QuizPlan
     /// Chapter id, entry id.
     var openEntry: ((String, String) -> Void)?
@@ -20,6 +20,7 @@ struct QuizScreen: View {
 
     init(store: Store, plan: QuizPlan, openEntry: ((String, String) -> Void)? = nil) {
         self.store = store
+        let plan = VocabDrill.isVocab(plan) ? store.endlessPlan(QuizPlan.Mix(words: true)) : plan
         _plan = State(initialValue: plan)
         self.openEntry = openEntry
         let r = store.round(for: plan)
@@ -72,19 +73,9 @@ struct QuizScreen: View {
                 Spacer()
                 Text(counter).font(Theme.F.mono(13))
                 Spacer()
-                if VocabDrill.isVocab(plan) {
-                    Button { goEndless() } label: {
-                        Text("∞").font(Theme.F.mono(16, bold: true))
-                            .frame(width: 44, height: 44, alignment: .trailing)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(PressDim())
-                    .accessibilityLabel("Keep going without an end")
-                } else {
-                    Text("×\(round.streak)").font(Theme.F.mono(13))
-                        .foregroundStyle(Theme.C.accent)
-                        .frame(width: 44, alignment: .trailing)
-                }
+                Text("×\(round.streak)").font(Theme.F.mono(13))
+                    .foregroundStyle(Theme.C.accent)
+                    .frame(width: 44, alignment: .trailing)
             }
             .foregroundStyle(Theme.C.ink)
             ribbon
@@ -212,22 +203,6 @@ struct QuizScreen: View {
         if plan.endless, round.answered > 0 { finished = true; return }
         if round.answered > 0, !finished { store.finish(round) }
         dismiss()
-    }
-
-    /// ∞ on a words round: what's answered is recorded, the rest carries on
-    /// with no end.
-    private func goEndless() {
-        guard !plan.endless else { return }
-        for (item, answer) in zip(round.items, round.answers) {
-            if let answer { store.recordEndless(item, answer) }
-        }
-        plan = store.endlessPlan(QuizPlan.Mix(words: true))
-        let rest = min(revealed == nil ? index : index + 1, round.items.count)
-        var next = QuizRound(plan: plan, items: Array(round.items[rest...]))
-        next.append(store.more(for: plan, after: next))
-        round = next
-        index = 0
-        shownAt = .now
     }
 
     private func again() {
