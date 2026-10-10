@@ -6,10 +6,11 @@
 // direct results go to `res:` in the batch results-file format, and the app
 // asks /results for them before reading a cancelled batch.
 //
-// One KV key per watched batch, `watch:<id>`. A single shared list was
-// read-modify-written by both /watch and the cron, so a batch registered
-// while another was being cleared could be dropped and never notify — with
-// two languages out at once that is exactly the case that happens.
+// One KV key per submitted batch, `watch:<id>`, with a push token or not: the
+// direct fallback needs every batch. A single shared list was
+// read-modify-written by both /watch and the cron, so a batch registered while
+// another was being cleared could be dropped and never notify — with two
+// languages out at once that is exactly the case that happens.
 // The cron runs every two minutes because listing keys is capped at 1,000 a
 // day on the free tier.
 //
@@ -18,13 +19,20 @@
 // keys and forwards. Deleting the KV key revokes the code within a minute.
 
 const WATCH = "watch:";
-// The batch a job became, so a resent job returns it instead of paying twice.
+// The batch a job became, so a resent job returns it instead of paying twice;
+// {"claim","at"} while a request is making it.
 const JOB = "job:";
+// A claim older than this belongs to a request that died before its batch.
+const CLAIM_MS = 60 * 1000;
 const APNS_JWT = "apns-jwt";
 // A batch's requests, kept so it can be graded directly if it stalls.
 const REQ = "req:";
-// Direct results, JSONL like a batch results file, or {"pending":true}.
+// Direct results, JSONL like a batch results file, or {"pending":true,"at"}.
 const RES = "res:";
+// A direct grading not finished in this long died with its run (cron runs
+// get 15 minutes); the next poll takes it over, up to TRIES times in all.
+const LEASE_MS = 16 * 60 * 1000;
+const TRIES = 3;
 // The app shows a countdown to this, from when it sent the batch.
 const DIRECT_AFTER_MS = 20 * 60 * 1000;
 // A batch that has not ended in this long has expired on Anthropic's side
@@ -39,10 +47,8 @@ const BETA = "server-side-fallback-2026-07-01";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname === "/health") {
-      const { keys } = await env.STATE.list({ prefix: WATCH });
-      return Response.json({ watching: keys.length });
-    }
+    // No KV list here: lists are capped at 1,000 a day and the cron needs 720.
+    if (url.pathname === "/health") return Response.json({ ok: true });
     const who = await admit(request, env);
     if (who instanceof Response) return who;
     console.log(`${who.name} ${request.method} ${url.pathname}`);
@@ -65,12 +71,32 @@ export default {
       const label = request.headers.get("x-label") || null;
       const sandbox = request.headers.get("x-sandbox") !== "0";
 
-      const existing = await env.STATE.get(JOB + job);
-      if (existing) return Response.json({ batch: existing, resent: true });
-
+      // The app sends a job twice on purpose (Send now beside the background
+      // upload), so the job is claimed before the batch is made: KV has no
+      // compare-and-set, but write, pause, re-read leaves one claim standing.
+      // A request that loses waits for the winner's batch, else 409, which
+      // the app retries later. The body is read first so nothing slow sits
+      // between the check and the claim. A corrupt body is 400, which the app
+      // does not resend.
       const body = await request.text();
-      const bad = (JSON.parse(body).requests || []).find((r) => !allowed(r.params));
-      if (bad) return new Response("model or max_tokens", { status: 403 });
+      let requests;
+      try { requests = JSON.parse(body).requests; } catch { return new Response("json", { status: 400 }); }
+      if (!Array.isArray(requests)) return new Response("requests", { status: 400 });
+      if (requests.find((r) => !allowed(r?.params))) return new Response("model or max_tokens", { status: 403 });
+
+      const key = JOB + job;
+      let held = await settled(env, key);
+      if (held === undefined) return new Response("in progress", { status: 409 });
+      if (held) return resent(env, held, token);
+
+      const claim = crypto.randomUUID();
+      await env.STATE.put(key, JSON.stringify({ claim, at: Date.now() }), { expirationTtl: 3 * 24 * 3600 });
+      await sleep(1000);
+      if (!(await env.STATE.get(key))?.includes(claim)) {
+        held = await settled(env, key);
+        if (held) return resent(env, held, token);
+        return new Response("in progress", { status: 409 });
+      }
       const created = await fetch("https://api.anthropic.com/v1/messages/batches", {
         method: "POST",
         headers: {
@@ -81,16 +107,18 @@ export default {
         body,
       });
       const text = await created.text();
-      if (!created.ok) return new Response(text, { status: created.status });
-      const batch = JSON.parse(text).id;
-
-      await env.STATE.put(JOB + job, batch, { expirationTtl: 3 * 24 * 3600 });
-      await env.STATE.put(REQ + batch, body, { expirationTtl: 2 * 24 * 3600 });
-      if (token) {
-        await env.STATE.put(WATCH + batch,
-          JSON.stringify({ batch, token, label, sandbox, job, since: Date.now() }),
-          { expirationTtl: GIVE_UP_MS / 1000 });
+      if (!created.ok) {
+        if ((await env.STATE.get(key))?.includes(claim)) await env.STATE.delete(key);
+        return new Response(text, { status: created.status });
       }
+      const batch = JSON.parse(text).id;
+      const sent = Date.now();
+
+      await env.STATE.put(REQ + batch, body, { expirationTtl: 2 * 24 * 3600 });
+      await env.STATE.put(WATCH + batch,
+        JSON.stringify({ batch, token, label, sandbox, job, sent }), keep(sent));
+      // Last, so a request waiting on the claim finds the watch in place.
+      await env.STATE.put(key, batch, { expirationTtl: 3 * 24 * 3600 });
       return Response.json({ batch, watched: !!token });
     }
     if (request.method === "POST" && url.pathname === "/watch") {
@@ -98,12 +126,21 @@ export default {
       // languages can be out at once and "1 graded" alone says neither.
       // `job` is optional: the app's late /watch doesn't send it, and the push
       // falls back to the batch id.
-      const { batch, token, label, sandbox, job } = await request.json();
+      // The batch is usually tracked already, from /submit: keep its sent
+      // time and any direct-grading claim, add the token.
+      let given;
+      try { given = await request.json(); } catch { return new Response("json", { status: 400 }); }
+      const { batch, token, label, sandbox, job } = given;
       if (!batch || !token) return new Response("batch and token", { status: 400 });
+      const prior = await env.STATE.get(WATCH + batch, "json");
+      if (!prior && final(await env.STATE.get(RES + batch))) {
+        return Response.json({ watching: batch }); // already graded directly; nothing to wait for
+      }
+      const sent = prior?.sent ?? prior?.since ?? Date.now();
       await env.STATE.put(WATCH + batch,
-                          JSON.stringify({ batch, token, label, sandbox: sandbox !== false,
-                                           job: job || null, since: Date.now() }),
-                          { expirationTtl: GIVE_UP_MS / 1000 });
+                          JSON.stringify({ ...prior, batch, token, label: label ?? prior?.label ?? null,
+                                           sandbox: sandbox !== false, job: job || prior?.job || null, sent }),
+                          keep(sent));
       return Response.json({ watching: batch });
     }
     // What the worker graded directly for a batch: 404 if it didn't step in,
@@ -113,7 +150,13 @@ export default {
       if (!batch) return new Response("batch", { status: 400 });
       const stored = await env.STATE.get(RES + batch);
       if (!stored) return new Response("none", { status: 404 });
-      if (stored.startsWith('{"pending"')) return new Response("grading", { status: 202 });
+      if (!final(stored)) {
+        // A claim nobody has renewed past its lease is abandoned: say so, and
+        // the app reads the cancelled batch as it stands.
+        const { at } = JSON.parse(stored);
+        if (!at || Date.now() - at > LEASE_MS + 5 * 60 * 1000) return new Response("none", { status: 404 });
+        return new Response("grading", { status: 202 });
+      }
       return new Response(stored, { headers: { "content-type": "application/x-ndjson" } });
     }
     return new Response("not found", { status: 404 });
@@ -190,31 +233,56 @@ async function azure(request, env, url) {
 async function poll(env) {
   const { keys } = await env.STATE.list({ prefix: WATCH });
   for (const { name } of keys) {
-    // Listing can lag a delete; a key already gone was already pushed.
-    const w = await env.STATE.get(name, "json");
-    if (!w) continue;
-    if (w.direct) continue; // being graded directly by an earlier run
-    const batch = await retrieve(env, w.batch);
-    if (!batch) continue;
-    if (batch.processing_status === "ended") {
-      await env.STATE.delete(name);
-      await push(env, w, countsOf(batch), batch.id);
-      continue;
-    }
-    if (Date.now() - w.since < DIRECT_AFTER_MS) continue;
-    const body = await env.STATE.get(REQ + w.batch);
-    if (!body) continue; // sent before requests were kept: wait it out
-    await gradeDirectly(env, name, w, JSON.parse(body).requests);
+    // One bad batch must not stop the rest; it is tried again next run.
+    try { await check(env, name); } catch (e) { console.log(`${name}: ${e?.stack || e}`); }
   }
 }
 
-// Claims the watch, cancels the batch, grades every request with an ordinary
-// call, stores the results and pushes. A failed call is stored as an error,
-// which the app retries once on its own, as it does for a batch.
+async function check(env, name) {
+  // Listing can lag a delete; a key already gone was already pushed.
+  const w = await env.STATE.get(name, "json");
+  if (!w) return;
+  if (w.direct) {
+    // `true` is a claim from before leases: one that never finished.
+    if (typeof w.direct === "number" && Date.now() - w.direct < LEASE_MS) return;
+    // The run that claimed it died. If it stored its results, only the push is left.
+    const stored = await env.STATE.get(RES + w.batch);
+    if (final(stored)) return finish(env, name, w, countsOfLines(stored), w.batch);
+  }
+  const batch = await retrieve(env, w.batch);
+  if (!batch) return;
+  if (w.direct) {
+    const body = await env.STATE.get(REQ + w.batch);
+    if ((w.tries || 1) < TRIES && body) return gradeDirectly(env, name, w, JSON.parse(body).requests);
+    // Give up: no direct results, so the app reads the cancelled batch.
+    await env.STATE.delete(RES + w.batch);
+    return finish(env, name, w, countsOf(batch), batch.id);
+  }
+  if (batch.processing_status === "ended") return finish(env, name, w, countsOf(batch), batch.id);
+  // The clock runs from when the batch was made, whatever /watch said.
+  const sent = Math.min(w.sent ?? w.since ?? Infinity, Date.parse(batch.created_at) || Infinity);
+  if (Date.now() - sent < DIRECT_AFTER_MS) return;
+  const body = await env.STATE.get(REQ + w.batch);
+  if (!body) return; // sent before requests were kept: wait it out
+  await gradeDirectly(env, name, w, JSON.parse(body).requests);
+}
+
+// Pushes if the app gave a token, re-read in case /watch added it mid-run,
+// then forgets the batch. A push that throws leaves the key for next run.
+async function finish(env, name, w, counts, batchID) {
+  const now = (await env.STATE.get(name, "json")) || w;
+  if (now.token) await push(env, now, counts, batchID);
+  await env.STATE.delete(name);
+}
+
+// Claims the watch for LEASE_MS, cancels the batch, grades every request with
+// an ordinary call, stores the results and pushes. A failed call is stored as
+// an error, which the app retries once on its own, as it does for a batch.
 async function gradeDirectly(env, name, w, requests) {
-  await env.STATE.put(name, JSON.stringify({ ...w, direct: true }),
-                      { expirationTtl: GIVE_UP_MS / 1000 });
-  await env.STATE.put(RES + w.batch, '{"pending":true}', { expirationTtl: 3 * 24 * 3600 });
+  const at = Date.now();
+  const sent = w.sent ?? w.since ?? at;
+  await env.STATE.put(name, JSON.stringify({ ...w, sent, direct: at, tries: (w.tries || 0) + 1 }), keep(sent));
+  await env.STATE.put(RES + w.batch, JSON.stringify({ pending: true, at }), { expirationTtl: 3 * 24 * 3600 });
   await fetch(`https://api.anthropic.com/v1/messages/batches/${w.batch}/cancel`, {
     method: "POST",
     headers: { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01" },
@@ -241,11 +309,53 @@ async function gradeDirectly(env, name, w, requests) {
     }
   }));
 
-  await env.STATE.put(RES + w.batch, lines.map((l) => JSON.stringify(l)).join("\n"),
-                      { expirationTtl: 3 * 24 * 3600 });
-  await env.STATE.delete(name);
-  const succeeded = lines.filter((l) => l.result.type === "succeeded").length;
-  await push(env, w, { succeeded, failed: lines.length - succeeded }, w.batch);
+  const stored = lines.map((l) => JSON.stringify(l)).join("\n");
+  await env.STATE.put(RES + w.batch, stored, { expirationTtl: 3 * 24 * 3600 });
+  await finish(env, name, w, countsOfLines(stored), w.batch);
+}
+
+// Direct results stored, not a pending claim.
+function final(stored) {
+  return !!stored && !stored.startsWith('{"pending"');
+}
+
+function countsOfLines(stored) {
+  const lines = stored.split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  const succeeded = lines.filter((l) => l.result?.type === "succeeded").length;
+  return { succeeded, failed: lines.length - succeeded };
+}
+
+// A watch lives until its batch has expired on Anthropic's side, counted from
+// when it was sent, not from the last write.
+function keep(sent) {
+  const now = Math.floor(Date.now() / 1000);
+  return { expiration: Math.max(Math.floor((sent + GIVE_UP_MS) / 1000), now + 60) };
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// The batch a job already became, waiting out a claim another request holds.
+// Null when nothing holds the job (or its claim is stale), undefined when the
+// claim is still live after the wait.
+async function settled(env, key) {
+  for (let i = 0; ; i++) {
+    const v = await env.STATE.get(key);
+    if (!v) return null;
+    if (!v.startsWith("{")) return v;
+    if (Date.now() - (JSON.parse(v).at || 0) > CLAIM_MS) return null;
+    if (i === 20) return undefined;
+    await sleep(1000);
+  }
+}
+
+// A resent job's batch. A token the first upload lacked is added here, and
+// `watched` says whether a push is coming, so the app skips /watch.
+async function resent(env, batch, token) {
+  const w = await env.STATE.get(WATCH + batch, "json");
+  if (w && token && !w.token) {
+    await env.STATE.put(WATCH + batch, JSON.stringify({ ...w, token }), keep(w.sent ?? w.since ?? Date.now()));
+  }
+  return Response.json({ batch, resent: true, watched: !!(w && (w.token || token)) });
 }
 
 function countsOf(batch) {
