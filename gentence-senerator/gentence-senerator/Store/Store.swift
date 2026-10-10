@@ -153,12 +153,12 @@ final class Store {
         }
         progress = Vault.load(Progress.self, Vault.progress) ?? Progress()
         spend = Vault.load(Spend.self, Vault.spend) ?? Spend()
-        past = Vault.load([Session].self, Vault.sessions) ?? []
-        bank = Vault.load([BankEntry].self, Vault.bank) ?? []
-        holds = Vault.load([String: Unfinished].self, Vault.holds) ?? [:]
-        passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
-        draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
-        jobs = Vault.load([GradingJob].self, Vault.grading) ?? []
+        past = Vault.loadList(Session.self, Vault.sessions) ?? []
+        bank = Vault.loadList(BankEntry.self, Vault.bank) ?? []
+        holds = Vault.loadMap(Unfinished.self, Vault.holds) ?? [:]
+        passageState = Vault.loadMap(PassageState.self, Vault.passages) ?? [:]
+        draws = Vault.loadMap(DayDraw.self, Vault.plan) ?? [:]
+        jobs = Vault.loadList(GradingJob.self, Vault.grading) ?? []
         landed = Vault.load([String: String].self, Vault.landed) ?? [:]
         if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
             lessons = shelf.lessons
@@ -1469,8 +1469,10 @@ final class Store {
             }
         }
 
+        let woven = Set(turn.prompt.revisited.map { $0.lowercased() })
         for atom in review.problems {
-            progress.saw(atom, language: turn.language)
+            progress.saw(atom, language: turn.language,
+                         woven: woven.contains(atom.seed.subject.lowercased()))
         }
         save()
     }

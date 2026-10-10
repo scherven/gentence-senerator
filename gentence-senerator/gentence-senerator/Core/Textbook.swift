@@ -337,14 +337,8 @@ enum Textbook {
 
     /// Session ids start `yyyy-MM-dd`.
     private static func date(of session: Session) -> Date {
-        day.date(from: String(session.id.prefix(10))) ?? .distantPast
+        Spend.date(String(session.id.prefix(10))) ?? .distantPast
     }
-
-    private static let day: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
 }
 
 /// The ask reply as the model writes it: the answer, and for each link the

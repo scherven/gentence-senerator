@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 struct Settings: Codable, Hashable {
     var language: Language = .mandarin
@@ -72,10 +73,40 @@ struct Spend: Codable, Hashable {
 
     func today(_ day: Date = .now) -> Day { days[Spend.key(day)] ?? Day() }
 
-    static func key(_ date: Date) -> String {
+    static func key(_ date: Date) -> String { dayFormat.string(from: date) }
+
+    /// The day a key names, at local midnight.
+    static func date(_ key: String) -> Date? { dayFormat.date(from: key) }
+
+    /// Gregorian and POSIX whatever the device is set to: keys are compared as
+    /// strings, so a Buddhist-calendar year would sort every hold as future.
+    /// One instance — this runs in loops.
+    private static let dayFormat: DateFormatter = {
         let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.calendar = Calendar(identifier: .gregorian)
+        f.timeZone = .current
         f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: date)
+        return f
+    }()
+}
+
+/// Tolerant of every key, for the same reason as `Spend.Day`: the synthesised
+/// decoder demands each one, and a missing key would reset every setting.
+extension Settings {
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = Settings()
+        language = try c.decodeIfPresent(Language.self, forKey: .language) ?? d.language
+        mode = try c.decodeIfPresent(Mode.self, forKey: .mode) ?? d.mode
+        level = try c.decodeIfPresent(Int.self, forKey: .level) ?? d.level
+        levelChangedAt = try c.decodeIfPresent(Date.self, forKey: .levelChangedAt)
+        dailyGoal = try c.decodeIfPresent(Int.self, forKey: .dailyGoal) ?? d.dailyGoal
+        prefersTyping = try c.decodeIfPresent(Bool.self, forKey: .prefersTyping) ?? d.prefersTyping
+        showPhonetics = try c.decodeIfPresent(Bool.self, forKey: .showPhonetics) ?? d.showPhonetics
+        turnsBeforeReview = try c.decodeIfPresent(Int.self, forKey: .turnsBeforeReview)
+            ?? d.turnsBeforeReview
+        offerStretch = try c.decodeIfPresent(Bool.self, forKey: .offerStretch) ?? d.offerStretch
     }
 }
 
@@ -101,10 +132,50 @@ extension Spend.Day {
 
 /// Typed JSON in UserDefaults. Small enough to stay there; if sessions ever
 /// outgrow it, only this file changes.
+///
+/// A blob that fails to decode is copied aside before anything can save over
+/// it, and lists decode element by element, so one bad session costs that
+/// session rather than the archive.
 enum Vault {
+    private static let log = Logger(subsystem: "gentence-senerator", category: "vault")
+
     static func load<T: Decodable>(_ type: T.Type, _ key: String) -> T? {
         guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            log.error("\(key, privacy: .public) failed to decode: \(error, privacy: .public)")
+            keepAside(data, key)
+            return nil
+        }
+    }
+
+    /// Drops what fails instead of failing whole.
+    static func loadList<E: Decodable>(_ type: E.Type, _ key: String) -> [E]? {
+        guard let lossy = load([Lossy<E>].self, key) else { return nil }
+        let kept = lossy.compactMap(\.value)
+        if kept.count < lossy.count, let data = UserDefaults.standard.data(forKey: key) {
+            log.error("\(key, privacy: .public): dropped \(lossy.count - kept.count) of \(lossy.count)")
+            keepAside(data, key)
+        }
+        return kept
+    }
+
+    static func loadMap<E: Decodable>(_ type: E.Type, _ key: String) -> [String: E]? {
+        guard let lossy = load([String: Lossy<E>].self, key) else { return nil }
+        let kept = lossy.compactMapValues(\.value)
+        if kept.count < lossy.count, let data = UserDefaults.standard.data(forKey: key) {
+            log.error("\(key, privacy: .public): dropped \(lossy.count - kept.count) of \(lossy.count)")
+            keepAside(data, key)
+        }
+        return kept
+    }
+
+    /// One copy a day per key: a blob that keeps failing is the same blob.
+    private static func keepAside(_ data: Data, _ key: String) {
+        let aside = "\(key).corrupt.\(Spend.key(.now))"
+        guard UserDefaults.standard.data(forKey: aside) == nil else { return }
+        UserDefaults.standard.set(data, forKey: aside)
     }
 
     static func save<T: Encodable>(_ value: T, _ key: String) {
@@ -149,4 +220,13 @@ enum Vault {
     static let conceptEdits = "words.edits.v1" // the learner's own word for a meaning, by concept and language
     static let activity = "activity.v1" // what was done each day, for History
     static let scores = "scores.v1" // every graded answer's score, for History averages
+}
+
+/// One element of a stored collection, or nothing if it no longer decodes.
+struct Lossy<E: Decodable>: Decodable {
+    let value: E?
+
+    init(from decoder: any Decoder) throws {
+        value = try? decoder.singleValueContainer().decode(E.self)
+    }
 }

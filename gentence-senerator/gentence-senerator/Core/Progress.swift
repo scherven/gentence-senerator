@@ -45,10 +45,26 @@ struct Progress: Codable, Hashable {
     /// A finding that landed in front of the learner, opened or not. Enough to
     /// know the atom exists and to get it a first date; the ladder moves on
     /// evidence, and reading past something is not evidence.
-    mutating func saw(_ atom: Atom, language: Language, on day: Date = .now) {
-        if encounters[atom.id] != nil {
-            encounters[atom.id]?.sightings += 1
-            encounters[atom.id]?.lastSeen = day
+    ///
+    /// Made again, though, it is evidence: the clean run is over, a retired
+    /// encounter comes back a rung down, and an active one is due no later than
+    /// tomorrow. `woven` when `missed` already moved it for this turn.
+    mutating func saw(_ atom: Atom, language: Language, on day: Date = .now,
+                      woven: Bool = false) {
+        if var e = encounters[atom.id] {
+            e.sightings += 1
+            e.lastSeen = day
+            if !woven, e.standing != .dismissed {
+                e.cleanRuns = 0
+                if e.standing == .held {
+                    if e.knowledge != .slip { e.stage = max(0, e.stage - 1) }
+                    e.schedule(from: day)
+                } else if let due = e.dueAt, let soon = Encounter.due(in: 1, from: day) {
+                    // Earlier, never later.
+                    e.dueAt = min(due, soon)
+                }
+            }
+            encounters[atom.id] = e
             return
         }
         var e = Encounter(
@@ -65,9 +81,14 @@ struct Progress: Codable, Hashable {
     /// A woven-in subject the review found nothing wrong with: retrieval held,
     /// so up a rung — or off the schedule, once the top rung has held three
     /// times running.
+    ///
+    /// Only while due: the day's translate and produce sets weave the same
+    /// subjects, and two clean answers in one day are one day's evidence. The
+    /// first moves the date out, so the second finds nothing due.
     mutating func retrieved(subject: String, language: Language, on day: Date = .now) {
         for id in encounterIDs(matching: subject, language: language) {
-            guard var e = encounters[id], e.standing != .dismissed else { continue }
+            guard var e = encounters[id], e.standing != .dismissed,
+                  let due = e.dueAt, due <= day else { continue }
             e.cleanRuns += 1
             e.lastSeen = day
             if e.atTopRung, e.cleanRuns >= Encounter.cleanRunsToHold {
@@ -350,7 +371,9 @@ extension Progress.Encounter {
 extension Progress {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        encounters = try container.decode([String: Encounter].self, forKey: .encounters)
+        // One encounter whose kind no longer exists costs that encounter.
+        encounters = try container.decode([String: Lossy<Encounter>].self,
+                                          forKey: .encounters).compactMapValues(\.value)
         structures = try container.decode([String: StructureUse].self, forKey: .structures)
         words = try container.decodeIfPresent([String: [String: Int]].self,
                                               forKey: .words) ?? [:]

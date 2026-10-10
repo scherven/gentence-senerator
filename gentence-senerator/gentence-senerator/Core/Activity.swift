@@ -122,15 +122,17 @@ struct HistoryDay: Identifiable, Hashable {
     var label: String { Self.label(day) }
 
     static func label(_ day: String) -> String {
-        let parse = DateFormatter()
-        parse.locale = Locale(identifier: "en_US_POSIX")
-        parse.dateFormat = "yyyy-MM-dd"
-        guard let date = parse.date(from: day) else { return day }
-        let out = DateFormatter()
-        out.locale = Locale(identifier: "en_US_POSIX")
-        out.dateFormat = "MMM d"
-        return out.string(from: date).uppercased()
+        guard let date = Spend.date(day) else { return day }
+        return labelFormat.string(from: date).uppercased()
     }
+
+    private static let labelFormat: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.calendar = Calendar(identifier: .gregorian)
+        f.dateFormat = "MMM d"
+        return f
+    }()
 
     /// `archive` holds every language; `quizzes` is the quiz log's plans,
     /// keyed "<language>|<plan id>". Days before `today` only: today's work is
