@@ -17,6 +17,13 @@
 // The app holds no keys. It sends an invite code (`x-invite`), minted with
 // invite.sh into `invite:<code>`; the worker adds the Anthropic and Azure
 // keys and forwards. Deleting the KV key revokes the code within a minute.
+//
+// Spend per code per day, and disputed findings, live in one Durable Object
+// (`Ledger`), not KV: the free tier allows 1,000 KV writes a day and has no
+// atomic increment, and the Ledger serialises every charge. A code past
+// DAILY_CAP_USD for the day is refused until midnight UTC. Batch costs land
+// when the batch is collected, so a day can overshoot by its last batch.
+// /stats (with ?key=ADMIN_KEY) shows both.
 
 const WATCH = "watch:";
 // The batch a job became, so a resent job returns it instead of paying twice;
@@ -44,12 +51,18 @@ const INVITE = "invite:";
 // produce answers and writes quiz top-ups.
 const MODELS = { "claude-opus-5": 32000, "claude-sonnet-5-5": 32000 };
 const BETA = "server-side-fallback-2026-07-01";
+// $ per million tokens: input, output, cache read, cache write. Batches half.
+const PRICES = {
+  "claude-opus-5": [5, 25, 0.5, 6.25],
+  "claude-sonnet-5-5": [2, 10, 0.2, 2.5],
+};
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     // No KV list here: lists are capped at 1,000 a day and the cron needs 720.
     if (url.pathname === "/health") return Response.json({ ok: true });
+    if (request.method === "GET" && url.pathname === "/stats") return stats(env, url);
     const who = await admit(request, env);
     if (who instanceof Response) return who;
     console.log(`${who.name} ${request.method} ${url.pathname}`);
@@ -57,7 +70,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/check") {
       return Response.json({ name: who.name });
     }
-    if (url.pathname.startsWith("/anthropic/")) return anthropic(request, env, url);
+    if (url.pathname.startsWith("/anthropic/")) return anthropic(request, env, url, who);
+    // A learner saying a finding is wrong. Kept with who said it, for the eval set.
+    if (request.method === "POST" && url.pathname === "/dispute") {
+      let given;
+      try { given = await request.json(); } catch { return new Response("json", { status: 400 }); }
+      if (!given || typeof given !== "object") return new Response("json", { status: 400 });
+      await ledger(env, "/dispute", { ...given, code: who.code, name: who.name, at: new Date().toISOString() });
+      return Response.json({ ok: true });
+    }
     if (request.method === "POST" && url.pathname === "/azure/pronounce") {
       return azure(request, env, url);
     }
@@ -84,6 +105,7 @@ export default {
       try { requests = JSON.parse(body).requests; } catch { return new Response("json", { status: 400 }); }
       if (!Array.isArray(requests)) return new Response("requests", { status: 400 });
       if (requests.find((r) => !allowed(r?.params))) return new Response("model or max_tokens", { status: 403 });
+      if (await overCap(env, who)) return new Response("daily limit", { status: 429 });
 
       const key = JOB + job;
       let held = await settled(env, key);
@@ -117,7 +139,7 @@ export default {
 
       await env.STATE.put(REQ + batch, body, { expirationTtl: 2 * 24 * 3600 });
       await env.STATE.put(WATCH + batch,
-        JSON.stringify({ batch, token, label, sandbox, job, sent }), keep(sent));
+        JSON.stringify({ batch, token, label, sandbox, job, sent, code: who.code, name: who.name }), keep(sent));
       // Last, so a request waiting on the claim finds the watch in place.
       await env.STATE.put(key, batch, { expirationTtl: 3 * 24 * 3600 });
       return Response.json({ batch, watched: !!token });
@@ -185,7 +207,8 @@ function allowed(params) {
 }
 
 // /anthropic/v1/<path>: one message, or reading a batch the app was handed.
-async function anthropic(request, env, url) {
+// A message is refused past the code's daily cap and charged to it after.
+async function anthropic(request, env, url, who) {
   const path = url.pathname.slice("/anthropic".length);
   const message = request.method === "POST" && path === "/v1/messages";
   const batch = request.method === "GET"
@@ -199,10 +222,18 @@ async function anthropic(request, env, url) {
     let params;
     try { params = JSON.parse(body); } catch { return new Response("json", { status: 400 }); }
     if (!allowed(params)) return new Response("model or max_tokens", { status: 403 });
+    if (await overCap(env, who)) return new Response("daily limit", { status: 429 });
     headers["content-type"] = "application/json";
     headers["anthropic-beta"] = BETA;
   }
   const r = await fetch(`https://api.anthropic.com${path}`, { method: request.method, headers, body });
+  if (message && r.ok) {
+    const text = await r.text();
+    let reply;
+    try { reply = JSON.parse(text); } catch { reply = null; }
+    await charge(env, who, [reply], false);
+    return new Response(text, { status: r.status, headers: { "content-type": "application/json" } });
+  }
   return new Response(r.body, {
     status: r.status,
     headers: { "content-type": r.headers.get("content-type") || "application/json" },
@@ -259,7 +290,10 @@ async function check(env, name) {
     await env.STATE.delete(RES + w.batch);
     return finish(env, name, w, countsOf(batch), batch.id);
   }
-  if (batch.processing_status === "ended") return finish(env, name, w, countsOf(batch), batch.id);
+  if (batch.processing_status === "ended") {
+    await chargeBatch(env, w, batch);
+    return finish(env, name, w, countsOf(batch), batch.id);
+  }
   // The clock runs from when the batch was made, whatever /watch said.
   const sent = Math.min(w.sent ?? w.since ?? Infinity, Date.parse(batch.created_at) || Infinity);
   if (Date.now() - sent < DIRECT_AFTER_MS) return;
@@ -312,6 +346,7 @@ async function gradeDirectly(env, name, w, requests) {
 
   const stored = lines.map((l) => JSON.stringify(l)).join("\n");
   await env.STATE.put(RES + w.batch, stored, { expirationTtl: 3 * 24 * 3600 });
+  if (w.code) await charge(env, w, lines.map((l) => l.result?.message), false);
   await finish(env, name, w, countsOfLines(stored), w.batch);
 }
 
@@ -439,4 +474,114 @@ function b64url(input) {
   let s = "";
   for (const b of bytes) s += String.fromCharCode(b);
   return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// MARK: Spend and disputes
+
+function today() {
+  return new Date(Date.now()).toISOString().slice(0, 10);
+}
+
+// What one reply cost, in dollars.
+function cost(reply, batched) {
+  const price = PRICES[reply?.model?.replace(/-\d{8}$/, "")] || PRICES["claude-opus-5"];
+  const u = reply?.usage || {};
+  const dollars = ((u.input_tokens || 0) * price[0] + (u.output_tokens || 0) * price[1]
+    + (u.cache_read_input_tokens || 0) * price[2] + (u.cache_creation_input_tokens || 0) * price[3]) / 1e6;
+  return batched ? dollars / 2 : dollars;
+}
+
+function ledger(env, path, body) {
+  const stub = env.LEDGER.get(env.LEDGER.idFromName("ledger"));
+  return stub.fetch(new Request(`https://ledger${path}`, {
+    method: body ? "POST" : "GET", body: body ? JSON.stringify(body) : undefined,
+  }));
+}
+
+async function charge(env, who, replies, batched) {
+  const got = replies.filter((r) => r && r.usage);
+  if (!got.length || !who?.code) return;
+  const sum = (f) => got.reduce((n, r) => n + (r.usage[f] || 0), 0);
+  await ledger(env, "/charge", {
+    day: today(), code: who.code, name: who.name, calls: got.length,
+    dollars: got.reduce((n, r) => n + cost(r, batched), 0),
+    input: sum("input_tokens"), output: sum("output_tokens"),
+  });
+}
+
+// An ended batch's results, read once, charged at batch price.
+async function chargeBatch(env, w, batch) {
+  if (!w.code || !batch.results_url) return;
+  const r = await fetch(batch.results_url, {
+    headers: { "x-api-key": env.ANTHROPIC_KEY.trim(), "anthropic-version": "2023-06-01" },
+  });
+  if (!r.ok) return;
+  const replies = (await r.text()).split("\n").filter(Boolean).map((l) => {
+    try { return JSON.parse(l).result?.message; } catch { return null; }
+  });
+  await charge(env, w, replies, true);
+}
+
+async function overCap(env, who) {
+  const cap = Number(env.DAILY_CAP_USD || 2);
+  const r = await ledger(env, `/spent?day=${today()}&code=${encodeURIComponent(who.code)}`);
+  const { dollars } = await r.json();
+  return dollars >= cap;
+}
+
+// Owner only: ?key=ADMIN_KEY. Spend per code per day for the last two weeks,
+// and the latest disputes. ?format=json for the raw rows.
+async function stats(env, url) {
+  if (!env.ADMIN_KEY || url.searchParams.get("key") !== env.ADMIN_KEY.trim()) {
+    return new Response("not found", { status: 404 });
+  }
+  const data = await (await ledger(env, "/stats")).json();
+  if (url.searchParams.get("format") === "json") return Response.json(data);
+  const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const rows = data.usage.map((u) => `<tr><td>${esc(u.day)}</td><td>${esc(u.name)}</td><td>${u.calls}</td>`
+    + `<td>${(u.input / 1000).toFixed(0)}k</td><td>${(u.output / 1000).toFixed(0)}k</td><td>$${u.dollars.toFixed(2)}</td></tr>`).join("");
+  const disputes = data.disputes.map((d) => `<tr><td>${esc(d.at?.slice(0, 16))}</td><td>${esc(d.name)}</td>`
+    + `<td>${esc(d.language)} ${esc(d.mode)}</td><td>${esc(d.attempt)}</td><td>${esc(d.finding?.kind)}: ${esc(d.finding?.text)}</td>`
+    + `<td>${esc(d.note)}</td></tr>`).join("");
+  const html = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>gentence stats</title><style>body{font:13px ui-monospace,monospace;margin:16px}table{border-collapse:collapse;margin-bottom:24px}
+td,th{border:1px solid #999;padding:3px 6px;text-align:left;vertical-align:top}</style>
+<h3>Spend (UTC days, last 14)</h3><table><tr><th>day</th><th>who</th><th>calls</th><th>in</th><th>out</th><th>$</th></tr>${rows}</table>
+<h3>Disputed findings (latest 100)</h3><table><tr><th>when</th><th>who</th><th>what</th><th>attempt</th><th>finding</th><th>note</th></tr>${disputes}</table>`;
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
+}
+
+// One instance for the whole worker. A Durable Object runs one request at a
+// time, so read-add-write here never loses a charge.
+export class Ledger {
+  constructor(state) { this.storage = state.storage; }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (url.pathname === "/charge") {
+      const c = await request.json();
+      const key = `use|${c.day}|${c.code}`;
+      const row = (await this.storage.get(key)) || { day: c.day, name: c.name, calls: 0, input: 0, output: 0, dollars: 0 };
+      row.name = c.name; row.calls += c.calls; row.input += c.input; row.output += c.output; row.dollars += c.dollars;
+      await this.storage.put(key, row);
+      return Response.json(row);
+    }
+    if (url.pathname === "/spent") {
+      const row = await this.storage.get(`use|${url.searchParams.get("day")}|${url.searchParams.get("code")}`);
+      return Response.json({ dollars: row?.dollars || 0 });
+    }
+    if (url.pathname === "/dispute") {
+      const d = await request.json();
+      await this.storage.put(`dispute|${d.at}|${crypto.randomUUID()}`, d);
+      return Response.json({ ok: true });
+    }
+    if (url.pathname === "/stats") {
+      const since = new Date(Date.now() - 14 * 86400 * 1000).toISOString().slice(0, 10);
+      const usage = [...(await this.storage.list({ prefix: "use|" })).values()]
+        .filter((u) => u.day >= since).sort((a, b) => (b.day + a.name).localeCompare(a.day + b.name));
+      const disputes = [...(await this.storage.list({ prefix: "dispute|", reverse: true, limit: 100 })).values()];
+      return Response.json({ usage, disputes });
+    }
+    return new Response("not found", { status: 404 });
+  }
 }

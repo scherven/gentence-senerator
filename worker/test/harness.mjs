@@ -69,12 +69,30 @@ globalThis.fetch = async (input, init = {}) => {
   }
   if (method === "POST" && u.pathname === "/v1/messages") {
     if (api.messages === "hang") return new Promise(() => {});
-    return Response.json({ id: "msg", content: [{ type: "text", text: "ok" }] });
+    return Response.json({ id: "msg", model: JSON.parse(init.body).model, content: [{ type: "text", text: "ok" }],
+                           usage: { input_tokens: 100000, output_tokens: 10000 } });
   }
   throw new Error(`unmocked ${method} ${u}`);
 };
 
-const { default: worker } = await import(new URL("../src/index.js", import.meta.url));
+const { default: worker, Ledger } = await import(new URL("../src/index.js", import.meta.url));
+
+// A Durable Object's storage, enough for the Ledger.
+function fakeLedger() {
+  const m = new Map();
+  const storage = {
+    get: async (k) => structuredClone(m.get(k)),
+    put: async (k, v) => { m.set(k, structuredClone(v)); },
+    list: async ({ prefix, reverse, limit }) => {
+      let keys = [...m.keys()].filter((k) => k.startsWith(prefix)).sort();
+      if (reverse) keys.reverse();
+      if (limit) keys = keys.slice(0, limit);
+      return new Map(keys.map((k) => [k, structuredClone(m.get(k))]));
+    },
+  };
+  const ledger = new Ledger({ storage });
+  return { idFromName: () => "ledger", get: () => ({ fetch: (r) => ledger.fetch(r) }) };
+}
 
 async function makeEnv() {
   const STATE = new KV();
@@ -82,7 +100,8 @@ async function makeEnv() {
   const kp = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign"]);
   const der = Buffer.from(await crypto.subtle.exportKey("pkcs8", kp.privateKey)).toString("base64");
   return {
-    STATE, PER_INVITE: { limit: async () => ({ success: true }) },
+    STATE, PER_INVITE: { limit: async () => ({ success: true }) }, LEDGER: fakeLedger(),
+    DAILY_CAP_USD: "2", ADMIN_KEY: "secret",
     ANTHROPIC_KEY: "k", APNS_KEY: `-----BEGIN PRIVATE KEY-----\n${der}\n-----END PRIVATE KEY-----`,
     APNS_KEY_ID: "KID", APNS_TEAM_ID: "TEAM", APNS_TOPIC: "topic",
   };
@@ -277,6 +296,58 @@ test("4: /health does no KV list", async () => {
   const r = await worker.fetch(new Request("https://w.test/health"), env);
   assert.equal(r.status, 200);
   assert.equal(env.STATE.lists, 0);
+});
+
+test("7: a message is charged to its code at its model's price", async () => {
+  const env = await makeEnv();
+  const r = await call(env, "/anthropic/v1/messages", { method: "POST",
+    body: JSON.stringify({ model: "claude-sonnet-5-5", max_tokens: 1000, messages: [] }) });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).content[0].text, "ok");
+  const s = await (await worker.fetch(new Request("https://w.test/stats?key=secret&format=json"), env)).json();
+  assert.equal(s.usage.length, 1);
+  assert.equal(s.usage[0].name, "test");
+  assert.equal(s.usage[0].calls, 1);
+  // 100k in at $2/M + 10k out at $10/M
+  assert.ok(Math.abs(s.usage[0].dollars - 0.3) < 1e-9);
+});
+
+test("7: past the daily cap, messages and submits are refused", async () => {
+  const env = await makeEnv();
+  env.DAILY_CAP_USD = "1";
+  const send = () => call(env, "/anthropic/v1/messages", { method: "POST",
+    body: JSON.stringify({ model: "claude-opus-5", max_tokens: 1000, messages: [] }) });
+  assert.equal((await send()).status, 200); // $0.75
+  assert.equal((await send()).status, 200); // $1.50: the check is before, so one overshoots
+  const r = await send();
+  assert.equal(r.status, 429);
+  assert.equal(await r.text(), "daily limit");
+  assert.equal((await submit(env, "j9")).status, 429);
+});
+
+test("7: a dispute is kept with who sent it; /stats is closed without the key", async () => {
+  const env = await makeEnv();
+  const r = await call(env, "/dispute", { method: "POST",
+    body: JSON.stringify({ language: "german", mode: "produce", attempt: "Ich habe gegangen",
+                           finding: { kind: "auxiliary", text: "habe → bin" }, note: "fine?" }) });
+  assert.equal(r.status, 200);
+  assert.equal((await worker.fetch(new Request("https://w.test/stats"), env)).status, 404);
+  assert.equal((await worker.fetch(new Request("https://w.test/stats?key=nope"), env)).status, 404);
+  const s = await (await worker.fetch(new Request("https://w.test/stats?key=secret&format=json"), env)).json();
+  assert.equal(s.disputes.length, 1);
+  assert.equal(s.disputes[0].name, "test");
+  assert.equal(s.disputes[0].note, "fine?");
+  const html = await (await worker.fetch(new Request("https://w.test/stats?key=secret"), env)).text();
+  assert.ok(html.includes("habe → bin"));
+});
+
+test("7: direct grading charges the batch's code", async () => {
+  const env = await makeEnv();
+  const { batch } = await (await submit(env, "j1")).json();
+  advance(21 * 60 * 1000);
+  await runPoll(env);
+  const s = await (await worker.fetch(new Request("https://w.test/stats?key=secret&format=json"), env)).json();
+  assert.equal(s.usage[0]?.calls, 2, `charged for ${batch}`);
 });
 
 let failed = 0;
