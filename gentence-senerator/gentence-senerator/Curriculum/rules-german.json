@@ -88,7 +88,7 @@
   "entry": "de.verb-prep.auf-aufpassen",
   "format": "two-step",
   "prompt": "aufpassen ＿ + ＿",
-  "gloss": "look after",
+  "gloss": "keep an eye on",
   "why": "auf + AKK",
   "steps": [
    {
@@ -704,7 +704,7 @@
   "entry": "de.verb-prep.fuer-halten",
   "format": "two-step",
   "prompt": "halten ＿ + ＿",
-  "gloss": "take for",
+  "gloss": "regard as",
   "why": "für + AKK",
   "steps": [
    {
@@ -2699,7 +2699,7 @@
   "format": "flip",
   "prompt": "sich treffen: ＿",
   "gloss": "meet",
-  "why": "mich",
+  "why": "uns",
   "steps": [
    {
     "options": [

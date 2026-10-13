@@ -39,7 +39,7 @@
     },
     {
      "head": "aufpassen",
-     "gloss": "look after",
+     "gloss": "keep an eye on",
      "group": "auf",
      "tag": "AKK",
      "example": "Kannst du heute Abend auf das Kind aufpassen?",
@@ -259,7 +259,7 @@
     },
     {
      "head": "halten",
-     "gloss": "take for",
+     "gloss": "regard as",
      "group": "für",
      "tag": "AKK",
      "example": "Ich halte ihn für den besten Spieler im Team.",
@@ -601,7 +601,7 @@
      "level": 2
     },
     {
-     "head": "über der Stadt",
+     "head": "über dem Tisch",
      "gloss": "wo?",
      "group": "über",
      "tag": "DAT",
@@ -635,7 +635,7 @@
      "gloss": "wohin?",
      "group": "unter",
      "tag": "AKK",
-     "example": "Schieb den Koffer unter das Bett.",
+     "example": "Schieb den Koffer unters Bett.",
      "point": "two-way-prep",
      "id": "de.two-way.unter-akk",
      "level": 2
@@ -655,7 +655,7 @@
      "gloss": "wohin?",
      "group": "vor",
      "tag": "AKK",
-     "example": "Stell die Fahrräder bitte vor das Haus.",
+     "example": "Stell die Fahrräder bitte vors Haus.",
      "point": "two-way-prep",
      "id": "de.two-way.vor-akk",
      "level": 2
@@ -819,7 +819,7 @@
      "example": "Außer dem Chef waren alle da.",
      "point": "dative-prepositions",
      "id": "de.fixed-preps.ausser",
-     "level": 3
+     "level": 2
     },
     {
      "head": "durch",
@@ -2523,7 +2523,7 @@
     },
     {
      "head": "sich treffen",
-     "reading": "mich",
+     "reading": "uns",
      "gloss": "meet",
      "tag": "AKK",
      "point": "reflexive-verbs",
@@ -2839,7 +2839,7 @@
      "example": "Er würde gern mitkommen.",
      "point": "konjunktiv-ii",
      "id": "de.konjunktiv-ii.wuerde",
-     "level": 3
+     "level": 2
     },
     {
      "head": "könnte",
@@ -3505,7 +3505,7 @@
      "id": "de.infinitive.zu-separable",
      "head": "anzurufen · mitzukommen",
      "gloss": "separable verbs take zu inside",
-     "example": "Ich habe vergessen, dich anzurufen.",
+     "example": "Vergiss nicht, das Licht auszumachen.",
      "point": "infinitive-zu",
      "level": 3
     },
@@ -4172,7 +4172,7 @@
      "gloss": "interest in",
      "group": "an",
      "tag": "DAT",
-     "example": "Ich habe kein Interesse an dem Angebot.",
+     "example": "Ich habe kein Interesse am Angebot.",
      "point": "noun-preposition",
      "level": 4
     },
@@ -4284,14 +4284,14 @@
      "head": "den kenne ich",
      "gloss": "der, die, das on their own point back",
      "example": "— Kennst du Herrn Braun? — Ja, den kenne ich.",
-     "point": "anaphora",
+     "point": "dieser-welcher",
      "level": 2
     },
     {
      "id": "de.pointers.dieses",
      "head": "dieses · das von gestern",
      "gloss": "picking one of two things already named",
-     "example": "Beide Angebote sind gut, dieses ist günstiger.",
+     "example": "Beide Angebote sind gut, aber das von gestern ist günstiger.",
      "point": "anaphora",
      "level": 4
     }
@@ -4313,7 +4313,7 @@
      "gloss": "more than: comparative + als",
      "example": "Er ist größer als ich.",
      "point": "comparison",
-     "level": 1
+     "level": 2
     },
     {
      "id": "de.comparison.so-wie",
@@ -4321,7 +4321,7 @@
      "gloss": "as … as",
      "example": "Sie ist so alt wie ich.",
      "point": "comparison",
-     "level": 1
+     "level": 2
     },
     {
      "id": "de.comparison.umlaut",
@@ -4372,7 +4372,7 @@
      "id": "de.plurals.e",
      "head": "-e · -¨e",
      "reading": "Tag → Tage · Stuhl → Stühle",
-     "gloss": "most der and das nouns",
+     "gloss": "most der nouns, many das nouns",
      "group": "-(¨)e",
      "example": "Wir brauchen noch vier Stühle.",
      "point": "plural-forms",

@@ -371,7 +371,7 @@
      "id": "zh.measure.chang",
      "head": "场",
      "reading": "chǎng",
-     "gloss": "matches, showings, rain",
+     "gloss": "matches, shows, films, rain",
      "group": "EVENTS · WORKS",
      "example": "一场比赛",
      "point": "measure-words",
@@ -930,7 +930,7 @@
     },
     {
      "id": "zh.word-order.manner",
-     "head": "怎么 + V",
+     "head": "Adj地 + V",
      "gloss": "how, before the verb",
      "example": "他慢慢地走过来了。",
      "point": "manner-before-verb",
@@ -1063,7 +1063,7 @@
      "id": "zh.word-order.no-it",
      "head": "no 它",
      "gloss": "a thing already named needs no 'it'",
-     "example": "这本书我已经看完了。",
+     "example": "这件衣服很好看，我想买。",
      "point": "object-pronoun-drop",
      "level": 2
     },
@@ -1624,7 +1624,7 @@
      "id": "zh.coverbs.ba-once",
      "head": "把 + O + V + 一遍",
      "reading": "bǎ",
-     "gloss": "go over it once, or for a while",
+     "gloss": "go through it once, or so many times",
      "example": "把这本书看一遍。",
      "point": "ba-thorough",
      "level": 4
