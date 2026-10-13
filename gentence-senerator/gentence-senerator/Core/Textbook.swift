@@ -273,13 +273,7 @@ enum Textbook {
                         entries: entries, formats: []), sources)
     }
 
-    static func chapterPrefix(_ language: Language) -> String {
-        switch language {
-        case .mandarin: return "zh"
-        case .german:   return "de"
-        case .french:   return "fr"
-        }
-    }
+    static func chapterPrefix(_ language: Language) -> String { language.code }
 
     /// Where a Noted entry stands. No quiz reaches these, so it is read off
     /// the record: a scheduled finding is slipping until it holds.

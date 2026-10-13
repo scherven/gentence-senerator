@@ -3,6 +3,10 @@ import os
 
 struct Settings: Codable, Hashable {
     var language: Language = .mandarin
+    /// The languages offered: the pickers, and the ALL LANGUAGES deck. Always
+    /// holds `language`. Spanish and Korean start off: their content has had
+    /// no native read.
+    var languages: [Language] = [.mandarin, .german, .french]
     var mode: Mode = .translate
     /// 1-6 for CEFR, 1-9 for HSK. `LanguagePack.level` renders it.
     var level: Int = 2
@@ -28,7 +32,8 @@ struct Spend: Codable, Hashable {
         var input = 0, output = 0, cacheRead = 0, cacheWrite = 0
         /// The same four, sent through the Batch API at half price.
         var batchInput = 0, batchOutput = 0, batchCacheRead = 0, batchCacheWrite = 0
-        /// Quiz top-ups, on Sonnet 5.5, already in dollars.
+        /// Sonnet 5.5 calls — quiz top-ups and reviews — already in dollars.
+        /// The name predates the reviews; kept so stored days still decode.
         var topUps = 0.0
 
         /// Opus 5: $5/MTok in, $25/MTok out. Cache reads are a tenth of input,
@@ -62,12 +67,13 @@ struct Spend: Codable, Hashable {
     }
 
     /// Sonnet 5.5: $2/MTok in, $10/MTok out; cache reads a tenth of input,
-    /// writes a quarter more.
-    mutating func addTopUp(_ usage: Anthropic.Usage, on day: Date = .now) {
+    /// writes a quarter more. Batched, half.
+    mutating func addSonnet(_ usage: Anthropic.Usage, batched: Bool = false, on day: Date = .now) {
         let key = Spend.key(day)
         var d = days[key] ?? Day()
         d.topUps += (Double(usage.inputTokens) * 2 + Double(usage.outputTokens) * 10
-                     + Double(usage.cacheReadTokens) * 0.2 + Double(usage.cacheWriteTokens) * 2.5) / 1_000_000
+                     + Double(usage.cacheReadTokens) * 0.2 + Double(usage.cacheWriteTokens) * 2.5)
+            / 1_000_000 / (batched ? 2 : 1)
         days[key] = d
     }
 
@@ -98,6 +104,8 @@ extension Settings {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let d = Settings()
         language = try c.decodeIfPresent(Language.self, forKey: .language) ?? d.language
+        languages = try c.decodeIfPresent([Language].self, forKey: .languages) ?? d.languages
+        if !languages.contains(language) { languages.append(language) }
         mode = try c.decodeIfPresent(Mode.self, forKey: .mode) ?? d.mode
         level = try c.decodeIfPresent(Int.self, forKey: .level) ?? d.level
         levelChangedAt = try c.decodeIfPresent(Date.self, forKey: .levelChangedAt)

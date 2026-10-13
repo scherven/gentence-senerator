@@ -221,6 +221,112 @@ def zh_cards(ch, rng):
             continue
         yield card(e, e["gloss"], e.get("reading"), speak=e["head"].strip("—"))
 
+# ---------------------------------------------------------------- Spanish
+
+def es_gender(ch, rng):
+    for e in ch["entries"]:
+        noun = e["head"].split(" ", 1)[1]
+        yield item(e, "flip", f"{GAP} {noun}", steps=[step(["el", "la"], e["tag"].lower())],
+                   why=e.get("gloss"))
+
+
+def es_split(sides):
+    """A two-column chapter: what the entry covers → which column."""
+    def fn(ch, rng):
+        for e in ch["entries"]:
+            yield item(e, "flip", f"{e['gloss']} → {GAP}", steps=[step(sides, e["tag"])],
+                       why=e["head"])
+    return fn
+
+
+# Forms, and uses that name a past, but not the endings, which give it away.
+ES_PAST_FORMS = {"saber", "querer", "poder"}
+ES_PAST_USES = {"event", "habit", "scene", "interrupted"}
+
+
+def es_past(ch, rng):
+    for e in ch["entries"]:
+        if e["group"] in ES_PAST_FORMS:
+            prompt = f"{e['head']} → {GAP}"
+        elif e["group"] in ES_PAST_USES:
+            prompt = f"{e['gloss']} → {GAP}"
+        else:
+            continue
+        yield item(e, "flip", prompt, gloss=e.get("gloss") if e["group"] in ES_PAST_FORMS else None,
+                   steps=[step(["PRETÉRITO", "IMPERFECTO"], e["tag"])], why=e["head"])
+
+
+def es_prep(ch, rng):
+    preps = sorted({e["tag"].lower() for e in ch["entries"]})
+    for e in ch["entries"]:
+        prep = e["tag"].lower()
+        verb = re.sub(rf"\s+{prep}\b.*$", "", e["head"])
+        if verb == e["head"]:
+            continue
+        yield item(e, "pick-one", f"{verb} {GAP}", gloss=e.get("gloss"),
+                   steps=[step(pick(rng, prep, preps, 4), prep)])
+
+
+# ---------------------------------------------------------------- Korean
+
+KO_TOPIC_SKIP = {"FORM", "HONOURED", "DOUBLE"}
+
+
+def ko_topic(ch, rng):
+    for e in ch["entries"]:
+        if e["group"] in KO_TOPIC_SKIP:
+            continue
+        yield item(e, "flip", f"{e['gloss']} → {GAP}", steps=[step(["은/는", "이/가"], e["tag"])],
+                   why=e["head"])
+
+
+def ko_places(ch, rng):
+    for e in ch["entries"]:
+        tag = e["tag"]
+        if tag not in e["head"] or e["head"].count(tag) > 1:
+            continue
+        yield item(e, "flip", e["head"].replace(tag, GAP, 1), gloss=e.get("gloss"),
+                   steps=[step(["에", "에서"], tag)])
+
+
+def ko_negation(ch, rng):
+    for e in ch["entries"]:
+        words = e["head"].split()
+        if words.count(e["tag"]) != 1:
+            continue
+        prompt = " ".join(GAP if w == e["tag"] else w for w in words)
+        yield item(e, "flip", prompt, gloss=e.get("gloss"), steps=[step(["안", "못"], e["tag"])])
+
+
+def ko_honorifics(ch, rng):
+    groups = {}
+    for e in ch["entries"]:
+        groups.setdefault(e["group"], []).append(e)
+    for name in ("VERBS", "HUMBLE", "NOUNS"):
+        heads = [e["head"] for e in groups.get(name, [])]
+        for e in groups.get(name, []):
+            if len(heads) < 3:
+                continue
+            yield item(e, "pick-one", f"{e['reading']} → {GAP}", gloss=e.get("gloss"),
+                       steps=[step(pick(rng, e["head"], heads, 4), e["head"])])
+
+
+KO_SUFFIX = {"PASSIVE": ["이", "히", "리", "기"], "CAUSATIVE": ["이", "히", "리", "기", "우"]}
+
+
+def ko_change(ch, rng):
+    for e in ch["entries"]:
+        sufs = KO_SUFFIX.get(e["group"])
+        if not sufs or " → " not in e["head"]:
+            continue
+        base, derived = e["head"].split(" → ")
+        stem = base[:-1]
+        options = [stem + s + "다" for s in sufs]
+        if derived not in options:
+            continue
+        yield item(e, "pick-one", f"{base} → {GAP}", gloss=e.get("gloss"),
+                   steps=[step(pick(rng, derived, options, 4), derived)])
+
 
 PLAN = {
     "german": {"de.verb-prep": de_prep, "de.noun-adj-prep": de_prep, "de.fixed-preps": de_fixed,
@@ -228,6 +334,10 @@ PLAN = {
                "de.gender": de_gender, "de.connectors": de_connectors},
     "french": {"fr.etre-avoir": fr_aux, "fr.verb-prep": fr_prep, "fr.places": fr_places,
                "fr.gender": fr_gender},
+    "spanish": {"es.gender": es_gender, "es.ser-estar": es_split(["SER", "ESTAR"]),
+                "es.por-para": es_split(["POR", "PARA"]), "es.past": es_past, "es.verb-prep": es_prep},
+    "korean": {"ko.topic-subject": ko_topic, "ko.places": ko_places, "ko.negation": ko_negation,
+               "ko.honorifics": ko_honorifics, "ko.change": ko_change},
     "mandarin": {"zh.measure": zh_measure, "zh.negation": zh_negation,
                  "zh.adv-idioms": zh_cards, "zh.adv-idioms-more": zh_cards,
                  "zh.adv-word-building": zh_cards},

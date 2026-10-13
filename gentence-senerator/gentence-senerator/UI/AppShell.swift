@@ -719,7 +719,7 @@ struct WrittenRows: View {
     }
 }
 
-/// This language's word deck and the one across all three, with what's due.
+/// This language's word deck, if it has one, and the one across languages, with what's due.
 struct WordsRow: View {
     let store: Store
     @Environment(\.startQuiz) private var startQuiz
@@ -729,10 +729,14 @@ struct WordsRow: View {
         VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Words")
             HStack(spacing: Theme.M.gapTight) {
-                key("Words · \(store.settings.language.short)", due: store.wordsDue) {
-                    startQuiz(VocabDrill.plan(store.settings.language))
+                if store.hasWordDeck {
+                    key("Words · \(store.settings.language.short)", due: store.wordsDue) {
+                        startQuiz(VocabDrill.plan(store.settings.language))
+                    }
                 }
-                key("All languages", due: store.conceptsDue) { startAllLanguages() }
+                if store.conceptRing.count >= 2 {
+                    key("All languages", due: store.conceptsDue) { startAllLanguages() }
+                }
             }
         }
     }

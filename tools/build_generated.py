@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Write Curriculum/gen-<lang>.json: test items made from the vocab lists, no
-model. Gender (German, French) and tones (Mandarin), each linked to the book
+model. Gender (German, French, Spanish) and tones (Mandarin), each linked to the book
 entry whose rule it shows. Only what links cleanly is kept: an ending that
 belongs to the word (not just its spelling), an article that agrees with the
 rule, a tone the audio says as written.
@@ -98,6 +98,37 @@ def fr_gender():
                                   "format": "flip", "prompt": f"{GAP} {w}", "gloss": n.get("en"),
                                   "why": f"{art} {w}",
                                   "steps": [{"options": ["le", "la"], "answer": ["le", "la"].index(art)}]})
+                break
+    return items
+
+
+# ---------------------------------------------------------------- Spanish gender
+# Ending → (the article the rule gives, its entry, the entry for an exception).
+# Plain -o and -a are left out: a thousand items saying el libro would drown the
+# endings worth learning. Their exceptions are kept.
+ES_SUFFIX = [("ción", "la", "cancion", None), ("sión", "la", "cancion", None),
+             ("dad", "la", "ciudad", None), ("tad", "la", "ciudad", None),
+             ("umbre", "la", "costumbre", None), ("aje", "el", "viaje", None),
+             ("ma", "el", "problema", "cama"), ("or", "el", "color", "flor"),
+             ("a", "la", None, "dia"), ("o", "el", None, "mano")]
+
+
+def es_gender():
+    used = used_words("spanish", "es.gender.")
+    book = {e["id"] for c in load("book", "spanish")["chapters"] for e in c["entries"]}
+    items = []
+    for n in load("vocab", "spanish"):
+        w, art = n["w"], n.get("art")
+        if n.get("pos") != "noun" or art not in ("el", "la") or n.get("skip") or w in used:
+            continue
+        for suf, rule_art, key, exc in ES_SUFFIX:
+            if w.endswith(suf) and len(w) > len(suf) + 1:
+                entry = key if art == rule_art else exc
+                if entry and f"es.gender.{entry}" in book and w != entry:
+                    items.append({"id": f"gen.es.gender.{entry}.{w}", "entry": f"es.gender.{entry}",
+                                  "format": "flip", "prompt": f"{GAP} {w}", "gloss": n.get("en"),
+                                  "why": f"{art} {w}",
+                                  "steps": [{"options": ["el", "la"], "answer": ["el", "la"].index(art)}]})
                 break
     return items
 
@@ -200,7 +231,8 @@ def zh_tones():
 
 
 def main():
-    for lang, items in (("german", de_gender()), ("french", fr_gender()), ("mandarin", zh_tones())):
+    for lang, items in (("german", de_gender()), ("french", fr_gender()), ("spanish", es_gender()),
+                        ("mandarin", zh_tones())):
         path = CUR / f"gen-{lang}.json"
         lines = ",\n".join(json.dumps(i, ensure_ascii=False) for i in items)
         path.write_text("[\n" + lines + "\n]\n")

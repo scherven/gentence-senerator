@@ -2,7 +2,7 @@
 """Validate Curriculum/book-<lang>.json and the quiz files (quiz-, gen-, rules-<lang>.json) against the
 contract in Core/Book.swift and Core/Quiz.swift. Exits nonzero on any error.
 
-    python3 tools/check_book.py [--upto N] [mandarin german french]
+    python3 tools/check_book.py [--upto N] [mandarin german french spanish korean]
 
 --upto N limits the coverage check (every curriculum point has an entry, and
 2+ items across its entries) to points at level N or below.
@@ -11,8 +11,8 @@ import json, sys, pathlib, collections
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CUR = ROOT / "gentence-senerator/gentence-senerator/Curriculum"
-PREFIX = {"mandarin": "zh", "german": "de", "french": "fr"}
-LEVELS = {"mandarin": 9, "german": 6, "french": 6}
+PREFIX = {"mandarin": "zh", "german": "de", "french": "fr", "spanish": "es", "korean": "ko"}
+LEVELS = {"mandarin": 9, "german": 6, "french": 6, "spanish": 6, "korean": 6}
 LAYOUTS = {"list", "cards", "formulas", "pairs", "split"}
 GAP = "＿"
 # (steps, options, tiles, accept) — mirrors QuizFormat.rules

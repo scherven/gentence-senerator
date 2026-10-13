@@ -38,10 +38,14 @@ actor Anthropic {
     }
 
     private let session: URLSession
-    /// The worker refuses any other but `topUpModel`.
+    /// The worker refuses any other but Sonnet 5.5.
     private let model = "claude-opus-5"
     /// Writes new quiz items: cheaper, and good enough for them.
     static let topUpModel = "claude-sonnet-5-5"
+    /// Reviews translate and produce answers. Measured 2026-10-11 against
+    /// Opus 5 and 5.5 (tools/eval): no misses, nothing invented, a third of
+    /// the price. Listen was not measured and stays on `model`.
+    static let reviewModel = "claude-sonnet-5-5"
 
     init(session: URLSession = .shared) {
         self.session = session

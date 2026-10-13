@@ -178,12 +178,18 @@ actor Tutor {
             schema: Schemas.review(for: turn.language),
             effort: Self.reviewEffort,
             maxTokens: 32000,
-            batched: true
+            batched: true,
+            model: Self.reviewModel(turn.mode)
         )
     }
 
     /// The one lever on quality left once latency stopped mattering.
     nonisolated static let reviewEffort: Anthropic.Effort = .high
+
+    /// Nil for listen: the default model.
+    nonisolated static func reviewModel(_ mode: Mode) -> String? {
+        mode == .listen ? nil : Anthropic.reviewModel
+    }
 
     /// Graded on the spot. Listen still works this way until it is rebuilt.
     func review(turn: Turn, history: [Turn] = [], level: Int)
@@ -194,7 +200,8 @@ actor Tutor {
             user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
             schema: Schemas.review(for: turn.language),
             effort: Self.reviewEffort,
-            maxTokens: 32000
+            maxTokens: 32000,
+            model: Self.reviewModel(turn.mode)
         )
         let (review, lessons) = try Self.read(reply, turn: turn, history: history)
         return (review, lessons, reply.usage)
@@ -743,9 +750,11 @@ actor Tutor {
 
         Rank them: exactly one finding has weight "start", the one that costs
         the learner most: being understood in translate and produce, catching
-        what was actually said in listen. Return every other finding too.
-        Never omit a real error because it is minor — silence reads as approval.
-        The opposite failure is worse. Report nothing you cannot point at. A
+        what was actually said in listen. A word a speaker would not reach for
+        outranks a wrong ending a listener reads straight through. Return every
+        other finding too, minor ones included — silence reads as approval — in
+        order of cost: what stops a listener, then what sounds unlike a speaker,
+        then form a listener would barely notice. Over-reporting is worse. Report nothing you cannot point at. A
         choice you would not have made is not an error, and an attempt with
         nothing wrong in it is an ordinary outcome — return no problems at all
         and say what carried it. Being corrected for something they got right is
@@ -784,13 +793,36 @@ actor Tutor {
         Report what they got right as well, with verdict "kept". Name the
         specific choice that worked. No generic praise.
 
+        In translate and produce, `score` is how well the attempt would work
+        said to a native speaker. Three things, in this order of weight:
+        understood — would a listener get what was meant, on first hearing,
+        without working at it (in translate, the meaning asked for); natural —
+        are the words and phrasing what a speaker would reach for; form —
+        grammar, case and endings included, weighed by how much a listener
+        would notice it. Do not count errors off one by one: three wrong
+        endings in a clear, natural sentence is a good score.
+        90–100: understood at once and sounds like a speaker; a slip or two in
+        form at most.
+        80–89: understood at once; some phrasing or form marks a learner.
+        50–79: understood with some effort, or correct but phrased the way no
+        speaker would.
+        Below 50: a listener misses or mistakes part of the meaning.
+
         `readOfScore` is one clause on what the score means. No breakdown, no
         pep talk.
 
-        Severity follows the level. Below B1 or HSK 4, being understood matters
-        more than being formally correct: a morphological slip that leaves the
-        meaning intact is "weakens", not "breaks". Reserve "breaks" for what
-        actually stops a listener.
+        Severity is about the listener, at every level. "breaks" is only for
+        what stops a listener or sends them to a different meaning. A wrong
+        case, ending, gender or agreement that leaves the meaning clear is
+        "weakens", however advanced the learner. It is still reported and still
+        taught; it does not outrank a word or phrasing a speaker would not use.
+
+        Spelling is the least of it. A typed word that would sound right said
+        aloud — a misspelling, a dropped accent, a homophone character — is at
+        most "weakens", ranks below anything a listener would notice, takes
+        "start" only when nothing else is wrong, and barely moves the score.
+        Several are one finding. When it makes a different word, it is that
+        word's error, not spelling.
 
         `subject` is what a lesson about the finding would be about: a real
         teachable point, never a restatement of the sentence.
@@ -799,9 +831,15 @@ actor Tutor {
         When the attempt was spoken, never use a written-only kind — silent
         orthography is not something a speaker got wrong.
 
-        Routing. missing-piece, extra-piece, word-order and word-choice are
-        catch-alls: almost any error fits one, so reach for a specific kind
-        first and fall back only when nothing else does.
+        Routing. missing-piece, extra-piece and word-order are catch-alls:
+        almost any error fits one, so reach for a specific kind first and fall
+        back only when nothing else does. word-choice, collocation and register
+        are not fallbacks. A correct word a speaker would not use there, a
+        pairing a native would not make, a grammatical sentence that sounds
+        translated: each is a real finding, usually "weakens", with a lesson,
+        even when the grammar is flawless. The test is whether a native
+        listener would notice it as foreign. If they would not, it is a
+        preference, and belongs in `natural` at most.
         \(pack.routing)
         \(pack.assessmentNotes)
 

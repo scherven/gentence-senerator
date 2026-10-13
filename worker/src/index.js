@@ -40,8 +40,9 @@ const DIRECT_AFTER_MS = 20 * 60 * 1000;
 const GIVE_UP_MS = 26 * 3600 * 1000;
 const INVITE = "invite:";
 // The models the app uses, each with its largest max_tokens: anything else
-// through the proxy is someone else's traffic. Sonnet writes quiz top-ups.
-const MODELS = { "claude-opus-5": 32000, "claude-sonnet-5-5": 16000 };
+// through the proxy is someone else's traffic. Sonnet reviews translate and
+// produce answers and writes quiz top-ups.
+const MODELS = { "claude-opus-5": 32000, "claude-sonnet-5-5": 32000 };
 const BETA = "server-side-fallback-2026-07-01";
 
 export default {

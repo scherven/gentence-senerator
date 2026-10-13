@@ -119,11 +119,11 @@ enum Theme {
             target(size: 17, for: language)
         }
 
-        /// Target text at any size. Mandarin gets the system face (PingFang):
-        /// a serif CJK is hard to read.
+        /// Target text at any size. Mandarin and Korean get the system face:
+        /// a serif CJK is hard to read, and Charter has no Hangul.
         static func target(size: CGFloat, bold: Bool = false,
                            for language: Language = ThemeState.shared.language) -> Font {
-            language == .mandarin
+            language.usesSystemFace
                 ? .system(size: scaled(size, mono: false), weight: bold ? .semibold : .regular)
                 : serif(size, bold: bold)
         }

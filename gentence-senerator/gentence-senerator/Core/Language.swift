@@ -7,14 +7,29 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
     case mandarin
     case german
     case french
+    case spanish
+    case korean
 
     var id: String { rawValue }
+
+    /// Two letters: chapter ids, concept rows.
+    var code: String {
+        switch self {
+        case .mandarin: return "zh"
+        case .german:   return "de"
+        case .french:   return "fr"
+        case .spanish:  return "es"
+        case .korean:   return "ko"
+        }
+    }
 
     var name: String {
         switch self {
         case .mandarin: return "Mandarin"
         case .german:   return "German"
         case .french:   return "French"
+        case .spanish:  return "Spanish"
+        case .korean:   return "Korean"
         }
     }
 
@@ -23,6 +38,8 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
         case .mandarin: return "🇨🇳"
         case .german:   return "🇩🇪"
         case .french:   return "🇫🇷"
+        case .spanish:  return "🇲🇽"
+        case .korean:   return "🇰🇷"
         }
     }
 
@@ -31,6 +48,8 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
         case .mandarin: return "zh-CN"
         case .german:   return "de-DE"
         case .french:   return "fr-FR"
+        case .spanish:  return "es-MX"
+        case .korean:   return "ko-KR"
         }
     }
 
@@ -38,22 +57,31 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
     var needsPhoneticGloss: Bool {
         switch self {
         case .mandarin: return true
-        case .german, .french: return false
+        case .german, .french, .spanish, .korean: return false
         }
     }
 
-    /// Listen is ChinesePod dialogues; German and French have none yet.
+    /// Listen is ChinesePod dialogues; the others have none yet.
     var modes: [Mode] {
         switch self {
         case .mandarin: return Mode.allCases
-        case .german, .french: return [.translate, .produce]
+        case .german, .french, .spanish, .korean: return [.translate, .produce]
         }
     }
 
     var levelSystem: String {
         switch self {
         case .mandarin: return "HSK"
-        case .german, .french: return "CEFR"
+        case .german, .french, .spanish: return "CEFR"
+        case .korean: return "TOPIK"
+        }
+    }
+
+    /// Set in the system face: Charter has no CJK or Hangul.
+    var usesSystemFace: Bool {
+        switch self {
+        case .mandarin, .korean: return true
+        case .german, .french, .spanish: return false
         }
     }
 }

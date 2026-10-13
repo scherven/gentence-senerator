@@ -6,7 +6,8 @@ struct VocabWord: Codable, Hashable {
     let w: String
     let band: Int
     var pos: String?
-    /// der/die/das, le/la; "die (pl)", "les", "le/la" are not asked.
+    /// der/die/das, le/la, el/la; "die (pl)", "les", "le/la", "el (f)" are
+    /// not asked.
     var art: String?
     var py: String?
     var en: String?
@@ -20,12 +21,16 @@ struct VocabWord: Codable, Hashable {
 
     /// The article, if it can be asked as a choice.
     var askableArticle: String? {
-        guard pos == "noun", let art, ["der", "die", "das", "le", "la"].contains(art) else { return nil }
+        guard pos == "noun", let art, ["der", "die", "das", "le", "la", "el"].contains(art) else { return nil }
         return art
     }
 
-    /// As shown: with its article for German and French nouns.
-    var display: String { [askableArticle ?? art, w].compactMap { $0 }.joined(separator: " ") }
+    /// As shown: with its article for German, French and Spanish nouns.
+    /// el agua is feminine, and says so.
+    var display: String {
+        if art == "el (f)" { return "el \(w) f." }
+        return [askableArticle ?? art, w].compactMap { $0 }.joined(separator: " ")
+    }
 
     /// As a card shows it: French elides, and says the gender it hides
     /// (l'usine f.).

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The ALL LANGUAGES deck: one meaning, four sides. Tap to show the next
+/// The ALL LANGUAGES deck: one meaning, a side per language on plus English. Tap to show the next
 /// side; once all are up, ✗ or ✓ on each language, and the card moves on.
 /// No end: STOP shows the tally. Holding a word retypes it, for
 /// when the list paired the wrong one.
@@ -11,7 +11,7 @@ struct AllLanguagesScreen: View {
     @State private var cards: [Concept] = []
     @State private var index = 0
     /// Where the front rotation starts, so each sitting doesn't open on DE.
-    @State private var turnBase = Int.random(in: 0..<ConceptDeck.fronts.count)
+    @State private var turnBase = Int.random(in: 0..<16)
     @State private var shown = 1
     @State private var marks: [Language: Bool] = [:]
     @State private var finished = false
@@ -42,7 +42,8 @@ struct AllLanguagesScreen: View {
     }
 
     private var concept: Concept { cards[index] }
-    private var faces: [ConceptDeck.Face] { ConceptDeck.faces(turn: turnBase + index) }
+    private var ring: [Language] { store.conceptRing }
+    private var faces: [ConceptDeck.Face] { ConceptDeck.faces(turn: turnBase + index, ring: ring) }
     private var allShown: Bool { shown >= faces.count }
 
     // MARK: Runner
@@ -191,7 +192,7 @@ struct AllLanguagesScreen: View {
                 .overlay(Rectangle().strokeBorder(colour, lineWidth: Theme.M.hair))
         }
         .buttonStyle(PressDim())
-        .disabled(marks.count == ConceptDeck.ring.count)
+        .disabled(marks.count == ring.count)
         .accessibilityLabel("\(language.name): \(right ? "knew it" : "didn't")")
     }
 
@@ -199,10 +200,10 @@ struct AllLanguagesScreen: View {
 
     private func mark(_ language: Language, _ right: Bool) {
         // Recorded already, and moving on: a late tap would count it twice.
-        guard marks.count < ConceptDeck.ring.count else { return }
+        guard marks.count < ring.count else { return }
         commit()
         marks[language] = right
-        guard marks.count == ConceptDeck.ring.count else { return }
+        guard marks.count == ring.count else { return }
         let done = concept
         store.markConcept(done, marks)
         for (l, r) in marks {
@@ -238,7 +239,7 @@ struct AllLanguagesScreen: View {
             Text(n == 1 ? "1 card" : "\(n) cards")
                 .font(Theme.F.display).foregroundStyle(Theme.C.ink)
             LedgerSheet {
-                ForEach(ConceptDeck.ring, id: \.self) { language in
+                ForEach(ring, id: \.self) { language in
                     let t = tally[language] ?? (0, 0)
                     HStack {
                         Text(language.name.uppercased()).font(Theme.F.label)
@@ -265,6 +266,6 @@ struct AllLanguagesScreen: View {
         marks = [:]
         tally = [:]
         finished = false
-        turnBase = Int.random(in: 0..<ConceptDeck.fronts.count)
+        turnBase = Int.random(in: 0..<16)
     }
 }

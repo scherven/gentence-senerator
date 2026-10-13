@@ -1,0 +1,1913 @@
+[
+  {
+    "id": "copula-ieyo-yeyo",
+    "name": "이에요/예요",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying what or who something is, after a noun ending in a consonant or a vowel.",
+    "examples": [
+      "저는 학생이에요",
+      "이거는 커피예요"
+    ]
+  },
+  {
+    "id": "copula-negative",
+    "name": "이/가 아니에요",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying something is not a given thing.",
+    "examples": [
+      "저는 선생님이 아니에요",
+      "이건 제 가방이 아니에요"
+    ]
+  },
+  {
+    "id": "itda-eopda",
+    "name": "있어요/없어요",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something being somewhere, or someone having or lacking something.",
+    "examples": [
+      "집에 고양이가 있어요",
+      "오늘은 시간이 없어요"
+    ]
+  },
+  {
+    "id": "topic-eun-neun",
+    "name": "은/는 for the topic",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Introducing what the sentence is about, or contrasting it with something else.",
+    "examples": [
+      "저는 미국 사람이에요",
+      "커피는 좋아하는데 차는 안 좋아해요"
+    ]
+  },
+  {
+    "id": "subject-i-ga",
+    "name": "이/가 for the subject",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A subject that is new information, or the subject of 있다, 없다, or an adjective.",
+    "examples": [
+      "비가 와요",
+      "누가 왔어요?"
+    ]
+  },
+  {
+    "id": "object-eul-reul",
+    "name": "을/를 for the object",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A transitive verb with its object stated.",
+    "examples": [
+      "밥을 먹어요",
+      "영화를 봐요"
+    ]
+  },
+  {
+    "id": "location-e",
+    "name": "에 for where something is or goes",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being at a place, or going to one.",
+    "examples": [
+      "도서관에 가요",
+      "책이 책상 위에 있어요"
+    ]
+  },
+  {
+    "id": "time-e",
+    "name": "에 for time",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action at a stated time or day.",
+    "examples": [
+      "세 시에 만나요",
+      "주말에 뭐 해요?"
+    ]
+  },
+  {
+    "id": "place-eseo",
+    "name": "에서 for where an action happens",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something at a place, as opposed to just being there.",
+    "examples": [
+      "카페에서 공부해요",
+      "회사에서 일해요"
+    ]
+  },
+  {
+    "id": "also-do",
+    "name": "도 for also",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Adding a second item that the same thing applies to.",
+    "examples": [
+      "저도 가요",
+      "사과도 샀어요"
+    ]
+  },
+  {
+    "id": "possessive-ui",
+    "name": "의, 제, 내 for possession",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One noun owning or belonging to another.",
+    "examples": [
+      "제 이름은 민수예요",
+      "친구의 동생이에요"
+    ]
+  },
+  {
+    "id": "and-hago",
+    "name": "하고 for and with nouns",
+    "level": 1,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Listing two nouns, or doing something with someone.",
+    "examples": [
+      "빵하고 우유를 샀어요",
+      "친구하고 영화를 봤어요"
+    ]
+  },
+  {
+    "id": "haeyo-present",
+    "name": "해요체 present",
+    "level": 1,
+    "kind": "speech-level",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A present or habitual action in everyday polite speech.",
+    "examples": [
+      "매일 운동해요",
+      "물을 마셔요"
+    ]
+  },
+  {
+    "id": "hamnida-formal",
+    "name": "-(스)ㅂ니다 formal style",
+    "level": 1,
+    "kind": "speech-level",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Introducing yourself formally, or speaking in a meeting or announcement.",
+    "examples": [
+      "반갑습니다",
+      "저는 김민수입니다"
+    ]
+  },
+  {
+    "id": "past-at-eot",
+    "name": "-았/었어요 for the past",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A finished action or a past state.",
+    "examples": [
+      "어제 친구를 만났어요",
+      "날씨가 좋았어요"
+    ]
+  },
+  {
+    "id": "future-eul-geoyeyo",
+    "name": "-(으)ㄹ 거예요 for plans",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plan or prediction about the future.",
+    "examples": [
+      "내일 부산에 갈 거예요",
+      "비가 올 거예요"
+    ]
+  },
+  {
+    "id": "progressive-go-itda",
+    "name": "-고 있다 for ongoing action",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action in progress right now.",
+    "examples": [
+      "지금 밥을 먹고 있어요",
+      "동생이 자고 있어요"
+    ]
+  },
+  {
+    "id": "want-go-sipda",
+    "name": "-고 싶다",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying what you want to do.",
+    "examples": [
+      "한국에 가고 싶어요",
+      "뭐 먹고 싶어요?"
+    ]
+  },
+  {
+    "id": "negation-an",
+    "name": "안 for not",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Not doing something by choice, or an adjective that does not hold.",
+    "examples": [
+      "오늘은 안 가요",
+      "안 매워요"
+    ]
+  },
+  {
+    "id": "negation-mot",
+    "name": "못 for cannot",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being unable to do something, against choosing not to.",
+    "examples": [
+      "수영을 못 해요",
+      "어제 잠을 못 잤어요"
+    ]
+  },
+  {
+    "id": "connective-go",
+    "name": "-고 for and then",
+    "level": 1,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two actions or facts joined in one sentence.",
+    "examples": [
+      "밥을 먹고 커피를 마셔요",
+      "이 식당은 싸고 맛있어요"
+    ]
+  },
+  {
+    "id": "connective-jiman",
+    "name": "-지만 for but",
+    "level": 1,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two clauses that contrast.",
+    "examples": [
+      "비싸지만 맛있어요",
+      "한국어는 어렵지만 재미있어요"
+    ]
+  },
+  {
+    "id": "request-euseyo",
+    "name": "-(으)세요 for requests",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Politely asking or telling someone to do something.",
+    "examples": [
+      "여기 앉으세요",
+      "천천히 말해 주세요"
+    ]
+  },
+  {
+    "id": "suggest-eulkkayo",
+    "name": "-(으)ㄹ까요? for suggestions",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Suggesting doing something together, or offering to do it.",
+    "examples": [
+      "같이 점심 먹을까요?",
+      "창문 열까요?"
+    ]
+  },
+  {
+    "id": "sino-numbers",
+    "name": "Sino-Korean numbers",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Dates, prices, phone numbers, minutes, or floors.",
+    "examples": [
+      "삼월 십오 일",
+      "만 오천 원이에요"
+    ]
+  },
+  {
+    "id": "native-counters",
+    "name": "Native numbers with counters",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Counting things, people, or age with a counter.",
+    "examples": [
+      "사과 세 개 주세요",
+      "동생은 스무 살이에요"
+    ]
+  },
+  {
+    "id": "wh-in-situ",
+    "name": "Question words stay in place",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question with 뭐, 어디, 언제, or 누구.",
+    "examples": [
+      "어디에 가요?",
+      "언제 와요?"
+    ]
+  },
+  {
+    "id": "verb-final",
+    "name": "Verb at the end",
+    "level": 1,
+    "kind": "verb-final",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Any clause with an object, place, or time before the verb.",
+    "examples": [
+      "저는 매일 학교에서 한국어를 공부해요"
+    ]
+  },
+  {
+    "id": "greetings",
+    "name": "Set greetings and thanks",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Greeting, thanking, apologising, meeting someone, or saying goodbye.",
+    "examples": [
+      "안녕하세요",
+      "감사합니다",
+      "처음 뵙겠습니다"
+    ]
+  },
+  {
+    "id": "pron-three-way",
+    "name": "Plain, aspirated, tense consonants",
+    "level": 1,
+    "kind": "pronunciation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Words that differ only by a plain, aspirated, or tense consonant.",
+    "examples": [
+      "달, 탈, 딸",
+      "불, 풀, 뿔"
+    ]
+  },
+  {
+    "id": "connective-eureo",
+    "name": "-(으)러 가다 for going to do",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going or coming somewhere for a purpose.",
+    "examples": [
+      "밥 먹으러 가요",
+      "책을 사러 서점에 왔어요"
+    ]
+  },
+  {
+    "id": "connective-aseo-reason",
+    "name": "-아서/어서 for a reason",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A cause followed by its result, not a command or suggestion.",
+    "examples": [
+      "배가 아파서 병원에 갔어요",
+      "늦어서 죄송해요"
+    ]
+  },
+  {
+    "id": "connective-aseo-sequence",
+    "name": "-아서/어서 for linked steps",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A first action the second depends on, such as going somewhere and then acting there.",
+    "examples": [
+      "친구를 만나서 영화를 봤어요",
+      "시장에 가서 과일을 샀어요"
+    ]
+  },
+  {
+    "id": "connective-eunikka",
+    "name": "-(으)니까 for a reason",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A reason followed by a command or suggestion.",
+    "examples": [
+      "비가 오니까 우산을 가져가세요",
+      "늦었으니까 택시 타요"
+    ]
+  },
+  {
+    "id": "connective-eumyeon",
+    "name": "-(으)면 for if",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition and what follows from it.",
+    "examples": [
+      "시간이 있으면 같이 가요",
+      "날씨가 좋으면 산책해요"
+    ]
+  },
+  {
+    "id": "connective-euryeogo",
+    "name": "-(으)려고 for in order to",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action done for a purpose.",
+    "examples": [
+      "한국 친구를 사귀려고 한국어를 배워요"
+    ]
+  },
+  {
+    "id": "connective-neunde",
+    "name": "-는데 for background",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Setting up a situation before a request, contrast, or question.",
+    "examples": [
+      "배고픈데 뭐 먹을까요?",
+      "어제 가게에 갔는데 문을 닫았어요"
+    ]
+  },
+  {
+    "id": "connective-eul-ttae",
+    "name": "-(으)ㄹ 때 for when",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that happens at the time of something else.",
+    "examples": [
+      "어릴 때 부산에 살았어요",
+      "밥 먹을 때 TV를 봐요"
+    ]
+  },
+  {
+    "id": "before-after",
+    "name": "-기 전에, -(으)ㄴ 후에",
+    "level": 2,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One action before or after another.",
+    "examples": [
+      "자기 전에 샤워해요",
+      "수업이 끝난 후에 만나요"
+    ]
+  },
+  {
+    "id": "adnominal-tense",
+    "name": "-(으)ㄴ/-는/-(으)ㄹ before a noun",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A verb describing a noun, with its time shown by the ending.",
+    "examples": [
+      "어제 본 영화",
+      "지금 읽는 책",
+      "내일 만날 사람"
+    ]
+  },
+  {
+    "id": "relative-clause-order",
+    "name": "Describing clause before the noun",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun described by a whole clause.",
+    "examples": [
+      "제가 어제 산 옷이에요",
+      "안경을 쓴 사람이 우리 형이에요"
+    ]
+  },
+  {
+    "id": "eul-su-itda",
+    "name": "-(으)ㄹ 수 있다/없다",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying someone can or cannot do something.",
+    "examples": [
+      "한국어를 읽을 수 있어요",
+      "오늘은 갈 수 없어요"
+    ]
+  },
+  {
+    "id": "aya-hada",
+    "name": "-아야/어야 하다",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that has to be done.",
+    "examples": [
+      "내일 일찍 일어나야 해요",
+      "약을 먹어야 돼요"
+    ]
+  },
+  {
+    "id": "eulgeyo",
+    "name": "-(으)ㄹ게요 for promises",
+    "level": 2,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Telling the listener what you will do, for their sake or in reply to them.",
+    "examples": [
+      "제가 전화할게요",
+      "내일 다시 올게요"
+    ]
+  },
+  {
+    "id": "a-boda",
+    "name": "-아/어 보다 for trying",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Trying something, or suggesting someone try it.",
+    "examples": [
+      "이거 한번 입어 보세요",
+      "김치를 먹어 봤어요"
+    ]
+  },
+  {
+    "id": "a-juda",
+    "name": "-아/어 주다 for doing for someone",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing a favour, or asking someone for one.",
+    "examples": [
+      "문 좀 열어 주세요",
+      "친구가 길을 가르쳐 줬어요"
+    ]
+  },
+  {
+    "id": "permission-ado-doeda",
+    "name": "-아/어도 되다 for permission",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Asking or giving permission.",
+    "examples": [
+      "여기 앉아도 돼요?",
+      "사진 찍어도 돼요"
+    ]
+  },
+  {
+    "id": "prohibition-eumyeon-an-doeda",
+    "name": "-(으)면 안 되다",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying something is not allowed.",
+    "examples": [
+      "여기서 담배를 피우면 안 돼요"
+    ]
+  },
+  {
+    "id": "confirm-jiyo",
+    "name": "-지요/-죠 for checking",
+    "level": 2,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Seeking agreement on something the speaker assumes.",
+    "examples": [
+      "날씨 좋죠?",
+      "내일 오시죠?"
+    ]
+  },
+  {
+    "id": "neg-ji-anta",
+    "name": "-지 않다",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Negating with the long form, especially on longer verbs or in writing.",
+    "examples": [
+      "오늘은 춥지 않아요",
+      "그 사람은 술을 마시지 않아요"
+    ]
+  },
+  {
+    "id": "neg-ji-maseyo",
+    "name": "-지 마세요",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling someone politely not to do something.",
+    "examples": [
+      "걱정하지 마세요",
+      "여기서 뛰지 마세요"
+    ]
+  },
+  {
+    "id": "honorific-si",
+    "name": "-(으)시- for an honoured subject",
+    "level": 2,
+    "kind": "speech-level",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A teacher, parent, elder, or customer as the subject.",
+    "examples": [
+      "선생님이 오셨어요",
+      "할머니가 신문을 읽으세요"
+    ]
+  },
+  {
+    "id": "honorific-verbs",
+    "name": "드시다, 계시다, 댁, 연세",
+    "level": 2,
+    "kind": "speech-level",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An elder eating, being somewhere, or asked their age or home.",
+    "examples": [
+      "할아버지께서 진지를 드세요",
+      "사장님은 사무실에 계세요",
+      "연세가 어떻게 되세요?"
+    ]
+  },
+  {
+    "id": "banmal",
+    "name": "반말",
+    "level": 2,
+    "kind": "speech-level",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Talking to a close friend, a younger sibling, or a child.",
+    "examples": [
+      "밥 먹었어?",
+      "나도 갈래"
+    ]
+  },
+  {
+    "id": "only-man",
+    "name": "만 for only",
+    "level": 2,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Limiting something to one item.",
+    "examples": [
+      "물만 마셨어요",
+      "주말에만 일해요"
+    ]
+  },
+  {
+    "id": "comparison-boda",
+    "name": "보다 for comparison",
+    "level": 2,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Comparing two things.",
+    "examples": [
+      "오늘이 어제보다 더 추워요",
+      "버스보다 지하철이 빨라요"
+    ]
+  },
+  {
+    "id": "direction-euro",
+    "name": "(으)로 for direction or means",
+    "level": 2,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Heading toward a place, or doing something with a tool or by a transport.",
+    "examples": [
+      "오른쪽으로 가세요",
+      "지하철로 와요",
+      "젓가락으로 먹어요"
+    ]
+  },
+  {
+    "id": "buteo-kkaji",
+    "name": "부터/에서 … 까지",
+    "level": 2,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A range of time or a distance between places.",
+    "examples": [
+      "아홉 시부터 다섯 시까지 일해요",
+      "집에서 학교까지 멀어요"
+    ]
+  },
+  {
+    "id": "to-person-ege-hante",
+    "name": "에게/한테 for to a person",
+    "level": 2,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Giving, telling, or sending something to a person or animal.",
+    "examples": [
+      "친구한테 선물을 줬어요",
+      "동생에게 문자를 보냈어요"
+    ]
+  },
+  {
+    "id": "telling-time",
+    "name": "Hours native, minutes Sino-Korean",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying the clock time.",
+    "examples": [
+      "지금 세 시 이십 분이에요",
+      "한 시 반에 만나요"
+    ]
+  },
+  {
+    "id": "nominal-neun-geot",
+    "name": "-는 것 for doing as a noun",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An activity as the object of 좋아하다, 싫어하다, or as a subject.",
+    "examples": [
+      "저는 요리하는 것을 좋아해요",
+      "한국어로 말하는 게 어려워요"
+    ]
+  },
+  {
+    "id": "irregular-stems",
+    "name": "Irregular stems",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A stem like 덥다, 듣다, 모르다, or 살다 before a vowel ending.",
+    "examples": [
+      "오늘은 너무 더워요",
+      "음악을 들어요",
+      "잘 몰라요"
+    ]
+  },
+  {
+    "id": "experience-eun-jeok",
+    "name": "-(으)ㄴ 적이 있다/없다",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying whether someone has ever done something.",
+    "examples": [
+      "제주도에 가 본 적이 있어요",
+      "그 영화는 본 적이 없어요"
+    ]
+  },
+  {
+    "id": "dropped-pronoun",
+    "name": "Leaving out 저는 and 당신",
+    "level": 2,
+    "kind": "extra-piece",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A reply or follow-up where the subject is already clear.",
+    "examples": [
+      "네, 어제 봤어요",
+      "이름이 뭐예요?"
+    ]
+  },
+  {
+    "id": "dropped-context",
+    "name": "Reading a reply with gaps",
+    "level": 2,
+    "kind": "comprehension",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A short reply whose subject and object come only from context.",
+    "examples": [
+      "— 숙제 했어요? — 아직 못 했어요"
+    ]
+  },
+  {
+    "id": "connective-gi-ttaemune",
+    "name": "-기 때문에",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A stated reason, more explicit than -아서.",
+    "examples": [
+      "길이 막히기 때문에 지하철을 타요"
+    ]
+  },
+  {
+    "id": "connective-eumyeonseo",
+    "name": "-(으)면서 for while",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two actions by the same person at the same time.",
+    "examples": [
+      "음악을 들으면서 공부해요",
+      "걸으면서 전화했어요"
+    ]
+  },
+  {
+    "id": "connective-daga",
+    "name": "-다가 for switching",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action interrupted or changed partway.",
+    "examples": [
+      "집에 가다가 친구를 만났어요",
+      "자다가 깼어요"
+    ]
+  },
+  {
+    "id": "connective-jamaja",
+    "name": "-자마자 for as soon as",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One action right after another.",
+    "examples": [
+      "집에 오자마자 잤어요"
+    ]
+  },
+  {
+    "id": "connective-ado",
+    "name": "-아/어도 for even if",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A result that holds despite a condition.",
+    "examples": [
+      "비가 와도 갈 거예요",
+      "아무리 먹어도 배가 고파요"
+    ]
+  },
+  {
+    "id": "connective-ge",
+    "name": "-게 for so that",
+    "level": 3,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action done so that something else can happen.",
+    "examples": [
+      "잘 들리게 크게 말해 주세요"
+    ]
+  },
+  {
+    "id": "ge-doeda",
+    "name": "-게 되다 for ending up",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A change that came about through circumstance rather than choice.",
+    "examples": [
+      "회사 때문에 서울에 살게 됐어요",
+      "김치를 좋아하게 됐어요"
+    ]
+  },
+  {
+    "id": "a-jida",
+    "name": "-아/어지다 for becoming",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An adjective describing a change of state.",
+    "examples": [
+      "날씨가 따뜻해졌어요",
+      "한국어가 쉬워졌어요"
+    ]
+  },
+  {
+    "id": "a-itda",
+    "name": "-아/어 있다 for a resulting state",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A state that remains after an action, such as sitting or a door being open.",
+    "examples": [
+      "문이 열려 있어요",
+      "의자에 앉아 있어요"
+    ]
+  },
+  {
+    "id": "a-nota",
+    "name": "-아/어 놓다/두다 for in advance",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something ahead so its result is ready.",
+    "examples": [
+      "식당을 예약해 놓았어요",
+      "창문을 열어 두세요"
+    ]
+  },
+  {
+    "id": "geot-gatda",
+    "name": "-(으)ㄴ/는/(으)ㄹ 것 같다",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A guess, or softening an opinion.",
+    "examples": [
+      "비가 올 것 같아요",
+      "이 옷이 좀 작은 것 같아요"
+    ]
+  },
+  {
+    "id": "na-boda",
+    "name": "-나 보다, -(으)ㄴ가 보다",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Inferring something from evidence.",
+    "examples": [
+      "밖에 비가 오나 봐요",
+      "저 사람이 피곤한가 봐요"
+    ]
+  },
+  {
+    "id": "gi-ro-hada",
+    "name": "-기로 하다 for deciding",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A decision or an agreement to do something.",
+    "examples": [
+      "내년에 결혼하기로 했어요",
+      "주말에 만나기로 했어요"
+    ]
+  },
+  {
+    "id": "eul-jul-alda",
+    "name": "-(으)ㄹ 줄 알다/모르다",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Knowing or not knowing how to do something.",
+    "examples": [
+      "운전할 줄 알아요?",
+      "김치를 만들 줄 몰라요"
+    ]
+  },
+  {
+    "id": "janayo",
+    "name": "-잖아요 for you know",
+    "level": 3,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Reminding the listener of something they already know.",
+    "examples": [
+      "어제 말했잖아요",
+      "주말이잖아요"
+    ]
+  },
+  {
+    "id": "geodeunyo",
+    "name": "-거든요 for explaining",
+    "level": 3,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Giving a reason or background the listener did not know.",
+    "examples": [
+      "오늘은 못 가요. 약속이 있거든요"
+    ]
+  },
+  {
+    "id": "quote-dago",
+    "name": "-다고 하다, reported statement",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting what someone said.",
+    "examples": [
+      "친구가 내일 바쁘다고 했어요",
+      "민수 씨가 학생이라고 했어요"
+    ]
+  },
+  {
+    "id": "quote-nyago",
+    "name": "-냐고 하다, reported question",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting a question someone asked.",
+    "examples": [
+      "선생님이 숙제를 했냐고 물어봤어요"
+    ]
+  },
+  {
+    "id": "quote-rago",
+    "name": "-(으)라고 하다, reported command",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting a request or order.",
+    "examples": [
+      "엄마가 일찍 오라고 했어요",
+      "의사가 쉬라고 했어요"
+    ]
+  },
+  {
+    "id": "quote-jago",
+    "name": "-자고 하다, reported suggestion",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting a suggestion someone made.",
+    "examples": [
+      "친구가 같이 여행 가자고 했어요"
+    ]
+  },
+  {
+    "id": "quote-contracted",
+    "name": "-대요, -래요",
+    "level": 3,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Passing on what someone said, in casual speech.",
+    "examples": [
+      "내일 비 온대요",
+      "선생님이 기다리래요"
+    ]
+  },
+  {
+    "id": "embedded-question",
+    "name": "-(으)ㄴ지/-는지 + 알다/모르다",
+    "level": 3,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question embedded as the object of 알다, 모르다, or 궁금하다.",
+    "examples": [
+      "그 사람이 어디 사는지 알아요?",
+      "언제 시작하는지 모르겠어요"
+    ]
+  },
+  {
+    "id": "honorific-kkeseo",
+    "name": "께서, 께",
+    "level": 3,
+    "kind": "speech-level",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An elder or superior as the subject, or receiving something.",
+    "examples": [
+      "아버지께서 말씀하셨어요",
+      "할머니께 선물을 드렸어요"
+    ]
+  },
+  {
+    "id": "neg-ji-malgo",
+    "name": "-지 말고",
+    "level": 3,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling someone to do one thing instead of another.",
+    "examples": [
+      "택시 타지 말고 지하철 타세요"
+    ]
+  },
+  {
+    "id": "like-cheoreom",
+    "name": "처럼, 같이 for like",
+    "level": 3,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Comparing how something is or is done to something else.",
+    "examples": [
+      "가수처럼 노래를 잘해요",
+      "아이같이 웃어요"
+    ]
+  },
+  {
+    "id": "every-mada",
+    "name": "마다 for every",
+    "level": 3,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that repeats with each unit of time or each member.",
+    "examples": [
+      "아침마다 운동해요",
+      "사람마다 생각이 달라요"
+    ]
+  },
+  {
+    "id": "only-bakke",
+    "name": "밖에 + negative",
+    "level": 3,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Only, stressing that it is less than expected.",
+    "examples": [
+      "천 원밖에 없어요",
+      "한 명밖에 안 왔어요"
+    ]
+  },
+  {
+    "id": "plain-written-style",
+    "name": "-(으)ㄴ/는다 written style",
+    "level": 3,
+    "kind": "speech-level",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A diary, essay, or report with no listener.",
+    "examples": [
+      "나는 매일 아침 운동을 한다",
+      "서울은 인구가 많다"
+    ]
+  },
+  {
+    "id": "conjunction-register",
+    "name": "그런데 against 근데",
+    "level": 3,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Starting a sentence with but or so in speech against in writing.",
+    "examples": [
+      "근데 그거 진짜야?",
+      "그러나 결과는 달랐다"
+    ]
+  },
+  {
+    "id": "verb-collocations",
+    "name": "Fixed noun + verb pairs",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Catching a cold, taking a photo, or a similar fixed pair.",
+    "examples": [
+      "감기에 걸렸어요",
+      "사진을 찍어도 돼요?",
+      "샤워를 해요"
+    ]
+  },
+  {
+    "id": "e-daehae",
+    "name": "에 대해(서), 에 대한",
+    "level": 3,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Talking or thinking about a topic.",
+    "examples": [
+      "한국 역사에 대해 배워요",
+      "환경에 대한 책을 읽었어요"
+    ]
+  },
+  {
+    "id": "connective-eulsurok",
+    "name": "-(으)ㄹ수록 for the more",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing increasing with another.",
+    "examples": [
+      "한국어는 배울수록 재미있어요",
+      "사람이 많을수록 좋아요"
+    ]
+  },
+  {
+    "id": "connective-baram-e",
+    "name": "-는 바람에",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An unexpected cause with a bad result.",
+    "examples": [
+      "늦잠을 자는 바람에 지각했어요"
+    ]
+  },
+  {
+    "id": "connective-doerok",
+    "name": "-도록 for so that",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A goal or extent the action is aimed at.",
+    "examples": [
+      "잊어버리지 않도록 메모하세요",
+      "밤늦도록 일했어요"
+    ]
+  },
+  {
+    "id": "connective-deoni",
+    "name": "-더니 for observed change",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something the speaker saw happen, followed by what came of it.",
+    "examples": [
+      "아침에는 흐리더니 오후에 비가 왔어요"
+    ]
+  },
+  {
+    "id": "connective-atdeoni",
+    "name": "-았/었더니 for after I did",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The speaker's own action and what they then found.",
+    "examples": [
+      "약을 먹었더니 좀 나았어요"
+    ]
+  },
+  {
+    "id": "connective-eul-ppunman-anira",
+    "name": "-(으)ㄹ 뿐만 아니라",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Adding a second point to a first: not only but also.",
+    "examples": [
+      "그 식당은 맛있을 뿐만 아니라 값도 싸요"
+    ]
+  },
+  {
+    "id": "connective-neun-gime",
+    "name": "-는 김에",
+    "level": 4,
+    "kind": "connective",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Doing something extra while already doing something else.",
+    "examples": [
+      "시장에 가는 김에 우유도 사 올게요"
+    ]
+  },
+  {
+    "id": "connective-dabomyeon",
+    "name": "-다 보면, -다 보니",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A result that comes from doing something repeatedly.",
+    "examples": [
+      "자꾸 연습하다 보면 잘하게 될 거예요",
+      "살다 보니 익숙해졌어요"
+    ]
+  },
+  {
+    "id": "connective-neurago",
+    "name": "-느라고",
+    "level": 4,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being kept from something by an activity.",
+    "examples": [
+      "숙제하느라고 못 잤어요"
+    ]
+  },
+  {
+    "id": "connective-myeo",
+    "name": "-(으)며 in writing",
+    "level": 4,
+    "kind": "connective",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Joining two facts or simultaneous actions in a report or article.",
+    "examples": [
+      "그는 교사이며 작가이다"
+    ]
+  },
+  {
+    "id": "eul-tende",
+    "name": "-(으)ㄹ 텐데",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A strong assumption leading into advice, worry, or a wish.",
+    "examples": [
+      "바쁠 텐데 와 줘서 고마워요",
+      "시간이 있으면 좋을 텐데요"
+    ]
+  },
+  {
+    "id": "eul-manhada",
+    "name": "-(으)ㄹ 만하다",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Recommending something as worth doing.",
+    "examples": [
+      "그 영화 볼 만해요",
+      "이 정도면 먹을 만해요"
+    ]
+  },
+  {
+    "id": "eun-cheok",
+    "name": "-(으)ㄴ/는 척하다",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Pretending to do or be something.",
+    "examples": [
+      "자는 척했어요",
+      "모르는 척하지 마세요"
+    ]
+  },
+  {
+    "id": "eul-ppeonhada",
+    "name": "-(으)ㄹ 뻔하다",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that nearly happened.",
+    "examples": [
+      "넘어질 뻔했어요",
+      "버스를 놓칠 뻔했어요"
+    ]
+  },
+  {
+    "id": "deoragoyo",
+    "name": "-더라고요 for what I saw",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Reporting something the speaker personally saw or felt.",
+    "examples": [
+      "그 식당 정말 맛있더라고요",
+      "사람이 많더라고요"
+    ]
+  },
+  {
+    "id": "deonde",
+    "name": "-던데(요)",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A past observation offered as background or mild disagreement.",
+    "examples": [
+      "민수 씨 아까 집에 가던데요",
+      "그 영화 재미있던데"
+    ]
+  },
+  {
+    "id": "adnominal-deon",
+    "name": "-던 for a past habit",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun described by something repeated or unfinished in the past.",
+    "examples": [
+      "제가 자주 가던 카페예요",
+      "먹던 빵 어디 있어요?"
+    ]
+  },
+  {
+    "id": "pluperfect-at-eosseot",
+    "name": "-았/었었- for a past no longer true",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A past state contrasted with now.",
+    "examples": [
+      "어렸을 때 부산에 살았었어요"
+    ]
+  },
+  {
+    "id": "passive-suffix",
+    "name": "Passive -이/히/리/기-",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that happens to the subject, such as a door opening or a word being heard.",
+    "examples": [
+      "문이 열렸어요",
+      "멀리서 소리가 들려요"
+    ]
+  },
+  {
+    "id": "causative-suffix",
+    "name": "Causative -이/히/리/기/우/구/추-",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Making someone eat, wear, or sleep, or making something lower.",
+    "examples": [
+      "아이에게 밥을 먹여요",
+      "소리를 좀 줄여 주세요"
+    ]
+  },
+  {
+    "id": "neun-de-geollida",
+    "name": "-는 데 걸리다/쓰다",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Time or money spent on an activity.",
+    "examples": [
+      "집에서 회사까지 가는 데 한 시간 걸려요"
+    ]
+  },
+  {
+    "id": "e-ttareumyeon",
+    "name": "에 따르면, 에 의하면",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Citing a source such as a forecast or a study.",
+    "examples": [
+      "일기 예보에 따르면 내일 눈이 온대요"
+    ]
+  },
+  {
+    "id": "connective-tase",
+    "name": "-(으)ㄴ/는 탓에",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A cause blamed for a bad result.",
+    "examples": [
+      "비가 온 탓에 경기가 취소됐어요"
+    ]
+  },
+  {
+    "id": "connective-banmyeone",
+    "name": "-(으)ㄴ/는 반면에",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two opposing sides of one thing.",
+    "examples": [
+      "이 집은 넓은 반면에 교통이 불편해요"
+    ]
+  },
+  {
+    "id": "connective-dasipi",
+    "name": "-다시피",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Pointing to something the listener already knows or can see.",
+    "examples": [
+      "보시다시피 방이 좀 좁아요",
+      "아시다시피 요즘 바빠요"
+    ]
+  },
+  {
+    "id": "connective-dedaga",
+    "name": "-(으)ㄴ/는 데다가",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Piling one fact on top of another.",
+    "examples": [
+      "비가 오는 데다가 바람도 불어요"
+    ]
+  },
+  {
+    "id": "connective-eun-isang",
+    "name": "-(으)ㄴ/는 이상",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A fact already settled that forces a conclusion.",
+    "examples": [
+      "약속한 이상 지켜야 해요"
+    ]
+  },
+  {
+    "id": "connective-aseo-geureonji",
+    "name": "-아/어서 그런지",
+    "level": 5,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A possible but uncertain reason.",
+    "examples": [
+      "어제 늦게 자서 그런지 피곤해요"
+    ]
+  },
+  {
+    "id": "connective-eumeuro",
+    "name": "-(으)므로 in writing",
+    "level": 5,
+    "kind": "connective",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal reason in a report, notice, or argument.",
+    "examples": [
+      "비용이 많이 들므로 신중해야 한다"
+    ]
+  },
+  {
+    "id": "connective-goja",
+    "name": "-고자 in writing",
+    "level": 5,
+    "kind": "connective",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A stated purpose in a formal speech or document.",
+    "examples": [
+      "이 문제를 해결하고자 노력하고 있습니다"
+    ]
+  },
+  {
+    "id": "gi-maryeonida",
+    "name": "-기 마련이다",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that naturally always happens.",
+    "examples": [
+      "누구나 실수하기 마련이에요"
+    ]
+  },
+  {
+    "id": "neun-semida",
+    "name": "-는 셈이다",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that amounts to being the case, all things considered.",
+    "examples": [
+      "거의 다 끝난 셈이에요",
+      "매일 만나는 셈이죠"
+    ]
+  },
+  {
+    "id": "gi-sipsangida",
+    "name": "-기 십상이다",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A bad outcome that is very likely.",
+    "examples": [
+      "그렇게 하면 실수하기 십상이에요"
+    ]
+  },
+  {
+    "id": "eul-ppunida",
+    "name": "-(으)ㄹ 뿐이다",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Nothing more than this.",
+    "examples": [
+      "저는 제 일을 했을 뿐이에요"
+    ]
+  },
+  {
+    "id": "eun-deutada",
+    "name": "-(으)ㄴ/는 듯하다",
+    "level": 5,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A hedged guess in writing or formal speech.",
+    "examples": [
+      "곧 비가 올 듯하다",
+      "그는 아무것도 모르는 듯했다"
+    ]
+  },
+  {
+    "id": "go-malda",
+    "name": "-고 말다 for in the end",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something that finally happened, often against wishes.",
+    "examples": [
+      "결국 울고 말았어요",
+      "지갑을 잃어버리고 말았어요"
+    ]
+  },
+  {
+    "id": "even-jocha-majeo",
+    "name": "조차, 마저",
+    "level": 5,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Even this, usually in a bad situation.",
+    "examples": [
+      "물조차 없어요",
+      "너마저 나를 떠나는구나"
+    ]
+  },
+  {
+    "id": "let-alone-keonyeong",
+    "name": "은/는커녕",
+    "level": 5,
+    "kind": "particle",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Not only not the big thing, but not even the small one.",
+    "examples": [
+      "밥은커녕 물도 못 마셨어요"
+    ]
+  },
+  {
+    "id": "nominal-eum-notes",
+    "name": "-(으)ㅁ in notes and notices",
+    "level": 5,
+    "kind": "speech-level",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A memo, notice, or form with clipped endings.",
+    "examples": [
+      "회의는 3시에 시작함",
+      "오늘 휴무임"
+    ]
+  },
+  {
+    "id": "written-vocab",
+    "name": "및, 등, 또는",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Listing items in a report or official text.",
+    "examples": [
+      "서울 및 경기 지역",
+      "사과, 배 등의 과일"
+    ]
+  },
+  {
+    "id": "euro-inhae",
+    "name": "(으)로 인해",
+    "level": 5,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal cause in news or reports.",
+    "examples": [
+      "폭우로 인해 도로가 통제되었다"
+    ]
+  },
+  {
+    "id": "connective-eulmangjeong",
+    "name": "-(으)ㄹ망정",
+    "level": 6,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Accepting a hardship rather than giving in.",
+    "examples": [
+      "굶을망정 남의 돈은 안 받겠어요"
+    ]
+  },
+  {
+    "id": "connective-eun-nameoji",
+    "name": "-(으)ㄴ 나머지",
+    "level": 6,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An excess of a feeling or action causing a bad result.",
+    "examples": [
+      "너무 긴장한 나머지 말을 못 했어요"
+    ]
+  },
+  {
+    "id": "connective-a-bwatja",
+    "name": "-아/어 봤자",
+    "level": 6,
+    "kind": "connective",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Saying an action would be pointless.",
+    "examples": [
+      "지금 가 봤자 문 닫았을 거예요"
+    ]
+  },
+  {
+    "id": "connective-eul-baeya",
+    "name": "-(으)ㄹ 바에야",
+    "level": 6,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Choosing one bad option over a worse one.",
+    "examples": [
+      "이렇게 기다릴 바에야 걸어가겠어요"
+    ]
+  },
+  {
+    "id": "connective-eun-madange",
+    "name": "-(으)ㄴ/는 마당에",
+    "level": 6,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A situation already reached that changes what makes sense.",
+    "examples": [
+      "이렇게 된 마당에 숨길 필요 없어요"
+    ]
+  },
+  {
+    "id": "connective-da-mothae",
+    "name": "-다 못해",
+    "level": 6,
+    "kind": "connective",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A state pushed past its limit.",
+    "examples": [
+      "기다리다 못해 먼저 갔어요"
+    ]
+  },
+  {
+    "id": "connective-geoniwa",
+    "name": "-거니와 in writing",
+    "level": 6,
+    "kind": "connective",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Granting one point while adding a stronger one.",
+    "examples": [
+      "그는 실력도 뛰어나거니와 성격도 좋다"
+    ]
+  },
+  {
+    "id": "connective-eul-jieonjeong",
+    "name": "-(으)ㄹ지언정 in writing",
+    "level": 6,
+    "kind": "connective",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A firm stance kept even at a cost.",
+    "examples": [
+      "실패할지언정 포기하지는 않겠다"
+    ]
+  },
+  {
+    "id": "eul-ttareumida",
+    "name": "-(으)ㄹ 따름이다",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal statement that this is all there is, often in thanks.",
+    "examples": [
+      "그저 감사할 따름입니다"
+    ]
+  },
+  {
+    "id": "gi-nareumida",
+    "name": "-기 나름이다",
+    "level": 6,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An outcome depending entirely on how something is done.",
+    "examples": [
+      "행복은 생각하기 나름이에요"
+    ]
+  },
+  {
+    "id": "eul-beophada",
+    "name": "-(으)ㄹ 법하다",
+    "level": 6,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something likely or understandable given the situation.",
+    "examples": [
+      "그렇게 생각할 법해요",
+      "화가 날 법도 하죠"
+    ]
+  },
+  {
+    "id": "neun-dung-maneun-dung",
+    "name": "-는 둥 마는 둥",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Doing something half-heartedly.",
+    "examples": [
+      "아침을 먹는 둥 마는 둥 하고 나갔어요"
+    ]
+  },
+  {
+    "id": "neun-bawa-gachi",
+    "name": "-는 바와 같이",
+    "level": 6,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Referring back to something already stated, in formal text.",
+    "examples": [
+      "앞에서 살펴본 바와 같이 문제가 많다"
+    ]
+  }
+]

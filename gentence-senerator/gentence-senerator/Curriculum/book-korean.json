@@ -1,0 +1,3182 @@
+{
+ "language": "korean",
+ "chapters": [
+  {
+   "id": "ko.basics",
+   "name": "Sentence basics",
+   "sub": "학생이에요 · 시간이 없어요 · 어디에 가요?",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.basics.ieyo",
+     "head": "이에요",
+     "reading": "학생이에요",
+     "gloss": "is, after a consonant",
+     "example": "저는 학생이에요.",
+     "point": "copula-ieyo-yeyo",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.yeyo",
+     "head": "예요",
+     "reading": "친구예요",
+     "gloss": "is, after a vowel",
+     "example": "이 사람은 제 친구예요.",
+     "point": "copula-ieyo-yeyo",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.anieyo",
+     "head": "이/가 아니에요",
+     "reading": "학생이 아니에요",
+     "gloss": "is not",
+     "example": "저는 한국 사람이 아니에요.",
+     "point": "copula-negative",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.isseoyo",
+     "head": "있어요",
+     "reading": "시간이 있어요",
+     "gloss": "there is, have",
+     "example": "집에 고양이가 있어요.",
+     "point": "itda-eopda",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.eopseoyo",
+     "head": "없어요",
+     "reading": "돈이 없어요",
+     "gloss": "there isn't, don't have",
+     "example": "오늘은 수업이 없어요.",
+     "point": "itda-eopda",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.sov",
+     "head": "S O V",
+     "reading": "저는 커피를 마셔요",
+     "gloss": "verb last",
+     "example": "동생이 매일 아침 신문을 읽어요.",
+     "point": "verb-final",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.time-place",
+     "head": "time · place · verb",
+     "reading": "내일 학교에서 만나요",
+     "gloss": "time and place before the verb",
+     "example": "우리 내일 도서관에서 공부해요.",
+     "point": "verb-final",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.mwo",
+     "head": "뭐",
+     "reading": "뭐 먹어요?",
+     "gloss": "what · stays in place",
+     "example": "점심에 뭐 먹었어요?",
+     "point": "wh-in-situ",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.eodi",
+     "head": "어디",
+     "reading": "어디에 가요?",
+     "gloss": "where",
+     "example": "화장실이 어디에 있어요?",
+     "point": "wh-in-situ",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.nugu",
+     "head": "누구 · 누가",
+     "reading": "누가 왔어요?",
+     "gloss": "who · 누가 as subject",
+     "example": "이 사람은 누구예요?",
+     "point": "wh-in-situ",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.no-jeoneun",
+     "head": "저는 dropped",
+     "reading": "네, 어제 봤어요",
+     "gloss": "leave out I when it's clear",
+     "example": "— 영화 봤어요? — 네, 어제 봤어요.",
+     "point": "dropped-pronoun",
+     "level": 2
+    },
+    {
+     "id": "ko.basics.no-dangsin",
+     "head": "당신 ✗",
+     "reading": "민수 씨는 …?",
+     "gloss": "use a name or title, not 당신",
+     "example": "선생님은 커피 좋아하세요?",
+     "point": "dropped-pronoun",
+     "level": 2
+    },
+    {
+     "id": "ko.basics.gaps",
+     "head": "reply with gaps",
+     "reading": "아직 못 했어요",
+     "gloss": "subject and object from context",
+     "example": "— 숙제 했어요? — 아직 못 했어요.",
+     "point": "dropped-context",
+     "level": 2
+    },
+    {
+     "id": "ko.basics.annyeong",
+     "head": "안녕하세요",
+     "gloss": "hello",
+     "example": "안녕하세요, 처음 뵙겠습니다.",
+     "point": "greetings",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.thanks",
+     "head": "감사합니다 · 고마워요",
+     "gloss": "thank you",
+     "example": "도와주셔서 감사합니다.",
+     "point": "greetings",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.sorry",
+     "head": "죄송합니다 · 미안해요",
+     "gloss": "sorry",
+     "example": "늦어서 죄송합니다.",
+     "point": "greetings",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.dtt",
+     "head": "ㄷ · ㅌ · ㄸ",
+     "reading": "달 · 탈 · 딸",
+     "gloss": "plain, aspirated, tense",
+     "example": "딸이 둘 있어요.",
+     "point": "pron-three-way",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.jcc",
+     "head": "ㅈ · ㅊ · ㅉ",
+     "reading": "자요 · 차요 · 짜요",
+     "gloss": "sleep · cold · salty",
+     "example": "국이 너무 짜요.",
+     "point": "pron-three-way",
+     "level": 1
+    },
+    {
+     "id": "ko.basics.gamgi",
+     "head": "감기에 걸리다",
+     "reading": "감기에 걸렸어요",
+     "gloss": "catch a cold",
+     "example": "감기에 걸려서 학교에 못 갔어요.",
+     "point": "verb-collocations",
+     "level": 3
+    },
+    {
+     "id": "ko.basics.sajin",
+     "head": "사진을 찍다",
+     "reading": "사진을 찍어요",
+     "gloss": "take a photo",
+     "example": "여기서 사진을 찍어도 돼요?",
+     "point": "verb-collocations",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.topic-subject",
+   "name": "은/는 or 이/가",
+   "sub": "저는 학생이에요 · 비가 와요 · 누가 왔어요?",
+   "layout": "split",
+   "entries": [
+    {
+     "id": "ko.topic-subject.eun",
+     "head": "은",
+     "reading": "책은",
+     "gloss": "topic, after a consonant",
+     "group": "FORM",
+     "tag": "은/는",
+     "example": "이 책은 재미있어요.",
+     "point": "topic-eun-neun",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.neun",
+     "head": "는",
+     "reading": "저는",
+     "gloss": "topic, after a vowel",
+     "group": "FORM",
+     "tag": "은/는",
+     "example": "저는 회사원이에요.",
+     "point": "topic-eun-neun",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.i",
+     "head": "이",
+     "reading": "책이",
+     "gloss": "subject, after a consonant",
+     "group": "FORM",
+     "tag": "이/가",
+     "example": "책상 위에 책이 있어요.",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.ga",
+     "head": "가",
+     "reading": "친구가",
+     "gloss": "subject, after a vowel",
+     "group": "FORM",
+     "tag": "이/가",
+     "example": "친구가 와요.",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.intro-topic",
+     "head": "저는 민수예요",
+     "gloss": "saying who I am",
+     "group": "INTRODUCING",
+     "tag": "은/는",
+     "example": "안녕하세요, 저는 민수예요.",
+     "point": "topic-eun-neun",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.intro-subject",
+     "head": "제가 민수예요",
+     "gloss": "I'm the one (answers who)",
+     "group": "INTRODUCING",
+     "tag": "이/가",
+     "example": "— 누가 민수 씨예요? — 제가 민수예요.",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.new",
+     "head": "왕이 살았어요",
+     "gloss": "new to the story",
+     "group": "NEW · KNOWN",
+     "tag": "이/가",
+     "example": "옛날에 한 왕이 살았어요.",
+     "point": "subject-i-ga",
+     "level": 2
+    },
+    {
+     "id": "ko.topic-subject.known",
+     "head": "그 왕은",
+     "gloss": "already known",
+     "group": "NEW · KNOWN",
+     "tag": "은/는",
+     "example": "그 왕은 딸이 셋 있었어요.",
+     "point": "topic-eun-neun",
+     "level": 2
+    },
+    {
+     "id": "ko.topic-subject.contrast",
+     "head": "커피는 좋아해요",
+     "gloss": "this one, unlike others",
+     "group": "CONTRAST",
+     "tag": "은/는",
+     "example": "커피는 좋아하지만 차는 안 좋아해요.",
+     "point": "topic-eun-neun",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.who",
+     "head": "누가 왔어요?",
+     "gloss": "question words take 이/가",
+     "group": "WHO?",
+     "tag": "이/가",
+     "example": "누가 이 케이크를 만들었어요?",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.have",
+     "head": "시간이 있어요",
+     "gloss": "the thing that is or isn't",
+     "group": "있다 · 없다",
+     "tag": "이/가",
+     "example": "저는 오늘 시간이 없어요.",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.fact",
+     "head": "지구는 둥글어요",
+     "gloss": "general truths",
+     "group": "FACT · EVENT",
+     "tag": "은/는",
+     "example": "한국의 겨울은 추워요.",
+     "point": "topic-eun-neun",
+     "level": 2
+    },
+    {
+     "id": "ko.topic-subject.event",
+     "head": "비가 와요",
+     "gloss": "what's happening now",
+     "group": "FACT · EVENT",
+     "tag": "이/가",
+     "example": "밖에 눈이 와요.",
+     "point": "subject-i-ga",
+     "level": 1
+    },
+    {
+     "id": "ko.topic-subject.double-topic",
+     "head": "코끼리는",
+     "reading": "코끼리는 코가 길어요",
+     "gloss": "whole: the topic",
+     "group": "DOUBLE",
+     "tag": "은/는",
+     "example": "저는 머리가 아파요.",
+     "point": "topic-eun-neun",
+     "level": 2
+    },
+    {
+     "id": "ko.topic-subject.double-subject",
+     "head": "코가",
+     "reading": "코끼리는 코가 길어요",
+     "gloss": "part: the subject",
+     "group": "DOUBLE",
+     "tag": "이/가",
+     "example": "동생은 키가 커요.",
+     "point": "subject-i-ga",
+     "level": 2
+    },
+    {
+     "id": "ko.topic-subject.kkeseoneun",
+     "head": "께서는",
+     "reading": "선생님께서는",
+     "gloss": "honoured topic",
+     "group": "HONOURED",
+     "tag": "은/는",
+     "example": "사장님께서는 지금 회의 중이세요.",
+     "point": "honorific-kkeseo",
+     "level": 3
+    },
+    {
+     "id": "ko.topic-subject.kkeseo",
+     "head": "께서",
+     "reading": "할머니께서",
+     "gloss": "honoured subject",
+     "group": "HONOURED",
+     "tag": "이/가",
+     "example": "할머니께서 오셨어요.",
+     "point": "honorific-kkeseo",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.particles",
+   "name": "Particles",
+   "sub": "빵을 먹어요 · 저도 · 친구하고",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.particles.eul",
+     "head": "을",
+     "reading": "빵을",
+     "gloss": "object, after a consonant",
+     "example": "아침에 빵을 먹어요.",
+     "point": "object-eul-reul",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.reul",
+     "head": "를",
+     "reading": "커피를",
+     "gloss": "object, after a vowel",
+     "example": "매일 커피를 마셔요.",
+     "point": "object-eul-reul",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.do",
+     "head": "도",
+     "reading": "저도",
+     "gloss": "also · replaces 은/는, 이/가, 을/를",
+     "example": "저도 한국어를 배워요.",
+     "point": "also-do",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.ui",
+     "head": "의",
+     "reading": "언니의 차",
+     "gloss": "of, 's",
+     "example": "이건 언니의 차예요.",
+     "point": "possessive-ui",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.je",
+     "head": "제 · 내",
+     "reading": "제 이름",
+     "gloss": "my: 저의, 나의 shortened",
+     "example": "제 이름은 지수예요.",
+     "point": "possessive-ui",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.hago",
+     "head": "하고",
+     "reading": "빵하고 우유",
+     "gloss": "and, with (nouns)",
+     "example": "주말에 친구하고 영화를 봤어요.",
+     "point": "and-hago",
+     "level": 1
+    },
+    {
+     "id": "ko.particles.man",
+     "head": "만",
+     "reading": "물만",
+     "gloss": "only",
+     "example": "저는 물만 마셔요.",
+     "point": "only-man",
+     "level": 2
+    },
+    {
+     "id": "ko.particles.boda",
+     "head": "보다",
+     "reading": "어제보다",
+     "gloss": "than",
+     "example": "오늘이 어제보다 더 추워요.",
+     "point": "comparison-boda",
+     "level": 2
+    },
+    {
+     "id": "ko.particles.euro-means",
+     "head": "(으)로",
+     "reading": "버스로",
+     "gloss": "by, with (means)",
+     "example": "학교에 버스로 가요.",
+     "point": "direction-euro",
+     "level": 2
+    },
+    {
+     "id": "ko.particles.buteo",
+     "head": "부터 … 까지",
+     "reading": "아홉 시부터 여섯 시까지",
+     "gloss": "from … to (time)",
+     "example": "아홉 시부터 여섯 시까지 일해요.",
+     "point": "buteo-kkaji",
+     "level": 2
+    },
+    {
+     "id": "ko.particles.hante",
+     "head": "에게 · 한테",
+     "reading": "친구한테",
+     "gloss": "to a person",
+     "example": "친구한테 선물을 줬어요.",
+     "point": "to-person-ege-hante",
+     "level": 2
+    },
+    {
+     "id": "ko.particles.cheoreom",
+     "head": "처럼 · 같이",
+     "reading": "아빠처럼",
+     "gloss": "like",
+     "example": "동생은 아빠처럼 키가 커요.",
+     "point": "like-cheoreom",
+     "level": 3
+    },
+    {
+     "id": "ko.particles.mada",
+     "head": "마다",
+     "reading": "주말마다",
+     "gloss": "every",
+     "example": "주말마다 등산을 가요.",
+     "point": "every-mada",
+     "level": 3
+    },
+    {
+     "id": "ko.particles.bakke",
+     "head": "밖에 + 안 · 못 · 없다",
+     "reading": "천 원밖에 없어요",
+     "gloss": "only, nothing but",
+     "example": "지갑에 천 원밖에 없어요.",
+     "point": "only-bakke",
+     "level": 3
+    },
+    {
+     "id": "ko.particles.daehae",
+     "head": "에 대해(서) · 에 대한",
+     "reading": "역사에 대해",
+     "gloss": "about",
+     "example": "한국 역사에 대해 이야기했어요.",
+     "point": "e-daehae",
+     "level": 3
+    },
+    {
+     "id": "ko.particles.jocha",
+     "head": "조차",
+     "reading": "물조차",
+     "gloss": "even (that basic)",
+     "example": "너무 바빠서 물조차 못 마셨어요.",
+     "point": "even-jocha-majeo",
+     "level": 5
+    },
+    {
+     "id": "ko.particles.majeo",
+     "head": "마저",
+     "reading": "친구마저",
+     "gloss": "even that last one",
+     "example": "믿었던 친구마저 떠났어요.",
+     "point": "even-jocha-majeo",
+     "level": 5
+    },
+    {
+     "id": "ko.particles.keonyeong",
+     "head": "은/는커녕",
+     "reading": "밥은커녕",
+     "gloss": "let alone",
+     "example": "밥은커녕 물도 못 마셨어요.",
+     "point": "let-alone-keonyeong",
+     "level": 5
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "spot-it",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.places",
+   "name": "에 or 에서",
+   "sub": "집에 있어요 · 집에서 쉬어요 · 세 시에",
+   "layout": "split",
+   "entries": [
+    {
+     "id": "ko.places.itda",
+     "head": "회사에 있어요",
+     "gloss": "where something is",
+     "group": "있다",
+     "tag": "에",
+     "example": "지금 회사에 있어요.",
+     "point": "location-e",
+     "level": 1
+    },
+    {
+     "id": "ko.places.gada",
+     "head": "부산에 가요",
+     "gloss": "where you go",
+     "group": "가다 · 오다",
+     "tag": "에",
+     "example": "내일 부산에 가요.",
+     "point": "location-e",
+     "level": 1
+    },
+    {
+     "id": "ko.places.gongbu",
+     "head": "도서관에서 공부해요",
+     "gloss": "where it happens",
+     "group": "공부하다",
+     "tag": "에서",
+     "example": "저는 보통 도서관에서 공부해요.",
+     "point": "place-eseo",
+     "level": 1
+    },
+    {
+     "id": "ko.places.ilhada",
+     "head": "은행에서 일해요",
+     "gloss": "where you work",
+     "group": "일하다",
+     "tag": "에서",
+     "example": "언니는 은행에서 일해요.",
+     "point": "place-eseo",
+     "level": 1
+    },
+    {
+     "id": "ko.places.mannada",
+     "head": "카페에서 만나요",
+     "gloss": "where you meet",
+     "group": "만나다",
+     "tag": "에서",
+     "example": "세 시에 카페에서 만나요.",
+     "point": "place-eseo",
+     "level": 1
+    },
+    {
+     "id": "ko.places.anjda",
+     "head": "의자에 앉아요",
+     "gloss": "where it ends up",
+     "group": "앉다 · 넣다",
+     "tag": "에",
+     "example": "여기에 앉으세요.",
+     "point": "location-e",
+     "level": 2
+    },
+    {
+     "id": "ko.places.neota",
+     "head": "가방에 넣어요",
+     "gloss": "where it ends up",
+     "group": "앉다 · 넣다",
+     "tag": "에",
+     "example": "지갑을 가방에 넣었어요.",
+     "point": "location-e",
+     "level": 2
+    },
+    {
+     "id": "ko.places.from",
+     "head": "캐나다에서 왔어요",
+     "gloss": "from a place",
+     "group": "가다 · 오다",
+     "tag": "에서",
+     "example": "저는 캐나다에서 왔어요.",
+     "point": "place-eseo",
+     "level": 1
+    },
+    {
+     "id": "ko.places.arrive",
+     "head": "공항에 도착했어요",
+     "gloss": "arrive at",
+     "group": "도착 · 출발",
+     "tag": "에",
+     "example": "방금 공항에 도착했어요.",
+     "point": "location-e",
+     "level": 2
+    },
+    {
+     "id": "ko.places.depart",
+     "head": "인천에서 출발해요",
+     "gloss": "leave from",
+     "group": "도착 · 출발",
+     "tag": "에서",
+     "example": "비행기는 인천에서 출발해요.",
+     "point": "place-eseo",
+     "level": 2
+    },
+    {
+     "id": "ko.places.eseo-kkaji",
+     "head": "서울에서 부산까지",
+     "gloss": "from … to (place)",
+     "group": "FROM … TO",
+     "tag": "에서",
+     "example": "서울에서 부산까지 KTX로 세 시간 걸려요.",
+     "point": "buteo-kkaji",
+     "level": 2
+    },
+    {
+     "id": "ko.places.clock",
+     "head": "세 시에",
+     "gloss": "at a time",
+     "group": "TIME",
+     "tag": "에",
+     "example": "세 시에 만나요.",
+     "point": "time-e",
+     "level": 1
+    },
+    {
+     "id": "ko.places.day",
+     "head": "월요일에",
+     "gloss": "on a day",
+     "group": "TIME",
+     "tag": "에",
+     "example": "월요일에 시험이 있어요.",
+     "point": "time-e",
+     "level": 1
+    },
+    {
+     "id": "ko.places.no-e",
+     "head": "오늘 · 어제 · 내일",
+     "reading": "내일 만나요",
+     "gloss": "no 에",
+     "group": "TIME",
+     "tag": "에",
+     "example": "어제 친구를 만났어요.",
+     "point": "time-e",
+     "level": 1
+    },
+    {
+     "id": "ko.places.per",
+     "head": "하루에 세 번",
+     "gloss": "per",
+     "group": "TIME",
+     "tag": "에",
+     "example": "하루에 두 번 이를 닦아요.",
+     "point": "time-e",
+     "level": 2
+    }
+   ],
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.verb-forms",
+   "name": "Verb forms",
+   "sub": "가요 · 먹었어요 · 갈 거예요",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.verb-forms.ayo",
+     "head": "-아요",
+     "reading": "가요 · 좋아요",
+     "gloss": "present, stem with ㅏ ㅗ",
+     "example": "주말에 영화관에 가요.",
+     "point": "haeyo-present",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.eoyo",
+     "head": "-어요",
+     "reading": "먹어요 · 읽어요",
+     "gloss": "present, other vowels",
+     "example": "아침마다 신문을 읽어요.",
+     "point": "haeyo-present",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.haeyo",
+     "head": "하다 → 해요",
+     "reading": "공부해요",
+     "gloss": "present of 하다",
+     "example": "도서관에서 공부해요.",
+     "point": "haeyo-present",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.merge",
+     "head": "보아요 → 봐요",
+     "reading": "봐요 · 마셔요 · 와요",
+     "gloss": "vowels merge",
+     "example": "저녁에 드라마를 봐요.",
+     "point": "haeyo-present",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.atseoyo",
+     "head": "-았어요",
+     "reading": "갔어요 · 봤어요",
+     "gloss": "past, stem with ㅏ ㅗ",
+     "example": "어제 친구를 만났어요.",
+     "point": "past-at-eot",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.eotseoyo",
+     "head": "-었어요",
+     "reading": "먹었어요 · 마셨어요",
+     "gloss": "past, other vowels",
+     "example": "점심을 벌써 먹었어요.",
+     "point": "past-at-eot",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.yeosseoyo",
+     "head": "이었어요 · 였어요",
+     "reading": "가수였어요",
+     "gloss": "was",
+     "example": "어릴 때 꿈이 가수였어요.",
+     "point": "past-at-eot",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.geoyeyo",
+     "head": "-(으)ㄹ 거예요",
+     "reading": "갈 거예요 · 먹을 거예요",
+     "gloss": "will, plan",
+     "example": "내년에 한국에 갈 거예요.",
+     "point": "future-eul-geoyeyo",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.go-itda",
+     "head": "-고 있어요",
+     "reading": "먹고 있어요",
+     "gloss": "is doing now",
+     "example": "지금 밥을 먹고 있어요.",
+     "point": "progressive-go-itda",
+     "level": 1
+    },
+    {
+     "id": "ko.verb-forms.eosseot",
+     "head": "-았/었었어요",
+     "reading": "살았었어요",
+     "gloss": "back then, no longer",
+     "example": "어릴 때 부산에 살았었어요.",
+     "point": "pluperfect-at-eosseot",
+     "level": 4
+    },
+    {
+     "id": "ko.verb-forms.irr-b",
+     "head": "ㅂ → 우",
+     "reading": "덥다 → 더워요",
+     "gloss": "most ㅂ adjectives",
+     "example": "오늘은 너무 더워요.",
+     "point": "irregular-stems",
+     "level": 2
+    },
+    {
+     "id": "ko.verb-forms.irr-d",
+     "head": "ㄷ → ㄹ",
+     "reading": "듣다 → 들어요",
+     "gloss": "듣다, 걷다, 묻다",
+     "example": "매일 음악을 들어요.",
+     "point": "irregular-stems",
+     "level": 2
+    },
+    {
+     "id": "ko.verb-forms.irr-reu",
+     "head": "르 → ㄹㄹ",
+     "reading": "모르다 → 몰라요",
+     "gloss": "모르다, 빠르다, 부르다",
+     "example": "그 사람 이름을 몰라요.",
+     "point": "irregular-stems",
+     "level": 2
+    },
+    {
+     "id": "ko.verb-forms.irr-l",
+     "head": "ㄹ drops",
+     "reading": "살다 → 사세요",
+     "gloss": "before ㄴ, ㅂ, ㅅ",
+     "example": "어디에 사세요?",
+     "point": "irregular-stems",
+     "level": 2
+    },
+    {
+     "id": "ko.verb-forms.irr-eu",
+     "head": "으 drops",
+     "reading": "바쁘다 → 바빠요",
+     "gloss": "before -아/어",
+     "example": "요즘 너무 바빠요.",
+     "point": "irregular-stems",
+     "level": 2
+    },
+    {
+     "id": "ko.verb-forms.irr-s",
+     "head": "ㅅ drops",
+     "reading": "낫다 → 나아요",
+     "gloss": "낫다, 짓다",
+     "example": "감기가 다 나았어요.",
+     "point": "irregular-stems",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "transform",
+    "spot-it",
+    "two-step"
+   ]
+  },
+  {
+   "id": "ko.honorifics",
+   "name": "Speech levels & honorifics",
+   "sub": "가요 · 갑니다 · 가 · 드세요",
+   "layout": "cards",
+   "entries": [
+    {
+     "id": "ko.honorifics.haeyo",
+     "head": "해요체",
+     "reading": "가요",
+     "gloss": "polite, everyday",
+     "group": "LEVELS",
+     "example": "어디 가요?",
+     "point": "haeyo-present",
+     "level": 1
+    },
+    {
+     "id": "ko.honorifics.hamnida",
+     "head": "합니다체",
+     "reading": "갑니다 · 갑니까?",
+     "gloss": "formal: news, work, strangers",
+     "group": "LEVELS",
+     "example": "회의는 세 시에 시작합니다.",
+     "point": "hamnida-formal",
+     "level": 1
+    },
+    {
+     "id": "ko.honorifics.banmal",
+     "head": "반말",
+     "reading": "가 · 먹어 · 했어",
+     "gloss": "drop 요: friends, younger",
+     "group": "LEVELS",
+     "example": "너 지금 어디 가?",
+     "point": "banmal",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.ja",
+     "head": "-자",
+     "reading": "가자",
+     "gloss": "let's, in 반말",
+     "group": "LEVELS",
+     "example": "배고파. 밥 먹자.",
+     "point": "banmal",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.euseyo",
+     "head": "-(으)세요",
+     "reading": "가세요 · 읽으세요",
+     "gloss": "honoured subject, now",
+     "group": "-(으)시-",
+     "example": "선생님은 매일 신문을 읽으세요.",
+     "point": "honorific-si",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.eusyeosseoyo",
+     "head": "-(으)셨어요",
+     "reading": "가셨어요",
+     "gloss": "honoured subject, past",
+     "group": "-(으)시-",
+     "example": "사장님은 벌써 퇴근하셨어요.",
+     "point": "honorific-si",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.deusida",
+     "head": "드시다",
+     "reading": "먹다 · 마시다",
+     "gloss": "eat, drink",
+     "group": "VERBS",
+     "example": "할아버지, 맛있게 드세요.",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.gyesida",
+     "head": "계시다",
+     "reading": "있다",
+     "gloss": "be (somewhere)",
+     "group": "VERBS",
+     "example": "어머니는 지금 집에 계세요.",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.jumusida",
+     "head": "주무시다",
+     "reading": "자다",
+     "gloss": "sleep",
+     "group": "VERBS",
+     "example": "안녕히 주무세요.",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.malsseumhasida",
+     "head": "말씀하시다",
+     "reading": "말하다",
+     "gloss": "speak",
+     "group": "VERBS",
+     "example": "천천히 말씀해 주세요.",
+     "point": "honorific-verbs",
+     "level": 3
+    },
+    {
+     "id": "ko.honorifics.doragasida",
+     "head": "돌아가시다",
+     "reading": "죽다",
+     "gloss": "pass away",
+     "group": "VERBS",
+     "example": "할아버지께서 작년에 돌아가셨어요.",
+     "point": "honorific-verbs",
+     "level": 3
+    },
+    {
+     "id": "ko.honorifics.deurida",
+     "head": "드리다",
+     "reading": "주다",
+     "gloss": "give (to an elder)",
+     "group": "HUMBLE",
+     "example": "부모님께 선물을 드렸어요.",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.boepda",
+     "head": "뵙다",
+     "reading": "보다",
+     "gloss": "see, meet (an elder)",
+     "group": "HUMBLE",
+     "example": "내일 회사에서 뵙겠습니다.",
+     "point": "honorific-verbs",
+     "level": 3
+    },
+    {
+     "id": "ko.honorifics.yeojjwoboda",
+     "head": "여쭤보다",
+     "reading": "묻다",
+     "gloss": "ask (an elder)",
+     "group": "HUMBLE",
+     "example": "선생님께 여쭤봤어요.",
+     "point": "honorific-verbs",
+     "level": 3
+    },
+    {
+     "id": "ko.honorifics.jeohui",
+     "head": "저 · 저희",
+     "reading": "나 · 우리",
+     "gloss": "I · we",
+     "group": "HUMBLE",
+     "example": "저희 회사는 서울에 있어요.",
+     "point": "honorific-verbs",
+     "level": 1
+    },
+    {
+     "id": "ko.honorifics.daek",
+     "head": "댁",
+     "reading": "집",
+     "gloss": "home",
+     "group": "NOUNS",
+     "example": "선생님 댁이 어디세요?",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.yeonse",
+     "head": "연세",
+     "reading": "나이",
+     "gloss": "age",
+     "group": "NOUNS",
+     "example": "할머니 연세가 어떻게 되세요?",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.seongham",
+     "head": "성함",
+     "reading": "이름",
+     "gloss": "name",
+     "group": "NOUNS",
+     "example": "성함이 어떻게 되세요?",
+     "point": "honorific-verbs",
+     "level": 2
+    },
+    {
+     "id": "ko.honorifics.kke",
+     "head": "께",
+     "reading": "에게",
+     "gloss": "to (an elder)",
+     "group": "PARTICLES",
+     "example": "선생님께 편지를 썼어요.",
+     "point": "honorific-kkeseo",
+     "level": 3
+    },
+    {
+     "id": "ko.honorifics.kkeseo",
+     "head": "께서",
+     "reading": "이/가",
+     "gloss": "subject (an elder)",
+     "group": "PARTICLES",
+     "example": "할아버지께서 오셨어요.",
+     "point": "honorific-kkeseo",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "sort",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.negation",
+   "name": "안 or 못",
+   "sub": "안 가요 · 못 가요 · 먹지 않아요",
+   "layout": "split",
+   "entries": [
+    {
+     "id": "ko.negation.an-gayo",
+     "head": "안 가요",
+     "gloss": "won't, choose not to",
+     "group": "가다",
+     "tag": "안",
+     "example": "오늘은 학교에 안 가요.",
+     "point": "negation-an",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.mot-gayo",
+     "head": "못 가요",
+     "gloss": "can't",
+     "group": "가다",
+     "tag": "못",
+     "example": "아파서 학교에 못 가요.",
+     "point": "negation-mot",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.an-meogeoyo",
+     "head": "안 먹어요",
+     "gloss": "don't eat",
+     "group": "먹다",
+     "tag": "안",
+     "example": "저는 아침을 안 먹어요.",
+     "point": "negation-an",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.mot-meogeoyo",
+     "head": "못 먹어요",
+     "gloss": "can't eat",
+     "group": "먹다",
+     "tag": "못",
+     "example": "매운 음식을 못 먹어요.",
+     "point": "negation-mot",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.an-hae",
+     "head": "공부 안 해요",
+     "gloss": "안 goes before 하다",
+     "group": "N + 하다",
+     "tag": "안",
+     "example": "주말에는 공부 안 해요.",
+     "point": "negation-an",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.mot-hae",
+     "head": "공부 못 했어요",
+     "gloss": "못 goes before 하다",
+     "group": "N + 하다",
+     "tag": "못",
+     "example": "어제 바빠서 공부 못 했어요.",
+     "point": "negation-mot",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.an-adj",
+     "head": "안 비싸요",
+     "gloss": "adjectives take 안",
+     "group": "ADJECTIVES",
+     "tag": "안",
+     "example": "이 옷은 안 비싸요.",
+     "point": "negation-an",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.an-jal",
+     "head": "잘 안 해요",
+     "gloss": "don't often do",
+     "group": "잘",
+     "tag": "안",
+     "example": "요리는 잘 안 해요.",
+     "point": "negation-an",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.mot-jal",
+     "head": "잘 못해요",
+     "gloss": "bad at",
+     "group": "잘",
+     "tag": "못",
+     "example": "저는 노래를 잘 못해요.",
+     "point": "negation-mot",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.ji-anayo",
+     "head": "-지 않아요",
+     "reading": "먹지 않아요",
+     "gloss": "not, long form",
+     "group": "LONG",
+     "tag": "안",
+     "example": "그는 고기를 먹지 않아요.",
+     "point": "neg-ji-anta",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.ji-mothaeyo",
+     "head": "-지 못해요",
+     "reading": "가지 못해요",
+     "gloss": "cannot, long form",
+     "group": "LONG",
+     "tag": "못",
+     "example": "일이 많아서 가지 못했어요.",
+     "point": "negation-mot",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.ji-anseumnida",
+     "head": "-지 않습니다",
+     "reading": "열지 않습니다",
+     "gloss": "not, formal",
+     "group": "FORMAL",
+     "tag": "안",
+     "example": "이 식당은 일요일에 문을 열지 않습니다.",
+     "point": "neg-ji-anta",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.ji-mothamnida",
+     "head": "-지 못합니다",
+     "reading": "참석하지 못합니다",
+     "gloss": "cannot, formal",
+     "group": "FORMAL",
+     "tag": "못",
+     "example": "죄송하지만 참석하지 못합니다.",
+     "point": "negation-mot",
+     "level": 2
+    },
+    {
+     "id": "ko.negation.molla",
+     "head": "몰라요",
+     "reading": "not 안 알아요",
+     "gloss": "알다 → 모르다",
+     "group": "알다 · 있다",
+     "tag": "안",
+     "example": "그 사람 전화번호를 몰라요.",
+     "point": "negation-an",
+     "level": 1
+    },
+    {
+     "id": "ko.negation.eopseo",
+     "head": "없어요",
+     "reading": "not 안 있어요",
+     "gloss": "있다 → 없다",
+     "group": "알다 · 있다",
+     "tag": "안",
+     "example": "지금 시간이 없어요.",
+     "point": "negation-an",
+     "level": 1
+    }
+   ],
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.numbers",
+   "name": "Numbers & counters",
+   "sub": "세 명 · 삼 층 · 두 시 십 분",
+   "layout": "cards",
+   "entries": [
+    {
+     "id": "ko.numbers.native-short",
+     "head": "한 · 두 · 세 · 네",
+     "reading": "하나 · 둘 · 셋 · 넷",
+     "gloss": "1–4 shorten before a counter",
+     "group": "NATIVE",
+     "example": "사과 두 개 주세요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.myeong",
+     "head": "세 명",
+     "reading": "명 · 분",
+     "gloss": "people (분 polite)",
+     "group": "NATIVE",
+     "example": "우리 가족은 네 명이에요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.gae",
+     "head": "두 개",
+     "reading": "개",
+     "gloss": "things",
+     "group": "NATIVE",
+     "example": "가방이 두 개 있어요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.mari",
+     "head": "한 마리",
+     "reading": "마리",
+     "gloss": "animals",
+     "group": "NATIVE",
+     "example": "고양이 한 마리를 키워요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.sal",
+     "head": "스물다섯 살",
+     "reading": "살",
+     "gloss": "age",
+     "group": "NATIVE",
+     "example": "저는 스물다섯 살이에요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.jan",
+     "head": "커피 한 잔",
+     "reading": "잔",
+     "gloss": "cups, glasses",
+     "group": "NATIVE",
+     "example": "커피 한 잔 주세요.",
+     "point": "native-counters",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.gwon",
+     "head": "책 세 권",
+     "reading": "권",
+     "gloss": "books",
+     "group": "NATIVE",
+     "example": "한 달에 책 세 권을 읽어요.",
+     "point": "native-counters",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.jang",
+     "head": "표 두 장",
+     "reading": "장",
+     "gloss": "paper, tickets",
+     "group": "NATIVE",
+     "example": "영화표 두 장 주세요.",
+     "point": "native-counters",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.beon",
+     "head": "세 번",
+     "reading": "번",
+     "gloss": "times",
+     "group": "NATIVE",
+     "example": "하루에 세 번 약을 먹어요.",
+     "point": "native-counters",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.sigan",
+     "head": "두 시간",
+     "reading": "시간",
+     "gloss": "hours (how long)",
+     "group": "NATIVE",
+     "example": "매일 두 시간 운동해요.",
+     "point": "native-counters",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.sino-digits",
+     "head": "일 · 이 · 삼 · 사",
+     "reading": "십 · 백 · 천 · 만",
+     "gloss": "dates, money, phone numbers",
+     "group": "SINO-KOREAN",
+     "example": "이 가방은 오만 원이에요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.won",
+     "head": "만 오천 원",
+     "reading": "원",
+     "gloss": "won · counted in 만",
+     "group": "SINO-KOREAN",
+     "example": "이 책은 만 오천 원이에요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.nyeon",
+     "head": "이천 년",
+     "reading": "년",
+     "gloss": "years",
+     "group": "SINO-KOREAN",
+     "example": "저는 이천 년에 태어났어요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.wol",
+     "head": "유월 · 시월",
+     "reading": "월",
+     "gloss": "months · 6 and 10 drop a letter",
+     "group": "SINO-KOREAN",
+     "example": "제 생일은 시월이에요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.il",
+     "head": "오월 오 일",
+     "reading": "일",
+     "gloss": "day of the month",
+     "group": "SINO-KOREAN",
+     "example": "오월 오 일은 어린이날이에요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.cheung",
+     "head": "삼 층",
+     "reading": "층",
+     "gloss": "floors",
+     "group": "SINO-KOREAN",
+     "example": "화장실은 삼 층에 있어요.",
+     "point": "sino-numbers",
+     "level": 1
+    },
+    {
+     "id": "ko.numbers.gaewol",
+     "head": "육 개월",
+     "reading": "개월",
+     "gloss": "months (how long)",
+     "group": "SINO-KOREAN",
+     "example": "한국어를 육 개월 배웠어요.",
+     "point": "sino-numbers",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.si",
+     "head": "두 시",
+     "reading": "시",
+     "gloss": "hour: native",
+     "group": "TIME",
+     "example": "두 시에 만나요.",
+     "point": "telling-time",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.bun",
+     "head": "이십 분",
+     "reading": "분",
+     "gloss": "minute: Sino-Korean",
+     "group": "TIME",
+     "example": "지금 세 시 이십 분이에요.",
+     "point": "telling-time",
+     "level": 2
+    },
+    {
+     "id": "ko.numbers.ban",
+     "head": "한 시 반",
+     "reading": "반",
+     "gloss": "half past",
+     "group": "TIME",
+     "example": "한 시 반에 점심을 먹어요.",
+     "point": "telling-time",
+     "level": 2
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "sort"
+   ]
+  },
+  {
+   "id": "ko.modals",
+   "name": "Want, can, must",
+   "sub": "가고 싶어요 · 갈 수 있어요 · 가야 해요",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.modals.go-sipda",
+     "head": "…고 싶다",
+     "reading": "가고 싶어요",
+     "gloss": "want to",
+     "example": "한국에 가고 싶어요.",
+     "point": "want-go-sipda",
+     "level": 1
+    },
+    {
+     "id": "ko.modals.go-sipeo-hada",
+     "head": "…고 싶어 하다",
+     "reading": "가고 싶어 해요",
+     "gloss": "he or she wants to",
+     "example": "동생은 고양이를 키우고 싶어 해요.",
+     "point": "want-go-sipda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.su-itda",
+     "head": "…(으)ㄹ 수 있다",
+     "reading": "읽을 수 있어요",
+     "gloss": "can",
+     "example": "저는 한글을 읽을 수 있어요.",
+     "point": "eul-su-itda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.su-eopda",
+     "head": "…(으)ㄹ 수 없다",
+     "reading": "만날 수 없어요",
+     "gloss": "can't",
+     "example": "오늘은 만날 수 없어요.",
+     "point": "eul-su-itda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.jul-alda",
+     "head": "…(으)ㄹ 줄 알다",
+     "reading": "탈 줄 알아요",
+     "gloss": "know how to",
+     "example": "자전거를 탈 줄 알아요?",
+     "point": "eul-jul-alda",
+     "level": 3
+    },
+    {
+     "id": "ko.modals.jul-moreuda",
+     "head": "…(으)ㄹ 줄 모르다",
+     "reading": "할 줄 몰라요",
+     "gloss": "don't know how to",
+     "example": "저는 운전할 줄 몰라요.",
+     "point": "eul-jul-alda",
+     "level": 3
+    },
+    {
+     "id": "ko.modals.aya-hada",
+     "head": "…아야/어야 하다",
+     "reading": "가야 해요",
+     "gloss": "must",
+     "example": "내일 일찍 일어나야 해요.",
+     "point": "aya-hada",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.ado-doeda",
+     "head": "…아도/어도 되다",
+     "reading": "열어도 돼요",
+     "gloss": "may",
+     "example": "창문을 열어도 돼요?",
+     "point": "permission-ado-doeda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.an-ado-doeda",
+     "head": "안 …아도/어도 되다",
+     "reading": "안 와도 돼요",
+     "gloss": "don't have to",
+     "example": "내일은 안 와도 돼요.",
+     "point": "permission-ado-doeda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.myeon-an-doeda",
+     "head": "…(으)면 안 되다",
+     "reading": "피우면 안 돼요",
+     "gloss": "must not",
+     "example": "여기서 담배를 피우면 안 돼요.",
+     "point": "prohibition-eumyeon-an-doeda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.a-boda",
+     "head": "…아/어 보다",
+     "reading": "먹어 봐요",
+     "gloss": "try, have a go",
+     "example": "이 김치 한번 먹어 보세요.",
+     "point": "a-boda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.a-juda",
+     "head": "…아/어 주다",
+     "reading": "사 줬어요",
+     "gloss": "do for someone",
+     "example": "엄마가 책을 사 줬어요.",
+     "point": "a-juda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.a-juseyo",
+     "head": "…아/어 주세요",
+     "reading": "기다려 주세요",
+     "gloss": "please (do for me)",
+     "example": "잠깐만 기다려 주세요.",
+     "point": "a-juda",
+     "level": 2
+    },
+    {
+     "id": "ko.modals.a-deurida",
+     "head": "…아/어 드리다",
+     "reading": "들어 드릴게요",
+     "gloss": "do for an elder",
+     "example": "할머니, 제가 가방을 들어 드릴게요.",
+     "point": "a-juda",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.endings",
+   "name": "Sentence endings",
+   "sub": "앉으세요 · 갈까요? · 할게요",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.endings.euseyo",
+     "head": "…(으)세요",
+     "reading": "앉으세요",
+     "gloss": "please (polite request)",
+     "example": "여기 앉으세요.",
+     "point": "request-euseyo",
+     "level": 1
+    },
+    {
+     "id": "ko.endings.ji-maseyo",
+     "head": "…지 마세요",
+     "reading": "가지 마세요",
+     "gloss": "please don't",
+     "example": "걱정하지 마세요.",
+     "point": "neg-ji-maseyo",
+     "level": 2
+    },
+    {
+     "id": "ko.endings.eulkkayo",
+     "head": "…(으)ㄹ까요?",
+     "reading": "먹을까요?",
+     "gloss": "shall we?",
+     "example": "같이 점심 먹을까요?",
+     "point": "suggest-eulkkayo",
+     "level": 1
+    },
+    {
+     "id": "ko.endings.eupsida",
+     "head": "…(으)ㅂ시다",
+     "reading": "갑시다",
+     "gloss": "let's (formal)",
+     "example": "자, 이제 시작합시다.",
+     "point": "suggest-eulkkayo",
+     "level": 2
+    },
+    {
+     "id": "ko.endings.eulgeyo",
+     "head": "…(으)ㄹ게요",
+     "reading": "할게요",
+     "gloss": "I'll (a promise)",
+     "example": "내일 다시 전화할게요.",
+     "point": "eulgeyo",
+     "level": 2
+    },
+    {
+     "id": "ko.endings.jiyo",
+     "head": "…지요 · …죠",
+     "reading": "좋죠?",
+     "gloss": "right? (checking)",
+     "example": "오늘 날씨 좋죠?",
+     "point": "confirm-jiyo",
+     "level": 2
+    },
+    {
+     "id": "ko.endings.janayo",
+     "head": "…잖아요",
+     "reading": "말했잖아요",
+     "gloss": "you know (reminding)",
+     "example": "제가 어제 말했잖아요.",
+     "point": "janayo",
+     "level": 3
+    },
+    {
+     "id": "ko.endings.geodeunyo",
+     "head": "…거든요",
+     "reading": "있거든요",
+     "gloss": "you see (explaining)",
+     "example": "오늘은 못 가요. 약속이 있거든요.",
+     "point": "geodeunyo",
+     "level": 3
+    },
+    {
+     "id": "ko.endings.neyo",
+     "head": "…네요",
+     "reading": "맛있네요",
+     "gloss": "oh, … (just noticed)",
+     "example": "와, 음식이 정말 맛있네요.",
+     "level": 2
+    },
+    {
+     "id": "ko.endings.deoragoyo",
+     "head": "…더라고요",
+     "reading": "맛있더라고요",
+     "gloss": "I found (what I saw)",
+     "example": "그 식당 음식이 정말 맛있더라고요.",
+     "point": "deoragoyo",
+     "level": 4
+    },
+    {
+     "id": "ko.endings.deondeyo",
+     "head": "…던데요",
+     "reading": "재미있던데요",
+     "gloss": "I saw … (soft reply)",
+     "example": "그 영화 생각보다 재미있던데요.",
+     "point": "deonde",
+     "level": 4
+    },
+    {
+     "id": "ko.endings.deonde",
+     "head": "…던데",
+     "reading": "많던데",
+     "gloss": "I saw …, so (background)",
+     "example": "어제 가 보니까 사람이 많던데 괜찮을까요?",
+     "point": "deonde",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "spot-it",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.links",
+   "name": "Linking endings",
+   "sub": "먹고 · 비싸지만 · 비가 오면",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.links.go",
+     "head": "…고",
+     "reading": "먹고",
+     "gloss": "and then",
+     "example": "밥을 먹고 커피를 마셔요.",
+     "point": "connective-go",
+     "level": 1
+    },
+    {
+     "id": "ko.links.go-and",
+     "head": "…고",
+     "reading": "싸고 맛있어요",
+     "gloss": "and (two facts)",
+     "example": "이 식당은 싸고 맛있어요.",
+     "point": "connective-go",
+     "level": 1
+    },
+    {
+     "id": "ko.links.jiman",
+     "head": "…지만",
+     "reading": "어렵지만",
+     "gloss": "but",
+     "example": "한국어는 어렵지만 재미있어요.",
+     "point": "connective-jiman",
+     "level": 1
+    },
+    {
+     "id": "ko.links.eureo",
+     "head": "…(으)러 가다",
+     "reading": "먹으러 가요",
+     "gloss": "go to do",
+     "example": "점심 먹으러 가요.",
+     "point": "connective-eureo",
+     "level": 2
+    },
+    {
+     "id": "ko.links.aseo-seq",
+     "head": "…아서/어서",
+     "reading": "만나서",
+     "gloss": "and then, carried over",
+     "example": "친구를 만나서 영화를 봤어요.",
+     "point": "connective-aseo-sequence",
+     "level": 2
+    },
+    {
+     "id": "ko.links.aseo-pose",
+     "head": "…아서/어서",
+     "reading": "앉아서",
+     "gloss": "in that position",
+     "example": "의자에 앉아서 기다리세요.",
+     "point": "connective-aseo-sequence",
+     "level": 2
+    },
+    {
+     "id": "ko.links.eumyeon",
+     "head": "…(으)면",
+     "reading": "비가 오면",
+     "gloss": "if, when",
+     "example": "비가 오면 집에 있을게요.",
+     "point": "connective-eumyeon",
+     "level": 2
+    },
+    {
+     "id": "ko.links.euryeogo",
+     "head": "…(으)려고",
+     "reading": "사려고",
+     "gloss": "in order to",
+     "example": "선물을 사려고 백화점에 갔어요.",
+     "point": "connective-euryeogo",
+     "level": 2
+    },
+    {
+     "id": "ko.links.euryeogo-hada",
+     "head": "…(으)려고 하다",
+     "reading": "이사하려고 해요",
+     "gloss": "plan to, about to",
+     "example": "내년에 이사하려고 해요.",
+     "point": "connective-euryeogo",
+     "level": 2
+    },
+    {
+     "id": "ko.links.neunde",
+     "head": "…는데",
+     "reading": "가는데",
+     "gloss": "background: and, but",
+     "example": "지금 집에 가는데 같이 갈래요?",
+     "point": "connective-neunde",
+     "level": 2
+    },
+    {
+     "id": "ko.links.eunde",
+     "head": "…(으)ㄴ데",
+     "reading": "추운데",
+     "gloss": "background, adjectives",
+     "example": "날씨가 추운데 코트 입고 가세요.",
+     "point": "connective-neunde",
+     "level": 2
+    },
+    {
+     "id": "ko.links.eul-ttae",
+     "head": "…(으)ㄹ 때",
+     "reading": "어릴 때",
+     "gloss": "when",
+     "example": "어릴 때 부산에 살았어요.",
+     "point": "connective-eul-ttae",
+     "level": 2
+    },
+    {
+     "id": "ko.links.gi-jeone",
+     "head": "…기 전에",
+     "reading": "자기 전에",
+     "gloss": "before",
+     "example": "자기 전에 이를 닦아요.",
+     "point": "before-after",
+     "level": 2
+    },
+    {
+     "id": "ko.links.eun-hue",
+     "head": "…(으)ㄴ 후에",
+     "reading": "먹은 후에",
+     "gloss": "after",
+     "example": "밥을 먹은 후에 산책해요.",
+     "point": "before-after",
+     "level": 2
+    },
+    {
+     "id": "ko.links.ji-malgo",
+     "head": "…지 말고",
+     "reading": "타지 말고",
+     "gloss": "not … but, instead",
+     "example": "택시 타지 말고 지하철 타세요.",
+     "point": "neg-ji-malgo",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.reasons",
+   "name": "-아서 or -(으)니까",
+   "sub": "늦어서 죄송해요 · 비가 오니까 · 가 보니까",
+   "layout": "split",
+   "entries": [
+    {
+     "id": "ko.reasons.aseo-plain",
+     "head": "배가 고파서",
+     "gloss": "because: plain cause",
+     "group": "REASON",
+     "tag": "-아서",
+     "example": "배가 고파서 라면을 먹었어요.",
+     "point": "connective-aseo-reason",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-plain",
+     "head": "배가 고프니까",
+     "gloss": "because: my reason, stressed",
+     "group": "REASON",
+     "tag": "-(으)니까",
+     "example": "배가 고프니까 먼저 먹을게요.",
+     "point": "connective-eunikka",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.aseo-command",
+     "head": "비가 와서 …갔어요",
+     "gloss": "no command after -아서",
+     "group": "+ COMMAND",
+     "tag": "-아서",
+     "example": "비가 와서 우산을 가져갔어요.",
+     "point": "connective-aseo-reason",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-command",
+     "head": "비가 오니까 …가세요",
+     "gloss": "command ok",
+     "group": "+ COMMAND",
+     "tag": "-(으)니까",
+     "example": "비가 오니까 우산을 가져가세요.",
+     "point": "connective-eunikka",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.aseo-lets",
+     "head": "시간이 없어서 …탔어요",
+     "gloss": "no let's after -아서",
+     "group": "+ LET'S",
+     "tag": "-아서",
+     "example": "시간이 없어서 택시를 탔어요.",
+     "point": "connective-aseo-reason",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-lets",
+     "head": "시간이 없으니까 …탑시다",
+     "gloss": "let's ok",
+     "group": "+ LET'S",
+     "tag": "-(으)니까",
+     "example": "시간이 없으니까 택시를 탑시다.",
+     "point": "connective-eunikka",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.aseo-past",
+     "head": "늦게 자서",
+     "reading": "not 잤어서",
+     "gloss": "never past inside",
+     "group": "PAST",
+     "tag": "-아서",
+     "example": "어제 늦게 자서 피곤해요.",
+     "point": "connective-aseo-reason",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-past",
+     "head": "벌써 늦었으니까",
+     "gloss": "past ok",
+     "group": "PAST",
+     "tag": "-(으)니까",
+     "example": "벌써 늦었으니까 내일 가요.",
+     "point": "connective-eunikka",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.aseo-sorry",
+     "head": "늦어서 죄송해요",
+     "gloss": "thanks and apologies",
+     "group": "SORRY · THANKS",
+     "tag": "-아서",
+     "example": "와 줘서 고마워요.",
+     "point": "connective-aseo-reason",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-sorry",
+     "head": "늦었으니까 죄송해요 ✗",
+     "gloss": "sounds like an excuse",
+     "group": "SORRY · THANKS",
+     "tag": "-(으)니까",
+     "example": "늦어서 죄송해요.",
+     "point": "connective-eunikka",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.aseo-seq",
+     "head": "가서",
+     "reading": "학교에 가서",
+     "gloss": "went there, then",
+     "group": "SEQUENCE · FINDING",
+     "tag": "-아서",
+     "example": "도서관에 가서 책을 빌렸어요.",
+     "point": "connective-aseo-sequence",
+     "level": 2
+    },
+    {
+     "id": "ko.reasons.nikka-find",
+     "head": "가 보니까",
+     "gloss": "went, and found",
+     "group": "SEQUENCE · FINDING",
+     "tag": "-(으)니까",
+     "example": "집에 가 보니까 아무도 없었어요.",
+     "point": "connective-eunikka",
+     "level": 3
+    }
+   ],
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.links-more",
+   "name": "More linking endings",
+   "sub": "먹으면서 · 가다가 · 도착하자마자",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.links-more.gi-ttaemune",
+     "head": "…기 때문에",
+     "reading": "있기 때문에",
+     "gloss": "because (firm)",
+     "example": "시험이 있기 때문에 오늘은 못 가요.",
+     "point": "connective-gi-ttaemune",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.eumyeonseo",
+     "head": "…(으)면서",
+     "reading": "들으면서",
+     "gloss": "while",
+     "example": "음악을 들으면서 공부해요.",
+     "point": "connective-eumyeonseo",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.daga",
+     "head": "…다가",
+     "reading": "가다가",
+     "gloss": "partway, then switch",
+     "example": "학교에 가다가 친구를 만났어요.",
+     "point": "connective-daga",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.atdaga",
+     "head": "…았/었다가",
+     "reading": "갔다가",
+     "gloss": "did, then undid",
+     "example": "도서관에 갔다가 문이 닫혀서 돌아왔어요.",
+     "point": "connective-daga",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.jamaja",
+     "head": "…자마자",
+     "reading": "도착하자마자",
+     "gloss": "as soon as",
+     "example": "집에 도착하자마자 잤어요.",
+     "point": "connective-jamaja",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.ado",
+     "head": "…아도/어도",
+     "reading": "비가 와도",
+     "gloss": "even if",
+     "example": "비가 와도 갈 거예요.",
+     "point": "connective-ado",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.ge",
+     "head": "…게",
+     "reading": "잘 보이게",
+     "gloss": "so that",
+     "example": "뒤에서도 잘 보이게 크게 써 주세요.",
+     "point": "connective-ge",
+     "level": 3
+    },
+    {
+     "id": "ko.links-more.eulsurok",
+     "head": "…(으)ㄹ수록",
+     "reading": "배울수록",
+     "gloss": "the more …",
+     "example": "한국어는 배울수록 재미있어요.",
+     "point": "connective-eulsurok",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.baram-e",
+     "head": "…는 바람에",
+     "reading": "자는 바람에",
+     "gloss": "because (bad result)",
+     "example": "늦잠을 자는 바람에 버스를 놓쳤어요.",
+     "point": "connective-baram-e",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.dorok",
+     "head": "…도록",
+     "reading": "늦지 않도록",
+     "gloss": "so that",
+     "example": "늦지 않도록 일찍 출발하세요.",
+     "point": "connective-doerok",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.deoni",
+     "head": "…더니",
+     "reading": "흐리더니",
+     "gloss": "was …, and then (seen)",
+     "example": "아침에는 흐리더니 오후에는 맑아졌어요.",
+     "point": "connective-deoni",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.atdeoni",
+     "head": "…았/었더니",
+     "reading": "먹었더니",
+     "gloss": "I did, and then",
+     "example": "약을 먹었더니 좀 나았어요.",
+     "point": "connective-atdeoni",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.ppunman",
+     "head": "…(으)ㄹ 뿐만 아니라",
+     "reading": "쌀 뿐만 아니라",
+     "gloss": "not only",
+     "example": "이 식당은 쌀 뿐만 아니라 맛도 좋아요.",
+     "point": "connective-eul-ppunman-anira",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.gime",
+     "head": "…는 김에",
+     "reading": "가는 김에",
+     "gloss": "while you're at it",
+     "example": "시장에 가는 김에 과일도 좀 사 오세요.",
+     "point": "connective-neun-gime",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.dabomyeon",
+     "head": "…다 보면",
+     "reading": "연습하다 보면",
+     "gloss": "keep doing, and",
+     "example": "계속 연습하다 보면 잘하게 될 거예요.",
+     "point": "connective-dabomyeon",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.daboni",
+     "head": "…다 보니(까)",
+     "reading": "살다 보니",
+     "gloss": "having kept doing, found",
+     "example": "한국에 살다 보니 매운 음식에 익숙해졌어요.",
+     "point": "connective-dabomyeon",
+     "level": 4
+    },
+    {
+     "id": "ko.links-more.neurago",
+     "head": "…느라고",
+     "reading": "준비하느라고",
+     "gloss": "busy doing, so",
+     "example": "시험 준비하느라고 연락을 못 했어요.",
+     "point": "connective-neurago",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "spot-it",
+    "two-step"
+   ]
+  },
+  {
+   "id": "ko.adnominal",
+   "name": "Describing clauses",
+   "sub": "어제 본 영화 · 요리하는 것 · 가 본 적이 있어요",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.adnominal.eun-past",
+     "head": "-(으)ㄴ",
+     "reading": "본 영화",
+     "gloss": "did, before a noun",
+     "example": "어제 본 영화가 재미있었어요.",
+     "point": "adnominal-tense",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.neun-now",
+     "head": "-는",
+     "reading": "보는 드라마",
+     "gloss": "is doing, before a noun",
+     "example": "요즘 보는 드라마가 뭐예요?",
+     "point": "adnominal-tense",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.eul-future",
+     "head": "-(으)ㄹ",
+     "reading": "볼 영화",
+     "gloss": "will do, before a noun",
+     "example": "내일 볼 영화를 골랐어요.",
+     "point": "adnominal-tense",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.eun-adj",
+     "head": "-(으)ㄴ",
+     "reading": "큰 가방",
+     "gloss": "adjective before a noun",
+     "example": "큰 가방을 샀어요.",
+     "point": "adnominal-tense",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.inneun",
+     "head": "있는 · 없는",
+     "reading": "맛있는 음식",
+     "gloss": "있다 and 없다 take -는",
+     "example": "맛있는 음식을 먹고 싶어요.",
+     "point": "adnominal-tense",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.order",
+     "head": "[clause] + noun",
+     "reading": "제가 어제 만난 사람",
+     "gloss": "the whole clause comes first",
+     "example": "제가 어제 만난 사람은 의사예요.",
+     "point": "relative-clause-order",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.no-who",
+     "head": "-(으)ㄴ 사람",
+     "reading": "안경을 쓴 사람",
+     "gloss": "no word for who or that",
+     "example": "안경을 쓴 사람이 우리 선생님이에요.",
+     "point": "relative-clause-order",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.deon",
+     "head": "-던",
+     "reading": "살던 집",
+     "gloss": "used to, before a noun",
+     "example": "어릴 때 살던 집에 가 봤어요.",
+     "point": "adnominal-deon",
+     "level": 4
+    },
+    {
+     "id": "ko.adnominal.neun-geot",
+     "head": "-는 것",
+     "reading": "요리하는 것",
+     "gloss": "doing, as a noun",
+     "example": "저는 요리하는 것을 좋아해요.",
+     "point": "nominal-neun-geot",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.neun-ge",
+     "head": "-는 게",
+     "reading": "운동하는 게",
+     "gloss": "것이 → 게, spoken",
+     "example": "매일 걷는 게 제일 좋아요.",
+     "point": "nominal-neun-geot",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.jeok-itda",
+     "head": "-(으)ㄴ 적이 있다",
+     "reading": "가 본 적이 있어요",
+     "gloss": "have done before",
+     "example": "한국에 가 본 적이 있어요?",
+     "point": "experience-eun-jeok",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.jeok-eopda",
+     "head": "-(으)ㄴ 적이 없다",
+     "reading": "먹어 본 적이 없어요",
+     "gloss": "have never done",
+     "example": "저는 번데기를 먹어 본 적이 없어요.",
+     "point": "experience-eun-jeok",
+     "level": 2
+    },
+    {
+     "id": "ko.adnominal.neunji",
+     "head": "-는지 알다 · 모르다",
+     "reading": "어디 있는지",
+     "gloss": "know where, whether",
+     "example": "화장실이 어디 있는지 알아요?",
+     "point": "embedded-question",
+     "level": 3
+    },
+    {
+     "id": "ko.adnominal.eunji",
+     "head": "-(으)ㄴ지",
+     "reading": "왜 화가 났는지",
+     "gloss": "past, adjectives",
+     "example": "그 사람이 왜 화가 났는지 모르겠어요.",
+     "point": "embedded-question",
+     "level": 3
+    },
+    {
+     "id": "ko.adnominal.de-geollida",
+     "head": "-는 데 걸리다",
+     "reading": "가는 데",
+     "gloss": "takes (time) to",
+     "example": "회사까지 가는 데 한 시간 걸려요.",
+     "point": "neun-de-geollida",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.guesses",
+   "name": "Plans & guesses",
+   "sub": "가기로 했어요 · 올 것 같아요 · 넘어질 뻔했어요",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.guesses.giro-hada",
+     "head": "…기로 하다",
+     "reading": "끊기로 했어요",
+     "gloss": "decided to",
+     "example": "올해부터 담배를 끊기로 했어요.",
+     "point": "gi-ro-hada",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.eun-geot",
+     "head": "…(으)ㄴ 것 같다",
+     "reading": "온 것 같아요",
+     "gloss": "seems it did",
+     "example": "밤에 비가 온 것 같아요.",
+     "point": "geot-gatda",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.neun-geot",
+     "head": "…는 것 같다",
+     "reading": "오는 것 같아요",
+     "gloss": "seems it is",
+     "example": "밖에 비가 오는 것 같아요.",
+     "point": "geot-gatda",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.eul-geot",
+     "head": "…(으)ㄹ 것 같다",
+     "reading": "올 것 같아요",
+     "gloss": "looks like it will",
+     "example": "곧 비가 올 것 같아요.",
+     "point": "geot-gatda",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.na-boda",
+     "head": "…나 보다",
+     "reading": "자나 봐요",
+     "gloss": "must be (from a clue), verbs",
+     "example": "불이 꺼졌네요. 다들 자나 봐요.",
+     "point": "na-boda",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.eunga-boda",
+     "head": "…(으)ㄴ가 보다",
+     "reading": "바쁜가 봐요",
+     "gloss": "must be, adjectives",
+     "example": "민수 씨가 요즘 바쁜가 봐요.",
+     "point": "na-boda",
+     "level": 3
+    },
+    {
+     "id": "ko.guesses.tende",
+     "head": "…(으)ㄹ 텐데",
+     "reading": "추울 텐데",
+     "gloss": "surely …, so",
+     "example": "밖이 추울 텐데 코트 입고 가세요.",
+     "point": "eul-tende",
+     "level": 4
+    },
+    {
+     "id": "ko.guesses.eosseul-tende",
+     "head": "…았/었을 텐데",
+     "reading": "좋았을 텐데",
+     "gloss": "would have been",
+     "example": "같이 갔으면 좋았을 텐데요.",
+     "point": "eul-tende",
+     "level": 4
+    },
+    {
+     "id": "ko.guesses.manhada",
+     "head": "…(으)ㄹ 만하다",
+     "reading": "볼 만해요",
+     "gloss": "worth doing",
+     "example": "그 영화는 한 번 볼 만해요.",
+     "point": "eul-manhada",
+     "level": 4
+    },
+    {
+     "id": "ko.guesses.cheok",
+     "head": "…(으)ㄴ/는 척하다",
+     "reading": "자는 척해요",
+     "gloss": "pretend",
+     "example": "동생이 자는 척했어요.",
+     "point": "eun-cheok",
+     "level": 4
+    },
+    {
+     "id": "ko.guesses.ppeon",
+     "head": "…(으)ㄹ 뻔하다",
+     "reading": "넘어질 뻔했어요",
+     "gloss": "almost",
+     "example": "빙판길에서 넘어질 뻔했어요.",
+     "point": "eul-ppeonhada",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "transform",
+    "spot-it",
+    "two-step"
+   ]
+  },
+  {
+   "id": "ko.quotes",
+   "name": "Reported speech",
+   "sub": "온다고 했어요 · 언제 오냐고 · 오래요",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.quotes.ndago",
+     "head": "-ㄴ/는다고 하다",
+     "reading": "온다고 했어요",
+     "gloss": "said that (verbs)",
+     "example": "민수 씨가 내일 온다고 했어요.",
+     "point": "quote-dago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.dago",
+     "head": "-다고 하다",
+     "reading": "바쁘다고 했어요",
+     "gloss": "said that (adjectives)",
+     "example": "친구가 요즘 바쁘다고 했어요.",
+     "point": "quote-dago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.irago",
+     "head": "-(이)라고 하다",
+     "reading": "선생님이라고",
+     "gloss": "said it's N",
+     "example": "그분이 선생님이라고 했어요.",
+     "point": "quote-dago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.nyago",
+     "head": "-냐고 하다 · 묻다",
+     "reading": "언제 오냐고",
+     "gloss": "asked",
+     "example": "엄마가 언제 오냐고 물었어요.",
+     "point": "quote-nyago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.eurago",
+     "head": "-(으)라고 하다",
+     "reading": "내라고",
+     "gloss": "told to",
+     "example": "선생님이 숙제를 내라고 하셨어요.",
+     "point": "quote-rago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.dallago",
+     "head": "-아/어 달라고 하다",
+     "reading": "도와 달라고",
+     "gloss": "asked me to (for them)",
+     "example": "친구가 도와 달라고 했어요.",
+     "point": "quote-rago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.jago",
+     "head": "-자고 하다",
+     "reading": "보자고",
+     "gloss": "suggested",
+     "example": "친구가 같이 영화 보자고 했어요.",
+     "point": "quote-jago",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.daeyo",
+     "head": "-대요",
+     "reading": "온대요",
+     "gloss": "they say (= -다고 해요)",
+     "example": "내일 비가 온대요.",
+     "point": "quote-contracted",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.raeyo",
+     "head": "-래요",
+     "reading": "오래요",
+     "gloss": "they say to (= -라고 해요)",
+     "example": "엄마가 빨리 오래요.",
+     "point": "quote-contracted",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.jaeyo",
+     "head": "-냬요 · -재요",
+     "reading": "가냬요 · 가재요",
+     "gloss": "asks · suggests",
+     "example": "민수가 같이 가재요.",
+     "point": "quote-contracted",
+     "level": 3
+    },
+    {
+     "id": "ko.quotes.ttareumyeon",
+     "head": "에 따르면",
+     "reading": "뉴스에 따르면",
+     "gloss": "according to",
+     "example": "뉴스에 따르면 내일 눈이 온대요.",
+     "point": "e-ttareumyeon",
+     "level": 4
+    },
+    {
+     "id": "ko.quotes.uihamyeon",
+     "head": "에 의하면",
+     "reading": "조사에 의하면",
+     "gloss": "according to (formal)",
+     "example": "조사에 의하면 1인 가구가 계속 늘고 있대요.",
+     "point": "e-ttareumyeon",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "transform",
+    "build",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.change",
+   "name": "Change & voice",
+   "sub": "예뻐졌어요 · 보여요 · 먹여요",
+   "layout": "cards",
+   "entries": [
+    {
+     "id": "ko.change.ge-doeda",
+     "head": "…게 되다",
+     "reading": "살게 됐어요",
+     "gloss": "end up, come to",
+     "group": "CHANGE",
+     "example": "회사 때문에 부산에 살게 됐어요.",
+     "point": "ge-doeda",
+     "level": 3
+    },
+    {
+     "id": "ko.change.a-jida",
+     "head": "…아/어지다",
+     "reading": "따뜻해졌어요",
+     "gloss": "become (adjectives)",
+     "group": "CHANGE",
+     "example": "날씨가 많이 따뜻해졌어요.",
+     "point": "a-jida",
+     "level": 3
+    },
+    {
+     "id": "ko.change.a-itda",
+     "head": "…아/어 있다",
+     "reading": "열려 있어요",
+     "gloss": "is in a state",
+     "group": "STATE",
+     "example": "문이 열려 있어요.",
+     "point": "a-itda",
+     "level": 3
+    },
+    {
+     "id": "ko.change.a-nota",
+     "head": "…아/어 놓다",
+     "reading": "사 놨어요",
+     "gloss": "do in advance, leave",
+     "group": "STATE",
+     "example": "음료수를 미리 사 놨어요.",
+     "point": "a-nota",
+     "level": 3
+    },
+    {
+     "id": "ko.change.a-duda",
+     "head": "…아/어 두다",
+     "reading": "적어 두세요",
+     "gloss": "keep for later",
+     "group": "STATE",
+     "example": "중요한 건 적어 두세요.",
+     "point": "a-nota",
+     "level": 3
+    },
+    {
+     "id": "ko.change.boida",
+     "head": "보다 → 보이다",
+     "reading": "-이-",
+     "gloss": "be seen",
+     "group": "PASSIVE",
+     "example": "여기서 바다가 보여요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.japhida",
+     "head": "잡다 → 잡히다",
+     "reading": "-히-",
+     "gloss": "be caught",
+     "group": "PASSIVE",
+     "example": "도둑이 경찰에게 잡혔어요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.yeollida",
+     "head": "열다 → 열리다",
+     "reading": "-리-",
+     "gloss": "open (by itself)",
+     "group": "PASSIVE",
+     "example": "문이 저절로 열렸어요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.deullida",
+     "head": "듣다 → 들리다",
+     "reading": "-리-",
+     "gloss": "be heard",
+     "group": "PASSIVE",
+     "example": "밖에서 이상한 소리가 들려요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.kkeunkida",
+     "head": "끊다 → 끊기다",
+     "reading": "-기-",
+     "gloss": "be cut off",
+     "group": "PASSIVE",
+     "example": "전화가 갑자기 끊겼어요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.doeda",
+     "head": "하다 → 되다",
+     "reading": "취소되다",
+     "gloss": "nouns with 하다",
+     "group": "PASSIVE",
+     "example": "비 때문에 경기가 취소됐어요.",
+     "point": "passive-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.meogida",
+     "head": "먹다 → 먹이다",
+     "reading": "-이-",
+     "gloss": "feed",
+     "group": "CAUSATIVE",
+     "example": "아기에게 우유를 먹였어요.",
+     "point": "causative-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.iphida",
+     "head": "입다 → 입히다",
+     "reading": "-히-",
+     "gloss": "dress someone",
+     "group": "CAUSATIVE",
+     "example": "엄마가 아이에게 옷을 입혀요.",
+     "point": "causative-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.ullida",
+     "head": "울다 → 울리다",
+     "reading": "-리-",
+     "gloss": "make cry",
+     "group": "CAUSATIVE",
+     "example": "동생을 또 울렸어요.",
+     "point": "causative-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.utgida",
+     "head": "웃다 → 웃기다",
+     "reading": "-기-",
+     "gloss": "make laugh, funny",
+     "group": "CAUSATIVE",
+     "example": "그 사람 정말 웃겨요.",
+     "point": "causative-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.kkaeuda",
+     "head": "깨다 → 깨우다",
+     "reading": "-우-",
+     "gloss": "wake someone",
+     "group": "CAUSATIVE",
+     "example": "내일 일곱 시에 깨워 주세요.",
+     "point": "causative-suffix",
+     "level": 4
+    },
+    {
+     "id": "ko.change.ge-hada",
+     "head": "…게 하다",
+     "reading": "읽게 했어요",
+     "gloss": "make, let someone",
+     "group": "CAUSATIVE",
+     "example": "선생님이 학생들에게 책을 읽게 했어요.",
+     "point": "causative-suffix",
+     "level": 4
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "sort",
+    "transform"
+   ]
+  },
+  {
+   "id": "ko.written",
+   "name": "Written style",
+   "sub": "간다 · 그러나 · 및 · 시작함",
+   "layout": "list",
+   "entries": [
+    {
+     "id": "ko.written.nda",
+     "head": "-ㄴ/는다",
+     "reading": "간다 · 먹는다",
+     "gloss": "plain written, verbs",
+     "example": "인구가 해마다 줄고 있다.",
+     "point": "plain-written-style",
+     "level": 3
+    },
+    {
+     "id": "ko.written.da",
+     "head": "-다",
+     "reading": "어렵다 · 학생이다",
+     "gloss": "plain written, adjectives and 이다",
+     "example": "서울은 한국의 수도이다.",
+     "point": "plain-written-style",
+     "level": 3
+    },
+    {
+     "id": "ko.written.geunde",
+     "head": "그런데 · 근데",
+     "reading": "근데 그거 진짜예요?",
+     "gloss": "but, by the way · 근데 spoken",
+     "example": "근데 그거 진짜예요?",
+     "point": "conjunction-register",
+     "level": 3
+    },
+    {
+     "id": "ko.written.geureona",
+     "head": "그러나 · 하지만",
+     "reading": "그러나 결과는 달랐다",
+     "gloss": "but · 그러나 written",
+     "example": "그러나 결과는 달랐다.",
+     "point": "conjunction-register",
+     "level": 3
+    },
+    {
+     "id": "ko.written.geureomeuro",
+     "head": "그래서 · 그러므로",
+     "reading": "그러므로",
+     "gloss": "so · 그러므로 written",
+     "example": "그러므로 이 문제는 다시 검토해야 한다.",
+     "point": "conjunction-register",
+     "level": 3
+    },
+    {
+     "id": "ko.written.myeo",
+     "head": "…(으)며",
+     "reading": "작가이며",
+     "gloss": "and (written -고)",
+     "example": "그는 작가이며 교수이다.",
+     "point": "connective-myeo",
+     "level": 4
+    },
+    {
+     "id": "ko.written.eumeuro",
+     "head": "…(으)므로",
+     "reading": "오므로",
+     "gloss": "because (written)",
+     "example": "비가 많이 오므로 주의가 필요하다.",
+     "point": "connective-eumeuro",
+     "level": 5
+    },
+    {
+     "id": "ko.written.goja",
+     "head": "…고자",
+     "reading": "알리고자",
+     "gloss": "in order to (formal)",
+     "example": "결과를 알리고자 이 글을 쓴다.",
+     "point": "connective-goja",
+     "level": 5
+    },
+    {
+     "id": "ko.written.inhae",
+     "head": "(으)로 인해 · 인한",
+     "reading": "폭우로 인해",
+     "gloss": "due to",
+     "example": "폭우로 인해 도로가 통제되었다.",
+     "point": "euro-inhae",
+     "level": 5
+    },
+    {
+     "id": "ko.written.mit",
+     "head": "및",
+     "reading": "신청서 및 서류",
+     "gloss": "and (lists)",
+     "example": "신청서 및 서류를 제출하십시오.",
+     "point": "written-vocab",
+     "level": 5
+    },
+    {
+     "id": "ko.written.deung",
+     "head": "등",
+     "reading": "사과, 배 등",
+     "gloss": "etc.",
+     "example": "사과, 배, 포도 등을 샀다.",
+     "point": "written-vocab",
+     "level": 5
+    },
+    {
+     "id": "ko.written.eum",
+     "head": "…(으)ㅁ",
+     "reading": "시작함 · 휴무임",
+     "gloss": "notes and notices",
+     "example": "회의는 3시에 시작함.",
+     "point": "nominal-eum-notes",
+     "level": 5
+    },
+    {
+     "id": "ko.written.bawa",
+     "head": "…는 바와 같이",
+     "reading": "살펴본 바와 같이",
+     "gloss": "as (shown)",
+     "example": "앞에서 살펴본 바와 같이 문제는 간단하지 않다.",
+     "point": "neun-bawa-gachi",
+     "level": 6
+    },
+    {
+     "id": "ko.written.geoniwa",
+     "head": "…거니와",
+     "reading": "힘들거니와",
+     "gloss": "not only …, and also",
+     "example": "그 일은 힘들거니와 시간도 오래 걸린다.",
+     "point": "connective-geoniwa",
+     "level": 6
+    },
+    {
+     "id": "ko.written.jieonjeong",
+     "head": "…(으)ㄹ지언정",
+     "reading": "굶을지언정",
+     "gloss": "even if (I'd rather)",
+     "example": "굶을지언정 남의 것은 훔치지 않겠다.",
+     "point": "connective-eul-jieonjeong",
+     "level": 6
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "flip",
+    "transform",
+    "spot-it"
+   ]
+  },
+  {
+   "id": "ko.adv-links",
+   "name": "Advanced linking endings",
+   "sub": "막힌 탓에 · 아시다시피 · 긴장한 나머지",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.adv-links.tase",
+     "head": "…(으)ㄴ/는 탓에",
+     "reading": "막힌 탓에",
+     "gloss": "because (blame)",
+     "example": "길이 막힌 탓에 회의에 늦었어요.",
+     "point": "connective-tase",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.banmyeon",
+     "head": "…(으)ㄴ/는 반면에",
+     "reading": "넓은 반면에",
+     "gloss": "whereas",
+     "example": "이 집은 넓은 반면에 교통이 불편해요.",
+     "point": "connective-banmyeone",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.dasipi",
+     "head": "…다시피",
+     "reading": "아시다시피",
+     "gloss": "as you know, see",
+     "example": "아시다시피 요즘 경기가 안 좋아요.",
+     "point": "connective-dasipi",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.dasipi-hada",
+     "head": "…다시피 하다",
+     "reading": "살다시피 해요",
+     "gloss": "practically",
+     "example": "요즘 도서관에서 살다시피 해요.",
+     "point": "connective-dasipi",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.dedaga",
+     "head": "…(으)ㄴ/는 데다가",
+     "reading": "오는 데다가",
+     "gloss": "on top of",
+     "example": "비가 오는 데다가 바람도 불어요.",
+     "point": "connective-dedaga",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.isang",
+     "head": "…(으)ㄴ/는 이상",
+     "reading": "약속한 이상",
+     "gloss": "now that, since",
+     "example": "약속한 이상 꼭 지켜야 해요.",
+     "point": "connective-eun-isang",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.geureonji",
+     "head": "…아/어서 그런지",
+     "reading": "못 자서 그런지",
+     "gloss": "maybe because",
+     "example": "어제 잠을 못 자서 그런지 머리가 아파요.",
+     "point": "connective-aseo-geureonji",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-links.mangjeong",
+     "head": "…(으)ㄹ망정",
+     "reading": "굶을망정",
+     "gloss": "even if (I'd rather)",
+     "example": "굶을망정 그런 일은 안 해요.",
+     "point": "connective-eulmangjeong",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-links.nameoji",
+     "head": "…(으)ㄴ 나머지",
+     "reading": "긴장한 나머지",
+     "gloss": "so much that",
+     "example": "너무 긴장한 나머지 아무 말도 못 했어요.",
+     "point": "connective-eun-nameoji",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-links.bwatja",
+     "head": "…아/어 봤자",
+     "reading": "가 봤자",
+     "gloss": "no use even if",
+     "example": "지금 가 봤자 문이 닫혔을 거예요.",
+     "point": "connective-a-bwatja",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-links.baeya",
+     "head": "…(으)ㄹ 바에야",
+     "reading": "살 바에야",
+     "gloss": "rather than (a bad option)",
+     "example": "그렇게 비싸게 살 바에야 차라리 안 살래요.",
+     "point": "connective-eul-baeya",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-links.madang",
+     "head": "…(으)ㄴ/는 마당에",
+     "reading": "끝난 마당에",
+     "gloss": "at this point, when",
+     "example": "다 끝난 마당에 그런 말이 무슨 소용이에요?",
+     "point": "connective-eun-madange",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-links.da-mothae",
+     "head": "…다 못해",
+     "reading": "기다리다 못해",
+     "gloss": "unable to bear any more",
+     "example": "기다리다 못해 먼저 출발했어요.",
+     "point": "connective-da-mothae",
+     "level": 6
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "transform",
+    "spot-it",
+    "two-step"
+   ]
+  },
+  {
+   "id": "ko.adv-endings",
+   "name": "Advanced endings",
+   "sub": "실수하기 마련이에요 · 끝난 셈이에요 · 올 듯해요",
+   "layout": "formulas",
+   "entries": [
+    {
+     "id": "ko.adv-endings.maryeon",
+     "head": "…기 마련이다",
+     "reading": "실수하기 마련이에요",
+     "gloss": "bound to",
+     "example": "처음에는 누구나 실수하기 마련이에요.",
+     "point": "gi-maryeonida",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.sem",
+     "head": "…(으)ㄴ/는 셈이다",
+     "reading": "끝난 셈이에요",
+     "gloss": "as good as",
+     "example": "이제 거의 다 끝난 셈이에요.",
+     "point": "neun-semida",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.sipsang",
+     "head": "…기 십상이다",
+     "reading": "늦기 십상이에요",
+     "gloss": "very likely to (bad)",
+     "example": "그렇게 늦게 출발하면 늦기 십상이에요.",
+     "point": "gi-sipsangida",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.ppun",
+     "head": "…(으)ㄹ 뿐이다",
+     "reading": "했을 뿐이에요",
+     "gloss": "only, merely",
+     "example": "저는 제 일을 했을 뿐이에요.",
+     "point": "eul-ppunida",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.deut",
+     "head": "…(으)ㄴ/는 듯하다",
+     "reading": "올 듯해요",
+     "gloss": "seems (formal)",
+     "example": "곧 비가 올 듯해요.",
+     "point": "eun-deutada",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.go-malda",
+     "head": "…고 말다",
+     "reading": "울고 말았어요",
+     "gloss": "ended up (sadly)",
+     "example": "결국 참지 못하고 울고 말았어요.",
+     "point": "go-malda",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.goya-malda",
+     "head": "…고야 말겠다",
+     "reading": "이기고야 말겠어요",
+     "gloss": "will, whatever it takes",
+     "example": "이번에는 꼭 이기고야 말겠어요.",
+     "point": "go-malda",
+     "level": 5
+    },
+    {
+     "id": "ko.adv-endings.ttareum",
+     "head": "…(으)ㄹ 따름이다",
+     "reading": "감사할 따름입니다",
+     "gloss": "nothing but (formal)",
+     "example": "도와주셔서 감사할 따름입니다.",
+     "point": "eul-ttareumida",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-endings.nareum",
+     "head": "…기 나름이다",
+     "reading": "생각하기 나름이에요",
+     "gloss": "depends on how",
+     "example": "행복은 생각하기 나름이에요.",
+     "point": "gi-nareumida",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-endings.beop",
+     "head": "…(으)ㄹ 법하다",
+     "reading": "화가 날 법해요",
+     "gloss": "understandable, likely",
+     "example": "그런 말을 들으면 화가 날 법해요.",
+     "point": "eul-beophada",
+     "level": 6
+    },
+    {
+     "id": "ko.adv-endings.dung",
+     "head": "…는 둥 마는 둥",
+     "reading": "먹는 둥 마는 둥",
+     "gloss": "half-heartedly",
+     "example": "늦어서 아침을 먹는 둥 마는 둥 하고 나왔어요.",
+     "point": "neun-dung-maneun-dung",
+     "level": 6
+    }
+   ],
+   "formats": [
+    "pick-one",
+    "transform",
+    "spot-it"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "id": "ko.drill.speed",
+   "name": "SPEED"
+  },
+  {
+   "id": "ko.drill.topic-subject",
+   "name": "은/는 · 이/가",
+   "chapters": [
+    "ko.topic-subject"
+   ]
+  },
+  {
+   "id": "ko.drill.places",
+   "name": "에 · 에서",
+   "chapters": [
+    "ko.places"
+   ]
+  },
+  {
+   "id": "ko.drill.counters",
+   "name": "COUNTERS",
+   "chapters": [
+    "ko.numbers"
+   ]
+  }
+ ]
+}

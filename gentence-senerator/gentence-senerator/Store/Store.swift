@@ -413,6 +413,14 @@ final class Store {
         refreshPlan()
     }
 
+    /// Turns a language on or off. The one in use stays on.
+    func setOffered(_ language: Language, _ on: Bool) {
+        guard on || language != settings.language else { return }
+        var set = Set(settings.languages)
+        if on { set.insert(language) } else { set.remove(language) }
+        settings.languages = Language.allCases.filter(set.contains)
+    }
+
     // MARK: Feedback by day
 
     /// Feedback belongs to the day. The main screen shows today's sessions'
@@ -1033,7 +1041,7 @@ final class Store {
         phase = .assessing
         do {
             let (review, written, usage) = try await tutor.review(turn: turn, level: settings.level)
-            note(usage)
+            note(usage, model: Tutor.reviewModel(turn.mode))
             turn.review = review
             current = turn
             session?.turns.append(turn)
@@ -1294,7 +1302,7 @@ final class Store {
             do {
                 let (review, lessons, usage) = try await tutor.review(
                     turn: last, history: Array(turns.dropLast()), level: level)
-                note(usage)
+                note(usage, model: Tutor.reviewModel(last.mode))
                 land(review, lessons, on: last)
             } catch {
                 if var now = jobs.first(where: { $0.id == job.id }) {
@@ -1328,7 +1336,7 @@ final class Store {
             guard let result = byID[exchange.customID], let reply = result.reply else { continue }
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
-            note(reply.usage, batched: batched)
+            note(reply.usage, batched: batched, model: Tutor.reviewModel(last.mode))
             guard let (review, lessons) = try? Tutor.read(reply, turn: last,
                                                            history: Array(turns.dropLast()))
             else { continue }
@@ -2178,8 +2186,12 @@ final class Store {
 
     // MARK: Bookkeeping
 
-    private func note(_ usage: Anthropic.Usage, batched: Bool = false) {
-        spend.add(usage, batched: batched)
+    private func note(_ usage: Anthropic.Usage, batched: Bool = false, model: String? = nil) {
+        if model == Anthropic.reviewModel {
+            spend.addSonnet(usage, batched: batched)
+        } else {
+            spend.add(usage, batched: batched)
+        }
         Vault.save(spend, Vault.spend)
     }
 
@@ -2509,14 +2521,14 @@ final class Store {
                 user: TopUp.request(chapter: chapter, level: pack.level(settings.level),
                                     examples: examples, used: used),
                 schema: TopUp.schema, effort: .medium, maxTokens: 16_000, model: Anthropic.topUpModel)
-            spend.addTopUp(usage)
+            spend.addSonnet(usage)
             var kept = TopUp.keep(written.items, chapter: chapter, used: used,
                                   idPrefix: "top.\(chapter.id).\(Int(Date.now.timeIntervalSince1970))")
             if !kept.isEmpty {
                 let (checked, usage) = try await tutor.api.send(
                     TopUp.Checked.self, cachedSystem: TopUp.checkSystem, user: TopUp.checkRequest(kept),
                     schema: TopUp.checkSchema, effort: .medium, maxTokens: 4_000, model: Anthropic.topUpModel)
-                spend.addTopUp(usage)
+                spend.addSonnet(usage)
                 let fail = Set(checked.fail)
                 kept = kept.enumerated().filter { !fail.contains($0.offset) }.map(\.element)
             }
@@ -2533,6 +2545,9 @@ final class Store {
     // MARK: Word decks
 
     /// Words due in the current language.
+    /// Whether `vocab-<language>.json` shipped.
+    var hasWordDeck: Bool { !books.words(for: settings.language).isEmpty }
+
     var wordsDue: Int {
         let language = settings.language
         return VocabDrill.dueCount(words: books.words(for: language), language: language) {
@@ -2542,6 +2557,9 @@ final class Store {
 
     /// The shipped rows with the learner's own words in.
     var concepts: [Concept] { books.concepts().map(edited) }
+
+    /// The ALL LANGUAGES deck's languages: the ones on. Under two, no deck.
+    var conceptRing: [Language] { ConceptDeck.ring(settings.languages) }
 
     /// Concept id → language → the word the learner typed over the list's.
     private(set) var conceptEdits: [String: [String: String]] =
@@ -2567,10 +2585,12 @@ final class Store {
         return concept.with(language, edits[language.rawValue] ?? original ?? typed)
     }
 
-    var conceptsDue: Int { ConceptDeck.dueCount(concepts) { self.quizLog.state(of: $0) } }
+    var conceptsDue: Int {
+        ConceptDeck.dueCount(concepts, ring: conceptRing) { self.quizLog.state(of: $0) }
+    }
 
     func nextConcepts(asked: Set<String>, count: Int) -> [Concept] {
-        ConceptDeck.next(concepts: concepts, state: { self.quizLog.state(of: $0) },
+        ConceptDeck.next(concepts: concepts, ring: conceptRing, state: { self.quizLog.state(of: $0) },
                          asked: asked, count: count)
     }
 
@@ -2676,7 +2696,7 @@ final class Store {
             chapter.entries.contains { $0.effectiveLevel(pointLevel: { points[$0] }) >= level }
         }
         var chapters = current + book.chapters.filter { c in !current.contains { $0.id == c.id } }
-        if !books.words(for: settings.language).isEmpty {
+        if hasWordDeck {
             book.drills.append(VocabDrill.plan(settings.language))
         }
         var noted: [String: Textbook.Entry] = [:]

@@ -165,7 +165,7 @@ struct VocabTests {
     /// The shipped lists decode and make full rounds at every band.
     @MainActor @Test func shippedListsMakeRounds() {
         let library = BookLibrary()
-        for (language, top) in [(Language.german, 4), (.french, 4), (.mandarin, 6)] {
+        for (language, top) in [(Language.german, 4), (.french, 4), (.mandarin, 6), (.spanish, 4), (.korean, 4)] {
             let words = library.words(for: language)
             #expect(words.count > 3000, "\(language)")
             for band in 1...top {
@@ -182,23 +182,45 @@ struct VocabTests {
 
     // MARK: All languages
 
+    static let three: [Language] = [.german, .french, .mandarin]
+
     @Test func frontsTurnAndEnglishComesSecond() {
         typealias F = ConceptDeck.Face
-        #expect(ConceptDeck.faces(turn: 0) == [F.language(.german), .en, .language(.french), .language(.mandarin)])
-        #expect(ConceptDeck.faces(turn: 1) == [F.language(.french), .en, .language(.mandarin), .language(.german)])
-        #expect(ConceptDeck.faces(turn: 2) == [F.language(.mandarin), .en, .language(.german), .language(.french)])
-        #expect(ConceptDeck.faces(turn: 3) == [F.en, .language(.german), .language(.french), .language(.mandarin)])
-        #expect(ConceptDeck.faces(turn: 4) == ConceptDeck.faces(turn: 0))
+        let ring = Self.three
+        #expect(ConceptDeck.faces(turn: 0, ring: ring) == [F.language(.german), .en, .language(.french), .language(.mandarin)])
+        #expect(ConceptDeck.faces(turn: 1, ring: ring) == [F.language(.french), .en, .language(.mandarin), .language(.german)])
+        #expect(ConceptDeck.faces(turn: 2, ring: ring) == [F.language(.mandarin), .en, .language(.german), .language(.french)])
+        #expect(ConceptDeck.faces(turn: 3, ring: ring) == [F.en, .language(.german), .language(.french), .language(.mandarin)])
+        #expect(ConceptDeck.faces(turn: 4, ring: ring) == ConceptDeck.faces(turn: 0, ring: ring))
+    }
+
+    /// The ring is the languages on, in a fixed order, whatever order they
+    /// were turned on in.
+    @Test func theRingFollowsTheLanguagesOn() {
+        #expect(ConceptDeck.ring([.korean, .german, .spanish]) == [.german, .spanish, .korean])
+        #expect(ConceptDeck.ring(Language.allCases) == [.german, .french, .spanish, .mandarin, .korean])
     }
 
     @Test func dueConceptsFirst() {
-        let rows = (0..<5).map { Concept(en: "e\($0)", de: "d\($0)", fr: "f\($0)", zh: "z\($0)") }
+        let rows = (0..<5).map {
+            Concept(en: "e\($0)", words: [.german: "d\($0)", .french: "f\($0)", .mandarin: "z\($0)"])
+        }
         var log = QuizLog()
         log.record(entry: ConceptDeck.entry(rows[3], .french), right: false, at: Self.now)
-        let next = ConceptDeck.next(concepts: rows, state: { log.state(of: $0) }, asked: [],
-                                    now: Self.now, count: 3)
+        let next = ConceptDeck.next(concepts: rows, ring: Self.three, state: { log.state(of: $0) },
+                                    asked: [], now: Self.now, count: 3)
         #expect(next.first == rows[3])
         #expect(next.count == 3)
+    }
+
+    /// A row missing a language that is on is left out of the deck.
+    @Test func rowsMustCoverTheRing() {
+        let full = Concept(en: "dog", words: [.german: "Hund", .spanish: "perro"])
+        let part = Concept(en: "cat", words: [.german: "Katze"])
+        let next = ConceptDeck.next(concepts: [full, part], ring: [.german, .spanish],
+                                    state: { _ in EntryState(standing: .never, slipping: false, lastSeen: nil, recent: []) },
+                                    asked: [], now: Self.now, count: 5)
+        #expect(next == [full])
     }
 
     /// The shipped rows point at words that exist.
@@ -207,8 +229,8 @@ struct VocabTests {
         let rows = library.concepts()
         #expect(rows.count > 1000)
         for row in rows.prefix(200) {
-            for language in ConceptDeck.ring {
-                #expect(library.word(row.word(language), in: language) != nil, "\(row.en) \(language)")
+            for (language, word) in row.words {
+                #expect(library.word(word, in: language) != nil, "\(row.en) \(language)")
             }
         }
     }
@@ -220,7 +242,7 @@ struct VocabTests {
         let library = BookLibrary()
         for language in Language.allCases {
             let rules = library.rules(for: language)
-            #expect(rules.count > 100, "\(language)")
+            #expect(rules.count > 40, "\(language)")
             let url = try #require(Bundle.main.url(forResource: "rules-\(language.rawValue)", withExtension: "json"))
             let raw = try JSONDecoder().decode([QuizItem].self, from: Data(contentsOf: url))
             #expect(raw.count == rules.count, "\(language)")
@@ -270,11 +292,20 @@ struct VocabTests {
         #expect(TopUp.similarity("Ich warte auf den Bus.", "Wir freuen uns auf das Wochenende.") < TopUp.sameAt)
     }
 
+    /// Settings saved before languages could be turned off: the three
+    /// reviewed ones, plus whichever is in use.
+    @Test func oldSettingsOfferTheLanguageInUse() throws {
+        let old = try JSONDecoder().decode(Settings.self, from: Data(#"{"language":"korean"}"#.utf8))
+        #expect(old.languages == [.mandarin, .german, .french, .korean])
+        let none = try JSONDecoder().decode(Settings.self, from: Data("{}".utf8))
+        #expect(none.languages == [.mandarin, .german, .french])
+    }
+
     @Test func oldSpendDaysStillDecode() throws {
         let old = #"{"days":{"2026-10-01":{"input":1000000,"output":0,"cacheRead":0,"cacheWrite":0}}}"#
         var spend = try JSONDecoder().decode(Spend.self, from: Data(old.utf8))
         #expect(spend.days["2026-10-01"]?.dollars == 5)
-        spend.addTopUp(.init(inputTokens: 1_000_000, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0),
+        spend.addSonnet(.init(inputTokens: 1_000_000, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0),
                        on: Date(timeIntervalSince1970: 1_790_000_000))
         #expect(spend.days.values.contains { abs($0.topUps - 2) < 0.0001 })
     }

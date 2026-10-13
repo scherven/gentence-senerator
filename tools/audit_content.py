@@ -20,7 +20,7 @@ for, so the two never disagree, and add what a format check can't see:
     pos           a concept row whose words differ in part of speech
     field         a missing or mistyped required field
 
-    python3 tools/audit_content.py [mandarin german french] [-v]
+    python3 tools/audit_content.py [mandarin german french spanish korean] [-v]
 
 Exits 1 if any file has an error. Other tools import `audit_items` to check
 items before writing them.
@@ -29,8 +29,8 @@ import collections, json, pathlib, re, sys, unicodedata
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CUR = ROOT / "gentence-senerator/gentence-senerator/Curriculum"
-LANGS = ("mandarin", "german", "french")
-CODE = {"mandarin": "zh", "german": "de", "french": "fr"}
+LANGS = ("mandarin", "german", "french", "spanish", "korean")
+CODE = {"mandarin": "zh", "german": "de", "french": "fr", "spanish": "es", "korean": "ko"}
 GAP = "＿"
 FORMATS = {"pick-one", "flip", "build", "two-step", "spot-it", "tone-tap",
            "sort", "transform", "card"}
@@ -279,24 +279,27 @@ def audit_concepts(rows, vocab_pos, add):
             add("field", f"#{n}", "not an object")
             continue
         key = r.get("en") if isinstance(r.get("en"), str) else f"#{n}"
-        for k in ("en", "de", "fr", "zh"):
-            if not isinstance(r.get(k), str):
-                add("field", key, f"{k} missing")
+        if not isinstance(r.get("en"), str):
+            add("field", key, "en missing")
+        codes = [c for c in CODE.values() if c in r]
+        if len(codes) < 2:
+            add("field", key, f"only {codes}: a row needs two languages")
         if key in seen:
             add("dup-id", key)
         seen.add(key)
         text_checks(key, r, add)
         poses = {}
-        for code in ("de", "fr", "zh"):
+        for code in codes:
             word = r.get(code)
-            if word is None:
+            if not isinstance(word, str):
+                add("field", key, f"{code} not a string")
                 continue
             if word not in vocab_pos[code]:
                 add("field", key, f"{code} {word!r} not in vocab")
             else:
                 poses[code] = vocab_pos[code][word]
         # Only when every word has a definite part of speech.
-        if len(poses) == 3 and not {"other", "phrase"} & set(poses.values()):
+        if len(poses) == len(codes) and not {"other", "phrase"} & set(poses.values()):
             clash = pos_clash(poses)
             if clash:
                 add("pos", key, " ".join(clash))

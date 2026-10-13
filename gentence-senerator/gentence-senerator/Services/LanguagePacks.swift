@@ -33,7 +33,7 @@ struct LanguagePack {
     let generationNotes: String
     let points: [GrammarPoint]
 
-    /// HSK runs to 9, CEFR to 6.
+    /// HSK runs to 9, CEFR and TOPIK to 6.
     var levels: Int { language == .mandarin ? 9 : 6 }
 
     func level(_ n: Int) -> String {
@@ -42,7 +42,9 @@ struct LanguagePack {
             // HSK 3.0 was designed for CEFR-style alignment: 1-3 ≈ A1-A2,
             // 4-6 ≈ B1-B2, 7-9 ≈ C1-C2.
             return "HSK \(min(max(n, 1), 9))"
-        case .german, .french:
+        case .korean:
+            return "TOPIK \(min(max(n, 1), 6))"
+        case .german, .french, .spanish:
             let bands = ["A1", "A2", "B1", "B2", "C1", "C2"]
             return bands[min(max(n - 1, 0), bands.count - 1)]
         }
@@ -70,6 +72,8 @@ enum LanguagePacks {
         case .mandarin: return mandarin
         case .german:   return german
         case .french:   return french
+        case .spanish:  return spanish
+        case .korean:   return korean
         }
     }
 
@@ -149,7 +153,8 @@ enum LanguagePacks {
         the verb or preposition; producing the wrong ending for the right case
         is morphology. Say which, because they take different repairs.
         Direction versus position after a two-way preposition genuinely changes
-        meaning; most other ending errors do not.
+        meaning; most other ending errors do not, and are "weakens", ranked
+        below any word or phrasing a speaker would not use.
         """,
         generationNotes: "No German in the English prompt.",
         points: curriculum.points(for: .german)
@@ -183,5 +188,88 @@ enum LanguagePacks {
         """,
         generationNotes: "No French in the English prompt.",
         points: curriculum.points(for: .french)
+    )
+
+    // MARK: Spanish
+
+    static let spanish = LanguagePack(
+        language: .spanish,
+        kinds: universal + [
+            .gender, .agreementHeard, .copula, .tenseAspect, .mood,
+            .pronounPlacement, .preposition, .negation
+        ],
+        routing: """
+        The target is Mexican Spanish, but Spain's is correct Spanish: never
+        report vosotros, leísmo or a Peninsular word as an error. Spoken,
+        si hubiera… hubiera and habían before a plural noun are Mexican
+        usage: kept.
+        A dropped subject pronoun is correct. One used where nothing is
+        contrasted is extra-piece, at most "weakens".
+        ser against estar is copula, never word-choice; so is estar where an
+        indefinite thing exists and hay was needed.
+        Preterite against imperfect is tense-aspect. A missing subjunctive
+        after a trigger — querer que, para que, cuando about the future — is
+        mood, never tense-aspect.
+        por against para, and a missing personal a, are preposition.
+        An object pronoun missing, misplaced, or lo where le belongs is
+        pronoun-placement, never missing-piece.
+        The wrong gender for a noun is gender; an article or adjective failing
+        to agree with a noun whose gender is right is agreement-heard.
+        No before the verb with nada, nadie or nunca after it is required;
+        leaving it out is negation.
+        A missing written accent is spelling: word-choice, written only, at
+        most "weakens" — unless it changes the word (esta/está, el/él).
+        """,
+        assessmentNotes: """
+        ser/estar, preterite/imperfect and the subjunctive are the three an
+        English speaker carries longest. In speech, what comes back wrong is
+        unstressed vowels drifting to schwa, and a tap r for a trilled rr —
+        pero against perro, which is a different word.
+        """,
+        generationNotes: "No Spanish in the English prompt. Plural you is ustedes.",
+        points: curriculum.points(for: .spanish)
+    )
+
+    // MARK: Korean
+
+    static let korean = LanguagePack(
+        language: .korean,
+        kinds: universal + [
+            .particle, .verbFinal, .speechLevel, .connective,
+            .tenseAspect, .negation, .mood
+        ],
+        routing: """
+        은/는 against 이/가, 에 against 에서, and any missing or wrong case
+        particle are particle, never word-choice and never preposition. The
+        wrong allomorph for the final consonant (을 for 를, 으로 for 로) is
+        particle, at most "weakens".
+        Speech drops 을/를 and 이/가, and subjects and objects once the topic is
+        set: spoken, a dropped one is kept. Report a missing one only when you
+        cannot tell who did what.
+        A verb or adjective that is not last in its clause is verb-final, never
+        word-order.
+        The ending's level against the listener — 반말 in a 해요체 sentence, or
+        the wrong level for who the prompt names — is speech-level, never
+        register. A missing -시- for an honoured subject, and honorific forms
+        (드시다, 계시다, 댁, 께서), are speech-level too. With no listener named, any
+        consistent polite level is right.
+        A clause-linking ending chosen wrong — -아서/-어서 against -니까, -고,
+        -는데, -지만, -면 — is connective, including -아서 before a command or
+        suggestion. Never word-choice or mood.
+        안 against 못, and -지 마세요, are negation.
+        되/돼 and 안/않 confusions are spelling: word-choice, written only, at
+        most "weakens".
+        """,
+        assessmentNotes: """
+        은/는 against 이/가 is the single most common confusion an English
+        speaker has: new information takes 이/가, the topic and the contrast
+        take 은/는. In speech, what comes back wrong is plain, aspirated and
+        tense consonants — 달, 탈, 딸 are three words — and ㅓ against ㅗ.
+        """,
+        generationNotes: """
+        No Korean in the English prompt. When the speech level matters, say who
+        is being spoken to; otherwise 해요체 is expected.
+        """,
+        points: curriculum.points(for: .korean)
     )
 }

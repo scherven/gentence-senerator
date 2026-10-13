@@ -3,6 +3,7 @@
 
 Writes gentence-senerator/gentence-senerator/Curriculum/words-<language>.json,
 one language at a time, so an interrupted run keeps whatever it finished.
+`python3 tools/build_words.py spanish korean` builds only the languages named.
 
 Where the bands come from:
 
@@ -17,10 +18,27 @@ Where the bands come from:
             expert levels of the Beacco et al. référentiels ("Niveau A1/A2/B1
             pour le français", Didier/CIEP) — (c) CENTAL, UCLouvain,
             CC BY-NC-SA 4.0.
+  Spanish   Bands 1-3 are ELELex, the CEFRLex resource for Spanish — (c)
+            CENTAL, UCLouvain, CC BY-NC-SA 4.0, mirrored in
+            kevinmonisit/MWE-Anki-Generator. It counts lemmas in coursebooks
+            per CEFR level rather than carrying an expert level, so a lemma is
+            put at the first of A1, A2, B1 where at least three coursebooks use
+            it. FreeLing-tagged proper nouns and most interjections are out.
+            No machine-readable copy of the Instituto Cervantes PCIC could be
+            found to do better.
 
-  Both      Bands 4-6 have no official list at all, so they stay rank buckets
-            over OpenSubtitles frequency (hermitdave/FrequencyWords, MIT),
-            cleaned hard and with everything already banded 1-3 removed.
+  German, French and Spanish: bands 4-6 have no official list at all, so they
+            stay rank buckets over OpenSubtitles frequency
+            (hermitdave/FrequencyWords, MIT), cleaned hard and with everything
+            already banded 1-3 removed.
+
+  Korean    국립국어원's vocabulary for the 국제 통용 한국어 표준 교육과정 (2017),
+            graded 1-6급 directly, which is the grading TOPIK follows — (c)
+            National Institute of Korean Language, 공공누리 (KOGL) Type 1; a
+            CSV export mirrored in hyoseo837/k-typer. Bands 1-6 are the grades
+            as published, homograph numbers stripped, predicates kept in their
+            다 form. There is no frequency tail: hermitdave's Korean list is of
+            eojeol with particles and endings attached, not of lemmas.
 
 The cleaning matters more than the banding. hermitdave's lists are lower-cased,
 so the capitalisation that would mark a name is gone and `alan` sits in the
@@ -32,10 +50,14 @@ a dictionary of the language that excludes proper nouns by construction:
   French    the Hunspell fr.dic shipped in LibreOffice/dictionaries (Dicollecte
             / Grammalecte, MPL 2.0), reading only its lower-case entries: French
             proper nouns are capitalised there, common words are not.
+  Spanish   the Hunspell es_MX.dic in the same repository (RLA-ES, GPL 3+ /
+            LGPL 3+ / MPL 1.1+), lower-case entries only as for French, and
+            intersected with ELELex's lemmas at any level, because es_MX.dic
+            also lists irregular and clitic forms (`fue`, `dime`) as entries.
 
-Both lists still leak — `Leslie` is in the German one, `blair` and `madison`
-are lower-case entries in fr.dic — so a name database (smashew/NameDatabases,
-Unlicense) drops what they miss. It takes `Faust` and `Mark` with it, which
+All three still leak — `Leslie` is in the German one, `blair` and `madison`
+are lower-case entries in fr.dic, `juan` and `maría` in es_MX.dic — so a
+name database (smashew/NameDatabases, Unlicense) drops what they miss. It takes `Faust` and `Mark` with it, which
 costs nothing: the tail is cut to a fixed size, so a word dropped is one more
 taken from further down the frequency list.
 
@@ -88,6 +110,19 @@ DE_WORDS = ("https://raw.githubusercontent.com/enz/german-wordlist/"
             "8436363e4cdb789815cf5084c431b43362bec7e5/words")
 FR_DIC = ("https://raw.githubusercontent.com/LibreOffice/dictionaries/"
           "32b006a2c22a4ac7e8ed3f03346f7b3d85a970a4/fr_FR/dictionaries/fr.dic")
+# ELELex, the Spanish CEFRLex resource, as CENTAL distribute it
+# (cental.uclouvain.be/cefrlex/static/resources/es/ELELex.tsv); this mirror is
+# byte-for-byte the same size as a second, independent one.
+ELELEX = ("https://raw.githubusercontent.com/kevinmonisit/MWE-Anki-Generator/"
+          "f74d1fa27d0a70efa3511f6b32b559f4ebb68530/data/ELELex.tsv")
+ES_DIC = ("https://raw.githubusercontent.com/LibreOffice/dictionaries/"
+          "762abe74008b94b2ff06db6f4024b59a8254c467/es/es_MX.dic")
+# 국립국어원's vocabulary for the 국제 통용 한국어 표준 교육과정, graded 1-6급.
+NIKL = ("https://raw.githubusercontent.com/hyoseo837/k-typer/"
+        "437ab2d35fa4da2b1d58d4daae47396f6bf8a959/resource/"
+        "%EA%B5%AD%EC%A0%9C%20%ED%86%B5%EC%9A%A9%20%ED%95%9C%EA%B5%AD%EC%96%B4"
+        "%20%ED%91%9C%EC%A4%80%20%EA%B5%90%EC%9C%A1%EA%B3%BC%EC%A0%95%20%EC%96%B4"
+        "%ED%9C%98%20%EB%AA%A9%EB%A1%9D-%EC%96%B4%ED%9C%98.csv")
 NAMES = ("https://raw.githubusercontent.com/smashew/NameDatabases/"
          "4a714a09ed69147c373d9b9f2bce20ef79a63381/"
          "NamesDatabases/first%20names/all.txt")
@@ -192,6 +227,8 @@ KEEP_SHORT = {"y", "à", "a", "on", "ou", "où", "et", "un", "je", "tu", "il",
               "um", "wo", "zu", "öl", "ei", "au", "ce", "de", "du", "en",
               "la", "le", "là", "me", "mi", "ne", "ni", "nu", "or", "os",
               "ré", "se", "si", "te"}
+# Spanish `o`, `u` and `e` are `or` and its variants and `and`'s.
+KEEP_SHORT_IN = {"spanish": {"o", "u", "e"}}
 
 # Subtitles are people making noises at each other. None of these is a word to
 # build a sentence around, and several sit high in the frequency list.
@@ -210,10 +247,18 @@ INTERJECTIONS = {
                "vlan", "vertubleu", "pardi", "pardieu", "ô", "ouais", "las",
                "tchao", "hi", "ha", "hé", "ouf", "psst", "ok",
                "aïe", "oups", "miam", "beuh", "holà"},
+    "spanish": {"ah", "aah", "oh", "ooh", "eh", "ay", "uy", "huy", "ja", "jaja",
+                "jajaja", "je", "bah", "puf", "uf", "uff", "ey", "hey", "ok",
+                "okay", "hmm", "mmm", "mm", "hum", "ajá", "guau", "olé",
+                "caramba", "híjole", "órale", "ándale", "ups", "epa", "ea",
+                "chao", "chau", "che", "guay", "ostras", "vaya", "venga",
+                "bua", "buah", "psst", "shh", "pss", "ufa", "ush",
+                "wow", "yeah", "hala", "bum", "pum", "zas", "aja",
+                "eh", "hi", "ha", "oye", "sh"},
 }
 
 REPEATED = re.compile(r"(.)\1\1")
-VOWEL = re.compile(r"[aeiouyàâäåéèêëîïôöùûüœæ]")
+VOWEL = re.compile(r"[aeiouyàâäåéèêëîïôöùûüœæáíóúñ]")
 
 
 # Slurs and strong vulgarity. A subtitle corpus is full of both, and these words
@@ -228,6 +273,24 @@ BLOCKED = {
     "french": {"négro", "pédé", "tapette", "pute", "putain", "salope", "salopard",
                "bite", "enculé", "connard", "cul", "merde", "chier", "foutre",
                "chatte", "couilles", "nique", "niquer"},
+    "spanish": {"puta", "puto", "putas", "putos", "putita", "mierda", "cabrón",
+                "cabrona", "cabrones", "coño", "joder", "jodido", "jodida",
+                "jodan", "verga", "pinche", "chingar", "chingada", "chingado",
+                "chinga", "chingón", "pendejo", "pendeja", "pendejos",
+                "pendejada", "culo", "culero", "maricón", "marica", "joto",
+                "puñeta", "carajo", "gilipollas", "polla", "follar", "cojones",
+                "huevón", "güey", "wey", "zorra", "teta", "tetas", "panocha",
+                "madrazo", "mamón", "mamada", "ojete", "cagar", "cagada",
+                "mear", "puñetero", "hostia", "capullo", "retrasado",
+                "negrata", "sudaca", "malparido", "hijueputa", "pajero",
+                "cachondo", "putada",
+                # `take` in Spain and in the coursebooks; vulgar in Mexico,
+                # and es-MX is the target.
+                "coger",
+                # Slurs ELELex's coursebooks quote (on Spaniards in Mexico, on
+                # soldiers in the Southern Cone), and rape, which nobody wants
+                # woven into a practice sentence.
+                "gachupín", "milico", "violar", "violación"},
 }
 
 
@@ -243,7 +306,8 @@ def is_noise(word, language):
 def acceptable(word, language):
     if not WORD.match(word):
         return False
-    if len(word) < 2 and word not in KEEP_SHORT:
+    if (len(word) < 2 and word not in KEEP_SHORT
+            and word not in KEEP_SHORT_IN.get(language, ())):
         return False
     return not is_noise(word, language)
 
@@ -272,6 +336,12 @@ ENDINGS = {
     "french": ["eraient", "erions", "aient", "erais", "erait", "eront",
                "ions", "iez", "ais", "ait", "ant", "ent", "ons", "ez",
                "er", "ir", "re", "ees", "ee", "es", "s", "e"],
+    "spanish": ["ariamos", "eriamos", "iriamos", "abamos", "aremos", "eremos",
+                "iremos", "aste", "iste", "aron", "ieron", "aran", "eran",
+                "iran", "aria", "eria", "iria", "ando", "iendo", "ado", "ido",
+                "ada", "ida", "aba", "ian", "ia", "io", "amos", "emos", "imos",
+                "ar", "er", "ir", "as", "es", "an", "en", "os", "a", "e", "i",
+                "o", "s"],
 }
 
 
@@ -402,20 +472,92 @@ def flelex():
     return bands
 
 
+# MARK: Spanish — ELELex, levelled by the textbooks that teach it
+
+# ELELex counts every lemma in a corpus of Spanish coursebooks, separately for
+# the books at each CEFR level. It carries no expert level of its own, so a
+# lemma is levelled where the coursebooks start using it: the first level at
+# which at least this many different books have it. One book is an accident —
+# a reading text about a volcano — and a threshold of one puts more than three
+# thousand lemmas at A1; three leaves about thirteen hundred, close to what the
+# Goethe and Beacco lists hold there.
+ELELEX_BOOKS = 3
+# FreeLing tags. Proper nouns and units are not vocabulary, and neither is most
+# of what is tagged an interjection (`ah`, `ca`, `chiiiist`, `guay`) — except
+# the handful a teacher does put in front of a beginner, `hola` first.
+ELELEX_DROP = re.compile(r"NP|^Zu$")
+ELELEX_INTERJECTION = "I"
+ELELEX_GREETINGS = {"hola", "adiós", "bueno", "claro", "exacto", "ojalá",
+                    "bravo", "socorro", "cuidado", "adelante", "atención"}
+# FreeLing lemmatises `gracias` to `gracia` (grace); the beginner's word is the
+# plural. And a few names it tagged as common nouns.
+ELELEX_RENAME = {"gracia": "gracias"}
+ELELEX_NAMES = {"maría", "ana", "paco", "lisa", "leo"}
+
+
+def elelex_rows():
+    """(lemma, the number of coursebooks using it at A1, A2, B1), common
+    lemmas only — FreeLing's proper nouns and most interjections dropped."""
+    text = fetch(ELELEX, "ELELex.tsv")
+    rows = text.splitlines()
+    header = [cell.strip('"') for cell in rows[0].split("\t")]
+    word_at, tag_at = header.index("word"), header.index("tag")
+    books_at = [header.index(f"nb_doc@{level}") for level in ("a1", "a2", "b1")]
+    for line in rows[1:]:
+        cell = [c.strip('"') for c in line.split("\t")]
+        if len(cell) < len(header):
+            continue
+        word, tag = cell[word_at].strip().lower(), cell[tag_at].strip()
+        word = ELELEX_RENAME.get(word, word)
+        if ELELEX_DROP.search(tag) or word in ELELEX_NAMES:
+            continue
+        if tag == ELELEX_INTERJECTION and word not in ELELEX_GREETINGS:
+            continue
+        yield word, [float(cell[at] or 0) for at in books_at]
+
+
+def elelex():
+    """A1, A2 and B1 as bands 1, 2 and 3, by where the coursebooks take a lemma up."""
+    blocked = BLOCKED["spanish"]
+    bands = {}
+    for word, books in elelex_rows():
+        level = next((i + 1 for i, n in enumerate(books)
+                      if n >= ELELEX_BOOKS), None)
+        # Multiword entries are joined by `_` and fall to `acceptable`.
+        if level is None or word in blocked or not acceptable(word, "spanish"):
+            continue
+        bands[word] = min(level, bands.get(word, level))
+    if not bands:
+        raise Missing(ELELEX, "ELELex.tsv")
+    return bands
+
+
 # MARK: Bands 4-6 — frequency, with the names taken out
+
+# Hunspell dictionaries hold a capitalised entry for a proper noun, so only the
+# lower-case ones are read.
+HUNSPELL = {"french": (FR_DIC, "fr.dic"), "spanish": (ES_DIC, "es_MX.dic")}
+
 
 def dictionary(language):
     """Words of the language that are not names. See the module docstring."""
     if language == "german":
         text = fetch(DE_WORDS, "german-wordlist-words.txt")
         return {line.strip().lower() for line in text.splitlines() if line.strip()}
-    text = fetch(FR_DIC, "fr.dic")
+    url, name = HUNSPELL[language]
+    text = fetch(url, name)
     known = set()
     for line in text.splitlines()[1:]:
         word = line.strip().split("/")[0]
-        # Only the lower-case entries: in fr.dic a proper noun is capitalised.
+        # Only the lower-case entries: there a proper noun is capitalised.
         if word and word[:1].islower():
             known.add(word.lower())
+    if language == "spanish":
+        # es_MX.dic also lists irregular and clitic forms as entries of their
+        # own — `fue`, `estoy`, `dime`, `dárselo` — so it does not leave
+        # lemmas the way fr.dic does. ELELex is FreeLing-lemmatised, so a
+        # tail word has to be one of its common lemmas too, at any level.
+        known &= {word for word, _ in elelex_rows()}
     return known
 
 
@@ -502,7 +644,7 @@ def tail(language, code, banded):
     return bands
 
 
-# MARK: The two European languages
+# MARK: The European languages
 
 def european(language, code, official, meta):
     bands = official()
@@ -579,15 +721,127 @@ FRENCH_META = {
                 "on a word held here are dropped too.",
 }
 
+SPANISH_META = {
+    "source": "ELELex (François, Göbel, Lundquist et al., CEFRLex project), "
+              "lemma frequencies in Spanish-as-a-foreign-language coursebooks "
+              "by CEFR level, as bands 1-3; OpenSubtitles 2018 frequency "
+              "(Lison & Tiedemann) rank buckets as bands 4-6",
+    "copyright": "Bands 1-3 (c) CENTAL, Université catholique de Louvain, "
+                 "licensed CC BY-NC-SA 4.0. The mirror below is a copy of "
+                 "CENTAL's own distribution and is not itself licensed by them.",
+    "via": "Bands 1-3: cental.uclouvain.be/cefrlex/elelex, mirrored at "
+           "github.com/kevinmonisit/MWE-Anki-Generator data/ELELex.tsv. "
+           "Bands 4-6: github.com/hermitdave/FrequencyWords (MIT). Filtered "
+           "against the Hunspell es_MX.dic in "
+           "github.com/LibreOffice/dictionaries (RLA-ES, Santiago Bosio et "
+           "al.; GPL 3+ / LGPL 3+ / MPL 1.1+) and "
+           "github.com/smashew/NameDatabases (Unlicense).",
+    "bands": "ELELex carries frequencies per level, not an expert level, so "
+             "1-3 are A1, A2 and B1 as the first level at which at least "
+             f"{ELELEX_BOOKS} different coursebooks use the lemma; proper "
+             "nouns (FreeLing NP), interjections other than a few greetings "
+             "(hola, adiós), multiword entries and a few names tagged as "
+             "common nouns (maría) are left out; `gracia` is taken as "
+             "`gracias`. 4-6 are rank buckets of 800 over the frequency tail, "
+             "which no list covers, with everything already in bands 1-3 "
+             "removed. Latin American Spanish is the target; the sources are "
+             "pan-Hispanic, and the tail is checked against the Mexican "
+             "dictionary.",
+    "filtered": "Bands 4-6 only, except the vulgarity block, which bands 1-3 "
+                "pass through as well since ELELex is counted rather than "
+                "chosen; it also takes `coger`, vulgar in Mexico. A tail word "
+                "must be a lower-case entry of the Mexican Spanish Hunspell "
+                "dictionary, which drops most names, and a common-noun lemma "
+                "somewhere in ELELex at any level, since the dictionary also "
+                "lists inflected forms (fue, estoy, dime) as entries; a known "
+                "given name is dropped as well, and "
+                "so is a word ranking five times better in English subtitles "
+                "than in Spanish ones, which is a line nobody translated. "
+                "Interjections, slurs and strong vulgarity, words shorter "
+                "than three letters, words holding a hyphen or a space and "
+                "words the Lexicon's suffix reduction already lands on a word "
+                "held here are dropped too.",
+}
+
+
+# MARK: Korean — 국립국어원, graded by the standard curriculum
+
+# `가다01` carries a homograph number; `계속02/계속01` is one form listed
+# under two homographs; `마흔02∙마흔01` is the numeral and the determiner.
+HANGUL = re.compile(r"^[가-힣]+$")
+VARIANTS = re.compile(r"[/∙·‧・.,]")
+HOMOGRAPH = re.compile(r"\d+$")
+GRADES = {f"{n}급": n for n in range(1, 7)}
+# Interjections are left out, except the ones a first lesson is built on.
+KOREAN_GREETINGS = {"안녕", "네", "예", "아니요", "여보세요"}
+
+
+def korean():
+    """1-6급 as bands 1-6, as published. Lowest grade wins.
+
+    Only interjections are left out by part of speech: affixes (`-하다`,
+    `불-`) carry a hyphen and fail the Hangul test on their own. A predicate
+    has to be in its dictionary form, since the Lexicon drops the final 다 and
+    matches the stem — a 동사 listed without one (`사인02`) is a slip in the
+    list and is skipped."""
+    import csv
+    import io
+    text = fetch(NIKL, "nikl-standard-curriculum-vocabulary.csv",
+                 encoding="utf-8-sig")
+    words = {}
+    for row in csv.DictReader(io.StringIO(text)):
+        level = GRADES.get((row.get("등급") or "").strip())
+        pos = re.sub(r"\s", "", row.get("품사") or "")
+        if level is None:
+            continue
+        predicate = all(part in ("동사", "형용사") for part in pos.split("/"))
+        for form in VARIANTS.split(row.get("어휘") or ""):
+            form = HOMOGRAPH.sub("", form.strip())
+            if not HANGUL.match(form):
+                continue
+            if pos == "감탄사" and form not in KOREAN_GREETINGS:
+                continue
+            if predicate and not form.endswith("다"):
+                continue
+            words[form] = min(level, words.get(form, level))
+    if not words:
+        raise Missing(NIKL, "nikl-standard-curriculum-vocabulary.csv")
+    write("korean", {
+        "source": "국제 통용 한국어 표준 교육과정 어휘 목록 (vocabulary of the "
+                  "International Standard Curriculum for Korean), 국립국어원 "
+                  "National Institute of Korean Language, 2017, 1-6급",
+        "copyright": "(c) 국립국어원 (National Institute of Korean Language), "
+                     "published under 공공누리 (KOGL) Type 1: attribution, "
+                     "commercial use and derivatives permitted.",
+        "via": "github.com/hyoseo837/k-typer resource/국제 통용 한국어 표준 "
+               "교육과정 어휘 목록-어휘.csv, a CSV export of NIKL's "
+               "spreadsheet.",
+        "bands": "1-6급 as NIKL grade them, which is the grading TOPIK 1-6 "
+                 "follows; a word taken at the lowest grade it appears. No "
+                 "frequency tail: Korean frequency lists are of eojeol, with "
+                 "particles and endings attached, not of lemmas.",
+        "filtered": "Homograph numbers stripped (가다01 → 가다), entries listing "
+                    "several homographs split, and the duplicates merged. "
+                    "Interjections (감탄사) dropped except 안녕, 네, 예, "
+                    "아니요 and 여보세요, and anything that is not "
+                    "pure Hangul — affixes like -하다 carry a hyphen. "
+                    "Predicates are kept in their 다 form, which the Lexicon "
+                    "needs; the few the list carries without one are "
+                    "dropped.",
+    }, words)
+
 
 if __name__ == "__main__":
-    only = sys.argv[1:] or ["mandarin", "german", "french"]
+    only = sys.argv[1:] or ["mandarin", "german", "french", "spanish", "korean"]
     failed = False
     for name, build in (("mandarin", mandarin),
                         ("german", lambda: european("german", "de", goethe,
                                                     GERMAN_META)),
                         ("french", lambda: european("french", "fr", flelex,
-                                                    FRENCH_META))):
+                                                    FRENCH_META)),
+                        ("spanish", lambda: european("spanish", "es", elelex,
+                                                     SPANISH_META)),
+                        ("korean", korean)):
         if name not in only:
             continue
         print(name)
