@@ -228,6 +228,7 @@ enum Vault {
     static let conceptEdits = "words.edits.v1" // the learner's own word for a meaning, by concept and language
     static let activity = "activity.v1" // what was done each day, for History
     static let scores = "scores.v1" // every graded answer's score, for History averages
+    static let disputed = "disputed.v1" // finding ids the learner reported as wrong
 }
 
 /// One element of a stored collection, or nothing if it no longer decodes.

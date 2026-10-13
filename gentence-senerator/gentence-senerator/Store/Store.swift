@@ -2103,6 +2103,38 @@ final class Store {
         save()
     }
 
+    /// Findings the learner has said are wrong, by atom id. Kept so the key
+    /// stays marked on a review opened again.
+    private(set) var disputed: Set<String> = Set(Vault.load([String].self, Vault.disputed) ?? [])
+
+    /// Sends a finding the learner says is wrong, with what they said and why.
+    /// Nil when sent, else the line to show.
+    func dispute(_ atom: Atom, in turn: Turn, note: String) async -> String? {
+        let body: [String: Any] = [
+            "language": turn.language.rawValue,
+            "mode": turn.mode.rawValue,
+            "model": Tutor.reviewModel(turn.mode) ?? "claude-opus-5",
+            "prompt": turn.prompt.english ?? turn.prompt.target ?? "",
+            "attempt": turn.attempt.confirmed,
+            "finding": [
+                "kind": atom.kind.rawValue,
+                "verdict": atom.verdict.rawValue,
+                "text": [atom.stages.locate, atom.stages.name, atom.stages.fix]
+                    .filter { !$0.isEmpty }.joined(separator: " · "),
+                "note": atom.stages.note
+            ],
+            "note": note.trimmingCharacters(in: .whitespacesAndNewlines)
+        ]
+        do {
+            try await Worker.dispute(body)
+            disputed.insert(atom.id)
+            Vault.save(Array(disputed), Vault.disputed)
+            return nil
+        } catch {
+            return Plain.message(error, "dispute")
+        }
+    }
+
     func classify(_ atom: Atom, as verdict: Progress.Encounter.Knowledge) {
         knowledge[atom.id] = verdict
         progress.classify(atom, as: verdict, language: language)
@@ -2903,11 +2935,11 @@ final class Store {
     }
 
     /// The verdict `grade(_:against:)` returns when the model could not be reached.
-    static let uncheckable = "Couldn't check that."
+    static let uncheckable = "Unchecked."
 
     /// The ask panel's failure line, with the reason when there is one.
     static func couldNotAnswer(_ why: String) -> String {
-        why == Plain.unknown ? "Couldn't answer that." : "Couldn't answer that. " + why
+        why == Plain.unknown ? "No answer." : "No answer. " + why
     }
 
     /// Where a finding sits in what was said, and its fix as wrong → right.
@@ -3295,7 +3327,7 @@ final class Store {
             hold()
         } catch {
             Plain.note(error, "another question")
-            speechTrouble = "Couldn't write another question."
+            speechTrouble = "No new question."
         }
     }
 }

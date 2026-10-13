@@ -10,6 +10,9 @@ struct ReviewScreen: View {
     let onOpenAtom: (Atom) -> Void
     let onOpenLink: (AtomLink) -> Void
     let onClassify: (Atom, Progress.Encounter.Knowledge) -> Void
+    /// Nil when the dispute was sent, else the line to show.
+    let onDispute: (Atom, String) async -> String?
+    let disputed: Set<String>
     let onAsk: (String) -> Void
     let answers: [AskItem]
     let isAsking: Bool
@@ -174,6 +177,8 @@ struct ReviewScreen: View {
                                 open: binding(for: atom),
                                 knowledge: knowledge[atom.id] ?? .unclassified,
                                 onClassify: { onClassify(atom, $0) },
+                                disputed: disputed.contains(atom.id),
+                                onDispute: { await onDispute(atom, $0) },
                                 onOpen: { onOpenAtom(atom) }
                             )
                         }
@@ -348,6 +353,8 @@ struct ReviewReader: View {
             onOpenAtom: { store.open($0) },
             onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
             onClassify: { store.classify($0, as: $1) },
+            onDispute: { await store.dispute($0, in: turn, note: $1) },
+            disputed: store.disputed,
             onAsk: { question in
                 Task {
                     await store.ask(question,

@@ -9,6 +9,8 @@ struct PlainErrorTests {
     @Test func workerStatusesBecomePlainLines() {
         #expect(Plain.message(for: Anthropic.Failure.http(401, "invite")) == Plain.invite)
         #expect(Plain.message(for: Anthropic.Failure.http(429, "slow down")) == Plain.limited)
+        #expect(Plain.message(for: Anthropic.Failure.http(429, "daily limit")) == Plain.capped)
+        #expect(Plain.message(for: Sender.Failure.rejected(429, "daily limit")) == Plain.capped)
         #expect(Plain.message(for: Anthropic.Failure.http(529, "overloaded")) == Plain.busy)
         #expect(Plain.message(for: Sender.Failure.rejected(401, "invite")) == Plain.invite)
         #expect(Plain.message(for: Sender.Failure.rejected(403, "model or max_tokens")) == Plain.unknown)
@@ -30,7 +32,7 @@ struct PlainErrorTests {
     }
 
     @Test func askNamesTheReasonOnlyWhenThereIsOne() {
-        #expect(Store.couldNotAnswer(Plain.offline) == "Couldn't answer that. No connection.")
-        #expect(Store.couldNotAnswer(Plain.unknown) == "Couldn't answer that.")
+        #expect(Store.couldNotAnswer(Plain.offline) == "No answer. Offline.")
+        #expect(Store.couldNotAnswer(Plain.unknown) == "No answer.")
     }
 }

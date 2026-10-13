@@ -28,6 +28,21 @@ enum Worker {
         return true
     }
 
+    /// A finding the learner says is wrong, for the owner to read on /stats.
+    static func dispute(_ body: [String: Any]) async throws {
+        var request = URLRequest(url: url("/dispute"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        authorize(&request)
+        request.timeoutInterval = 20
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+        guard code == 200 else {
+            throw Sender.Failure.rejected(code, String(decoding: data, as: UTF8.self))
+        }
+    }
+
     /// Keeps `code` if the worker accepts it.
     static func redeem(_ code: String) async -> Bool {
         // Codes are XXXX-XXXX; accept them typed with or without the dash.

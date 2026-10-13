@@ -45,7 +45,16 @@ struct StagedAtomRow: View {
     @Binding var open: Bool
     let knowledge: Progress.Encounter.Knowledge
     let onClassify: (Progress.Encounter.Knowledge) -> Void
+    /// Reported as wrong already.
+    var disputed = false
+    /// Nil when sent, else the line to show.
+    var onDispute: ((String) async -> String?)? = nil
     let onOpen: () -> Void
+
+    @State private var asking = false
+    @State private var note = ""
+    @State private var sending = false
+    @State private var trouble: String?
 
     /// Reviews from before grading moved to a batch can be missing everything
     /// after `locate`; those stay on it.
@@ -85,6 +94,21 @@ struct StagedAtomRow: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: advance)
         .accessibilityAddTraits(.isButton)
+        .alert("What's wrong?", isPresented: $asking) {
+            TextField("Optional", text: $note)
+            Button("Send") { send() }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private func send() {
+        guard let onDispute else { return }
+        sending = true
+        trouble = nil
+        Task {
+            trouble = await onDispute(note)
+            sending = false
+        }
     }
 
     @ViewBuilder
@@ -109,6 +133,21 @@ struct StagedAtomRow: View {
             }
             .padding(.top, 4)
         }
+        if onDispute != nil { wrong }
+    }
+
+    /// Says the finding itself is wrong. Goes to the owner, changes nothing here.
+    @ViewBuilder
+    private var wrong: some View {
+        HStack(spacing: 8) {
+            TinyButton(title: disputed ? "Reported" : sending ? "Sending" : "That's wrong",
+                       selected: disputed) { if !disputed && !sending { note = ""; asking = true } }
+                .fixedSize()
+            if let trouble {
+                Text(trouble).font(Theme.F.meta).foregroundStyle(Theme.C.bad)
+            }
+        }
+        .padding(.top, 2)
     }
 
     private var lesson: some View {

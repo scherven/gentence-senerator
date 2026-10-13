@@ -18,14 +18,15 @@ enum Plain {
         log.error("\(context, privacy: .public): \(String(describing: error), privacy: .public)")
     }
 
-    static let offline = "No connection."
+    static let offline = "Offline."
     static let timedOut = "Timed out."
-    static let invite = "Invite code no longer works."
-    static let limited = "Too many requests. Try again in a minute."
-    static let busy = "Server busy. Try again shortly."
-    static let garbled = "Couldn't read the reply."
-    static let declined = "Couldn't do that one."
-    static let unknown = "Something went wrong."
+    static let invite = "Code expired."
+    static let limited = "Too fast. Wait a minute."
+    static let capped = "Today's limit reached."
+    static let busy = "Busy. Try later."
+    static let garbled = "Bad reply."
+    static let declined = "Declined."
+    static let unknown = "Failed."
 
     /// The line for `error`, without logging. Pure, for tests.
     static func message(for error: Error) -> String {
@@ -41,13 +42,13 @@ enum Plain {
             }
         case let error as Anthropic.Failure:
             switch error {
-            case .http(let code, _): return status(code)
+            case .http(let code, let body): return status(code, body)
             case .malformed: return garbled
             case .refused: return declined
             }
         case let error as Sender.Failure:
             switch error {
-            case .rejected(let code, _): return status(code)
+            case .rejected(let code, let body): return status(code, body)
             }
         case let error as Voice.Trouble:
             return error.errorDescription ?? unknown
@@ -62,11 +63,12 @@ enum Plain {
         }
     }
 
-    private static func status(_ code: Int) -> String {
+    /// The worker says "daily limit" when a code is past its day's spend.
+    private static func status(_ code: Int, _ body: String) -> String {
         switch code {
         case 0: return offline
         case 401: return invite
-        case 429: return limited
+        case 429: return body.contains("daily limit") ? capped : limited
         case 500...599: return busy
         default: return unknown
         }

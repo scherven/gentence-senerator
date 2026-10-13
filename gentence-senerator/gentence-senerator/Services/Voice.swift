@@ -36,9 +36,9 @@ final class Voice: NSObject, SpeechIO {
         var errorDescription: String? {
             switch self {
             case .denied:
-                return "Microphone or speech access is off. Turn it on in Settings."
+                return "Mic off. Allow it in Settings."
             case .unavailable:
-                return "Speech recognition unavailable."
+                return "No speech recognition."
             }
         }
     }
