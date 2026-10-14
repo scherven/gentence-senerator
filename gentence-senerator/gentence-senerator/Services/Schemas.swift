@@ -161,8 +161,10 @@ enum Schemas {
                 "name": ["type": "string", "description": "What is wrong, still without the corrected text. For kept: what they did right."],
                 "fix": ["type": "string", "description": "The corrected text. For kept: the words that were right."],
                 "note": ["type": "string", "description": "One or two sentences on why."],
-                "subject": ["type": "string", "description": "What a lesson about this would be about."]
-            ], required: ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject"])),
+                "subject": ["type": "string", "description": "What a lesson about this would be about."],
+                "point": ["type": ["string", "null"],
+                          "description": "Id of the listed grammar point this finding is about, or null."]
+            ], required: ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject", "point"])),
             "natural": ["type": ["string", "null"],
                         "description": "What a speaker would actually say, if different from the minimal fix."],
             "respeaks": array(object([

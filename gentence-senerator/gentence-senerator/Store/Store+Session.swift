@@ -176,7 +176,8 @@ extension Store {
             (requestedStretch(on: Spend.key(day)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
-                            progress: progress, language: language))
+                            progress: progress, language: language,
+                            missed: missedWords))
         }
         if drawn != draws[slot] {
             draws[slot] = drawn
@@ -249,7 +250,8 @@ extension Store {
             (requestedStretch(on: Spend.key(.now)) { pickStretch()?.id },
              WordSeeds.read(band: lexicon.band(upTo: level, language: language),
                             above: lexicon.band(at: level + 1, language: language),
-                            progress: progress, language: language))
+                            progress: progress, language: language,
+                            missed: missedWords))
         }
         if drawn != draws[language.rawValue] {
             draws[language.rawValue] = drawn

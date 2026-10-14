@@ -191,6 +191,7 @@ extension Store {
         var schedulable = review
         schedulable.atoms.removeAll { $0.kind == .comprehension }
         record(for: turn, review: schedulable)
+        noteResult(turn, review: review, dialogue: true)
 
         // A second dialogue the same day joins that day's listen session
         // rather than filing another under the same id.

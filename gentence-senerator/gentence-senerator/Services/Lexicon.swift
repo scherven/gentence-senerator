@@ -78,12 +78,15 @@ struct WordSeeds: Codable, Hashable {
 
     /// Two of each. One is not enough of a chance to meet a word and four turn
     /// a sentence into a list. The draw is random; what is eligible is not.
+    /// One `have` slot goes to a word lately missed in a deck, when there is one.
     static func read(band: [String], above: [String],
                      progress: Progress, language: Language,
-                     each: Int = 2) -> WordSeeds {
-        WordSeeds(
-            have: Array(progress.neverProduced(among: band, language: language)
-                .shuffled().prefix(each)),
+                     missed: [String] = [], each: Int = 2) -> WordSeeds {
+        let deck = Array(missed.shuffled().prefix(min(1, each)))
+        let rest = progress.neverProduced(among: band, language: language)
+            .filter { !deck.contains($0) }
+        return WordSeeds(
+            have: deck + Array(rest.shuffled().prefix(each - deck.count)),
             new: Array(above.shuffled().prefix(each))
         )
     }

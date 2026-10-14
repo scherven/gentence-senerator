@@ -233,6 +233,7 @@ extension Store {
         graded.review = review
         record(for: graded, review: review)
         reached(review, in: graded)
+        noteResult(graded, review: review)
         if scores.add(graded) { Vault.save(scores, Vault.scores) }
     }
 
@@ -437,9 +438,16 @@ extension Store {
     func reached(_ review: Review, in turn: Turn) {
         for pointID in review.usedPoints where pointID != turn.prompt.pointID {
             progress.attempted(pointID: pointID, language: turn.language,
-                               succeeded: review.problems.isEmpty)
+                               succeeded: Store.clean(review, on: pointID))
         }
         if !review.usedPoints.isEmpty { save() }
+    }
+
+    /// No problem finding on the point. Reviews from before findings named
+    /// their point tag every finding with the asked-for one, so there this is
+    /// the whole sentence, as it always was.
+    nonisolated static func clean(_ review: Review, on pointID: String) -> Bool {
+        !review.problems.contains { $0.seed.pointID == pointID }
     }
 
     /// Everything a landed review is evidence of. Nothing here waits for a tap:
@@ -450,7 +458,7 @@ extension Store {
         // what separates reach from repetition.
         if let pointID = turn.prompt.pointID {
             progress.attempted(pointID: pointID, language: turn.language,
-                               succeeded: review.problems.isEmpty)
+                               succeeded: Store.clean(review, on: pointID))
             if pointID == stretch?.id { stretch = nil }
         }
 
@@ -465,9 +473,14 @@ extension Store {
 
         // Repetition. A due subject was woven into the sentence; whether it came
         // back clean is the retrieval check the schedule was waiting on.
+        // A point woven in by name, because a quiz missed it, is wrong when a
+        // finding names the point.
+        let pack = LanguagePacks.pack(for: turn.language)
         for subject in turn.prompt.revisited {
+            let point = pack.points.first { $0.name.lowercased() == subject.lowercased() }?.id
             let wrong = review.problems.contains {
                 $0.seed.subject.lowercased() == subject.lowercased()
+                    || (point != nil && $0.seed.pointID == point)
             }
             if wrong {
                 progress.missed(subject: subject, language: turn.language)

@@ -169,7 +169,7 @@ struct QuizScreen: View {
         guard round.answers[index] == nil else { return }
         round.answer(index, a)
         if plan.endless {
-            store.recordEndless(item, a)
+            store.recordEndless(item, a, in: round)
             // A miss comes back a few items on.
             if !a.right { round.again(index, after: Int.random(in: 4...7)) }
         }

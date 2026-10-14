@@ -45,11 +45,11 @@ extension Store {
     /// Shipped and generated tests, then what the model has written since.
     var quizItems: [QuizItem] { books.items(for: settings.language) + (topUps[settings.language.rawValue] ?? []) }
 
-    /// Quizzes take an entry to holding; solid is its point's production
-    /// standing, as the day plan reads it.
+    /// Quizzes take an entry to holding; its point's production can take it
+    /// further, and a sentence gone wrong on the point makes it slipping.
     func state(of entry: Chapter.Entry) -> EntryState {
-        let solid = entry.point.map { DayPlan.standing(of: $0, in: progress) == .solid } ?? false
-        return quizLog.state(of: entry.id, pointSolid: solid)
+        let quiz = quizLog.state(of: entry.id)
+        return entry.point.map { combined(quiz, pointID: $0) } ?? quiz
     }
 
     /// Drill ids are not language-scoped, so the log key is.
@@ -168,10 +168,12 @@ extension Store {
 
     /// Endless rounds record each answer as it comes, so stopping, or the app
     /// going away, loses nothing.
-    func recordEndless(_ item: QuizItem, _ answer: QuizRound.Answer) {
+    func recordEndless(_ item: QuizItem, _ answer: QuizRound.Answer, in round: QuizRound) {
         noteAsked([item])
         quizLog.record(entry: item.entry, right: answer.right)
         Vault.save(quizLog, Vault.quizLog)
+        noteQuiz(item, answer, in: round)
+        saveRecord()
         if activity.add(.quiz, on: .now, settings.language) { Vault.save(activity, Vault.activity) }
     }
 
@@ -324,6 +326,7 @@ extension Store {
             quizLog.record(entry: ConceptDeck.entry(concept, language), right: right)
         }
         Vault.save(quizLog, Vault.quizLog)
+        noteWords(concept, marks)
         if activity.add(.quiz, on: .now, settings.language) { Vault.save(activity, Vault.activity) }
     }
 
@@ -354,6 +357,10 @@ extension Store {
         }
         quizLog.record(round, planKey: planKey(round.plan))
         Vault.save(quizLog, Vault.quizLog)
+        for (item, answer) in zip(round.items, round.answers) {
+            if let answer { noteQuiz(item, answer, in: round) }
+        }
+        saveRecord()
         if round.answers.allSatisfy({ $0 != nil }),
            activity.add(.quiz, on: .now, settings.language) {
             Vault.save(activity, Vault.activity)

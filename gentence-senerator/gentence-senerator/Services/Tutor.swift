@@ -146,6 +146,8 @@ actor Tutor {
             var kind: AtomKind; var verdict: Atom.Verdict; var weight: Atom.Weight
             var locate: String; var name: String; var fix: String; var note: String
             var subject: String
+            /// Absent from batches sent before findings named their point.
+            var point: String?
         }
         struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
         var score: Int
@@ -214,7 +216,8 @@ actor Tutor {
             Atom(id: Atom.identify(f.kind, f.subject),
                  kind: f.kind, verdict: f.verdict,
                  stages: .init(locate: f.locate, name: f.name, fix: f.fix, note: f.note),
-                 seed: .init(subject: f.subject, context: said, pointID: turn.prompt.pointID),
+                 seed: .init(subject: f.subject, context: said,
+                             pointID: f.point.flatMap { pack.pointIDs.contains($0) ? $0 : nil }),
                  weight: f.weight)
         }
         return Review(
@@ -806,6 +809,9 @@ actor Tutor {
         and whether or not anyone asked for them. A point you cannot put a
         finger on in their sentence is not used, and an empty list is an
         ordinary answer. Ids only, copied exactly; invent none.
+
+        A finding's `point` is the one point below it is about, or null when
+        none fits. Same ids.
 
         The points, by id:
         \(pack.points.map { "\($0.id) — \($0.name)" }.joined(separator: "\n"))

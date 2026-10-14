@@ -167,6 +167,9 @@ final class Store {
 
     var quizLog: QuizLog = Vault.load(QuizLog.self, Vault.quizLog) ?? QuizLog()
 
+    /// Per point and as one feed: what the learner has done, from every mode.
+    var learner = LearnerRecord()
+
     var endlessMixes: [String: QuizPlan.Mix] =
         Vault.load([String: QuizPlan.Mix].self, Vault.endlessMixes) ?? [:]
 
@@ -230,6 +233,13 @@ final class Store {
         draws = Vault.loadMap(DayDraw.self, Vault.plan) ?? [:]
         jobs = Vault.loadList(GradingJob.self, Vault.grading) ?? []
         landed = Vault.load([String: String].self, Vault.landed) ?? [:]
+        if let stored = Vault.load(LearnerRecord.self, Vault.record) {
+            learner = stored
+        } else {
+            learner = LearnerRecord.built(from: past + holds.values.map(\.session),
+                                          quizzes: quizLog.plans)
+            Vault.save(learner, Vault.record)
+        }
         if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
             lessons = shelf.lessons
             lessonOrder = shelf.order
