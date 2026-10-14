@@ -1,0 +1,48 @@
+  opus5-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus5-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus5-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  opus55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus5-high: collected 18
+  opus55-high: collected 18
+  opus55-medium: collected 18
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.71
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.71
+  sonnet55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-medium: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.71
+  sonnet55-high: collected 18
+  sonnet55-medium: collected 18
+  haiku55-high: in_progress {'processing': 18, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $2.18
+  haiku55-high: collected 18
+judge: msgbatch_01NcDSg5NxY1tW5vChpoiVfM (108 requests)
+  judge: in_progress {'processing': 108, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $2.21
+  judge: in_progress {'processing': 108, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $2.21
+  judge: collected 108
+all collected; run spent $2.81

@@ -1,0 +1,26 @@
+  opus55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $0.00
+  opus55-high: collected 24
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.17
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.17
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.17
+  sonnet55-high: in_progress {'processing': 24, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.17
+  sonnet55-high: collected 24
+judge: msgbatch_01F9VSQMYs1MvWvjPSmLBK9t (48 requests)
+  judge: in_progress {'processing': 48, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.60
+  judge: in_progress {'processing': 48, 'succeeded': 0, 'errored': 0, 'canceled': 0, 'expired': 0}
+waiting... spent $1.60
+  judge: collected 48
+all collected; run spent $1.94
