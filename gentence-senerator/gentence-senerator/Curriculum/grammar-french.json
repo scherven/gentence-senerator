@@ -350,7 +350,7 @@
     "kind": "liaison",
     "use": "spoken",
     "formulaic": false,
-    "instruction": "Obligatory liaison across a determiner or pronoun boundary.",
+    "instruction": "Obligatory liaison after a determiner, a pronoun before its verb, an adjective before its noun, or a short preposition (dans, en, chez).",
     "examples": [
       "les amis",
       "nous avons",
@@ -436,7 +436,7 @@
   },
   {
     "id": "time-markers",
-    "name": "il y a, pendant, dans, depuis",
+    "name": "il y a, pendant, dans, en",
     "level": 2,
     "kind": "preposition",
     "use": "both",
@@ -586,7 +586,7 @@
     "name": "Negating an infinitive",
     "level": 2,
     "kind": "negation",
-    "use": "written",
+    "use": "both",
     "formulaic": false,
     "instruction": "Telling somebody not to do something, with both negation words together in front.",
     "examples": [
@@ -1009,7 +1009,7 @@
   {
     "id": "dont",
     "name": "The relative dont",
-    "level": 4,
+    "level": 3,
     "kind": "pronoun-placement",
     "use": "both",
     "formulaic": false,
@@ -1181,7 +1181,7 @@
     "kind": "register",
     "use": "written",
     "formulaic": false,
-    "instruction": "Negation in formal writing, where dropping ne would be wrong.",
+    "instruction": "Negation in formal writing, where ne is expected.",
     "examples": [
       "Il ne s'agit pas d'une erreur",
       "Nous ne pouvons accepter cette offre"
@@ -1540,7 +1540,7 @@
   },
   {
     "id": "mise-en-relief-soutenue",
-    "name": "Si …, c'est que …",
+    "name": "Si …, c'est que … · ce dont …, c'est …",
     "level": 5,
     "kind": "word-order",
     "use": "both",
@@ -1548,7 +1548,8 @@
     "instruction": "Framing what an argument really turns on.",
     "examples": [
       "Si je le dis, c'est que c'est vrai",
-      "Ce dont il s'agit, c'est de la méthode"
+      "Ce dont il s'agit, c'est de la méthode",
+      "S'il est parti, c'est qu'il avait peur"
     ]
   },
   {

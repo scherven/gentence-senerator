@@ -45,7 +45,17 @@ struct StagedAtomRow: View {
     @Binding var open: Bool
     let knowledge: Progress.Encounter.Knowledge
     let onClassify: (Progress.Encounter.Knowledge) -> Void
-    let onOpen: () -> Void
+    /// When it comes back: `today`, `3 days`, `held`.
+    var back: String? = nil
+    /// Reported as wrong already.
+    var disputed = false
+    /// Nil when sent, else the line to show.
+    var onDispute: ((String) async -> String?)? = nil
+
+    @State private var asking = false
+    @State private var note = ""
+    @State private var sending = false
+    @State private var trouble: String?
 
     /// Reviews from before grading moved to a batch can be missing everything
     /// after `locate`; those stay on it.
@@ -62,7 +72,14 @@ struct StagedAtomRow: View {
                 if atom.weight == .start && !open {
                     Text("START HERE").monoCaps().foregroundStyle(Theme.C.ink2)
                 }
-                Text(atom.kind.label).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(atom.kind.label).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                    Spacer(minLength: 8)
+                    if let back {
+                        Text(back).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                            .accessibilityLabel("Back \(back)")
+                    }
+                }
                 Text(headline)
                     .font(Theme.F.bodyTight)
                     .foregroundStyle(Theme.C.ink)
@@ -70,7 +87,7 @@ struct StagedAtomRow: View {
                 if open { opened }
             }
         } trailing: {
-            // Open, the entry takes the width; LESSON › sits under the fix.
+            // Open, the entry takes the width.
             if !open {
                 Text("FIX +")
                     .font(Theme.F.label)
@@ -85,6 +102,21 @@ struct StagedAtomRow: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: advance)
         .accessibilityAddTraits(.isButton)
+        .alert("What's wrong?", isPresented: $asking) {
+            TextField("Optional", text: $note)
+            Button("Send") { send() }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private func send() {
+        guard let onDispute else { return }
+        sending = true
+        trouble = nil
+        Task {
+            trouble = await onDispute(note)
+            sending = false
+        }
     }
 
     @ViewBuilder
@@ -100,24 +132,24 @@ struct StagedAtomRow: View {
                 .foregroundStyle(Theme.C.ink2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 0) { classify; Spacer(minLength: Theme.M.gapTight); lesson }
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 0) { classify }
-                    lesson
-                }
-            }
-            .padding(.top, 4)
+            HStack(spacing: 0) { classify }
+                .padding(.top, 4)
         }
+        if onDispute != nil { wrong }
     }
 
-    private var lesson: some View {
-        Text("LESSON ›")
-            .font(Theme.F.label)
-            .tracking(Theme.M.caps)
-            .foregroundStyle(Theme.C.accent)
-            .fixedSize()
-            .padding(.vertical, 6)
+    /// Says the finding itself is wrong. Goes to the owner, changes nothing here.
+    @ViewBuilder
+    private var wrong: some View {
+        HStack(spacing: 8) {
+            TinyButton(title: disputed ? "Reported" : sending ? "Sending" : "That's wrong",
+                       selected: disputed) { if !disputed && !sending { note = ""; asking = true } }
+                .fixedSize()
+            if let trouble {
+                Text(trouble).font(Theme.F.meta).foregroundStyle(Theme.C.bad)
+            }
+        }
+        .padding(.top, 2)
     }
 
     @ViewBuilder
@@ -131,7 +163,7 @@ struct StagedAtomRow: View {
     }
 
     private func advance() {
-        if !open { open = true } else if atom.isDeep { onOpen() }
+        if !open { open = true }
     }
 }
 
@@ -148,7 +180,7 @@ struct FixLine: View {
             .foregroundColor(Theme.C.good)
         Group {
             if let span {
-                Text(span.wrong).font(target).foregroundColor(Theme.C.ink)
+                Text(span.wrong).font(target).foregroundColor(Theme.C.bad).underline(color: Theme.C.bad)
                     + Text("  →  ").font(Theme.F.meta).foregroundColor(Theme.C.ink3)
                     + right
             } else {
@@ -159,34 +191,26 @@ struct FixLine: View {
     }
 }
 
-/// Something that worked: what, and the words. Opens its lesson.
+/// Something that worked: what, and the words.
 struct KeptRow: View {
     let atom: Atom
     var last = false
-    let onOpen: () -> Void
 
     var body: some View {
-        Button(action: onOpen) {
-            LedgerRow(account: atom.verdict.rawValue, colour: Theme.C.good,
-                      edge: Theme.C.good, ruled: !last) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(atom.stages.name.isEmpty ? atom.kind.label : atom.stages.name)
-                        .font(Theme.F.bodyTight)
-                        .foregroundStyle(Theme.C.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                    if !atom.stages.fix.isEmpty {
-                        Text(atom.stages.fix)
-                            .font(Theme.F.target(size: 13))
-                            .foregroundStyle(Theme.C.ink3)
-                    }
+        LedgerRow(account: atom.verdict.rawValue, colour: Theme.C.good,
+                  edge: Theme.C.good, ruled: !last) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(atom.stages.name.isEmpty ? atom.kind.label : atom.stages.name)
+                    .font(Theme.F.bodyTight)
+                    .foregroundStyle(Theme.C.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                if !atom.stages.fix.isEmpty {
+                    Text(atom.stages.fix)
+                        .font(Theme.F.target(size: 13))
+                        .foregroundStyle(Theme.C.ink3)
                 }
-            } trailing: {
-                Text("›").font(Theme.F.label).foregroundStyle(Theme.C.ink3)
-                    .padding(.top, 12).padding(.trailing, 10)
             }
-            .background(Theme.C.surface)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(PressDim())
+        .background(Theme.C.surface)
     }
 }

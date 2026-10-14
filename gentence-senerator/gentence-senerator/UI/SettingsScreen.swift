@@ -27,10 +27,10 @@ struct SettingsScreen: View {
         .paper()
     }
 
-    /// Keys; the one in use is marked.
+    /// Keys for the languages on, the one in use marked; then which are on.
     private var language: some View {
         VStack(spacing: Theme.M.gapTight) {
-            ForEach(Language.allCases) { candidate in
+            ForEach(store.settings.languages) { candidate in
                 let on = candidate == store.settings.language
                 Button { store.switchLanguage(candidate) } label: {
                     HStack {
@@ -44,6 +44,22 @@ struct SettingsScreen: View {
                 .buttonStyle(KeyStyle(on ? .spent : .neutral))
                 .disabled(on)
             }
+            VStack(alignment: .leading, spacing: 6) {
+                ModuleLabel(text: "Offered")
+                VStack(spacing: 0) {
+                    ForEach(Language.allCases) { candidate in
+                        row {
+                            SquareToggle(isOn: Binding(
+                                get: { store.settings.languages.contains(candidate) },
+                                set: { store.setOffered(candidate, $0) })) {
+                                Text(candidate.name).font(Theme.F.body)
+                            }
+                            .disabled(candidate == store.settings.language)
+                        }
+                    }
+                }
+            }
+            .padding(.top, Theme.M.gapTight)
         }
     }
 

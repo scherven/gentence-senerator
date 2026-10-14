@@ -9,7 +9,13 @@ final class Store {
 
     // MARK: Persisted
 
-    var settings = Settings() { didSet { Vault.save(settings, Vault.settings) } }
+    var settings = Settings() {
+        didSet {
+            Vault.save(settings, Vault.settings)
+            if oldValue.prefersTyping != settings.prefersTyping
+                || oldValue.offerStretch != settings.offerStretch { rewriteUnstarted() }
+        }
+    }
     private(set) var progress = Progress()
     private(set) var spend = Spend()
     private(set) var past: [Session] = []
@@ -34,7 +40,9 @@ final class Store {
     /// instead of asking for the same thing twice.
     private var coreLoads: [String: Task<Void, Never>] = [:]
     private var practiceLoads: [String: Task<Void, Never>] = [:]
-    private(set) var lessonError: String?
+    /// Why a lesson did not load, by `LessonRequest.cacheKey`: one lesson's
+    /// failure is not another's.
+    private(set) var lessonErrors: [String: String] = [:]
     /// Lessons, in the order they were written, so the shelf can be capped.
     private var lessonOrder: [String] = []
 
@@ -137,7 +145,7 @@ final class Store {
     let dialogue = DialoguePlayer()
 
     init(tutor: Tutor, speech: SpeechIO? = nil,
-         pronunciation: Pronunciation = Pronunciation(key: Key.azureKey, region: Key.azureRegion)) {
+         pronunciation: Pronunciation = Pronunciation()) {
         self.pronunciation = pronunciation
         self.tutor = tutor
         self.speech = speech
@@ -153,12 +161,12 @@ final class Store {
         }
         progress = Vault.load(Progress.self, Vault.progress) ?? Progress()
         spend = Vault.load(Spend.self, Vault.spend) ?? Spend()
-        past = Vault.load([Session].self, Vault.sessions) ?? []
-        bank = Vault.load([BankEntry].self, Vault.bank) ?? []
-        holds = Vault.load([String: Unfinished].self, Vault.holds) ?? [:]
-        passageState = Vault.load([String: PassageState].self, Vault.passages) ?? [:]
-        draws = Vault.load([String: DayDraw].self, Vault.plan) ?? [:]
-        jobs = Vault.load([GradingJob].self, Vault.grading) ?? []
+        past = Vault.loadList(Session.self, Vault.sessions) ?? []
+        bank = Vault.loadList(BankEntry.self, Vault.bank) ?? []
+        holds = Vault.loadMap(Unfinished.self, Vault.holds) ?? [:]
+        passageState = Vault.loadMap(PassageState.self, Vault.passages) ?? [:]
+        draws = Vault.loadMap(DayDraw.self, Vault.plan) ?? [:]
+        jobs = Vault.loadList(GradingJob.self, Vault.grading) ?? []
         landed = Vault.load([String: String].self, Vault.landed) ?? [:]
         if let shelf = Vault.load(LessonShelf.self, Vault.lessons) {
             lessons = shelf.lessons
@@ -197,7 +205,7 @@ final class Store {
         for session in unfinished { file(session) }
         past.sort { $0.startedAt < $1.startedAt }
         for key in stale.keys { holds[key] = nil }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         Vault.save(holds, Vault.holds)
         // A session left part-way is still worth grading: those answers were
         // given, and nobody is going to finish them now.
@@ -359,8 +367,31 @@ final class Store {
         } else {
             past.append(finished)
         }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         if activity.add(finished) { Vault.save(activity, Vault.activity) }
+    }
+
+    /// The archive as it is on disk: trimmed here too, so History does not
+    /// show more than the next launch will.
+    private func saveArchive() {
+        if past.count > Store.archiveLimit { past.removeFirst(past.count - Store.archiveLimit) }
+        Vault.save(past, Vault.sessions)
+    }
+
+    private static let archiveLimit = 120
+
+    /// The archive plus today's live and held sessions, each once. Today's
+    /// can also be archived; the live or held copy is the newer.
+    private var everySession: [Session] {
+        var sessions = past
+        for live in Mode.allCases.compactMap({ today($0) }) {
+            if let i = sessions.firstIndex(where: { $0.id == live.id }) {
+                sessions[i] = live
+            } else {
+                sessions.append(live)
+            }
+        }
+        return sessions
     }
 
     var pack: LanguagePack { LanguagePacks.pack(for: settings.language) }
@@ -380,6 +411,14 @@ final class Store {
         path = []
         knowledge = [:]
         refreshPlan()
+    }
+
+    /// Turns a language on or off. The one in use stays on.
+    func setOffered(_ language: Language, _ on: Bool) {
+        guard on || language != settings.language else { return }
+        var set = Set(settings.languages)
+        if on { set.insert(language) } else { set.remove(language) }
+        settings.languages = Language.allCases.filter(set.contains)
     }
 
     // MARK: Feedback by day
@@ -438,6 +477,23 @@ final class Store {
         next.levelChangedAt = .now
         settings = next
         refreshPlan()
+        rewriteUnstarted()
+    }
+
+    /// Sets written ahead for a level, stretch or way of answering the learner
+    /// has just changed. Unstarted only — anything begun holds answers.
+    private func rewriteUnstarted() {
+        var dropped = false
+        for mode in [Mode.translate, .produce] {
+            let key = Store.holdKey(settings.language, mode)
+            if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
+               held.session.id != session?.id {
+                holds[key] = nil
+                dropped = true
+            }
+        }
+        if dropped { Vault.save(holds, Vault.holds) }
+        Task { await prepareDay() }
     }
 
     /// What the evidence says about the level. Nil is stay — most of the time,
@@ -468,11 +524,11 @@ final class Store {
     private func recentTurns(_ n: Int) -> [Turn] {
         var seen: Set<UUID> = []
         let since = settings.levelChangedAt ?? .distantPast
-        let sessions = past + Mode.allCases.compactMap { today($0) }
-        let turns = sessions
+        let turns = everySession
             .filter { $0.language == settings.language }
             .flatMap(\.turns)
-            .filter { $0.review != nil && $0.createdAt >= since && seen.insert($0.id).inserted }
+            .filter { $0.mode.isScored && $0.review != nil && $0.createdAt >= since
+                && seen.insert($0.id).inserted }
             .sorted { $0.createdAt < $1.createdAt }
         return Array(turns.suffix(n))
     }
@@ -591,7 +647,8 @@ final class Store {
                 else { return }
                 // Started by hand while this was being written: that one owns
                 // the slot, and this set goes unused.
-                guard self.holds[key] == nil, self.session?.id != draft.id else { return }
+                guard self.holds[key] == nil, self.session?.id != draft.id,
+                      draft.level == self.settings.level else { return }
                 var planned = draft
                 planned.planned = prompts
                 // The goal may have moved while this was being written.
@@ -770,7 +827,7 @@ final class Store {
         do {
             install(try await makeTurn())
         } catch {
-            phase = .failed(error.localizedDescription)
+            phase = .failed(Plain.message(error, "next prompt"))
         }
     }
 
@@ -904,7 +961,7 @@ final class Store {
         } catch {
             // Not a dead end: the answer can still be typed, and the session
             // goes on.
-            speechTrouble = error.localizedDescription
+            speechTrouble = Plain.message(error, "start recording")
             phase = .ready
         }
     }
@@ -983,18 +1040,17 @@ final class Store {
         var turn = turn
         phase = .assessing
         do {
-            let (review, written, usage) = try await tutor.review(turn: turn, level: settings.level)
-            note(usage)
+            let (review, usage) = try await tutor.review(turn: turn, level: settings.level)
+            note(usage, model: Tutor.reviewModel(turn.mode))
             turn.review = review
             current = turn
             session?.turns.append(turn)
             record(for: turn, review: review)
             reached(review, in: turn)
-            shelve(written)
             hold()
             phase = .reviewing
         } catch {
-            phase = .failed(error.localizedDescription)
+            phase = .failed(Plain.message(error, "review"))
         }
     }
 
@@ -1009,12 +1065,14 @@ final class Store {
             change(&session!.turns[index])
             hold()
         }
+        var archived = false
         for s in past.indices {
             if let t = past[s].turns.firstIndex(where: { $0.id == id }) {
                 change(&past[s].turns[t])
-                Vault.save(Array(past.suffix(120)), Vault.sessions)
+                archived = true
             }
         }
+        if archived { saveArchive() }
         // A reopened session is held and archived at once.
         for key in holds.keys where session?.id != holds[key]?.session.id {
             if let t = holds[key]?.session.turns.firstIndex(where: { $0.id == id }) {
@@ -1053,7 +1111,9 @@ final class Store {
     /// counts what is graded, and reads in whatever has finished. Safe to call
     /// as often as liked; a failure in one job or one step is retried on the
     /// next call and never stops the others.
-    func pump() async {
+    /// `backgroundOnly`: submit and read what came back, nothing slow — iOS
+    /// gives the app seconds once it is put away.
+    func pump(backgroundOnly: Bool = false) async {
         guard !pumping else { return }
         pumping = true
         defer { pumping = false }
@@ -1062,7 +1122,7 @@ final class Store {
             guard var job = jobs.first(where: { $0.id == id }), job.state != .done else { continue }
             do {
                 if job.batchID == nil {
-                    if !job.uploading { try submit(&job) }
+                    if !job.uploading, mayUpload(job.id) { try submit(&job) }
                     put(job)
                     continue
                 }
@@ -1085,7 +1145,15 @@ final class Store {
                     switch await directResults(batchID) {
                     case .pending: put(job); continue
                     case .ready(let graded): results = graded; direct = true
-                    case .none: break
+                    case .none, .unknown:
+                        // Cancelled means the worker stepped in, whatever this
+                        // answer said: a stale 404 or a dropped request is not
+                        // a reason to read the cancelled batch and pay twice.
+                        // A quarter of an hour on, its results are not coming.
+                        if batch.canceled > 0,
+                           Date.now < Store.switchAt(job).addingTimeInterval(Store.directGrace) {
+                            put(job); continue
+                        }
                     }
                 }
                 if results == nil, batch.ended {
@@ -1105,7 +1173,7 @@ final class Store {
                     }
                 }
             } catch {
-                job.error = error.localizedDescription
+                job.error = Plain.message(error, "batch results")
             }
             put(job)
         }
@@ -1113,18 +1181,20 @@ final class Store {
         // A failed answer gets one second attempt on its own, outside the
         // batch — where the refusal fallback is allowed. After that it waits
         // for Retry.
-        for id in jobs.map(\.id) {
+        // Detached: each is a slow live call, and the pump has other
+        // languages' batches to read in. `regrading` keeps it to one at a time.
+        for id in jobs.map(\.id) where !backgroundOnly {
             guard var job = jobs.first(where: { $0.id == id }),
                   job.state == .done, !job.retried, hasFailures(job) else { continue }
             job.retried = true
             put(job)
-            await gradeMissing(of: job)
+            Task { await gradeMissing(of: job) }
         }
 
         // Done jobs stay a day and a half, so the screen can still say what
         // came back.
         let cutoff = Date.now.addingTimeInterval(-36 * 3600)
-        jobs.removeAll { $0.state == .done && $0.createdAt < cutoff }
+        jobs.removeAll { $0.state == .done && ($0.returnedAt ?? $0.createdAt) < cutoff }
         saveJobs()
     }
 
@@ -1166,15 +1236,15 @@ final class Store {
         defer { sendingNow.remove(job.id) }
         do {
             guard let body = try body(of: job) else { return }
-            let batch = try await sender.sendNow(
+            let accepted = try await sender.sendNow(
                 job: job.id, body: body,
                 token: UserDefaults.standard.string(forKey: Vault.pushToken),
                 label: label(of: job))
-            submitted(job.id, .success(batch))
+            submitted(job.id, .success(accepted))
             await pump()
         } catch {
             if var now = jobs.first(where: { $0.id == job.id }) {
-                now.error = online ? error.localizedDescription : "Still no connection."
+                now.error = online ? Plain.message(error, "send now") : "Still no connection."
                 put(now)
             }
         }
@@ -1183,9 +1253,10 @@ final class Store {
     /// The uploader's answer, possibly delivered with the app in the
     /// background. Saved before anything else: this is the only record of
     /// which batch the answers became.
-    private func submitted(_ id: UUID, _ result: Result<String, Error>) {
+    private func submitted(_ id: UUID, _ result: Result<Sender.Accepted, Error>) {
         guard var job = jobs.first(where: { $0.id == id }) else { return }
         job.uploading = false
+        noteUpload(id, result)
         // Sent both ways: the second answer is the same batch, or a failure
         // that no longer matters.
         if job.batchID != nil {
@@ -1193,14 +1264,15 @@ final class Store {
             return
         }
         switch result {
-        case .success(let batch):
-            job.batchID = batch
+        case .success(let accepted):
+            job.batchID = accepted.batch
             job.state = .grading
             job.sentAt = .now
-            job.watched = UserDefaults.standard.string(forKey: Vault.pushToken) != nil
+            // What the upload carried, not what has arrived since.
+            job.watched = accepted.watched
             job.error = nil
         case .failure(let error):
-            job.error = error.localizedDescription
+            job.error = Plain.message(error, "upload")
         }
         put(job)
     }
@@ -1227,13 +1299,13 @@ final class Store {
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
             do {
-                let (review, lessons, usage) = try await tutor.review(
+                let (review, usage) = try await tutor.review(
                     turn: last, history: Array(turns.dropLast()), level: level)
-                note(usage)
-                land(review, lessons, on: last)
+                note(usage, model: Tutor.reviewModel(last.mode))
+                land(review, on: last)
             } catch {
                 if var now = jobs.first(where: { $0.id == job.id }) {
-                    now.error = error.localizedDescription
+                    now.error = Plain.message(error, "regrade")
                     put(now)
                 }
             }
@@ -1243,13 +1315,12 @@ final class Store {
 
     /// One review into the archive, and everything it is evidence of into
     /// `Progress`.
-    private func land(_ review: Review, _ lessons: [Lesson], on turn: Turn) {
+    private func land(_ review: Review, on turn: Turn) {
         amend(turn.id) { $0.review = review }
         var graded = turn
         graded.review = review
         record(for: graded, review: review)
         reached(review, in: graded)
-        shelve(lessons)
         if scores.add(graded) { Vault.save(scores, Vault.scores) }
     }
 
@@ -1263,11 +1334,11 @@ final class Store {
             guard let result = byID[exchange.customID], let reply = result.reply else { continue }
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
-            note(reply.usage, batched: batched)
-            guard let (review, lessons) = try? Tutor.read(reply, turn: last,
-                                                           history: Array(turns.dropLast()))
+            note(reply.usage, batched: batched, model: Tutor.reviewModel(last.mode))
+            guard let review = try? Tutor.read(reply, turn: last,
+                                               history: Array(turns.dropLast()))
             else { continue }
-            land(review, lessons, on: last)
+            land(review, on: last)
         }
         // What the reviews put into `Progress` moves the record on screen.
         refreshPlan()
@@ -1277,12 +1348,11 @@ final class Store {
     /// a job submitted before the device had a token. False when it could
     /// not, so the next pump tries again.
     private func watch(_ batchID: String, job: UUID, label: String) async -> Bool {
-        guard let token = UserDefaults.standard.string(forKey: Vault.pushToken),
-              let url = URL(string: Key.graderURL + "/watch") else { return false }
-        var request = URLRequest(url: url)
+        guard let token = UserDefaults.standard.string(forKey: Vault.pushToken) else { return false }
+        var request = URLRequest(url: Worker.url("/watch"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         request.httpBody = try? JSONSerialization.data(
             withJSONObject: ["batch": batchID, "job": job.uuidString, "token": token, "label": label,
                              "sandbox": Sender.sandbox])
@@ -1375,21 +1445,49 @@ final class Store {
         now >= switchAt(job)
     }
 
-    enum Direct { case none, pending, ready([Anthropic.BatchResult]) }
+    /// `none`: the worker did not step in, as far as it says. `unknown`: no
+    /// usable answer — offline, limited, a timeout.
+    enum Direct { case none, unknown, pending, ready([Anthropic.BatchResult]) }
+
+    /// How long past the switch a cancelled batch waits for the worker's
+    /// direct results before it is read as it stands.
+    nonisolated static let directGrace: TimeInterval = 15 * 60
+
+    /// Uploads turned down, by job: when the next may go, and how many in a
+    /// row have failed. In memory — a relaunch tries again.
+    private var uploadHolds: [UUID: (next: Date, failures: Int)] = [:]
+
+    private func mayUpload(_ id: UUID) -> Bool {
+        (uploadHolds[id]?.next ?? .distantPast) <= .now
+    }
+
+    /// A malformed or refused request fails the same way every time, so it
+    /// is not sent again this launch. Anything else waits, longer each time,
+    /// so a limit is not spent on retries.
+    private func noteUpload(_ id: UUID, _ result: Result<Sender.Accepted, Error>) {
+        guard case .failure(let error) = result else { uploadHolds[id] = nil; return }
+        let failures = (uploadHolds[id]?.failures ?? 0) + 1
+        var next = Date.now.addingTimeInterval(min(60 * pow(2, Double(failures - 1)), 30 * 60))
+        if case Sender.Failure.rejected(let code, _) = error, code == 400 || code == 403 {
+            next = .distantFuture
+        }
+        uploadHolds[id] = (next, failures)
+    }
 
     /// What the worker graded directly for a batch, if it stepped in.
     private func directResults(_ batchID: String) async -> Direct {
-        guard var parts = URLComponents(string: Key.graderURL + "/results") else { return .none }
+        guard var parts = URLComponents(string: Worker.base + "/results") else { return .none }
         parts.queryItems = [URLQueryItem(name: "batch", value: batchID)]
         guard let url = parts.url else { return .none }
         var request = URLRequest(url: url)
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let code = (response as? HTTPURLResponse)?.statusCode else { return .none }
+              let code = (response as? HTTPURLResponse)?.statusCode else { return .unknown }
         switch code {
         case 200: return .ready(Anthropic.results(from: data))
         case 202: return .pending
-        default: return .none
+        case 404: return .none
+        default: return .unknown
         }
     }
 
@@ -1470,8 +1568,10 @@ final class Store {
             }
         }
 
+        let woven = Set(turn.prompt.revisited.map { $0.lowercased() })
         for atom in review.problems {
-            progress.saw(atom, language: turn.language)
+            progress.saw(atom, language: turn.language,
+                         woven: woven.contains(atom.seed.subject.lowercased()))
         }
         save()
     }
@@ -1722,7 +1822,12 @@ final class Store {
         )
         let review = read(of: passage, run: live)
         turn.review = review
-        record(for: turn, review: review)
+        // A missed gist question is a whole line, and only hearing it again
+        // tests it — the shelf brings the dialogue back. Woven into a written
+        // sentence it could never come back wrong. Tapped words schedule.
+        var schedulable = review
+        schedulable.atoms.removeAll { $0.kind == .comprehension }
+        record(for: turn, review: schedulable)
 
         // A second dialogue the same day joins that day's listen session
         // rather than filing another under the same id.
@@ -1740,7 +1845,7 @@ final class Store {
         if let i = past.lastIndex(where: { $0.id == id }) {
             past[i].goal = max(listenGoal, past[i].turns.count)
         }
-        Vault.save(Array(past.suffix(120)), Vault.sessions)
+        saveArchive()
         savePassage()
         session = nil
         current = turn
@@ -1799,13 +1904,12 @@ final class Store {
 
     // MARK: Drilling down
 
-    /// The one entry point. Every openable thing in the app ends up here, at
-    /// any depth, with a request built from the atom rather than the screen.
     /// The language of what is on screen. Usually the setting; while reading
     /// a graded session it is that session's, which can be another language
     /// entirely — its lessons, its schedule, its voice.
     private var language: Language { current?.language ?? settings.language }
 
+    /// A finding's lesson, from the Book. Opening counts as a visit.
     func open(_ atom: Atom) {
         let request = LessonRequest(
             seed: atom.seed, kind: atom.kind, language: language,
@@ -1841,6 +1945,12 @@ final class Store {
     }
 
     /// A lesson the learner asked for: the rule, then the practice behind it.
+    /// Try again, from the lesson's own error.
+    func retryLesson(_ request: LessonRequest) {
+        lessonErrors[request.cacheKey] = nil
+        Task { await load(request) }
+    }
+
     private func load(_ request: LessonRequest) async {
         await loadCore(request)
         guard lessons[request.cacheKey] != nil else { return }
@@ -1858,7 +1968,7 @@ final class Store {
         }
 
         loadingLesson.insert(key)
-        lessonError = nil
+        lessonErrors[key] = nil
         let task = Task { [weak self] in
             guard let self else { return }
             do {
@@ -1866,7 +1976,7 @@ final class Store {
                 if let usage { self.note(usage) }
                 self.shelve([lesson])
             } catch {
-                self.lessonError = error.localizedDescription
+                self.lessonErrors[key] = Plain.message(error, "lesson")
             }
             self.loadingLesson.remove(key)
             self.coreLoads[key] = nil
@@ -1895,7 +2005,7 @@ final class Store {
                     self.shelve([full])
                 }
             } catch {
-                self.lessonError = error.localizedDescription
+                self.lessonErrors[key] = Plain.message(error, "practice")
             }
             self.practiceLoads[key] = nil
         }
@@ -1990,6 +2100,38 @@ final class Store {
         save()
     }
 
+    /// Findings the learner has said are wrong, by atom id. Kept so the key
+    /// stays marked on a review opened again.
+    private(set) var disputed: Set<String> = Set(Vault.load([String].self, Vault.disputed) ?? [])
+
+    /// Sends a finding the learner says is wrong, with what they said and why.
+    /// Nil when sent, else the line to show.
+    func dispute(_ atom: Atom, in turn: Turn, note: String) async -> String? {
+        let body: [String: Any] = [
+            "language": turn.language.rawValue,
+            "mode": turn.mode.rawValue,
+            "model": Tutor.reviewModel(turn.mode) ?? "claude-opus-5",
+            "prompt": turn.prompt.english ?? turn.prompt.target ?? "",
+            "attempt": turn.attempt.confirmed,
+            "finding": [
+                "kind": atom.kind.rawValue,
+                "verdict": atom.verdict.rawValue,
+                "text": [atom.stages.locate, atom.stages.name, atom.stages.fix]
+                    .filter { !$0.isEmpty }.joined(separator: " · "),
+                "note": atom.stages.note
+            ],
+            "note": note.trimmingCharacters(in: .whitespacesAndNewlines)
+        ]
+        do {
+            try await Worker.dispute(body)
+            disputed.insert(atom.id)
+            Vault.save(Array(disputed), Vault.disputed)
+            return nil
+        } catch {
+            return Plain.message(error, "dispute")
+        }
+    }
+
     func classify(_ atom: Atom, as verdict: Progress.Encounter.Knowledge) {
         knowledge[atom.id] = verdict
         progress.classify(atom, as: verdict, language: language)
@@ -2012,7 +2154,7 @@ final class Store {
         } catch {
             asked[context, default: []].append(
                 AskItem(id: UUID().uuidString, question: question,
-                        answer: "Couldn't answer that: \(error.localizedDescription)",
+                        answer: Store.couldNotAnswer(Plain.message(error, "ask")),
                         atoms: [])
             )
         }
@@ -2033,9 +2175,8 @@ final class Store {
             note(usage)
             return verdict
         } catch {
-            return Tutor.DrillVerdict(
-                correct: false, note: "Couldn't check that."
-            )
+            Plain.note(error, "drill check")
+            return Tutor.DrillVerdict(correct: false, note: Store.uncheckable)
         }
     }
 
@@ -2074,8 +2215,12 @@ final class Store {
 
     // MARK: Bookkeeping
 
-    private func note(_ usage: Anthropic.Usage, batched: Bool = false) {
-        spend.add(usage, batched: batched)
+    private func note(_ usage: Anthropic.Usage, batched: Bool = false, model: String? = nil) {
+        if model == Anthropic.reviewModel {
+            spend.addSonnet(usage, batched: batched)
+        } else {
+            spend.add(usage, batched: batched)
+        }
         Vault.save(spend, Vault.spend)
     }
 
@@ -2163,7 +2308,7 @@ final class Store {
     func textbook(scope: Textbook.Scope, search: String = "") -> [Textbook.Section] {
         let language = settings.language
         let pack = LanguagePacks.pack(for: language)
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.assemble(
             language: language, kinds: pack.kinds, points: pack.points,
             noted: Textbook.noted(in: sessions, language: language),
@@ -2193,7 +2338,8 @@ final class Store {
 
     /// The current language's book.
     var book: Book { books.book(for: settings.language) }
-    var quizItems: [QuizItem] { books.items(for: settings.language) }
+    /// Shipped and generated tests, then what the model has written since.
+    var quizItems: [QuizItem] { books.items(for: settings.language) + (topUps[settings.language.rawValue] ?? []) }
 
     /// Quizzes take an entry to holding; solid is its point's production
     /// standing, as the day plan reads it.
@@ -2231,26 +2377,266 @@ final class Store {
         return n > settings.level ? pack.level(n) : nil
     }
 
+    /// The current language's rules quizzes.
+    var rulesItems: [QuizItem] { books.rules(for: settings.language) }
+
+    /// Rules items in a chapter: what its RULES key counts.
+    func rulesCount(in chapter: Chapter) -> Int {
+        let ids = Set(chapter.entries.map(\.id))
+        return rulesItems.filter { ids.contains($0.entry) }.count
+    }
+
+    /// Highest band new words come from. The lists stop at HSK 6 and B2.
+    private var wordBand: Int { min(settings.level, settings.language == .mandarin ? 6 : 4) }
+
     func round(for plan: QuizPlan) -> QuizRound {
+        if plan.endless {
+            let empty = QuizRound(plan: plan, items: [])
+            return QuizRound(plan: plan, items: more(for: plan, after: empty, count: 12))
+        }
         if VocabDrill.isVocab(plan) {
             let language = settings.language
-            // The lists stop at HSK 6 and B2.
             return VocabDrill.round(words: books.words(for: language), language: language,
-                                    maxBand: min(settings.level, language == .mandarin ? 6 : 4)) {
+                                    maxBand: wordBand) {
                 self.quizLog.state(of: $0)
             }
         }
+        return assemble(plan, bank: plan.rules ? rulesItems : quizItems, minLevel: settings.level)
+    }
+
+    private func assemble(_ plan: QuizPlan, bank: [QuizItem], minLevel: Int) -> QuizRound {
         let book = book
         let points = pointLevels
         let entries = Dictionary(book.chapters.flatMap(\.entries).map { ($0.id, $0) },
                                  uniquingKeysWith: { a, _ in a })
         return QuizRound.assemble(
-            plan: plan, book: book, bank: quizItems, maxLevel: settings.level + 1,
-            minLevel: settings.level,
+            plan: plan, book: book, bank: bank, maxLevel: settings.level + 1,
+            minLevel: minLevel,
             levelOf: { id in entries[id]?.effectiveLevel { points[$0] } ?? 1 }
         ) { id in
             entries[id].map(self.state(of:)) ?? self.quizLog.state(of: id)
         }
+    }
+
+    // MARK: Endless
+
+    /// The next items of an endless round: its quiz sources and its words in
+    /// proportion, entries asked lately held back while there is anything else.
+    /// Chapters picked for it ignore the level floor.
+    func more(for plan: QuizPlan, after round: QuizRound, count: Int = 10) -> [QuizItem] {
+        guard let mix = plan.mix, !mix.isEmpty else { return [] }
+        let sources = (mix.tests.isEmpty ? 0 : 1) + (mix.rules.isEmpty ? 0 : 1) + (mix.words ? 1 : 0)
+        let wordCount = mix.words ? (sources == 1 ? count : max(1, count / sources)) : 0
+        var quiz: [QuizItem] = []
+        if wordCount < count {
+            let entryIDs = { (chapters: [String]) in
+                Set(self.book.chapters.filter { chapters.contains($0.id) }.flatMap { $0.entries.map(\.id) })
+            }
+            let tests = entryIDs(mix.tests), rules = entryIDs(mix.rules)
+            var bank = quizItems.filter { tests.contains($0.entry) } + rulesItems.filter { rules.contains($0.entry) }
+            let recent = Set(round.items.suffix(40).map(\.entry))
+            let fresh = bank.filter { !recent.contains($0.entry) }
+            if fresh.count >= count - wordCount { bank = fresh }
+            let draw = QuizPlan(id: plan.id, name: plan.name, count: count - wordCount)
+            quiz = assemble(draw, bank: bank, minLevel: 1).items
+            topUpIfLow(mix.tests)
+        }
+        var words: [QuizItem] = []
+        if wordCount > 0 {
+            let language = settings.language
+            var rng = SystemRandomNumberGenerator()
+            words = VocabDrill.next(words: books.words(for: language), language: language,
+                                    maxBand: wordBand, state: { self.quizLog.state(of: $0) },
+                                    asked: Set(round.items.map(\.entry)), count: wordCount,
+                                    startIndex: round.items.count, using: &rng)
+        }
+        // Words spread evenly through the quiz items.
+        guard !quiz.isEmpty, !words.isEmpty else { return quiz + words }
+        var out: [QuizItem] = []
+        var w = 0, q = 0
+        while w < words.count || q < quiz.count {
+            // Whichever is further behind its share of the batch goes next.
+            let word = q >= quiz.count || (w < words.count && (2 * w + 1) * quiz.count <= (2 * q + 1) * words.count)
+            if word { out.append(words[w]); w += 1 } else { out.append(quiz[q]); q += 1 }
+        }
+        return out
+    }
+
+    /// Endless rounds record each answer as it comes, so stopping, or the app
+    /// going away, loses nothing.
+    func recordEndless(_ item: QuizItem, _ answer: QuizRound.Answer) {
+        noteAsked([item])
+        quizLog.record(entry: item.entry, right: answer.right)
+        Vault.save(quizLog, Vault.quizLog)
+        if activity.add(.quiz, on: .now, settings.language) { Vault.save(activity, Vault.activity) }
+    }
+
+    private(set) var endlessMixes: [String: QuizPlan.Mix] =
+        Vault.load([String: QuizPlan.Mix].self, Vault.endlessMixes) ?? [:]
+
+    /// The current language's last endless mix.
+    var endlessMix: QuizPlan.Mix? { endlessMixes[settings.language.rawValue] }
+
+    func saveEndlessMix(_ mix: QuizPlan.Mix) {
+        endlessMixes[settings.language.rawValue] = mix
+        Vault.save(endlessMixes, Vault.endlessMixes)
+    }
+
+    func endlessPlan(_ mix: QuizPlan.Mix) -> QuizPlan {
+        QuizPlan(id: QuizPlan.endlessID(settings.language), name: "Endless", mix: mix)
+    }
+
+    /// "GENDER + VERB + PREPOSITION + WORDS".
+    func endlessLabel(_ mix: QuizPlan.Mix) -> String {
+        let ids = mix.tests + mix.rules.filter { !mix.tests.contains($0) }
+        let names = ids.compactMap { book.chapter($0)?.name } + (mix.words ? ["Words"] : [])
+        return names.joined(separator: " + ")
+    }
+
+    // MARK: Top-ups
+
+    private(set) var topUps: [String: [QuizItem]] =
+        Vault.load([String: [QuizItem]].self, Vault.topUps) ?? [:]
+    @ObservationIgnored private var askedItems: [String: Set<String>] =
+        Vault.load([String: Set<String>].self, Vault.askedItems) ?? [:]
+    @ObservationIgnored private var toppingUp: Set<String> = []
+    @ObservationIgnored private var topUpFailed: [String: Date] = [:]
+
+    /// Items answered at least once, by their id before any re-ask suffix.
+    private func noteAsked(_ items: [QuizItem]) {
+        let key = settings.language.rawValue
+        var asked = askedItems[key] ?? []
+        let before = asked.count
+        // Only top-ups read this, and they never ask about words.
+        for item in items where !item.entry.hasPrefix(VocabWord.entryPrefix) {
+            asked.insert(String(item.id.split(separator: "~").first ?? ""))
+        }
+        guard asked.count != before else { return }
+        askedItems[key] = asked
+        Vault.save(askedItems, Vault.askedItems)
+    }
+
+    /// Chapters among `ids` (empty: none) down to their last few unseen tests
+    /// get more, written in the background. One at a time per chapter, and
+    /// two chapters at most at once; a failure waits `TopUp.retryAfter`.
+    func topUpIfLow(_ ids: [String]) {
+        let asked = askedItems[settings.language.rawValue] ?? []
+        let bank = quizItems
+        for chapter in book.chapters where ids.contains(chapter.id) && !TopUp.formats(chapter).isEmpty {
+            guard toppingUp.count < Store.topUpsAtOnce else { break }
+            guard !toppingUp.contains(chapter.id),
+                  Date.now.timeIntervalSince(topUpFailed[chapter.id] ?? .distantPast) > TopUp.retryAfter
+            else { continue }
+            let entries = Set(chapter.entries.map(\.id))
+            let unseen = bank.filter { entries.contains($0.entry) && !asked.contains($0.id) }.count
+            guard unseen < TopUp.lowWater else { continue }
+            toppingUp.insert(chapter.id)
+            Task { await topUp(chapter) }
+        }
+    }
+
+    private static let topUpsAtOnce = 2
+
+    private func topUp(_ chapter: Chapter) async {
+        let language = settings.language
+        defer { toppingUp.remove(chapter.id) }
+        let entries = Set(chapter.entries.map(\.id))
+        let bank = quizItems.filter { entries.contains($0.entry) }
+        let used = bank.map(TopUp.text)
+        let examples = Array(bank.filter { TopUp.formats(chapter).contains($0.format) }.shuffled().prefix(8))
+        do {
+            let (written, usage) = try await tutor.api.send(
+                TopUp.Written.self, cachedSystem: TopUp.system,
+                user: TopUp.request(chapter: chapter, level: pack.level(settings.level),
+                                    examples: examples, used: used),
+                schema: TopUp.schema, effort: .medium, maxTokens: 16_000, model: Anthropic.topUpModel)
+            spend.addSonnet(usage)
+            var kept = TopUp.keep(written.items, chapter: chapter, used: used,
+                                  idPrefix: "top.\(chapter.id).\(Int(Date.now.timeIntervalSince1970))")
+            if !kept.isEmpty {
+                let (checked, usage) = try await tutor.api.send(
+                    TopUp.Checked.self, cachedSystem: TopUp.checkSystem, user: TopUp.checkRequest(kept),
+                    schema: TopUp.checkSchema, effort: .medium, maxTokens: 4_000, model: Anthropic.topUpModel)
+                spend.addSonnet(usage)
+                let fail = Set(checked.fail)
+                kept = kept.enumerated().filter { !fail.contains($0.offset) }.map(\.element)
+            }
+            Vault.save(spend, Vault.spend)
+            topUps[language.rawValue, default: []] += kept
+            Vault.save(topUps, Vault.topUps)
+        } catch {
+            Plain.note(error, "top-up")
+            Vault.save(spend, Vault.spend)
+            topUpFailed[chapter.id] = .now
+        }
+    }
+
+    // MARK: Word decks
+
+    /// Words due in the current language.
+    /// Whether `vocab-<language>.json` shipped.
+    var hasWordDeck: Bool { !books.words(for: settings.language).isEmpty }
+
+    var wordsDue: Int {
+        let language = settings.language
+        return VocabDrill.dueCount(words: books.words(for: language), language: language) {
+            self.quizLog.state(of: $0)
+        }
+    }
+
+    /// The shipped rows with the learner's own words in.
+    var concepts: [Concept] { books.concepts().map(edited) }
+
+    /// The ALL LANGUAGES deck's languages: the ones on. Under two, no deck.
+    var conceptRing: [Language] { ConceptDeck.ring(settings.languages) }
+
+    /// Concept id → language → the word the learner typed over the list's.
+    private(set) var conceptEdits: [String: [String: String]] =
+        Vault.load([String: [String: String]].self, Vault.conceptEdits) ?? [:]
+
+    private func edited(_ concept: Concept) -> Concept {
+        var out = concept
+        for (code, word) in conceptEdits[concept.id] ?? [:] {
+            if let language = Language(rawValue: code) { out = out.with(language, word) }
+        }
+        return out
+    }
+
+    /// Retypes one side of a meaning; empty puts the list's word back. The
+    /// new word has its own schedule, as any word does.
+    func retype(_ concept: Concept, _ language: Language, _ word: String) -> Concept {
+        let typed = word.trimmingCharacters(in: .whitespacesAndNewlines)
+        let original = books.concepts().first { $0.id == concept.id }?.word(language)
+        var edits = conceptEdits[concept.id] ?? [:]
+        edits[language.rawValue] = typed.isEmpty || typed == original ? nil : typed
+        conceptEdits[concept.id] = edits.isEmpty ? nil : edits
+        Vault.save(conceptEdits, Vault.conceptEdits)
+        return concept.with(language, edits[language.rawValue] ?? original ?? typed)
+    }
+
+    var conceptsDue: Int {
+        ConceptDeck.dueCount(concepts, ring: conceptRing) { self.quizLog.state(of: $0) }
+    }
+
+    func nextConcepts(asked: Set<String>, count: Int) -> [Concept] {
+        ConceptDeck.next(concepts: concepts, ring: conceptRing, state: { self.quizLog.state(of: $0) },
+                         asked: asked, count: count)
+    }
+
+    func vocabWord(_ w: String, in language: Language) -> VocabWord? { books.word(w, in: language) }
+
+    /// One mark per language: each moves that language's word.
+    func markConcept(_ concept: Concept, _ marks: [Language: Bool]) {
+        for (language, right) in marks {
+            quizLog.record(entry: ConceptDeck.entry(concept, language), right: right)
+        }
+        Vault.save(quizLog, Vault.quizLog)
+        if activity.add(.quiz, on: .now, settings.language) { Vault.save(activity, Vault.activity) }
+    }
+
+    /// Spoken in `language`, whichever is current.
+    func speak(_ text: String, in language: Language) {
+        speech?.speak(text, locale: language.localeID)
     }
 
 
@@ -2262,6 +2648,17 @@ final class Store {
 
     /// Answered items move their entries; a finished round counts to its plan.
     func finish(_ round: QuizRound) {
+        // Endless rounds were recorded answer by answer.
+        guard !round.plan.endless else { return }
+        let answered = zip(round.items, round.answers).filter { $0.1 != nil }.map(\.0)
+        noteAsked(answered)
+        if !round.plan.rules, !VocabDrill.isVocab(round.plan) {
+            // No chapter list is every chapter: the ones this round reached.
+            let chapters = round.plan.chapters.isEmpty
+                ? Array(Set(answered.compactMap { book.chapter(of: $0.entry)?.id }))
+                : round.plan.chapters
+            topUpIfLow(chapters)
+        }
         quizLog.record(round, planKey: planKey(round.plan))
         Vault.save(quizLog, Vault.quizLog)
         if round.answers.allSatisfy({ $0 != nil }),
@@ -2328,9 +2725,6 @@ final class Store {
             chapter.entries.contains { $0.effectiveLevel(pointLevel: { points[$0] }) >= level }
         }
         var chapters = current + book.chapters.filter { c in !current.contains { $0.id == c.id } }
-        if !books.words(for: settings.language).isEmpty {
-            book.drills.append(VocabDrill.plan(settings.language))
-        }
         var noted: [String: Textbook.Entry] = [:]
         if let extra = Textbook.notedChapter(
             language: settings.language, sections: textbook(scope: .mine),
@@ -2353,7 +2747,7 @@ final class Store {
 
     /// The learner's own sentences where this point was noted, newest first.
     func noted(point: String) -> [Textbook.Noted] {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.noted(in: sessions, language: settings.language)
             .filter { $0.atom.seed.pointID == point }
             .sorted { $0.at > $1.at }
@@ -2361,7 +2755,7 @@ final class Store {
 
     /// The learner's own sentences that used this point, newest first.
     func uses(point: String) -> [Textbook.Use] {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
+        let sessions = everySession
         return Textbook.uses(of: point, in: sessions, language: settings.language)
     }
 
@@ -2509,22 +2903,6 @@ final class Store {
         }
     }
 
-    /// A recurring point's lesson. The latest finding it came from when one
-    /// is still archived, so the lesson keeps its sentence; else its subject.
-    func open(_ encounter: Progress.Encounter) {
-        let sessions = past + Mode.allCases.compactMap { today($0) }
-        let atom = sessions.sorted { $0.startedAt > $1.startedAt }.lazy
-            .flatMap(\.turns)
-            .compactMap { $0.review?.atoms.first { $0.id == encounter.atomID } }
-            .first
-        if let atom {
-            open(atom)
-        } else {
-            open(seed: Atom.Seed(subject: encounter.subject, context: "", pointID: nil),
-                 kind: encounter.kind)
-        }
-    }
-
     // MARK: Review
 
     /// Graded turns of a batch being read, in order. For the summary.
@@ -2535,7 +2913,12 @@ final class Store {
     }
 
     /// The verdict `grade(_:against:)` returns when the model could not be reached.
-    static let uncheckable = "Couldn't check that."
+    static let uncheckable = "Unchecked."
+
+    /// The ask panel's failure line, with the reason when there is one.
+    static func couldNotAnswer(_ why: String) -> String {
+        why == Plain.unknown ? "No answer." : "No answer. " + why
+    }
 
     /// Where a finding sits in what was said, and its fix as wrong → right.
     struct Span: Equatable {
@@ -2921,7 +3304,8 @@ final class Store {
             }
             hold()
         } catch {
-            speechTrouble = "Couldn't write another question."
+            Plain.note(error, "another question")
+            speechTrouble = "No new question."
         }
     }
 }

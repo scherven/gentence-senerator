@@ -8,6 +8,7 @@ struct AppShell: View {
     @State private var paths: [RootTab: [LessonRequest]] = [:]
     @State private var bookRoutes: [BookRoute] = []
     @State private var quiz: QuizPlan?
+    @State private var allLanguages = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,7 +44,10 @@ struct AppShell: View {
             }
             store.pathBeforeTap = nil
         }
+        .environment(\.startAllLanguages) { allLanguages = true }
+        .fullScreenCover(isPresented: $allLanguages) { AllLanguagesScreen(store: store) }
         .onChange(of: quiz?.id) { _, open in store.quizOpen = open != nil }
+        .onChange(of: allLanguages) { _, open in store.quizOpen = open }
         .onChange(of: store.settings.language) { bookRoutes = [] }
         .onChange(of: store.settings.language, initial: true) { _, language in
             ThemeState.shared.language = language
@@ -152,7 +156,7 @@ struct TabBar: View {
                 Button { tab = item } label: {
                     HStack(spacing: 4) {
                         Text(item.title)
-                            .font(Theme.F.mono(12, bold: on))
+                            .font(Theme.F.mono(12, bold: on, upTo: 1.4))
                             .tracking(1.2)
                             .foregroundStyle(on ? Theme.C.ink : Theme.C.ink3)
                             .overlay(alignment: .bottom) {
@@ -226,6 +230,11 @@ struct ModeScreen: View {
         .onChange(of: store.reading.isEmpty) { _, idle in
             if !idle { showingSettings = false }
         }
+        // A half-typed answer belongs to its session, not the next one.
+        .onChange(of: store.session?.id) {
+            typing = ""
+            showGloss = false
+        }
     }
 
     private var isIdle: Bool { store.phase == .idle }
@@ -287,6 +296,7 @@ struct ModeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 ForEach(store.settings.language.modes) { modeKey($0) }
+                WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
                 GradingPanel(store: store)
@@ -426,7 +436,15 @@ struct ModeScreen: View {
         }
     }
 
+    /// Scrolls, so a long answer cannot push Submit under the keyboard.
     private var confirm: some View {
+        ScrollView {
+            confirmBody
+        }
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    private var confirmBody: some View {
         VStack(alignment: .leading, spacing: Theme.M.gap) {
             dimmedPrompt
             TextField("", text: $store.draft, axis: .vertical)
@@ -542,8 +560,8 @@ struct LessonHost: View {
                     answers: store.asked[request.cacheKey] ?? [],
                     isAsking: store.asking.contains(request.cacheKey)
                 )
-            } else if let error = store.lessonError {
-                Trouble(message: error) { }
+            } else if let error = store.lessonErrors[request.cacheKey] {
+                Trouble(message: error) { store.retryLesson(request) }
             } else {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
                     Text(request.seed.subject)
@@ -698,6 +716,46 @@ struct WrittenRows: View {
                 }
             }
         }
+    }
+}
+
+/// This language's word deck, if it has one, and the one across languages, with what's due.
+struct WordsRow: View {
+    let store: Store
+    @Environment(\.startQuiz) private var startQuiz
+    @Environment(\.startAllLanguages) private var startAllLanguages
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Words")
+            HStack(spacing: Theme.M.gapTight) {
+                if store.hasWordDeck {
+                    key("Words · \(store.settings.language.short)", due: store.wordsDue) {
+                        startQuiz(VocabDrill.plan(store.settings.language))
+                    }
+                }
+                if store.conceptRing.count >= 2 {
+                    key("All languages", due: store.conceptsDue) { startAllLanguages() }
+                }
+            }
+        }
+    }
+
+    private func key(_ title: String, due: Int, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title.uppercased()).font(Theme.F.label).tracking(0.6)
+                    .lineLimit(2).multilineTextAlignment(.leading)
+                Spacer(minLength: 4)
+                Text("\(due)").font(Theme.F.meta)
+                    .foregroundStyle(due > 0 ? Theme.C.accent : Theme.C.ink3)
+            }
+            .foregroundStyle(Theme.C.ink)
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .topLeading)
+        }
+        .buttonStyle(KeyStyle(.neutral))
+        .accessibilityLabel("\(title), \(due) due")
     }
 }
 

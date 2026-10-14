@@ -81,25 +81,31 @@ enum Theme {
 
     /// Courier Prime for labels, counts and measurements; Charter for anything
     /// read as prose; Mandarin always in the system sans.
+    ///
+    /// Every face follows the system text size. The sizes here are the
+    /// default (Large) size; each grows with the text style named beside it.
+    /// Prose grows without limit. Labels, counts and display numerals stop
+    /// growing at a multiple of their default size, past which they would
+    /// push dense ledger rows and stamps out of shape.
     enum F {
         /// Big typed numerals: 151 / 262.
-        static let display    = mono(36, bold: true)
+        static var display: Font   { mono(36, bold: true) }
         /// Page titles.
-        static let title      = serif(22, bold: true)
+        static var title: Font     { serif(22, bold: true) }
         /// Tiles and keys that carry a name. Allow two lines.
-        static let cardTitle  = serif(17, bold: true)
-        static let body       = serif(16)
-        static let bodyTight  = serif(14.5)
+        static var cardTitle: Font { serif(17, bold: true) }
+        static var body: Font      { serif(16) }
+        static var bodyTight: Font { serif(14.5) }
         /// Secondary prose. Pair with `ink2`.
-        static let note       = serif(13)
+        static var note: Font      { serif(13) }
         /// English gloss under target text. Pair with `ink2`.
-        static let gloss      = serif(13, italic: true)
+        static var gloss: Font     { serif(13, italic: true) }
         /// Values: counts, times, lowercase readouts.
-        static let meta       = mono(11)
+        static var meta: Font      { mono(11) }
         /// CAPS names. Use `.monoCaps()` for the tracking and case.
-        static let label      = mono(11, bold: true)
+        static var label: Font     { mono(11, bold: true) }
         /// Mid-size typed number.
-        static let number     = mono(20, bold: true)
+        static var number: Font    { mono(20, bold: true) }
 
         /// Target-language text for the language being learned now.
         static var target: Font { target(for: ThemeState.shared.language) }
@@ -113,17 +119,20 @@ enum Theme {
             target(size: 17, for: language)
         }
 
-        /// Target text at any size. Mandarin gets the system face (PingFang):
-        /// a serif CJK is hard to read.
+        /// Target text at any size. Mandarin and Korean get the system face:
+        /// a serif CJK is hard to read, and Charter has no Hangul.
         static func target(size: CGFloat, bold: Bool = false,
                            for language: Language = ThemeState.shared.language) -> Font {
-            language == .mandarin
-                ? .system(size: size, weight: bold ? .semibold : .regular)
+            language.usesSystemFace
+                ? .system(size: scaled(size, mono: false), weight: bold ? .semibold : .regular)
                 : serif(size, bold: bold)
         }
 
-        static func mono(_ size: CGFloat, bold: Bool = false) -> Font {
-            face(bold ? "CourierPrime-Bold" : "CourierPrime-Regular", size, bold: bold)
+        /// `upTo`: a tighter cap than the role's, as a multiple of `size`,
+        /// for text in a fixed-width column or bar.
+        static func mono(_ size: CGFloat, bold: Bool = false, upTo: CGFloat? = nil) -> Font {
+            face(bold ? "CourierPrime-Bold" : "CourierPrime-Regular",
+                 scaled(size, mono: true, upTo: upTo), bold: bold)
         }
 
         static func serif(_ size: CGFloat, bold: Bool = false, italic: Bool = false) -> Font {
@@ -133,7 +142,48 @@ enum Theme {
             case (false, true):  "Charter-Italic"
             case (true, true):   "Charter-BoldItalic"
             }
-            return face(name, size, bold: bold)
+            return face(name, scaled(size, mono: false), bold: bold)
+        }
+
+        /// `size` at the current text size: grown along the text style
+        /// nearest it, and held to the cap for its role. Unchanged at the
+        /// default size.
+        static func scaled(_ size: CGFloat, mono: Bool, upTo: CGFloat? = nil,
+                           category: UIContentSizeCategory = ThemeState.shared.category) -> CGFloat {
+            let style: UIFont.TextStyle = switch size {
+            case 28...: .largeTitle
+            case 22..<28: .title2
+            case 20..<22: .title3
+            case 17..<20: .body
+            case 15..<17: .subheadline
+            case 13..<15: .footnote
+            case 12..<13: .caption1
+            default: .caption2
+            }
+            let traits = UITraitCollection(preferredContentSizeCategory: category)
+            // As a ratio: `scaledValue` rounds to the pixel, which would move
+            // a 14.5 face at the default size.
+            let grown = size * UIFontMetrics(forTextStyle: style)
+                .scaledValue(for: 1000, compatibleWith: traits) / 1000
+            return min(grown, size * min(upTo ?? .infinity, cap(size, mono: mono)))
+        }
+
+        /// How much a face of `size` has grown at the current text size: for
+        /// widths that must grow with the text they hold.
+        static func growth(_ size: CGFloat, mono: Bool, upTo: CGFloat? = nil) -> CGFloat {
+            scaled(size, mono: mono, upTo: upTo) / size
+        }
+
+        /// Account names in a ledger row's fixed column.
+        static let accountCap: CGFloat = 1.4
+        static var account: Font { mono(11, bold: true, upTo: accountCap) }
+
+        /// How far a face may grow, as a multiple of its default size.
+        private static func cap(_ size: CGFloat, mono: Bool) -> CGFloat {
+            if size >= 28 { return 1.4 }   // display numerals, quiz prompts
+            if size >= 20 { return 1.75 }  // titles, typed numbers
+            if mono { return 2 }           // labels, counts, times in ledger rows
+            return .infinity               // prose
         }
 
         /// A named face whose missing glyphs fall to PingFang, so Chinese inside
@@ -178,10 +228,11 @@ enum Theme {
         bar.backgroundColor = C.uiDyn(0xECE5D5, 0x16140F)
         bar.shadowColor = C.uiDyn(0xCCBFA4, 0x3A3428)
         let ink = C.uiDyn(0x1E1C18, 0xE9E0CC)
-        if let charter = UIFont(name: "Charter-Bold", size: 17) {
+        // Set once, so these follow the text size the app launched at.
+        if let charter = UIFont(name: "Charter-Bold", size: F.scaled(17, mono: false)) {
             bar.titleTextAttributes = [.font: charter, .foregroundColor: ink]
         }
-        if let charter = UIFont(name: "Charter-Bold", size: 30) {
+        if let charter = UIFont(name: "Charter-Bold", size: F.scaled(30, mono: false)) {
             bar.largeTitleTextAttributes = [.font: charter, .foregroundColor: ink]
         }
         UINavigationBar.appearance().standardAppearance = bar
@@ -191,11 +242,25 @@ enum Theme {
 }
 
 /// What the theme needs to know about the app. Observable, so a view that
-/// reads `Theme.F.target` redraws when the language changes. Set by the shell.
+/// reads a `Theme.F` face redraws when the language or the system text size
+/// changes. The language is set by the shell; the text size follows iOS.
 @Observable
 final class ThemeState {
     static let shared = ThemeState()
     var language: Language = .german
+    var category: UIContentSizeCategory = UIApplication.shared.preferredContentSizeCategory
+
+    @ObservationIgnored private var watch: NSObjectProtocol?
+
+    private init() {
+        watch = NotificationCenter.default.addObserver(
+            forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.category = UIApplication.shared.preferredContentSizeCategory
+            }
+        }
+    }
 }
 
 /// Autocorrect is trained on the interface language, so it rewrites the

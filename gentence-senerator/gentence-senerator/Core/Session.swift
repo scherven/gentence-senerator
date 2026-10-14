@@ -8,6 +8,10 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Whose scores are the learner's own sentences. A dialogue's is a share
+    /// of gist questions, so History averages and the level offer leave it out.
+    var isScored: Bool { self != .listen }
+
     var name: String {
         switch self {
         case .translate: return "Translate"

@@ -9,14 +9,16 @@ struct DayScreen: View {
     @State private var expanded: String?
 
     var body: some View {
+        let findings = store.todayFindings
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
                 GradingPanel(store: store)
                 tally
-                section("To fix", store.todayFindings.filter(\.isProblem))
-                section("Got right", store.todayFindings.filter { !$0.isProblem })
+                section("To fix", findings.filter(\.isProblem))
+                section("Got right", findings.filter { !$0.isProblem })
             }
             .padding(Theme.M.gap)
         }
@@ -55,7 +57,6 @@ struct DayScreen: View {
                         ruled: finding.id != rows.last?.id,
                         kept: store.isKept(finding.id),
                         due: store.progress.dueLabel(finding.id),
-                        onOpen: { store.open(finding.atom) },
                         onKeep: {
                             if store.isKept(finding.id) { store.unkeep(finding.id) }
                             else { store.keep(finding) }
@@ -73,7 +74,7 @@ struct DayScreen: View {
 }
 
 /// A finding at the end of the day. Tapped, it shows the keep and bring-back
-/// decisions and a way into its lesson.
+/// decisions.
 private struct DayFindingRow: View {
     let finding: DayFinding
     @Binding var expanded: Bool
@@ -81,7 +82,6 @@ private struct DayFindingRow: View {
     let kept: Bool
     /// When it is next due, if it is coming back at all.
     let due: String?
-    let onOpen: () -> Void
     let onKeep: () -> Void
     let onReturn: () -> Void
 
@@ -105,7 +105,6 @@ private struct DayFindingRow: View {
                             TinyButton(title: due ?? "Bring back", selected: due != nil,
                                        action: onReturn)
                             Spacer(minLength: 0)
-                            TypedLink("Open", action: onOpen)
                         }
                         .padding(.top, 6)
                     }

@@ -144,6 +144,14 @@ enum AtomKind: String, Codable, Hashable, CaseIterable {
     case tone           = "tone"
     case measureWord    = "measure-word"
 
+    // Spanish. ser against estar is a choice about the predicate, not a word.
+    case copula         = "copula"
+
+    // Korean. The ending picks the listener (speech level) or links two
+    // clauses (connective); neither is a word an English speaker can map.
+    case speechLevel    = "speech-level"
+    case connective     = "connective"
+
     var label: String {
         switch self {
         case .wordOrder:         return "Word order"
@@ -173,6 +181,9 @@ enum AtomKind: String, Codable, Hashable, CaseIterable {
         case .liaison:           return "Liaison"
         case .tone:              return "Tone"
         case .measureWord:       return "Measure word"
+        case .copula:            return "Ser / estar"
+        case .speechLevel:       return "Speech level"
+        case .connective:        return "Linking ending"
         }
     }
 

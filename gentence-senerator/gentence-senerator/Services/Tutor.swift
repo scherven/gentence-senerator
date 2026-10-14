@@ -136,9 +136,10 @@ actor Tutor {
     //
     // One call per answer. It used to be two — a score and `locate` first,
     // the rest streamed in behind — because the learner was waiting. Graded in
-    // a batch, nobody is, so every stage and a lesson per problem come back
-    // together. `history` is only for produce jobs filed before each answer
-    // was graded alone.
+    // a batch, nobody is, so every stage comes back together. It wrote a
+    // lesson per problem too, until those were dropped: a quarter of the cost,
+    // for a screen few findings were opened into. `history` is only for
+    // produce jobs filed before each answer was graded alone.
 
     struct Graded: Codable {
         struct Finding: Codable {
@@ -147,25 +148,11 @@ actor Tutor {
             var subject: String
         }
         struct Say: Codable { var instruction: String; var accept: [String]; var correct: String; var incorrect: String }
-        struct Pair: Codable { var target: String; var gloss: String }
-        struct Drill: Codable { var rungs: [Practice.R]; var correct: String; var incorrect: String }
-        struct Taught: Codable {
-            var finding: Int
-            var title: String
-            var rule: String
-            var contrastTerm: String?
-            var contrastNote: String?
-            var contrastSubject: String?
-            var examples: [Pair]
-            var drills: [Drill]
-            var patterns: [Pair]
-        }
         var score: Int
         var readOfScore: String
         var findings: [Finding]
         var natural: String?
         var respeaks: [Say]
-        var lessons: [Taught]
         var used: [String]
     }
 
@@ -178,33 +165,40 @@ actor Tutor {
             schema: Schemas.review(for: turn.language),
             effort: Self.reviewEffort,
             maxTokens: 32000,
-            batched: true
+            batched: true,
+            model: Self.reviewModel(turn.mode)
         )
     }
 
     /// The one lever on quality left once latency stopped mattering.
     nonisolated static let reviewEffort: Anthropic.Effort = .high
 
+    /// Nil for listen: the default model.
+    nonisolated static func reviewModel(_ mode: Mode) -> String? {
+        mode == .listen ? nil : Anthropic.reviewModel
+    }
+
     /// Graded on the spot. Listen still works this way until it is rebuilt.
     func review(turn: Turn, history: [Turn] = [], level: Int)
-    async throws -> (Review, [Lesson], Anthropic.Usage) {
+    async throws -> (Review, Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: turn.language)
         let reply = try await api.send(
             cachedSystem: Self.reviewSystem(pack),
             user: Self.attemptFacts(turn: turn, history: history, level: level, pack: pack),
             schema: Schemas.review(for: turn.language),
             effort: Self.reviewEffort,
-            maxTokens: 32000
+            maxTokens: 32000,
+            model: Self.reviewModel(turn.mode)
         )
-        let (review, lessons) = try Self.read(reply, turn: turn, history: history)
-        return (review, lessons, reply.usage)
+        let review = try Self.read(reply, turn: turn, history: history)
+        return (review, reply.usage)
     }
 
-    /// A finished reply, as a review and the lessons behind its problems.
-    /// `known` drops point ids the model invented: anything that gets past
-    /// here is written into `Progress` under that id and stays there.
+    /// A finished reply, as a review. `known` drops point ids the model
+    /// invented: anything that gets past here is written into `Progress` under
+    /// that id and stays there.
     nonisolated static func read(_ reply: Anthropic.Reply, turn: Turn, history: [Turn])
-    throws -> (Review, [Lesson]) {
+    throws -> Review {
         let graded = try Anthropic.decode(Graded.self, from: reply)
         // Valid JSON, and nonsense: nothing found, yet a failing score. Seen
         // as score 0, readOfScore "x". Failed, so it is graded again.
@@ -223,7 +217,7 @@ actor Tutor {
                  seed: .init(subject: f.subject, context: said, pointID: turn.prompt.pointID),
                  weight: f.weight)
         }
-        let review = Review(
+        return Review(
             score: graded.score,
             readOfScore: graded.readOfScore,
             atoms: atoms,
@@ -234,54 +228,6 @@ actor Tutor {
             },
             usedPoints: Array(Set(graded.used).intersection(pack.pointIDs)).sorted(),
             isDeep: true
-        )
-
-        let lessons = graded.lessons.compactMap { taught -> Lesson? in
-            guard atoms.indices.contains(taught.finding) else { return nil }
-            let atom = atoms[taught.finding]
-            let request = LessonRequest(seed: atom.seed, kind: atom.kind, language: turn.language)
-            return lesson(from: taught, request: request)
-        }
-        return (review, lessons)
-    }
-
-    private nonisolated static func lesson(from taught: Graded.Taught, request: LessonRequest) -> Lesson {
-        var blocks: [Block] = [Block(id: "rule", kind: .rule, label: nil, text: taught.rule)]
-        if let term = taught.contrastTerm, let note = taught.contrastNote {
-            blocks.append(Block(
-                id: "contrast", kind: .contrast, label: "Don't confuse with",
-                sides: [
-                    Side(id: "a", term: request.seed.subject, note: "What you used.", seed: nil),
-                    Side(id: "b", term: term, note: note,
-                         seed: taught.contrastSubject.map {
-                             Atom.Seed(subject: $0, context: request.seed.context, pointID: nil)
-                         })
-                ]
-            ))
-        }
-        blocks.append(Block(
-            id: "examples", kind: .examples, label: "Examples",
-            examples: taught.examples.enumerated().map { index, pair in
-                Example(id: "ex\(index)", target: pair.target, gloss: pair.gloss, seed: nil)
-            }
-        ))
-        blocks.append(Block(
-            id: "drills", kind: .drills, label: "Practice",
-            drills: taught.drills.enumerated().map { index, drill in
-                Drill(id: "d\(index)",
-                      rungs: drill.rungs.enumerated().map { rungIndex, rung in
-                          Rung(id: "d\(index)r\(rungIndex)", support: rung.support,
-                               prompt: rung.prompt, accept: rung.accept,
-                               options: rung.options, answerIndex: rung.answerIndex)
-                      },
-                      correct: drill.correct, incorrect: drill.incorrect, atoms: [])
-            }
-        ))
-        return Lesson(
-            id: request.cacheKey, title: taught.title, blocks: blocks,
-            patterns: taught.patterns.enumerated().map { index, pair in
-                Example(id: "p\(index)", target: pair.target, gloss: pair.gloss, seed: nil)
-            }
         )
     }
 
@@ -729,9 +675,8 @@ actor Tutor {
         \(voice(pack))
 
         You review an attempt and return everything the learner will read: a
-        score, every finding at every stage, and a short lesson behind each
-        problem. The learner reads it later, not while waiting, so take the
-        time to be right.
+        score and every finding at every stage. The learner reads it later,
+        not while waiting, so take the time to be right.
 
         Each finding is revealed in stages, so keep them apart. `locate` says
         where, and must not give the answer away: the learner reads it first
@@ -743,10 +688,13 @@ actor Tutor {
 
         Rank them: exactly one finding has weight "start", the one that costs
         the learner most: being understood in translate and produce, catching
-        what was actually said in listen. Return every other finding too.
-        Never omit a real error because it is minor — silence reads as approval.
-        The opposite failure is worse. Report nothing you cannot point at. A
-        choice you would not have made is not an error, and an attempt with
+        what was actually said in listen. A word a speaker would not reach for
+        outranks a wrong ending a listener reads straight through. Return every
+        other finding too, minor ones included — silence reads as approval — in
+        order of cost: what stops a listener, then what sounds unlike a speaker,
+        then form a listener would barely notice. Over-reporting is worse.
+        Report nothing you cannot point at. A choice you would not have made
+        is not an error, and an attempt with
         nothing wrong in it is an ordinary outcome — return no problems at all
         and say what carried it. Being corrected for something they got right is
         what stops a learner trusting any of it. Before you finish, go back
@@ -782,15 +730,46 @@ actor Tutor {
         what a speaker said. Build the respeaks from the played sentence.
 
         Report what they got right as well, with verdict "kept". Name the
-        specific choice that worked. No generic praise.
+        specific choice that worked. No generic praise. Never mark kept a
+        phrase that `natural` replaces: built correctly is not the same as what
+        a speaker would say.
+
+        In translate and produce, `score` is how well the attempt would work
+        said to a native speaker. Three things, in this order of weight:
+        understood — would a listener get what was meant, on first hearing,
+        without working at it (in translate, the meaning asked for); natural —
+        are the words and phrasing what a speaker would reach for; form —
+        grammar, case and endings included, weighed by how much a listener
+        would notice it. Do not count errors off one by one: three wrong
+        endings in a clear, natural sentence is a good score.
+        90–100: understood at once and sounds like a speaker; a slip or two in
+        form at most.
+        80–89: understood at once; some phrasing or form marks a learner.
+        50–79: understood with some effort, or correct but phrased the way no
+        speaker would.
+        Below 50: a listener misses or mistakes part of the meaning.
 
         `readOfScore` is one clause on what the score means. No breakdown, no
         pep talk.
 
-        Severity follows the level. Below B1 or HSK 4, being understood matters
-        more than being formally correct: a morphological slip that leaves the
-        meaning intact is "weakens", not "breaks". Reserve "breaks" for what
-        actually stops a listener.
+        Severity is about the listener, at every level. "breaks" is only for
+        what stops a listener or sends them to a different meaning. A wrong
+        case, ending, gender or agreement that leaves the meaning clear is
+        "weakens", however advanced the learner. It is still reported and still
+        taught; it does not outrank a word or phrasing a speaker would not use.
+        Before using "breaks", ask whether a native listener would actually get
+        it wrong. If they would get it, it is "weakens", and the score stays
+        above 50. A knock-on of another finding — the ending that follows from
+        the wrong auxiliary or preposition — is part of that finding, not a
+        second one.
+
+        Spelling is the least of it. A typed word that would sound right said
+        aloud — a misspelling, a dropped accent, a homophone character — is at
+        most "weakens", ranks below anything a listener would notice, takes
+        "start" only when nothing else is wrong, and barely moves the score.
+        Several are one finding, of kind word-choice. When the written form would sound different
+        said aloud, it is not spelling. Spoken, spelling is never the learner's:
+        recognition wrote it, so it is not reported.
 
         `subject` is what a lesson about the finding would be about: a real
         teachable point, never a restatement of the sentence.
@@ -799,9 +778,16 @@ actor Tutor {
         When the attempt was spoken, never use a written-only kind — silent
         orthography is not something a speaker got wrong.
 
-        Routing. missing-piece, extra-piece, word-order and word-choice are
-        catch-alls: almost any error fits one, so reach for a specific kind
-        first and fall back only when nothing else does.
+        Routing. missing-piece, extra-piece and word-order are catch-alls:
+        almost any error fits one, so reach for a specific kind first and fall
+        back only when nothing else does. word-choice, collocation and register
+        are not fallbacks. A correct word a speaker would not use there, a
+        pairing a native would not make, a grammatical sentence that sounds
+        translated: each is a real finding, usually "weakens", with a lesson,
+        even when the grammar is flawless. The test is whether a native
+        listener would notice it as foreign. If they would not, or you are not
+        sure they would, it is a preference, and belongs in `natural` at most.
+        A finding whose own note says the original is fine is not a finding.
         \(pack.routing)
         \(pack.assessmentNotes)
 
@@ -814,22 +800,6 @@ actor Tutor {
         the correction. Two or three, each with the forms you would accept.
         `correct` and `incorrect` are one short sentence each; `incorrect` leads
         with the right form.
-
-        `lessons`: one for each finding whose verdict is breaks or weakens,
-        pointing at it by its index in `findings`. None for kept. A lesson
-        teaches the point, not the sentence. `rule` says what governs the
-        choice, not what the learner did. The contrast is the confusable
-        neighbour, which is usually what they need next; null it only when
-        there genuinely is no near neighbour. `examples` are the pattern in
-        use — three or four things a person would say. `drills`: two, each with
-        at least two rungs, hardest first. Rung 0 is unaided production; each
-        later rung removes something the learner has to build — a frame with a
-        gap, then a choice between two — and must test the same point with less
-        to construct, never a different point. `accept` lists every form a
-        speaker would accept, not just the neatest. A drill's `correct` and
-        `incorrect` are one short sentence each; `incorrect` leads with the
-        right form. `patterns` replaces the rule on a third visit: examples
-        only, no explanation.
 
         `used` is not about the errors. List the points below that the
         learner's own words actually used, whether they used them well or badly

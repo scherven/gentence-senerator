@@ -8,20 +8,30 @@ struct GentenceApp: App {
     /// launching the app in the background to hand it an upload's result,
     /// before any scene exists.
     @MainActor static let store = Store(
-        tutor: Tutor(api: Anthropic(key: Key.anthropicKey)),
+        tutor: Tutor(api: Anthropic()),
         speech: Voice()
     )
     @State private var store = GentenceApp.store
     /// Once per process, so returning to the app never replays it. UI tests
     /// pass `-skipOpening`.
     @State private var opening = !ProcessInfo.processInfo.arguments.contains("-skipOpening")
+    /// Nothing reaches the worker without a code, so nothing wakes either.
+    @State private var invited = Worker.invite != nil
 
     init() { Theme.install() }
 
     var body: some Scene {
         WindowGroup {
             ZStack {
-                AppShell(store: store)
+                if invited {
+                    AppShell(store: store)
+                } else {
+                    InviteScreen(ready: !opening) {
+                        invited = true
+                        Push.ask()
+                        Task { await store.wake() }
+                    }
+                }
                 if opening {
                     Opening { opening = false }
                         .transition(.identity)
@@ -30,19 +40,44 @@ struct GentenceApp: App {
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {
-            case .active: Task { await store.wake() }
+            case .active:
+                guard invited else { break }
+                Task { await store.wake() }
+                Task { if await Worker.revoked() { invited = false } }
             case .background:
                 store.sleep()
                 // A session finished with no signal is sent the moment the
                 // phone is put away, if the network has come back by then.
                 guard store.hasUnsent else { break }
-                let task = UIApplication.shared.beginBackgroundTask()
-                Task {
-                    await store.pump()
-                    UIApplication.shared.endBackgroundTask(task)
-                }
+                BackgroundSend.start(store)
             default: break
             }
         }
+    }
+}
+
+/// The pump, for as long as iOS allows once the app is put away. When the
+/// time runs out the pump is cancelled and the task ended, rather than the app
+/// being killed with it open.
+@MainActor private final class BackgroundSend {
+    private var id = UIBackgroundTaskIdentifier.invalid
+
+    static func start(_ store: Store) {
+        let send = BackgroundSend()
+        let work = Task { await store.pump(backgroundOnly: true) }
+        send.id = UIApplication.shared.beginBackgroundTask {
+            work.cancel()
+            send.end()
+        }
+        Task {
+            await work.value
+            send.end()
+        }
+    }
+
+    private func end() {
+        guard id != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(id)
+        id = .invalid
     }
 }

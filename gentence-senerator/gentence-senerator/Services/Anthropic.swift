@@ -1,7 +1,7 @@
 import Foundation
 
-/// Transport for the Messages API. There is no official Anthropic SDK for
-/// Swift, so this speaks the REST endpoint directly.
+/// Transport for the Messages API, through the worker, which adds the key.
+/// There is no official Anthropic SDK for Swift, so this speaks REST directly.
 actor Anthropic {
 
     enum Effort: String { case low, medium, high, xhigh, max }
@@ -21,15 +21,12 @@ actor Anthropic {
     }
 
     enum Failure: LocalizedError {
-        case noKey
         case http(Int, String)
         case malformed(String)
         case refused(String)
 
         var errorDescription: String? {
             switch self {
-            case .noKey:
-                return "No API key. Add Key.anthropicKey in key.swift."
             case .http(let code, let body):
                 return "Request failed (\(code)). \(body)"
             case .malformed(let detail):
@@ -40,12 +37,17 @@ actor Anthropic {
         }
     }
 
-    private let key: String
     private let session: URLSession
+    /// The worker refuses any other but Sonnet 5.5.
     private let model = "claude-opus-5"
+    /// Writes new quiz items: cheaper, and good enough for them.
+    static let topUpModel = "claude-sonnet-5-5"
+    /// Reviews translate and produce answers. Measured 2026-10-11 against
+    /// Opus 5 and 5.5 (tools/eval): no misses, nothing invented, a third of
+    /// the price. Listen was not measured and stays on `model`.
+    static let reviewModel = "claude-sonnet-5-5"
 
-    init(key: String, session: URLSession = .shared) {
-        self.key = key
+    init(session: URLSession = .shared) {
         self.session = session
     }
 
@@ -61,13 +63,14 @@ actor Anthropic {
     /// Batches refuse `fallbacks`, so a batched request that trips a safety
     /// classifier comes back as a refusal and is left ungraded.
     nonisolated func params(cachedSystem: String, user: String, schema: [String: Any]?,
-                            effort: Effort, maxTokens: Int, batched: Bool = false) -> [String: Any] {
+                            effort: Effort, maxTokens: Int, batched: Bool = false,
+                            model: String? = nil) -> [String: Any] {
         var outputConfig: [String: Any] = ["effort": effort.rawValue]
         if let schema {
             outputConfig["format"] = ["type": "json_schema", "schema": schema]
         }
         var body: [String: Any] = [
-            "model": model,
+            "model": model ?? self.model,
             "max_tokens": maxTokens,
             "system": [[
                 "type": "text",
@@ -84,11 +87,9 @@ actor Anthropic {
 
     nonisolated private func request(_ path: String, method: String = "POST",
                                      body: [String: Any]? = nil) throws -> URLRequest {
-        var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/\(path)")!)
+        var request = URLRequest(url: Worker.url("/anthropic/v1/\(path)"))
         request.httpMethod = method
-        request.setValue(key, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-        request.setValue("server-side-fallback-2026-07-01", forHTTPHeaderField: "anthropic-beta")
+        Worker.authorize(&request)
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         if let body { request.httpBody = try Schemas.data(body) }
         // Long enough for a high-effort reply that sends nothing until it is done.
@@ -98,6 +99,10 @@ actor Anthropic {
 
     private func data(for request: URLRequest) async throws -> Data {
         let (data, response) = try await session.data(for: request)
+        return try Self.checked(data, response)
+    }
+
+    private static func checked(_ data: Data, _ response: URLResponse) throws -> Data {
         guard let http = response as? HTTPURLResponse else {
             throw Failure.malformed("no HTTP response")
         }
@@ -108,6 +113,38 @@ actor Anthropic {
         return data
     }
 
+    /// Limited, overloaded or briefly down: worth another go.
+    static let transient: Set<Int> = [429, 500, 502, 503, 529]
+    /// The connection dropped, not timed out — a timeout already waited
+    /// ten minutes.
+    private static let dropped: Set<URLError.Code> = [.networkConnectionLost, .notConnectedToInternet]
+    private static let tries = 3
+
+    /// `data(for:)` for a live call, tried again on a transient failure:
+    /// after `retry-after` when the server sends one, else a jittered pause
+    /// that grows. Twenty seconds at most — past that, the learner's Try
+    /// again is the better retry.
+    private func dataRetrying(for request: URLRequest) async throws -> Data {
+        var attempt = 1
+        while true {
+            let wait: Double?
+            do {
+                let (data, response) = try await session.data(for: request)
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                guard attempt < Self.tries, Self.transient.contains(code) else {
+                    return try Self.checked(data, response)
+                }
+                wait = (response as? HTTPURLResponse)?
+                    .value(forHTTPHeaderField: "retry-after").flatMap(Double.init)
+            } catch let error as URLError where attempt < Self.tries && Self.dropped.contains(error.code) {
+                wait = nil
+            }
+            let pause = min(wait ?? Double(attempt) * Double.random(in: 1...2), 20)
+            try await Task.sleep(for: .seconds(pause))
+            attempt += 1
+        }
+    }
+
     /// One call. `schema` constrains the reply to valid JSON; `cachedSystem` is
     /// the byte-identical prefix that must not vary per request, so per-attempt
     /// facts belong in `user` instead.
@@ -115,13 +152,12 @@ actor Anthropic {
               user: String,
               schema: [String: Any]? = nil,
               effort: Effort = .medium,
-              maxTokens: Int = 8000) async throws -> Reply {
-
-        guard !key.isEmpty else { throw Failure.noKey }
+              maxTokens: Int = 8000,
+              model: String? = nil) async throws -> Reply {
 
         let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
-                          effort: effort, maxTokens: maxTokens)
-        let data = try await data(for: try request("messages", body: body))
+                          effort: effort, maxTokens: maxTokens, model: model)
+        let data = try await dataRetrying(for: try request("messages", body: body))
 
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw Failure.malformed("not a JSON object")
@@ -156,10 +192,11 @@ actor Anthropic {
                             user: String,
                             schema: [String: Any],
                             effort: Effort = .medium,
-                            maxTokens: Int = 8000) async throws -> (T, Usage) {
+                            maxTokens: Int = 8000,
+                            model: String? = nil) async throws -> (T, Usage) {
 
         let reply = try await send(cachedSystem: cachedSystem, user: user,
-                                   schema: schema, effort: effort, maxTokens: maxTokens)
+                                   schema: schema, effort: effort, maxTokens: maxTokens, model: model)
         return (try Self.decode(T.self, from: reply), reply.usage)
     }
 
@@ -210,6 +247,8 @@ actor Anthropic {
         var failed: Int
         var processing: Int
         var resultsURL: URL?
+        /// Of `failed`: only the worker cancels, when it steps in to grade.
+        var canceled = 0
     }
 
     /// One result line. `reply` is nil when the request errored or expired.
@@ -225,8 +264,9 @@ actor Anthropic {
 
     func batchResults(_ batch: Batch) async throws -> [BatchResult] {
         guard let url = batch.resultsURL else { throw Failure.malformed("batch has no results yet") }
+        // results_url points at api.anthropic.com; the worker serves the same path.
         var request = try request("", method: "GET")
-        request.url = url
+        request.url = Worker.url("/anthropic" + url.path)
         return Self.results(from: try await data(for: request))
     }
 
@@ -267,7 +307,8 @@ actor Anthropic {
             succeeded: n("succeeded"),
             failed: n("errored") + n("expired") + n("canceled"),
             processing: n("processing"),
-            resultsURL: (object["results_url"] as? String).flatMap(URL.init(string:))
+            resultsURL: (object["results_url"] as? String).flatMap(URL.init(string:)),
+            canceled: n("canceled")
         )
     }
 

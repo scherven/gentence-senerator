@@ -142,23 +142,14 @@ enum Schemas {
     // MARK: Review
     //
     // One call per answer, graded in a batch while nobody is waiting. Every
-    // stage of every finding, and a lesson for each problem, come back
-    // together — there is no second pass to hold anything back for.
+    // stage of every finding comes back together — there is no second pass
+    // to hold anything back for.
 
     static func review(for language: Language) -> [String: Any] {
         let kinds = enumOf(LanguagePacks.pack(for: language).kinds.map(\.rawValue), "Category.")
-        let rung = object([
-            "support": enumOf(["free", "transform", "frame", "choice"],
-                              "free is unaided production; choice is two options."),
-            "prompt": string,
-            "accept": array(string),
-            "options": ["type": ["array", "null"], "items": string],
-            "answerIndex": ["type": ["integer", "null"]]
-        ], required: ["support", "prompt", "accept", "options", "answerIndex"])
-        let pair = object(["target": string, "gloss": string], required: ["target", "gloss"])
 
         return object([
-            "score": ["type": "integer", "description": "0 to 100."],
+            "score": ["type": "integer", "description": "0 to 100: how well it would work said to a native speaker. Understood first, then natural, then form."],
             "readOfScore": ["type": "string", "description": "One clause on what it means. Not a breakdown."],
             "findings": array(object([
                 "kind": kinds,
@@ -181,30 +172,9 @@ enum Schemas {
                 "correct": string,
                 "incorrect": string
             ], required: ["instruction", "accept", "correct", "incorrect"])),
-            "lessons": ["type": "array",
-                        "description": "One per problem finding (breaks or weakens), none for kept.",
-                        "items": object([
-                "finding": ["type": "integer", "description": "Index of the finding in `findings`, from 0."],
-                "title": string,
-                "rule": ["type": "string", "description": "The explanation. A short paragraph, not an essay."],
-                "contrastTerm": ["type": ["string", "null"], "description": "The confusable neighbour, or null."],
-                "contrastNote": nullableString,
-                "contrastSubject": ["type": ["string", "null"], "description": "What a lesson about the neighbour would be about."],
-                "examples": array(pair),
-                "drills": array(object([
-                    "rungs": ["type": "array", "items": rung,
-                              "description": "At least two, hardest first. Each later rung removes something the learner has to build."],
-                    "correct": string,
-                    "incorrect": string
-                ], required: ["rungs", "correct", "incorrect"])),
-                "patterns": ["type": "array",
-                             "description": "Shown instead of the rule on a third visit. Pattern only, no explanation.",
-                             "items": pair]
-            ], required: ["finding", "title", "rule", "contrastTerm", "contrastNote",
-                          "contrastSubject", "examples", "drills", "patterns"])],
             "used": ["type": "array", "items": string,
                      "description": "Ids of the grammar points the learner's own sentences used, correctly or not. Only ids from the list given. Empty is a normal answer."]
-        ], required: ["findings", "score", "readOfScore", "natural", "respeaks", "lessons", "used"])
+        ], required: ["findings", "score", "readOfScore", "natural", "respeaks", "used"])
     }
 
     // MARK: The day's prompts

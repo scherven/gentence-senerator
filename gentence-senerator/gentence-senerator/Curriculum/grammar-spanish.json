@@ -1,0 +1,1915 @@
+[
+  {
+    "id": "ser-identity",
+    "name": "ser for who and what",
+    "level": 1,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying who somebody is, where they are from, or what they do.",
+    "examples": [
+      "Soy de Monterrey",
+      "Ella es maestra"
+    ]
+  },
+  {
+    "id": "estar-location",
+    "name": "estar for where",
+    "level": 1,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying where somebody or something is right now.",
+    "examples": [
+      "El baño está al fondo",
+      "¿Dónde estás?"
+    ]
+  },
+  {
+    "id": "estar-states",
+    "name": "estar for how",
+    "level": 1,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How somebody feels or how something is at the moment.",
+    "examples": [
+      "Estoy cansado",
+      "La sopa está fría"
+    ]
+  },
+  {
+    "id": "hay-existence",
+    "name": "hay against estar",
+    "level": 1,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying something exists somewhere, against locating a known thing.",
+    "examples": [
+      "Hay una farmacia en la esquina",
+      "La farmacia está en la esquina"
+    ]
+  },
+  {
+    "id": "noun-gender",
+    "name": "Noun gender",
+    "level": 1,
+    "kind": "gender",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun taking an article or adjective, so the gender is visible.",
+    "examples": [
+      "una casa grande",
+      "el carro nuevo"
+    ]
+  },
+  {
+    "id": "article-adjective-agreement",
+    "name": "Articles and adjectives agree",
+    "level": 1,
+    "kind": "agreement-heard",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plural or feminine noun with an article and an adjective.",
+    "examples": [
+      "las casas blancas",
+      "unos amigos simpáticos"
+    ]
+  },
+  {
+    "id": "verb-endings",
+    "name": "Verb endings",
+    "level": 1,
+    "kind": "agreement-heard",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A subject other than yo, where the ending changes.",
+    "examples": [
+      "Nosotros vivimos aquí",
+      "Ellos comen tarde"
+    ]
+  },
+  {
+    "id": "stem-changing-verbs",
+    "name": "Stem-changing verbs",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A present-tense verb whose stem changes: querer, poder, pedir.",
+    "examples": [
+      "Quiero un café",
+      "¿Puedes venir?",
+      "Pido la cuenta"
+    ]
+  },
+  {
+    "id": "subject-pronoun-drop",
+    "name": "Dropping the subject pronoun",
+    "level": 1,
+    "kind": "extra-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A subject already clear from the verb, with nothing contrasted.",
+    "examples": [
+      "Vivo en Puebla",
+      "¿Tienes hambre?"
+    ]
+  },
+  {
+    "id": "negation-no",
+    "name": "no before the verb",
+    "level": 1,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plain denial.",
+    "examples": [
+      "No hablo inglés",
+      "No lo sé"
+    ]
+  },
+  {
+    "id": "question-words",
+    "name": "Question words first",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A question with qué, dónde, cuándo or cómo, the subject after the verb.",
+    "examples": [
+      "¿Dónde vive tu hermana?",
+      "¿Qué quieres?"
+    ]
+  },
+  {
+    "id": "ir-a-infinitive",
+    "name": "ir a plus infinitive",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A plan or something about to happen.",
+    "examples": [
+      "Voy a comer",
+      "Vamos a ver"
+    ]
+  },
+  {
+    "id": "estar-gerund",
+    "name": "estar plus gerund",
+    "level": 1,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An action under way right now.",
+    "examples": [
+      "Estoy comiendo",
+      "¿Qué estás haciendo?"
+    ]
+  },
+  {
+    "id": "gustar",
+    "name": "gustar",
+    "level": 1,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Liking something, where the thing liked is the subject.",
+    "examples": [
+      "Me gusta el café",
+      "Me gustan los tacos",
+      "¿Te gusta bailar?"
+    ]
+  },
+  {
+    "id": "reflexive-routine",
+    "name": "Reflexive verbs",
+    "level": 1,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A daily routine, where English needs no pronoun.",
+    "examples": [
+      "Me levanto a las siete",
+      "Se baña en la noche"
+    ]
+  },
+  {
+    "id": "tener-expressions",
+    "name": "States with tener",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being hungry, cold, afraid, right, or a certain age.",
+    "examples": [
+      "Tengo hambre",
+      "Tengo veinte años",
+      "Tienes razón"
+    ]
+  },
+  {
+    "id": "tener-que",
+    "name": "tener que",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something somebody has to do.",
+    "examples": [
+      "Tengo que trabajar",
+      "¿Tienes que irte?"
+    ]
+  },
+  {
+    "id": "hace-weather",
+    "name": "Weather with hacer",
+    "level": 1,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Talking about the weather.",
+    "examples": [
+      "Hace calor",
+      "Hace mucho frío",
+      "Está lloviendo"
+    ]
+  },
+  {
+    "id": "tu-usted",
+    "name": "tú against usted",
+    "level": 1,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Addressing a stranger, an older person, or a friend.",
+    "examples": [
+      "¿Usted es de aquí?",
+      "¿Tú cómo te llamas?"
+    ]
+  },
+  {
+    "id": "ustedes-plural",
+    "name": "ustedes for all plural you",
+    "level": 1,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Addressing two or more people, friends included.",
+    "examples": [
+      "¿Ustedes ya comieron?",
+      "Los espero aquí"
+    ]
+  },
+  {
+    "id": "politeness-formulas",
+    "name": "Fixed politeness",
+    "level": 1,
+    "kind": "register",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Asking a stranger for something in a shop or on the street.",
+    "examples": [
+      "¿Me da un café, por favor?",
+      "Disculpe, ¿dónde está el metro?"
+    ]
+  },
+  {
+    "id": "me-gustaria",
+    "name": "me gustaría, quisiera",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Ordering or requesting, in the fixed polite forms only.",
+    "examples": [
+      "Me gustaría un café",
+      "Quisiera reservar una mesa"
+    ]
+  },
+  {
+    "id": "ojala-formulaic",
+    "name": "ojalá",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "Hoping for something, as a fixed reply.",
+    "examples": [
+      "¡Ojalá!",
+      "Ojalá que sí"
+    ]
+  },
+  {
+    "id": "imperative",
+    "name": "The imperative",
+    "level": 1,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling somebody to do something, tú or usted.",
+    "examples": [
+      "Ven aquí",
+      "Pase, por favor",
+      "Cierra la puerta"
+    ]
+  },
+  {
+    "id": "possessives",
+    "name": "mi, tu, su, nuestro",
+    "level": 1,
+    "kind": "agreement-heard",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whose something is, the possessive agreeing with the thing owned.",
+    "examples": [
+      "mis papás",
+      "nuestra casa",
+      "su carro"
+    ]
+  },
+  {
+    "id": "definite-article-generic",
+    "name": "The article on a generic noun",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Liking or describing something in general, where English uses no article.",
+    "examples": [
+      "Me gusta el café",
+      "Los perros son leales"
+    ]
+  },
+  {
+    "id": "adjective-position",
+    "name": "Adjective after the noun",
+    "level": 1,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A description whose adjective English puts in front.",
+    "examples": [
+      "un carro rojo",
+      "una película interesante"
+    ]
+  },
+  {
+    "id": "contractions-al-del",
+    "name": "al and del",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going to or coming from a place that takes el.",
+    "examples": [
+      "Voy al mercado",
+      "Vengo del trabajo"
+    ]
+  },
+  {
+    "id": "a-en-place",
+    "name": "a against en",
+    "level": 1,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Going somewhere against being there.",
+    "examples": [
+      "Voy a la escuela",
+      "Estoy en la escuela"
+    ]
+  },
+  {
+    "id": "muy-mucho",
+    "name": "muy against mucho",
+    "level": 1,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Intensifying an adjective, against a noun or a verb.",
+    "examples": [
+      "Es muy caro",
+      "Hace mucho calor",
+      "Trabaja mucho"
+    ]
+  },
+  {
+    "id": "trilled-rr",
+    "name": "Tap r against trilled rr",
+    "level": 1,
+    "kind": "pronunciation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "A word with rr or initial r, next to one with a single r.",
+    "examples": [
+      "pero / perro",
+      "caro / carro",
+      "Roberto"
+    ]
+  },
+  {
+    "id": "preterite",
+    "name": "The preterite",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A finished event at a stated time.",
+    "examples": [
+      "Ayer comí tacos",
+      "¿Viste el partido?"
+    ]
+  },
+  {
+    "id": "preterite-irregular",
+    "name": "Irregular preterites",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A finished event with ir, ser, tener, hacer, estar or poder.",
+    "examples": [
+      "Fui al cine",
+      "Tuve que salir",
+      "¿Qué hiciste?"
+    ]
+  },
+  {
+    "id": "imperfect-description",
+    "name": "The imperfect",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How things used to be, or what was going on at the time.",
+    "examples": [
+      "De niño vivía en Guadalajara",
+      "Hacía mucho frío"
+    ]
+  },
+  {
+    "id": "present-perfect-experience",
+    "name": "The present perfect",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Experience up to now, ever or never.",
+    "examples": [
+      "¿Has ido a Oaxaca?",
+      "Nunca he visto el mar"
+    ]
+  },
+  {
+    "id": "future-simple",
+    "name": "The simple future",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A prediction or a promise further off than tonight.",
+    "examples": [
+      "Mañana lloverá",
+      "Te lo devolveré el lunes"
+    ]
+  },
+  {
+    "id": "acabar-de",
+    "name": "acabar de",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something finished moments ago.",
+    "examples": [
+      "Acabo de llegar",
+      "Acaba de salir"
+    ]
+  },
+  {
+    "id": "hace-duration",
+    "name": "desde hace, hace … que",
+    "level": 2,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long something has been going on and still is.",
+    "examples": [
+      "Vivo aquí desde hace tres años",
+      "Hace una hora que te espero"
+    ]
+  },
+  {
+    "id": "ya-todavia",
+    "name": "ya, todavía, ya no",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something already done, not done yet, or no longer the case.",
+    "examples": [
+      "Ya comí",
+      "Todavía no llega",
+      "Ya no vivo ahí"
+    ]
+  },
+  {
+    "id": "direct-object-pronouns",
+    "name": "lo, la, los, las",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Replacing a stated object — English speakers repeat the noun instead.",
+    "examples": [
+      "Lo veo mañana",
+      "La compré ayer"
+    ]
+  },
+  {
+    "id": "indirect-object-pronouns",
+    "name": "le, les",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Giving, telling or showing something to somebody.",
+    "examples": [
+      "Le di el libro",
+      "Les escribo luego"
+    ]
+  },
+  {
+    "id": "indirect-doubling",
+    "name": "le with a named person",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An indirect object named outright, which still takes le.",
+    "examples": [
+      "Le hablé a mi mamá",
+      "Les mandé un mensaje a mis amigos"
+    ]
+  },
+  {
+    "id": "pronouns-with-infinitive",
+    "name": "Pronouns with an infinitive or gerund",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An object pronoun with ir a, querer or estar plus gerund.",
+    "examples": [
+      "Voy a comprarlo",
+      "Lo voy a comprar",
+      "Estoy leyéndolo"
+    ]
+  },
+  {
+    "id": "imperative-pronouns",
+    "name": "Pronouns with the imperative",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling somebody to do it, then telling them not to.",
+    "examples": [
+      "Siéntate",
+      "No te sientes",
+      "Dímelo"
+    ]
+  },
+  {
+    "id": "gustar-type-verbs",
+    "name": "encantar, doler, importar",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An ache, a pleasure or a concern, built like gustar.",
+    "examples": [
+      "Me duele la cabeza",
+      "Nos encanta la playa",
+      "¿Te importa si abro?"
+    ]
+  },
+  {
+    "id": "reciprocal-se",
+    "name": "se for each other",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Two people doing something to one another.",
+    "examples": [
+      "Se conocieron en la prepa",
+      "Nos vemos mañana"
+    ]
+  },
+  {
+    "id": "relative-que-donde",
+    "name": "que and donde",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Joining two statements about the same person, thing or place.",
+    "examples": [
+      "la chica que conocí",
+      "la ciudad donde nací"
+    ]
+  },
+  {
+    "id": "prepositional-pronouns",
+    "name": "mí, ti, conmigo, contigo",
+    "level": 2,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A pronoun after a preposition.",
+    "examples": [
+      "Esto es para ti",
+      "¿Vienes conmigo?"
+    ]
+  },
+  {
+    "id": "personal-a",
+    "name": "Personal a",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A specific person as direct object.",
+    "examples": [
+      "Visité a mi abuela",
+      "¿Conoces a Ana?"
+    ]
+  },
+  {
+    "id": "por-para",
+    "name": "por against para",
+    "level": 2,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A purpose or a recipient, against a cause or a route.",
+    "examples": [
+      "Es para ti",
+      "Gracias por todo",
+      "Pasamos por el centro"
+    ]
+  },
+  {
+    "id": "comparatives",
+    "name": "más, menos, tan … que",
+    "level": 2,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Setting two things side by side, or naming the best of a group.",
+    "examples": [
+      "Es más alto que yo",
+      "tan caro como el otro",
+      "el mejor restaurante de la ciudad"
+    ]
+  },
+  {
+    "id": "saber-conocer",
+    "name": "saber against conocer",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Knowing a fact or a skill against knowing a person or a place.",
+    "examples": [
+      "Sé nadar",
+      "Conozco Oaxaca",
+      "¿Sabes dónde vive?"
+    ]
+  },
+  {
+    "id": "ir-venir",
+    "name": "ir against venir",
+    "level": 2,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Moving toward the listener, where English says coming.",
+    "examples": [
+      "¡Ya voy!",
+      "¿Vienes a mi casa?"
+    ]
+  },
+  {
+    "id": "hay-que",
+    "name": "hay que",
+    "level": 2,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A general obligation with nobody in particular responsible.",
+    "examples": [
+      "Hay que pagar en caja",
+      "Hay que reservar antes"
+    ]
+  },
+  {
+    "id": "imperative-negative",
+    "name": "The negative imperative",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Telling somebody not to do something.",
+    "examples": [
+      "No vengas",
+      "No se preocupe",
+      "No toques eso"
+    ]
+  },
+  {
+    "id": "si-present",
+    "name": "si with the present",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A real condition and what will follow from it.",
+    "examples": [
+      "Si llueve, nos quedamos",
+      "Si tienes tiempo, llámame"
+    ]
+  },
+  {
+    "id": "que-wishes-formulaic",
+    "name": "que te vaya bien",
+    "level": 2,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": true,
+    "instruction": "A goodbye or a good wish, in fixed form.",
+    "examples": [
+      "¡Que te vaya bien!",
+      "Que descanses",
+      "Que te mejores"
+    ]
+  },
+  {
+    "id": "negation-double",
+    "name": "no … nada, nadie, nunca",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Nothing, nobody or never after the verb, with no before it.",
+    "examples": [
+      "No vino nadie",
+      "No quiero nada",
+      "No voy nunca"
+    ]
+  },
+  {
+    "id": "alguno-ninguno",
+    "name": "algún against ningún",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Asking whether there is any, or saying there is none.",
+    "examples": [
+      "¿Tienes alguna pregunta?",
+      "No hay ningún problema"
+    ]
+  },
+  {
+    "id": "tambien-tampoco",
+    "name": "también against tampoco",
+    "level": 2,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Agreeing with a negative statement.",
+    "examples": [
+      "Yo tampoco",
+      "A mí tampoco me gusta"
+    ]
+  },
+  {
+    "id": "gender-exceptions",
+    "name": "Gender against the ending",
+    "level": 2,
+    "kind": "gender",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A noun whose gender its ending hides.",
+    "examples": [
+      "el problema",
+      "la mano",
+      "el día"
+    ]
+  },
+  {
+    "id": "preterite-imperfect",
+    "name": "Preterite against imperfect",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A narrative with both a background and an event.",
+    "examples": [
+      "Estaba en la regadera cuando sonó el teléfono",
+      "Llovía, así que no salimos"
+    ]
+  },
+  {
+    "id": "pluperfect",
+    "name": "The pluperfect",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something already over before another past event.",
+    "examples": [
+      "Ya se había ido cuando llegué",
+      "Nunca había comido mole"
+    ]
+  },
+  {
+    "id": "future-conjecture",
+    "name": "The future for guessing",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Guessing about the present.",
+    "examples": [
+      "¿Qué hora será?",
+      "Estará en el tráfico"
+    ]
+  },
+  {
+    "id": "llevar-gerund",
+    "name": "llevar plus gerund",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How long somebody has been doing something.",
+    "examples": [
+      "Llevo dos años estudiando",
+      "¿Cuánto tiempo llevas esperando?"
+    ]
+  },
+  {
+    "id": "aspect-periphrases",
+    "name": "seguir, dejar de, volver a",
+    "level": 3,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Continuing, stopping or doing something again.",
+    "examples": [
+      "Sigue lloviendo",
+      "Dejé de fumar",
+      "Volví a llamar"
+    ]
+  },
+  {
+    "id": "subjunctive-wishes",
+    "name": "Subjunctive after wanting",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Wanting, asking or hoping that somebody else does something.",
+    "examples": [
+      "Quiero que vengas",
+      "Espero que te guste"
+    ]
+  },
+  {
+    "id": "subjunctive-emotion",
+    "name": "Subjunctive after feeling",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Being glad, sorry or afraid about what somebody else does.",
+    "examples": [
+      "Me da gusto que estés bien",
+      "Me preocupa que no conteste"
+    ]
+  },
+  {
+    "id": "subjunctive-cuando",
+    "name": "cuando about the future",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something to do once another future thing happens.",
+    "examples": [
+      "Cuando llegues, me avisas",
+      "Cuando tenga tiempo, te llamo"
+    ]
+  },
+  {
+    "id": "para-que",
+    "name": "para que",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Doing something so that somebody else can do something.",
+    "examples": [
+      "Te lo digo para que sepas",
+      "Habla más fuerte para que te oigan"
+    ]
+  },
+  {
+    "id": "ojala-subjunctive",
+    "name": "ojalá plus subjunctive",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Hoping something happens.",
+    "examples": [
+      "Ojalá que no llueva",
+      "Ojalá puedas venir"
+    ]
+  },
+  {
+    "id": "impersonal-subjunctive",
+    "name": "es importante que",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Judging what somebody else should do.",
+    "examples": [
+      "Es importante que descanses",
+      "Es mejor que vayas tú"
+    ]
+  },
+  {
+    "id": "creer-que-mood",
+    "name": "creo que against no creo que",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Believing something, against doubting it.",
+    "examples": [
+      "Creo que viene",
+      "No creo que venga"
+    ]
+  },
+  {
+    "id": "conditional-politeness",
+    "name": "The conditional to soften",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A request or advice pitched short of an order.",
+    "examples": [
+      "¿Podrías ayudarme?",
+      "Deberías descansar"
+    ]
+  },
+  {
+    "id": "si-hypothetical",
+    "name": "si with the imperfect subjunctive",
+    "level": 3,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An unreal present condition and what would follow.",
+    "examples": [
+      "Si tuviera dinero, viajaría",
+      "Si yo fuera tú, no iría"
+    ]
+  },
+  {
+    "id": "ser-estar-meaning",
+    "name": "Adjectives that change with ser and estar",
+    "level": 3,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An adjective whose meaning shifts between ser and estar.",
+    "examples": [
+      "Es listo / Está listo",
+      "Es aburrido / Está aburrido"
+    ]
+  },
+  {
+    "id": "ser-event",
+    "name": "ser for where an event is",
+    "level": 3,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying where a party, a meeting or a concert takes place.",
+    "examples": [
+      "La fiesta es en casa de Ana",
+      "¿Dónde es la junta?"
+    ]
+  },
+  {
+    "id": "estar-resultative",
+    "name": "estar plus participle",
+    "level": 3,
+    "kind": "copula",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The state something is left in.",
+    "examples": [
+      "La tienda está cerrada",
+      "Ya está hecho"
+    ]
+  },
+  {
+    "id": "se-lo",
+    "name": "se lo",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Both objects as pronouns, one of them le.",
+    "examples": [
+      "Se lo di a mi hermano",
+      "¿Me lo prestas?"
+    ]
+  },
+  {
+    "id": "impersonal-se",
+    "name": "Impersonal se",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "What people in general do, with nobody named.",
+    "examples": [
+      "Aquí se come bien",
+      "¿Cómo se dice?"
+    ]
+  },
+  {
+    "id": "accidental-se",
+    "name": "se me olvidó",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An accident, told as something that happened to you.",
+    "examples": [
+      "Se me olvidó",
+      "Se me cayó el vaso",
+      "Se le descompuso el carro"
+    ]
+  },
+  {
+    "id": "relative-lo-que",
+    "name": "lo que",
+    "level": 3,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The thing that, left unnamed.",
+    "examples": [
+      "Lo que quiero es dormir",
+      "No entiendo lo que dices"
+    ]
+  },
+  {
+    "id": "por-para-advanced",
+    "name": "por and para beyond the basics",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A price, a duration, a deadline or an opinion.",
+    "examples": [
+      "Lo compré por cien pesos",
+      "Es para el lunes",
+      "Para mí, está bien"
+    ]
+  },
+  {
+    "id": "verb-prepositions",
+    "name": "Verbs with a fixed preposition",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A verb whose preposition English does not have.",
+    "examples": [
+      "Pienso en ti",
+      "Sueño con viajar",
+      "Se casó con Luis"
+    ]
+  },
+  {
+    "id": "antes-despues-infinitive",
+    "name": "antes de, después de plus infinitive",
+    "level": 3,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "One thing before or after another, the same person doing both.",
+    "examples": [
+      "Antes de salir, cierra la puerta",
+      "Después de comer, dormimos"
+    ]
+  },
+  {
+    "id": "que-obligatory",
+    "name": "que cannot be dropped",
+    "level": 3,
+    "kind": "missing-piece",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting what somebody said or thinks, where English can leave out 'that'.",
+    "examples": [
+      "Creo que tiene razón",
+      "Dice que viene mañana"
+    ]
+  },
+  {
+    "id": "indirect-questions",
+    "name": "si and question words in reported questions",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting a question instead of asking it.",
+    "examples": [
+      "No sé si viene",
+      "Pregúntale dónde vive"
+    ]
+  },
+  {
+    "id": "infinitive-as-noun",
+    "name": "The infinitive as a noun",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "An activity as subject or object, where English uses -ing.",
+    "examples": [
+      "Fumar está prohibido",
+      "Me encanta nadar"
+    ]
+  },
+  {
+    "id": "pero-sino",
+    "name": "pero against sino",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Correcting a negative statement.",
+    "examples": [
+      "No es rojo, sino azul",
+      "No vino, pero llamó"
+    ]
+  },
+  {
+    "id": "connectors-cause",
+    "name": "porque, como, ya que",
+    "level": 3,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A reason the listener already knows, against one they do not.",
+    "examples": [
+      "Como llovía, nos quedamos",
+      "Ya que estás aquí, ayúdame"
+    ]
+  },
+  {
+    "id": "ni-ni",
+    "name": "ni … ni",
+    "level": 3,
+    "kind": "negation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Neither one thing nor the other.",
+    "examples": [
+      "No tengo ni tiempo ni dinero",
+      "Ni él ni yo sabemos"
+    ]
+  },
+  {
+    "id": "diminutives",
+    "name": "Diminutives",
+    "level": 3,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Softening a request or an offer in conversation.",
+    "examples": [
+      "Ahorita vengo",
+      "¿Un cafecito?",
+      "Espérame tantito"
+    ]
+  },
+  {
+    "id": "preterite-meaning-change",
+    "name": "Verbs that shift in the preterite",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "conocer, saber, querer or poder as an event rather than a state.",
+    "examples": [
+      "Conocí a Ana en 2019",
+      "No quise ir",
+      "Por fin pude dormir"
+    ]
+  },
+  {
+    "id": "reported-speech-past",
+    "name": "Reported speech in the past",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Reporting what somebody said, from a past vantage point.",
+    "examples": [
+      "Dijo que vendría",
+      "Me preguntó si había terminado"
+    ]
+  },
+  {
+    "id": "future-perfect",
+    "name": "The future perfect",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something finished by a point still to come, or a guess about the past.",
+    "examples": [
+      "Para junio ya habré terminado",
+      "Ya se habrá ido"
+    ]
+  },
+  {
+    "id": "passive-ser",
+    "name": "Passive with ser",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A news report where the agent is secondary.",
+    "examples": [
+      "El puente fue inaugurado en 1990",
+      "Los detenidos fueron liberados"
+    ]
+  },
+  {
+    "id": "al-infinitive",
+    "name": "al plus infinitive",
+    "level": 4,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The moment one thing happens, triggering another.",
+    "examples": [
+      "Al llegar, vi el problema",
+      "Al salir, apaga la luz"
+    ]
+  },
+  {
+    "id": "subjunctive-sequence",
+    "name": "Imperfect subjunctive after a past verb",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Wanting or asking in the past that somebody else do something.",
+    "examples": [
+      "Quería que vinieras",
+      "Me pidió que lo ayudara"
+    ]
+  },
+  {
+    "id": "subjunctive-perfect",
+    "name": "The present perfect subjunctive",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Hoping, doubting or being glad about something already done.",
+    "examples": [
+      "Espero que hayas descansado",
+      "No creo que lo haya hecho"
+    ]
+  },
+  {
+    "id": "aunque-mood",
+    "name": "aunque with either mood",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Conceding a known fact, against a possibility.",
+    "examples": [
+      "Aunque llueve, salgo",
+      "Aunque llueva, salgo"
+    ]
+  },
+  {
+    "id": "subjunctive-relative-unknown",
+    "name": "Subjunctive in a relative clause",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Looking for something that may not exist.",
+    "examples": [
+      "Busco a alguien que hable inglés",
+      "No hay nadie que sepa"
+    ]
+  },
+  {
+    "id": "subjunctive-conjunctions",
+    "name": "antes de que, sin que, hasta que",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A conjunction leaving the second clause unrealised.",
+    "examples": [
+      "Vete antes de que llueva",
+      "Espera hasta que llegue",
+      "Salió sin que lo vieran"
+    ]
+  },
+  {
+    "id": "si-pluperfect",
+    "name": "si with the pluperfect subjunctive",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Regretting how something turned out.",
+    "examples": [
+      "Si hubiera sabido, no habría venido",
+      "Si me hubieras avisado, te habría esperado"
+    ]
+  },
+  {
+    "id": "como-si",
+    "name": "como si",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Comparing with something untrue.",
+    "examples": [
+      "Habla como si fuera el jefe",
+      "Me trata como si fuera un niño"
+    ]
+  },
+  {
+    "id": "tal-vez-a-lo-mejor",
+    "name": "tal vez against a lo mejor",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Saying maybe, with tal vez or quizás taking the subjunctive and a lo mejor not.",
+    "examples": [
+      "Tal vez llegue tarde",
+      "A lo mejor llueve"
+    ]
+  },
+  {
+    "id": "siempre-y-cuando",
+    "name": "siempre y cuando, con tal de que",
+    "level": 4,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition that must hold for something to go ahead.",
+    "examples": [
+      "Voy, siempre y cuando me invites",
+      "Con tal de que llegues, no importa la hora"
+    ]
+  },
+  {
+    "id": "relative-preposition",
+    "name": "el que, la que after a preposition",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A relative clause whose verb needs a preposition.",
+    "examples": [
+      "la persona con la que hablé",
+      "la empresa en la que trabajo"
+    ]
+  },
+  {
+    "id": "lo-la-usted",
+    "name": "lo and la for usted",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A direct object meaning you, said to somebody addressed as usted.",
+    "examples": [
+      "¿Lo ayudo?",
+      "La espero afuera, señora"
+    ]
+  },
+  {
+    "id": "topic-doubling",
+    "name": "Fronted object with a pronoun",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Fronting the object to set the topic, which then needs lo or la.",
+    "examples": [
+      "Ese libro ya lo leí",
+      "A Juan no lo conozco"
+    ]
+  },
+  {
+    "id": "relative-lo-cual",
+    "name": "lo cual, lo que for a whole clause",
+    "level": 4,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Commenting on everything just said.",
+    "examples": [
+      "Llegó tarde, lo cual molestó a todos",
+      "No llamó, lo que me extrañó"
+    ]
+  },
+  {
+    "id": "pasiva-refleja",
+    "name": "se with a plural thing",
+    "level": 4,
+    "kind": "agreement-heard",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Something done to plural things, with nobody named.",
+    "examples": [
+      "Se rentan departamentos",
+      "Se venden tamales"
+    ]
+  },
+  {
+    "id": "de-que",
+    "name": "de que after a noun or adjective",
+    "level": 4,
+    "kind": "preposition",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A clause after a phrase that takes de.",
+    "examples": [
+      "Me di cuenta de que era tarde",
+      "Estoy seguro de que viene"
+    ]
+  },
+  {
+    "id": "ponerse-volverse",
+    "name": "ponerse, volverse, hacerse",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Somebody becoming something, temporarily or for good.",
+    "examples": [
+      "Se puso rojo",
+      "Se volvió loco",
+      "Se hizo rico"
+    ]
+  },
+  {
+    "id": "connectors-opposition",
+    "name": "sin embargo, en cambio",
+    "level": 4,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Setting one fact against another inside an argument.",
+    "examples": [
+      "Es caro; sin embargo, vale la pena",
+      "Él trabaja; ella, en cambio, estudia"
+    ]
+  },
+  {
+    "id": "entre-mas",
+    "name": "entre más … más",
+    "level": 4,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "The more one thing happens, the more another does.",
+    "examples": [
+      "Entre más lo pienso, menos lo entiendo",
+      "Cuanto más practicas, mejor"
+    ]
+  },
+  {
+    "id": "hacer-falta-valer-pena",
+    "name": "hacer falta, valer la pena",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Needing something, or judging whether it is worth it.",
+    "examples": [
+      "Me hace falta dinero",
+      "No vale la pena"
+    ]
+  },
+  {
+    "id": "mandar-hacer",
+    "name": "mandar a hacer",
+    "level": 4,
+    "kind": "collocation",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Having somebody else do something for you.",
+    "examples": [
+      "Mandé a arreglar el carro",
+      "Me corté el pelo en el centro"
+    ]
+  },
+  {
+    "id": "le-intensifier",
+    "name": "ándale, órale, pásale",
+    "level": 4,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Urging or welcoming somebody in casual Mexican speech.",
+    "examples": [
+      "¡Pásale!",
+      "Córrele, que se va el camión",
+      "¡Ándale!"
+    ]
+  },
+  {
+    "id": "no-es-que",
+    "name": "no es que",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Rejecting a reason before giving the real one.",
+    "examples": [
+      "No es que no quiera, es que no puedo"
+    ]
+  },
+  {
+    "id": "reduplicative-subjunctive",
+    "name": "pase lo que pase",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Whatever happens, nothing changes the outcome.",
+    "examples": [
+      "Pase lo que pase, te apoyo",
+      "Sea como sea, hay que terminar",
+      "Digan lo que digan"
+    ]
+  },
+  {
+    "id": "el-hecho-de-que",
+    "name": "el hecho de que",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A known fact as the subject of a judgement.",
+    "examples": [
+      "El hecho de que no llame me preocupa"
+    ]
+  },
+  {
+    "id": "por-mucho-que",
+    "name": "por mucho que, por más que",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "However much somebody tries, nothing changes.",
+    "examples": [
+      "Por mucho que insistas, no voy",
+      "Por más que lo intento, no me sale"
+    ]
+  },
+  {
+    "id": "de-infinitive-condition",
+    "name": "de plus infinitive as a condition",
+    "level": 5,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A condition compressed into an infinitive.",
+    "examples": [
+      "De haberlo sabido, no habría venido",
+      "De seguir así, nos vamos a perder"
+    ]
+  },
+  {
+    "id": "conditional-journalistic",
+    "name": "The conditional for unverified claims",
+    "level": 5,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Reporting something the press has not confirmed.",
+    "examples": [
+      "El sospechoso habría huido a Guatemala",
+      "El costo superaría los mil millones"
+    ]
+  },
+  {
+    "id": "haber-de",
+    "name": "ha de for probability",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A confident guess, in Mexican speech.",
+    "examples": [
+      "Ha de ser difícil",
+      "Han de estar cansados"
+    ]
+  },
+  {
+    "id": "acabar-por",
+    "name": "acabar por, terminar plus gerund",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "How something ended up after resistance.",
+    "examples": [
+      "Acabó por aceptar",
+      "Terminamos cenando en su casa"
+    ]
+  },
+  {
+    "id": "compound-gerund",
+    "name": "habiendo plus participle",
+    "level": 5,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written clause saying what had already been done.",
+    "examples": [
+      "Habiendo terminado el informe, se fue",
+      "Habiendo dicho esto, se retiró"
+    ]
+  },
+  {
+    "id": "cuyo",
+    "name": "cuyo",
+    "level": 5,
+    "kind": "pronoun-placement",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A written relative naming what belongs to somebody.",
+    "examples": [
+      "el autor cuya novela leímos",
+      "una empresa cuyos dueños viven fuera"
+    ]
+  },
+  {
+    "id": "quien-generic",
+    "name": "quien for whoever",
+    "level": 5,
+    "kind": "pronoun-placement",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Anyone at all who does something.",
+    "examples": [
+      "Quien quiera venir, que venga",
+      "Quien mucho abarca, poco aprieta"
+    ]
+  },
+  {
+    "id": "cleft",
+    "name": "fue ahí donde, es él quien",
+    "level": 5,
+    "kind": "word-order",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Insisting it was this one and not another.",
+    "examples": [
+      "Fue ahí donde la conocí",
+      "Es él quien tiene que decidir"
+    ]
+  },
+  {
+    "id": "lo-adjective-que",
+    "name": "lo plus adjective plus que",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Exclaiming how much of a quality something has.",
+    "examples": [
+      "No sabes lo cansado que estoy",
+      "Mira lo grande que está"
+    ]
+  },
+  {
+    "id": "connectors-argument",
+    "name": "no obstante, asimismo, por ende",
+    "level": 5,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Turning or extending a written argument.",
+    "examples": [
+      "No obstante, el problema persiste",
+      "Asimismo, se revisarán los contratos"
+    ]
+  },
+  {
+    "id": "nominalization",
+    "name": "Nominalisation",
+    "level": 5,
+    "kind": "register",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A headline or a report where the action becomes a noun.",
+    "examples": [
+      "El aumento de precios preocupa",
+      "La cancelación del vuelo fue confirmada"
+    ]
+  },
+  {
+    "id": "support-verbs",
+    "name": "llevar a cabo, dar a conocer",
+    "level": 5,
+    "kind": "collocation",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A formal report where the verb carries little of the meaning.",
+    "examples": [
+      "Se llevó a cabo una revisión",
+      "El gobierno dio a conocer las cifras"
+    ]
+  },
+  {
+    "id": "dizque",
+    "name": "dizque",
+    "level": 5,
+    "kind": "register",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Reporting a claim you doubt, in casual Mexican speech.",
+    "examples": [
+      "Dizque estaba enfermo",
+      "Es dizque experto"
+    ]
+  },
+  {
+    "id": "future-subjunctive",
+    "name": "The future subjunctive",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Legal text or a fixed saying.",
+    "examples": [
+      "Adonde fueres, haz lo que vieres",
+      "quien infringiere esta disposición"
+    ]
+  },
+  {
+    "id": "se-imperfect-subjunctive",
+    "name": "The -se imperfect subjunctive",
+    "level": 6,
+    "kind": "mood",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Formal prose using the -se forms.",
+    "examples": [
+      "Si tuviese más tiempo, lo haría",
+      "Le pidió que se marchase"
+    ]
+  },
+  {
+    "id": "ra-pluperfect",
+    "name": "-ra as a pluperfect",
+    "level": 6,
+    "kind": "tense-aspect",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "Journalistic or literary prose looking back to an earlier past.",
+    "examples": [
+      "la novela que escribiera en 1990",
+      "el edificio que fuera su casa"
+    ]
+  },
+  {
+    "id": "mixed-conditional",
+    "name": "Mixed conditionals",
+    "level": 6,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "A past condition with a present result.",
+    "examples": [
+      "Si hubiera estudiado, ahora sería médico",
+      "Si no fuera tan terco, ya lo habría arreglado"
+    ]
+  },
+  {
+    "id": "sentir-decir-dual",
+    "name": "Verbs that switch meaning with mood",
+    "level": 6,
+    "kind": "mood",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "decir or sentir, reporting with the indicative and ordering or regretting with the subjunctive.",
+    "examples": [
+      "Le dije que venía / Le dije que viniera",
+      "Siento que alguien me sigue / Siento que estés mal"
+    ]
+  },
+  {
+    "id": "ni-que",
+    "name": "ni que",
+    "level": 6,
+    "kind": "mood",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Rejecting a claim as absurd.",
+    "examples": [
+      "¡Ni que fuera tu mamá!",
+      "Ni que tuviera tanto dinero"
+    ]
+  },
+  {
+    "id": "con-lo-que",
+    "name": "con lo que",
+    "level": 6,
+    "kind": "collocation",
+    "use": "spoken",
+    "formulaic": false,
+    "instruction": "Complaining that something happened in spite of an obvious fact.",
+    "examples": [
+      "Con lo que gana, y se queja",
+      "Con lo caro que está, ni lo compres"
+    ]
+  },
+  {
+    "id": "fronting-inversion",
+    "name": "Fronting the predicate",
+    "level": 6,
+    "kind": "word-order",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "An essay opening on the judgement rather than the subject.",
+    "examples": [
+      "Muy distinta fue su reacción",
+      "Poco importa lo que digan"
+    ]
+  },
+  {
+    "id": "nominal-infinitive",
+    "name": "el plus infinitive",
+    "level": 6,
+    "kind": "word-choice",
+    "use": "written",
+    "formulaic": false,
+    "instruction": "A whole action, often compound, as the subject of a judgement.",
+    "examples": [
+      "El haber llegado tarde le costó el puesto",
+      "El no saber me angustia"
+    ]
+  },
+  {
+    "id": "litotes",
+    "name": "Understatement",
+    "level": 6,
+    "kind": "register",
+    "use": "both",
+    "formulaic": false,
+    "instruction": "Praising or condemning by denying the opposite.",
+    "examples": [
+      "No está nada mal",
+      "No es poca cosa"
+    ]
+  }
+]

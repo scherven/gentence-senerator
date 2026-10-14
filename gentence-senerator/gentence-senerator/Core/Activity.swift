@@ -72,7 +72,7 @@ struct ScoreLog: Codable, Hashable {
 
     @discardableResult
     mutating func add(_ turn: Turn) -> Bool {
-        guard turn.mode != .listen, let score = turn.review?.score else { return false }
+        guard turn.mode.isScored, let score = turn.review?.score else { return false }
         let entry = Entry(day: Spend.key(turn.createdAt), language: turn.language, score: score)
         guard turns[turn.id.uuidString] != entry else { return false }
         turns[turn.id.uuidString] = entry
@@ -122,15 +122,17 @@ struct HistoryDay: Identifiable, Hashable {
     var label: String { Self.label(day) }
 
     static func label(_ day: String) -> String {
-        let parse = DateFormatter()
-        parse.locale = Locale(identifier: "en_US_POSIX")
-        parse.dateFormat = "yyyy-MM-dd"
-        guard let date = parse.date(from: day) else { return day }
-        let out = DateFormatter()
-        out.locale = Locale(identifier: "en_US_POSIX")
-        out.dateFormat = "MMM d"
-        return out.string(from: date).uppercased()
+        guard let date = Spend.date(day) else { return day }
+        return labelFormat.string(from: date).uppercased()
     }
+
+    private static let labelFormat: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.calendar = Calendar(identifier: .gregorian)
+        f.dateFormat = "MMM d"
+        return f
+    }()
 
     /// `archive` holds every language; `quizzes` is the quiz log's plans,
     /// keyed "<language>|<plan id>". Days before `today` only: today's work is

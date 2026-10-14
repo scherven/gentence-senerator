@@ -10,9 +10,14 @@ final class Push: NSObject, UIApplicationDelegate, UNUserNotificationCenterDeleg
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        // Not over the invite screen: asked once the code is in.
+        if Worker.invite != nil { Self.ask() }
         application.registerForRemoteNotifications()
         return true
+    }
+
+    static func ask() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
     func application(_ application: UIApplication,

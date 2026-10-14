@@ -80,3 +80,10 @@ gentence-senerator/gentence-senerator/Dialogues/
 notes*.txt
 *.apkg
 secrets/key.swift
+
+# Keys moved out of the app; the worker holds them now.
+secrets/
+
+# Review eval: requests.json is regenerated from Swift; runs hold model output.
+!tools/eval/scenarios.json
+tools/eval/runs/

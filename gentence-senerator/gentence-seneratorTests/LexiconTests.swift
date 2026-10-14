@@ -11,7 +11,9 @@ struct LexiconTests {
     static let lexicon = Lexicon([
         .mandarin: ["好": 1, "吃": 1, "白": 1, "明白": 2, "喜欢": 1, "环境": 3],
         .german: ["haus": 1, "fahren": 1, "arbeiten": 2, "gehen": 1, "buch": 2],
-        .french: ["manger": 1, "maison": 1, "livre": 2, "être": 1, "aimer": 2]
+        .french: ["manger": 1, "maison": 1, "livre": 2, "être": 1, "aimer": 2],
+        .spanish: ["hablar": 1, "comer": 1, "casa": 1, "tener": 1, "ventana": 2],
+        .korean: ["가다": 1, "먹다": 1, "마시다": 1, "하다": 1, "학교": 1, "듣다": 1, "커피": 1]
     ])
 
     static func found(_ text: String, _ language: Language) -> Set<String> {
@@ -79,6 +81,39 @@ struct LexiconTests {
         #expect(!Self.found("Il est tard", .french).contains("être"))
     }
 
+    @Test func spanishMatchesAcrossRegularInflection() {
+        let said = Self.found("Hablaron mucho y comimos en casa", .spanish)
+        #expect(said.contains("hablar"))
+        #expect(said.contains("comer"))
+        #expect(said.contains("casa"))
+    }
+
+    /// Same limit as German: `tengo` is not a regular form of `tener`.
+    @Test func spanishMissesAStemChange() {
+        #expect(!Self.found("Tengo hambre", .spanish).contains("tener"))
+    }
+
+    // MARK: Korean — a stem prefix, in jamo
+
+    @Test func koreanMatchesAStemThroughItsEndings() {
+        let said = Self.found("어제 학교에 갔어요. 밥을 먹었어요.", .korean)
+        #expect(said.contains("가다"))     // 갔: the past marker merged into 가
+        #expect(said.contains("먹다"))
+        #expect(said.contains("학교"))     // particle 에 glued on
+    }
+
+    @Test func koreanMatchesAContractedStem() {
+        let said = Self.found("커피를 마셨어요. 숙제를 했어요.", .korean)
+        #expect(said.contains("마시다"))   // 시 + 었 → 셨
+        #expect(said.contains("하다"))     // 하 + 였 → 했
+        #expect(said.contains("커피"))
+    }
+
+    /// ㄷ-irregular: 듣 becomes 들 before a vowel, and nothing chases it.
+    @Test func koreanMissesAnIrregularStem() {
+        #expect(!Self.found("음악을 들었어요", .korean).contains("듣다"))
+    }
+
     // MARK: Bands
 
     @Test func aBandIsEverythingAtOrBelowTheLevel() {
@@ -114,5 +149,8 @@ struct LexiconTests {
                     .contains("buch"))
         #expect(shipped.words(in: "Je vais à la maison", language: .french)
                     .contains("maison"))
+        #expect(shipped.words(in: "Vivo en una casa grande", language: .spanish)
+                    .contains("casa"))
+        #expect(shipped.words(in: "학교에 갔어요", language: .korean).contains("학교"))
     }
 }

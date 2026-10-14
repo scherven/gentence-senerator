@@ -273,13 +273,7 @@ enum Textbook {
                         entries: entries, formats: []), sources)
     }
 
-    static func chapterPrefix(_ language: Language) -> String {
-        switch language {
-        case .mandarin: return "zh"
-        case .german:   return "de"
-        case .french:   return "fr"
-        }
-    }
+    static func chapterPrefix(_ language: Language) -> String { language.code }
 
     /// Where a Noted entry stands. No quiz reaches these, so it is read off
     /// the record: a scheduled finding is slipping until it holds.
@@ -337,14 +331,8 @@ enum Textbook {
 
     /// Session ids start `yyyy-MM-dd`.
     private static func date(of session: Session) -> Date {
-        day.date(from: String(session.id.prefix(10))) ?? .distantPast
+        Spend.date(String(session.id.prefix(10))) ?? .distantPast
     }
-
-    private static let day: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
 }
 
 /// The ask reply as the model writes it: the answer, and for each link the

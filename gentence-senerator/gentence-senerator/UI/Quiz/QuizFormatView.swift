@@ -19,6 +19,7 @@ struct QuizFormatView: View {
         case .toneTap:   ToneTapQuiz(c: context)
         case .sort:      SortQuiz(c: context)
         case .transform: TransformQuiz(c: context)
+        case .card:      CardQuiz(c: context)
         }
     }
 }
@@ -40,6 +41,13 @@ struct QuizFormatContext {
     var coversOptions = false
 
     var done: Bool { revealed != nil }
+
+    /// The same context about another item: rule, structure and gloss kept.
+    func with(item: QuizItem) -> QuizFormatContext {
+        QuizFormatContext(item: item, revealed: revealed, answer: answer, speak: speak,
+                          entryGloss: entryGloss, structure: structure, rule: rule,
+                          coversOptions: coversOptions)
+    }
 }
 
 /// The empty middle of a format: the rule appears there once answered, in
@@ -144,9 +152,9 @@ func quizGapText(_ prompt: String, _ fills: [QuizGapFill?]) -> Text {
         let f = i < fills.count ? fills[i] : nil
         if let f, let given = f.given {
             if f.right == false, let correct = f.correct {
-                out = out + Text(given).strikethrough().foregroundColor(Theme.C.bad)
+                out = out + Text(given).underline(color: Theme.C.bad).foregroundColor(Theme.C.bad)
                     + Text(" → ").foregroundColor(Theme.C.ink3)
-                    + Text(correct).foregroundColor(Theme.C.good).underline()
+                    + Text(correct).bold().foregroundColor(Theme.C.good)
             } else {
                 out = out + Text(given).underline()
                     .foregroundColor(f.right == true ? Theme.C.good : Theme.C.accent)
@@ -169,48 +177,6 @@ enum QuizBlank {
         }
         return Image(uiImage: ui.withRenderingMode(.alwaysTemplate))
     }()
-}
-
-/// Wraps children onto lines. Tokens, tiles.
-struct QuizFlow: Layout {
-    var spacing: CGFloat = 8
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let rows = arrange(width: proposal.width ?? .infinity, subviews)
-        return CGSize(width: proposal.width ?? rows.map(\.width).max() ?? 0,
-                      height: rows.map(\.height).reduce(0, +) + spacing * CGFloat(max(0, rows.count - 1)))
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var y = bounds.minY
-        for row in arrange(width: bounds.width, subviews) {
-            var x = bounds.minX
-            for i in row.indices {
-                let s = subviews[i].sizeThatFits(.unspecified)
-                subviews[i].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(s))
-                x += s.width + spacing
-            }
-            y += row.height + spacing
-        }
-    }
-
-    private struct Row { var indices: [Int] = []; var width: CGFloat = 0; var height: CGFloat = 0 }
-
-    private func arrange(width: CGFloat, _ subviews: Subviews) -> [Row] {
-        var rows: [Row] = [Row()]
-        for i in subviews.indices {
-            let s = subviews[i].sizeThatFits(.unspecified)
-            let extra = rows[rows.count - 1].indices.isEmpty ? s.width : s.width + spacing
-            if rows[rows.count - 1].width + extra > width, !rows[rows.count - 1].indices.isEmpty {
-                rows.append(Row())
-            }
-            let gap = rows[rows.count - 1].indices.isEmpty ? 0 : spacing
-            rows[rows.count - 1].indices.append(i)
-            rows[rows.count - 1].width += s.width + gap
-            rows[rows.count - 1].height = max(rows[rows.count - 1].height, s.height)
-        }
-        return rows.filter { !$0.indices.isEmpty }
-    }
 }
 
 /// Mono caption for a step: "1 ✓ AUXILIARY · 2 ENDING".

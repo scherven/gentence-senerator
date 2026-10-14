@@ -7,13 +7,14 @@ struct HistoryScreen: View {
 
     var body: some View {
         let days = store.history
+        let weakest = weakest
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
                     ActivityCalendar(store: store, targets: Set(days.map(\.day))) { day in
                         withAnimation { proxy.scrollTo(day, anchor: .top) }
                     }
-                    if !weakest.isEmpty { recurring }
+                    if !weakest.isEmpty { recurring(weakest) }
                     ForEach(days) { block($0) }
                 }
                 .padding(.horizontal, Theme.M.gap)
@@ -44,30 +45,26 @@ struct HistoryScreen: View {
             .map { $0 }
     }
 
-    private var recurring: some View {
+    private func recurring(_ weakest: [Progress.Encounter]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             ModuleLabel(text: "Recurring")
             LedgerSheet {
                 ForEach(Array(weakest.enumerated()), id: \.element.id) { i, encounter in
-                    Button { store.open(encounter) } label: {
-                        LedgerRow(account: encounter.kind.label, colour: Theme.C.accent,
-                                  ruled: i < weakest.count - 1) {
-                            Text(encounter.subject)
-                                .font(Theme.F.target(size: 15, for: encounter.language))
-                                .foregroundStyle(Theme.C.ink)
-                                .lineLimit(2)
-                        } trailing: {
-                            VStack(alignment: .trailing, spacing: 2) {
-                                Text(encounter.dueLabel)
-                                    .foregroundStyle(overdue(encounter) ? Theme.C.warn : Theme.C.ink2)
-                                Text(standing(encounter)).foregroundStyle(Theme.C.ink3)
-                            }
-                            .font(Theme.F.meta)
-                            .padding(.vertical, 12).padding(.trailing, 10)
+                    LedgerRow(account: encounter.kind.label, colour: Theme.C.accent,
+                              ruled: i < weakest.count - 1) {
+                        Text(encounter.subject)
+                            .font(Theme.F.target(size: 15, for: encounter.language))
+                            .foregroundStyle(Theme.C.ink)
+                            .lineLimit(2)
+                    } trailing: {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(encounter.dueLabel)
+                                .foregroundStyle(overdue(encounter) ? Theme.C.warn : Theme.C.ink2)
+                            Text(standing(encounter)).foregroundStyle(Theme.C.ink3)
                         }
-                        .contentShape(Rectangle())
+                        .font(Theme.F.meta)
+                        .padding(.vertical, 12).padding(.trailing, 10)
                     }
-                    .buttonStyle(PressDim())
                 }
             }
         }

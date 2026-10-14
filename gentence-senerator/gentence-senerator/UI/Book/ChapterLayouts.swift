@@ -144,7 +144,7 @@ struct FormulasLayout: View {
         var parts = [rows.levels[entry.id], entry.gloss?.uppercased()].compactMap { $0 }
         if state.slipping { parts.append("MISSED") }
         else if state.right > 0 { parts.append("×\(state.right)") }
-        else if state.standing == .never { parts.append("NEVER USED") }
+        else if state.standing == .never { parts.append("NEVER") }
         return parts.joined(separator: " · ")
     }
 }
@@ -295,53 +295,5 @@ struct SplitLayout: View {
         } else {
             Color.clear.frame(maxWidth: .infinity)
         }
-    }
-}
-
-/// Left-to-right, wrapping.
-struct Flow: Layout {
-    var spacing: CGFloat = 4
-    var lineSpacing: CGFloat = 4
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = proposal.width ?? .infinity
-        let lines = arrange(subviews, width: width)
-        let height = lines.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(lines.count - 1, 0))
-        let used = lines.map(\.width).max() ?? 0
-        return CGSize(width: proposal.width ?? used, height: height)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var y = bounds.minY
-        for line in arrange(subviews, width: bounds.width) {
-            var x = bounds.minX
-            for i in line.items {
-                let size = subviews[i].sizeThatFits(.unspecified)
-                subviews[i].place(at: CGPoint(x: x, y: y + (line.height - size.height) / 2),
-                                  proposal: ProposedViewSize(size))
-                x += size.width + spacing
-            }
-            y += line.height + lineSpacing
-        }
-    }
-
-    private struct Line { var items: [Int] = []; var width: CGFloat = 0; var height: CGFloat = 0 }
-
-    private func arrange(_ subviews: Subviews, width: CGFloat) -> [Line] {
-        var lines: [Line] = []
-        var line = Line()
-        for i in subviews.indices {
-            let size = subviews[i].sizeThatFits(.unspecified)
-            let needed = line.items.isEmpty ? size.width : line.width + spacing + size.width
-            if needed > width, !line.items.isEmpty {
-                lines.append(line)
-                line = Line()
-            }
-            line.width = line.items.isEmpty ? size.width : line.width + spacing + size.width
-            line.height = max(line.height, size.height)
-            line.items.append(i)
-        }
-        if !line.items.isEmpty { lines.append(line) }
-        return lines
     }
 }

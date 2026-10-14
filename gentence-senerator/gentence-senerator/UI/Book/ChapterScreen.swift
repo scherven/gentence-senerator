@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A chapter: header, its layout, and its speed round pinned above the tabs.
+/// A chapter: header, its layout, and its rounds pinned above the tabs.
 struct ChapterScreen: View {
     @Bindable var store: Store
     let chapterID: String
@@ -41,11 +41,26 @@ struct ChapterScreen: View {
             if quizzed {
                 let plan = Store.speedRound(for: chapter)
                 let done = store.roundsDone(plan)
-                SpeedRoundBar(title: "SPEED ROUND · \(plan.count)",
-                              trailing: done == 0 ? "" : "×\(done) DONE") { startQuiz(plan) }
-                    .padding(.horizontal, Theme.M.gap)
-                    .padding(.vertical, Theme.M.gapTight)
-                    .background(Theme.C.ground)
+                let rules = store.rulesCount(in: chapter)
+                Group {
+                    if rules > 0 {
+                        // Rules: the fact on its own. Test: the fact in a sentence.
+                        let rulesPlan = QuizPlan.rules(for: chapter)
+                        let rulesDone = store.roundsDone(rulesPlan)
+                        HStack(spacing: Theme.M.gapTight) {
+                            SpeedRoundBar(title: "RULES · \(min(rules, rulesPlan.count))",
+                                          trailing: rulesDone == 0 ? "" : "×\(rulesDone)") { startQuiz(rulesPlan) }
+                            SpeedRoundBar(title: "TEST · \(plan.count)",
+                                          trailing: done == 0 ? "" : "×\(done)") { startQuiz(plan) }
+                        }
+                    } else {
+                        SpeedRoundBar(title: "SPEED ROUND · \(plan.count)",
+                                      trailing: done == 0 ? "" : "×\(done) DONE") { startQuiz(plan) }
+                    }
+                }
+                .padding(.horizontal, Theme.M.gap)
+                .padding(.vertical, Theme.M.gapTight)
+                .background(Theme.C.ground)
             }
         }
         .pageHeader(.back("Book"), title: chapter.name,

@@ -46,6 +46,7 @@ struct DrillView: View {
                                 .padding(.vertical, 11)
                         }
                         .buttonStyle(KeyStyle(key(for: index)))
+                        .disabled(result == true)
                     }
                 }
             } else {
@@ -57,11 +58,11 @@ struct DrillView: View {
                         .targetLanguageInput()
                         .submitLabel(.done)
                         .onSubmit { Task { await check(choice: nil) } }
-                        .disabled(checking)
+                        .disabled(checking || result == true)
                         .inset(padding: Theme.M.padTight)
                     if checking {
                         Ticker()
-                    } else {
+                    } else if result != true {
                         TinyButton(title: "Check") { Task { await check(choice: nil) } }
                     }
                 }
@@ -129,6 +130,8 @@ struct DrillView: View {
     }
 
     private func check(choice: Int?) async {
+        // Already got: another check is another paid call and more XP.
+        guard result != true, !checking else { return }
         let correct: Bool
         var note: String?
 
@@ -139,6 +142,13 @@ struct DrillView: View {
             checking = true
             let verdict = await grade(input, rung)
             checking = false
+            // Not checked is not wrong: no rung lost, nothing recorded, and
+            // the answer stays to try again.
+            if verdict.note == Store.uncheckable {
+                extra = verdict.note
+                result = false
+                return
+            }
             correct = verdict.correct
             if !verdict.note.isEmpty { note = verdict.note }
         }

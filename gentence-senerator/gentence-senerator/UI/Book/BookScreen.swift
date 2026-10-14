@@ -9,8 +9,15 @@ struct BookScreen: View {
         let index = store.bookIndex
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                tally(index)
-                drills(index.book.drills)
+                // A language without a shipped book still gets Noted.
+                if !index.book.chapters.isEmpty {
+                    tally(index)
+                    drills(index.book.drills)
+                    EndlessBar(store: store)
+                } else if index.chapters.isEmpty {
+                    Text("No book for \(store.settings.language.name) yet.")
+                        .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                }
                 chapters(index)
             }
             .padding(.horizontal, Theme.M.gap)
@@ -27,7 +34,7 @@ struct BookScreen: View {
         let level = store.settings.level
         return Menu {
             Section {
-                ForEach(Language.allCases) { language in
+                ForEach(store.settings.languages) { language in
                     Button { store.switchLanguage(language) } label: {
                         if language == store.settings.language {
                             Label(language.name, systemImage: "checkmark")
@@ -234,12 +241,25 @@ struct BookScreen: View {
 }
 
 extension Language {
+    /// On a key: DE, FR, ES, 中文, 한국어.
+    var short: String {
+        switch self {
+        case .mandarin: return "中文"
+        case .german:   return "DE"
+        case .french:   return "FR"
+        case .spanish:  return "ES"
+        case .korean:   return "한국어"
+        }
+    }
+
     /// The pill: what the language calls itself.
     var native: String {
         switch self {
         case .mandarin: return "中文"
         case .german:   return "DEUTSCH"
         case .french:   return "FRANÇAIS"
+        case .spanish:  return "ESPAÑOL"
+        case .korean:   return "한국어"
         }
     }
 }

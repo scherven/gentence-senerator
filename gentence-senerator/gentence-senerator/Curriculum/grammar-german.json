@@ -193,7 +193,7 @@
     "kind": "tense-aspect",
     "use": "both",
     "formulaic": false,
-    "instruction": "The past of sein and haben, where the Perfekt sounds wrong.",
+    "instruction": "The past of sein and haben, where the Perfekt sounds stiff.",
     "examples": [
       "Ich war krank",
       "Wir hatten keine Zeit"
@@ -269,7 +269,7 @@
   {
     "id": "comparison",
     "name": "Comparatives with als and wie",
-    "level": 1,
+    "level": 2,
     "kind": "word-choice",
     "use": "both",
     "formulaic": false,
@@ -495,7 +495,7 @@
     "kind": "tense-aspect",
     "use": "both",
     "formulaic": false,
-    "instruction": "A past ability, wish or obligation, where the Perfekt sounds wrong.",
+    "instruction": "A past ability, wish or obligation, where the Perfekt sounds stiff.",
     "examples": [
       "Ich konnte nicht kommen",
       "Wir mussten lange warten"
@@ -567,7 +567,7 @@
   {
     "id": "du-ihr-sie",
     "name": "du, ihr and Sie",
-    "level": 2,
+    "level": 1,
     "kind": "register",
     "use": "both",
     "formulaic": false,
@@ -592,7 +592,7 @@
   {
     "id": "man",
     "name": "man for the generic subject",
-    "level": 3,
+    "level": 1,
     "kind": "word-choice",
     "use": "both",
     "formulaic": false,
@@ -857,7 +857,7 @@
   {
     "id": "superlative",
     "name": "Superlatives before a noun and after am",
-    "level": 3,
+    "level": 2,
     "kind": "adjective-ending",
     "use": "both",
     "formulaic": false,
@@ -1132,7 +1132,7 @@
     "formulaic": false,
     "instruction": "A condition finer than a plain wenn.",
     "examples": [
-      "Sofern nichts dazwischenkommt, sehen wir uns Freitag",
+      "Sofern nichts dazwischenkommt, sehen wir uns am Freitag",
       "Ich komme, es sei denn, es schneit"
     ]
   },
@@ -1159,7 +1159,7 @@
     "instruction": "die Frage nach, der Grund für, das Interesse an.",
     "examples": [
       "die Frage nach der Finanzierung",
-      "kein Interesse an dem Angebot"
+      "kein Interesse am Angebot"
     ]
   },
   {
@@ -1210,7 +1210,7 @@
     "formulaic": false,
     "instruction": "Two things named, and only one of them meant next.",
     "examples": [
-      "Beide Angebote sind gut, dieses ist allerdings günstiger"
+      "Beide Angebote sind gut, das von gestern ist allerdings günstiger"
     ]
   },
   {
@@ -1402,7 +1402,7 @@
     "formulaic": false,
     "instruction": "Fine-tuning how one statement stands to the last.",
     "examples": [
-      "Das Problem ist nicht neu, zumal es schon oft diskutiert wurde",
+      "Ich bleibe heute zu Hause, zumal ich noch erkältet bin",
       "Es war nicht schlecht, immerhin haben wir etwas gelernt"
     ]
   },
@@ -1592,7 +1592,7 @@
     "kind": "preposition",
     "use": "written",
     "formulaic": false,
-    "instruction": "ungeachtet, mangels, zugunsten, kraft, seitens.",
+    "instruction": "ungeachtet, mangels, zugunsten, kraft, unweit.",
     "examples": [
       "ungeachtet aller Einwände",
       "mangels Beweisen eingestellt"
@@ -1640,7 +1640,7 @@
   },
   {
     "id": "geschweige-denn",
-    "name": "geschweige denn, zumal, insofern",
+    "name": "geschweige denn and insofern",
     "level": 6,
     "kind": "word-choice",
     "use": "both",

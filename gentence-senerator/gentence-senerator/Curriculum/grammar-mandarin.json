@@ -6,8 +6,9 @@
     "kind": "tense-aspect",
     "use": "both",
     "formulaic": false,
-    "instruction": "A finished action, followed by something else.",
+    "instruction": "A finished action, usually counted, specified, or followed by a next step.",
     "examples": [
+      "我买了三本书",
       "我吃了饭就走了"
     ]
   },
@@ -424,7 +425,7 @@
     "formulaic": false,
     "instruction": "因为 / 所以 clauses where English would drop the subject.",
     "examples": [
-      "因为那里很安静"
+      "我喜欢这家咖啡馆，因为那里很安静"
     ]
   },
   {
@@ -436,7 +437,7 @@
     "formulaic": false,
     "instruction": "Both halves marked; English marks only one.",
     "examples": [
-      "虽然很贵，但是我买了"
+      "虽然很贵，但是我还是买了"
     ]
   },
   {
@@ -708,7 +709,7 @@
     "kind": "word-order",
     "use": "both",
     "formulaic": false,
-    "instruction": "How long something lasted; with an object the verb repeats.",
+    "instruction": "How long something lasted; an object follows the duration, or the verb repeats.",
     "examples": [
       "我学了两年中文",
       "他等了半个小时"
@@ -749,7 +750,7 @@
     "formulaic": false,
     "instruction": "English needs 'it'; the slot stays empty here.",
     "examples": [
-      "这本书我已经看完了",
+      "这件衣服很好看，我想买",
       "他昨天就还给我了"
     ]
   },
@@ -1515,10 +1516,10 @@
     "kind": "word-order",
     "use": "both",
     "formulaic": false,
-    "instruction": "Doing something to an object once through, or for a set stretch.",
+    "instruction": "Doing something to an object once through, or a set number of times.",
     "examples": [
       "把这本书看一遍",
-      "把房间打扫了半个小时"
+      "把课文读了三遍"
     ]
   },
   {
@@ -2182,7 +2183,7 @@
     "kind": "word-order",
     "use": "both",
     "formulaic": false,
-    "instruction": "Time, then scope, then manner, then place — all in front of the verb.",
+    "instruction": "Time, then place, then manner — all in front of the verb.",
     "examples": [
       "他昨天在公司很认真地看了那份报告"
     ]
@@ -2234,7 +2235,7 @@
     "formulaic": false,
     "instruction": "Something odd now explained by what was just learned.",
     "examples": [
-      "难怪他今天没来，原来病了",
+      "难怪他今天没来，原来是病了",
       "下雪了，难怪这么冷"
     ]
   },
@@ -2660,7 +2661,7 @@
     "kind": "missing-piece",
     "use": "both",
     "formulaic": false,
-    "instruction": "Taking the worse option to avoid a worse one still.",
+    "instruction": "Accepting a cost rather than take the option ruled out.",
     "examples": [
       "宁可自己吃亏，也不愿麻烦别人"
     ]
@@ -2691,7 +2692,7 @@
   },
   {
     "id": "bieshuo-dou",
-    "name": "别说…，都或也…",
+    "name": "别说…，…都 or 也…",
     "level": 7,
     "kind": "missing-piece",
     "use": "spoken",
@@ -3138,7 +3139,7 @@
     "instruction": "Ranking something level with a known benchmark, or just under it.",
     "examples": [
       "其影响不亚于一场革命",
-      "产量仅次于去年"
+      "产量仅次于美国，位居世界第二"
     ]
   },
   {
@@ -3517,7 +3518,7 @@
     "kind": "register",
     "use": "both",
     "formulaic": false,
-    "instruction": "Attributing a claim to a source without naming one.",
+    "instruction": "Attributing a claim to a source, or to none in particular.",
     "examples": [
       "据悉，该项目已经启动",
       "据我所知，情况并非如此"
@@ -3580,7 +3581,7 @@
     "kind": "missing-piece",
     "use": "both",
     "formulaic": false,
-    "instruction": "递进 escalated in argument.",
+    "instruction": "A second point ranked above the first, in argument.",
     "examples": [
       "这不仅是技术问题，更是管理问题"
     ]
@@ -3621,7 +3622,7 @@
     "formulaic": false,
     "instruction": "A comparison made without 比.",
     "examples": [
-      "生于忧患，死于安乐",
+      "事实胜于雄辩",
       "重于泰山"
     ]
   },

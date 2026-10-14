@@ -1,0 +1,873 @@
+[
+ {
+  "id": "rule.ko.topic-subject.intro-topic",
+  "entry": "ko.topic-subject.intro-topic",
+  "format": "flip",
+  "prompt": "saying who I am → ＿",
+  "why": "저는 민수예요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.intro-subject",
+  "entry": "ko.topic-subject.intro-subject",
+  "format": "flip",
+  "prompt": "I'm the one (answers who) → ＿",
+  "why": "제가 민수예요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.new",
+  "entry": "ko.topic-subject.new",
+  "format": "flip",
+  "prompt": "new to the story → ＿",
+  "why": "왕이 살았어요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.known",
+  "entry": "ko.topic-subject.known",
+  "format": "flip",
+  "prompt": "already known → ＿",
+  "why": "그 왕은",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.contrast",
+  "entry": "ko.topic-subject.contrast",
+  "format": "flip",
+  "prompt": "this one, unlike others → ＿",
+  "why": "커피는 좋아해요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.who",
+  "entry": "ko.topic-subject.who",
+  "format": "flip",
+  "prompt": "question words take 이/가 → ＿",
+  "why": "누가 왔어요?",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.have",
+  "entry": "ko.topic-subject.have",
+  "format": "flip",
+  "prompt": "the thing that is or isn't → ＿",
+  "why": "시간이 있어요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.fact",
+  "entry": "ko.topic-subject.fact",
+  "format": "flip",
+  "prompt": "general truths → ＿",
+  "why": "지구는 둥글어요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.topic-subject.event",
+  "entry": "ko.topic-subject.event",
+  "format": "flip",
+  "prompt": "what's happening now → ＿",
+  "why": "비가 와요",
+  "steps": [
+   {
+    "options": [
+     "은/는",
+     "이/가"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.itda",
+  "entry": "ko.places.itda",
+  "format": "flip",
+  "prompt": "회사＿ 있어요",
+  "gloss": "where something is",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.gada",
+  "entry": "ko.places.gada",
+  "format": "flip",
+  "prompt": "부산＿ 가요",
+  "gloss": "where you go",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.gongbu",
+  "entry": "ko.places.gongbu",
+  "format": "flip",
+  "prompt": "도서관＿ 공부해요",
+  "gloss": "where it happens",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.ilhada",
+  "entry": "ko.places.ilhada",
+  "format": "flip",
+  "prompt": "은행＿ 일해요",
+  "gloss": "where you work",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.mannada",
+  "entry": "ko.places.mannada",
+  "format": "flip",
+  "prompt": "카페＿ 만나요",
+  "gloss": "where you meet",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.anjda",
+  "entry": "ko.places.anjda",
+  "format": "flip",
+  "prompt": "의자＿ 앉아요",
+  "gloss": "where it ends up",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.neota",
+  "entry": "ko.places.neota",
+  "format": "flip",
+  "prompt": "가방＿ 넣어요",
+  "gloss": "where it ends up",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.from",
+  "entry": "ko.places.from",
+  "format": "flip",
+  "prompt": "캐나다＿ 왔어요",
+  "gloss": "from a place",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.arrive",
+  "entry": "ko.places.arrive",
+  "format": "flip",
+  "prompt": "공항＿ 도착했어요",
+  "gloss": "arrive at",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.depart",
+  "entry": "ko.places.depart",
+  "format": "flip",
+  "prompt": "인천＿ 출발해요",
+  "gloss": "leave from",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.eseo-kkaji",
+  "entry": "ko.places.eseo-kkaji",
+  "format": "flip",
+  "prompt": "서울＿ 부산까지",
+  "gloss": "from … to (place)",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.clock",
+  "entry": "ko.places.clock",
+  "format": "flip",
+  "prompt": "세 시＿",
+  "gloss": "at a time",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.day",
+  "entry": "ko.places.day",
+  "format": "flip",
+  "prompt": "월요일＿",
+  "gloss": "on a day",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.places.per",
+  "entry": "ko.places.per",
+  "format": "flip",
+  "prompt": "하루＿ 세 번",
+  "gloss": "per",
+  "steps": [
+   {
+    "options": [
+     "에",
+     "에서"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.an-gayo",
+  "entry": "ko.negation.an-gayo",
+  "format": "flip",
+  "prompt": "＿ 가요",
+  "gloss": "won't, choose not to",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.mot-gayo",
+  "entry": "ko.negation.mot-gayo",
+  "format": "flip",
+  "prompt": "＿ 가요",
+  "gloss": "can't",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.an-meogeoyo",
+  "entry": "ko.negation.an-meogeoyo",
+  "format": "flip",
+  "prompt": "＿ 먹어요",
+  "gloss": "don't eat",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.mot-meogeoyo",
+  "entry": "ko.negation.mot-meogeoyo",
+  "format": "flip",
+  "prompt": "＿ 먹어요",
+  "gloss": "can't eat",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.an-hae",
+  "entry": "ko.negation.an-hae",
+  "format": "flip",
+  "prompt": "공부 ＿ 해요",
+  "gloss": "안 goes before 하다",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.mot-hae",
+  "entry": "ko.negation.mot-hae",
+  "format": "flip",
+  "prompt": "공부 ＿ 했어요",
+  "gloss": "못 goes before 하다",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.an-adj",
+  "entry": "ko.negation.an-adj",
+  "format": "flip",
+  "prompt": "＿ 비싸요",
+  "gloss": "adjectives take 안",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.negation.an-jal",
+  "entry": "ko.negation.an-jal",
+  "format": "flip",
+  "prompt": "잘 ＿ 해요",
+  "gloss": "don't often do",
+  "steps": [
+   {
+    "options": [
+     "안",
+     "못"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.deusida",
+  "entry": "ko.honorifics.deusida",
+  "format": "pick-one",
+  "prompt": "먹다 · 마시다 → ＿",
+  "gloss": "eat, drink",
+  "steps": [
+   {
+    "options": [
+     "주무시다",
+     "돌아가시다",
+     "계시다",
+     "드시다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.gyesida",
+  "entry": "ko.honorifics.gyesida",
+  "format": "pick-one",
+  "prompt": "있다 → ＿",
+  "gloss": "be (somewhere)",
+  "steps": [
+   {
+    "options": [
+     "주무시다",
+     "돌아가시다",
+     "계시다",
+     "드시다"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.jumusida",
+  "entry": "ko.honorifics.jumusida",
+  "format": "pick-one",
+  "prompt": "자다 → ＿",
+  "gloss": "sleep",
+  "steps": [
+   {
+    "options": [
+     "계시다",
+     "돌아가시다",
+     "주무시다",
+     "드시다"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.malsseumhasida",
+  "entry": "ko.honorifics.malsseumhasida",
+  "format": "pick-one",
+  "prompt": "말하다 → ＿",
+  "gloss": "speak",
+  "steps": [
+   {
+    "options": [
+     "드시다",
+     "말씀하시다",
+     "주무시다",
+     "돌아가시다"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.doragasida",
+  "entry": "ko.honorifics.doragasida",
+  "format": "pick-one",
+  "prompt": "죽다 → ＿",
+  "gloss": "pass away",
+  "steps": [
+   {
+    "options": [
+     "드시다",
+     "계시다",
+     "말씀하시다",
+     "돌아가시다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.deurida",
+  "entry": "ko.honorifics.deurida",
+  "format": "pick-one",
+  "prompt": "주다 → ＿",
+  "gloss": "give (to an elder)",
+  "steps": [
+   {
+    "options": [
+     "여쭤보다",
+     "드리다",
+     "저 · 저희",
+     "뵙다"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.boepda",
+  "entry": "ko.honorifics.boepda",
+  "format": "pick-one",
+  "prompt": "보다 → ＿",
+  "gloss": "see, meet (an elder)",
+  "steps": [
+   {
+    "options": [
+     "저 · 저희",
+     "여쭤보다",
+     "뵙다",
+     "드리다"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.yeojjwoboda",
+  "entry": "ko.honorifics.yeojjwoboda",
+  "format": "pick-one",
+  "prompt": "묻다 → ＿",
+  "gloss": "ask (an elder)",
+  "steps": [
+   {
+    "options": [
+     "저 · 저희",
+     "뵙다",
+     "드리다",
+     "여쭤보다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.jeohui",
+  "entry": "ko.honorifics.jeohui",
+  "format": "pick-one",
+  "prompt": "나 · 우리 → ＿",
+  "gloss": "I · we",
+  "steps": [
+   {
+    "options": [
+     "저 · 저희",
+     "뵙다",
+     "드리다",
+     "여쭤보다"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.daek",
+  "entry": "ko.honorifics.daek",
+  "format": "pick-one",
+  "prompt": "집 → ＿",
+  "gloss": "home",
+  "steps": [
+   {
+    "options": [
+     "댁",
+     "연세",
+     "성함"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.yeonse",
+  "entry": "ko.honorifics.yeonse",
+  "format": "pick-one",
+  "prompt": "나이 → ＿",
+  "gloss": "age",
+  "steps": [
+   {
+    "options": [
+     "성함",
+     "연세",
+     "댁"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.honorifics.seongham",
+  "entry": "ko.honorifics.seongham",
+  "format": "pick-one",
+  "prompt": "이름 → ＿",
+  "gloss": "name",
+  "steps": [
+   {
+    "options": [
+     "연세",
+     "성함",
+     "댁"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.boida",
+  "entry": "ko.change.boida",
+  "format": "pick-one",
+  "prompt": "보다 → ＿",
+  "gloss": "be seen",
+  "steps": [
+   {
+    "options": [
+     "보이다",
+     "보리다",
+     "보히다",
+     "보기다"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.japhida",
+  "entry": "ko.change.japhida",
+  "format": "pick-one",
+  "prompt": "잡다 → ＿",
+  "gloss": "be caught",
+  "steps": [
+   {
+    "options": [
+     "잡리다",
+     "잡이다",
+     "잡기다",
+     "잡히다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.yeollida",
+  "entry": "ko.change.yeollida",
+  "format": "pick-one",
+  "prompt": "열다 → ＿",
+  "gloss": "open (by itself)",
+  "steps": [
+   {
+    "options": [
+     "열리다",
+     "열이다",
+     "열기다",
+     "열히다"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.kkeunkida",
+  "entry": "ko.change.kkeunkida",
+  "format": "pick-one",
+  "prompt": "끊다 → ＿",
+  "gloss": "be cut off",
+  "steps": [
+   {
+    "options": [
+     "끊기다",
+     "끊리다",
+     "끊이다",
+     "끊히다"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.meogida",
+  "entry": "ko.change.meogida",
+  "format": "pick-one",
+  "prompt": "먹다 → ＿",
+  "gloss": "feed",
+  "steps": [
+   {
+    "options": [
+     "먹리다",
+     "먹기다",
+     "먹우다",
+     "먹이다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.iphida",
+  "entry": "ko.change.iphida",
+  "format": "pick-one",
+  "prompt": "입다 → ＿",
+  "gloss": "dress someone",
+  "steps": [
+   {
+    "options": [
+     "입우다",
+     "입리다",
+     "입기다",
+     "입히다"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.ullida",
+  "entry": "ko.change.ullida",
+  "format": "pick-one",
+  "prompt": "울다 → ＿",
+  "gloss": "make cry",
+  "steps": [
+   {
+    "options": [
+     "울우다",
+     "울기다",
+     "울리다",
+     "울이다"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.utgida",
+  "entry": "ko.change.utgida",
+  "format": "pick-one",
+  "prompt": "웃다 → ＿",
+  "gloss": "make laugh, funny",
+  "steps": [
+   {
+    "options": [
+     "웃우다",
+     "웃히다",
+     "웃기다",
+     "웃리다"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.ko.change.kkaeuda",
+  "entry": "ko.change.kkaeuda",
+  "format": "pick-one",
+  "prompt": "깨다 → ＿",
+  "gloss": "wake someone",
+  "steps": [
+   {
+    "options": [
+     "깨우다",
+     "깨히다",
+     "깨리다",
+     "깨기다"
+    ],
+    "answer": 0
+   }
+  ]
+ }
+]

@@ -1,0 +1,619 @@
+[
+ {
+  "id": "de-clean-translate",
+  "lang": "german",
+  "mode": "translate",
+  "level": 4,
+  "typed": true,
+  "english": "If I had known that the train was cancelled, I would have taken the car.",
+  "said": "Wenn ich gewusst hätte, dass der Zug ausfällt, hätte ich das Auto genommen.",
+  "expect": []
+ },
+ {
+  "id": "de-clean-produce",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What do you usually do on Sunday mornings?",
+  "target": "Was machst du normalerweise am Sonntagmorgen?",
+  "said": "Am Sonntagmorgen schlafe ich meistens lange. Danach trinke ich Kaffee auf dem Balkon und lese die Zeitung, weil ich unter der Woche keine Zeit dafür habe.",
+  "expect": []
+ },
+ {
+  "id": "de-clean-b2-mood",
+  "lang": "german",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "What would you change if you could redesign your job?",
+  "target": "Was würdest du ändern, wenn du deinen Job neu gestalten könntest?",
+  "said": "Ich würde vor allem weniger Meetings einplanen. Wenn wir mehr Zeit zum konzentrierten Arbeiten hätten, wären die Ergebnisse vermutlich besser.",
+  "expect": []
+ },
+ {
+  "id": "de-weil",
+  "lang": "german",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "I'm staying at home because I'm sick.",
+  "said": "Ich bleibe zu Hause, weil ich bin krank.",
+  "expect": [
+   "weil clause: finite verb must go last (weil ich krank bin)"
+  ]
+ },
+ {
+  "id": "de-dative-weil",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "Who did you last give a present to?",
+  "target": "Wem hast du zuletzt ein Geschenk gemacht?",
+  "said": "Ich habe meine Schwester ein Buch geschenkt, weil sie hat Geburtstag gehabt.",
+  "expect": [
+   "dative indirect object: meiner Schwester, not meine Schwester",
+   "weil clause: verb-final (weil sie Geburtstag hatte / gehabt hat)"
+  ]
+ },
+ {
+  "id": "de-sein-aux",
+  "lang": "german",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "We went to the cinema yesterday.",
+  "said": "Wir haben gestern ins Kino gegangen.",
+  "expect": [
+   "auxiliary: gehen takes sein (Wir sind gestern ins Kino gegangen)"
+  ]
+ },
+ {
+  "id": "de-neuter-auto",
+  "lang": "german",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "What kind of car would you like to drive?",
+  "target": "Was für ein Auto würdest du gern fahren?",
+  "said": "Ich würde gern einen kleinen, elektrischen Auto fahren, weil das günstiger ist.",
+  "expect": [
+   "Auto is neuter: ein kleines, elektrisches Auto (article and adjective endings)"
+  ]
+ },
+ {
+  "id": "zh-clean-ge",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 2,
+  "typed": false,
+  "english": "What do you usually do on weekends?",
+  "target": "你周末一般做什么？",
+  "said": "我周末一般在家看个电影，有时候跟朋友去一个饭馆吃饭。",
+  "expect": []
+ },
+ {
+  "id": "zh-clean-ba",
+  "lang": "mandarin",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "I have already finished my homework.",
+  "said": "我已经把作业做完了。",
+  "expect": []
+ },
+ {
+  "id": "zh-clean-long",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 4,
+  "typed": true,
+  "english": "Why did you start learning Chinese?",
+  "target": "你为什么开始学中文？",
+  "said": "因为我以前在上海工作过两年，虽然那时候只会说几句，但是我一直觉得中文很有意思。",
+  "expect": []
+ },
+ {
+  "id": "zh-shi-adj",
+  "lang": "mandarin",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "He is very tall.",
+  "said": "他是很高。",
+  "expect": [
+   "no 是 before an adjective predicate (他很高)"
+  ]
+ },
+ {
+  "id": "zh-bu-mei",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 2,
+  "typed": true,
+  "english": "What did you eat last night?",
+  "target": "你昨天晚上吃了什么？",
+  "said": "我昨天晚上不吃饭，我只喝一杯茶了。",
+  "expect": [
+   "past non-occurrence takes 没, not 不 (我昨天晚上没吃饭)",
+   "了 placement with a quantified object: 喝了一杯茶"
+  ]
+ },
+ {
+  "id": "zh-de-relative",
+  "lang": "mandarin",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "This is the book my friend bought.",
+  "said": "这是我朋友买书。",
+  "expect": [
+   "missing 的 in the relative clause (我朋友买的书)"
+  ]
+ },
+ {
+  "id": "zh-word-order",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What time do you get up every day?",
+  "target": "你每天几点起床？",
+  "said": "我起床七点每天，然后去公司坐地铁。",
+  "expect": [
+   "time expressions go before the verb (我每天七点起床)",
+   "means of transport before the destination: 坐地铁去公司"
+  ]
+ },
+ {
+  "id": "fr-clean-ne",
+  "lang": "french",
+  "mode": "produce",
+  "level": 2,
+  "typed": false,
+  "english": "What do you do in the evening after work?",
+  "target": "Qu'est-ce que tu fais le soir après le travail ?",
+  "said": "Le soir, je cuisine un peu et après je regarde une série. Je sors pas beaucoup pendant la semaine.",
+  "expect": []
+ },
+ {
+  "id": "fr-clean-si",
+  "lang": "french",
+  "mode": "translate",
+  "level": 4,
+  "typed": true,
+  "english": "If I had more time, I would learn to play the piano.",
+  "said": "Si j'avais plus de temps, j'apprendrais à jouer du piano.",
+  "expect": []
+ },
+ {
+  "id": "fr-clean-passe",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "Where did you go on your last holiday?",
+  "target": "Où es-tu allé pendant tes dernières vacances ?",
+  "said": "Je suis allé en Bretagne avec ma famille. Il a fait un peu froid, mais on a beaucoup marché au bord de la mer.",
+  "expect": []
+ },
+ {
+  "id": "fr-etre-aux",
+  "lang": "french",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "She went to the market this morning.",
+  "said": "Elle a allé au marché ce matin.",
+  "expect": [
+   "aller takes être, with agreement: Elle est allée"
+  ]
+ },
+ {
+  "id": "fr-imparfait",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What did you do last weekend?",
+  "target": "Qu'est-ce que tu as fait le week-end dernier ?",
+  "said": "Samedi, j'ai vu mes amis et nous avons mangé dans un restaurant. Après, je suis rentré à la maison et je me suis couché tôt parce que je suis fatigué.",
+  "expect": [
+   "past state needs the imparfait: parce que j'étais fatigué"
+  ]
+ },
+ {
+  "id": "fr-subjonctif",
+  "lang": "french",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "I don't think he is right.",
+  "said": "Je ne pense pas qu'il a raison.",
+  "expect": [
+   "negated penser que takes the subjunctive: qu'il ait raison"
+  ]
+ },
+ {
+  "id": "fr-agreement",
+  "lang": "french",
+  "mode": "produce",
+  "level": 2,
+  "typed": false,
+  "english": "Do you have brothers and sisters?",
+  "target": "Tu as des frères et sœurs ?",
+  "said": "Oui, j'ai un frère et une sœur. Ma sœur est plus vieux que moi et elle habite à Lyon avec son mari.",
+  "expect": [
+   "adjective agreement: Ma sœur est plus vieille (or plus âgée)"
+  ]
+ },
+ {
+  "id": "de-multi",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What did you do last weekend?",
+  "target": "Was hast du letztes Wochenende gemacht?",
+  "said": "Letztes Wochenende bin ich mit meinem Freund nach Hamburg gefahren. Wir haben in einem kleinen Hotel übernachtet, das war sehr gemütlich. Am Samstag haben wir den Hafen besucht und danach wir haben Fischbrötchen gegessen. Es war kalt, aber ich habe es sehr gefallen.",
+  "expect": [
+   "verb second after a fronted adverb: danach haben wir",
+   "gefallen takes a dative experiencer and haben with es as subject: es hat mir sehr gefallen"
+  ]
+ },
+ {
+  "id": "de-clean-particles",
+  "lang": "german",
+  "mode": "produce",
+  "level": 5,
+  "typed": false,
+  "english": "How do you find working from home?",
+  "target": "Wie findest du es, im Homeoffice zu arbeiten?",
+  "said": "Eigentlich ganz gut. Man spart halt viel Zeit, weil man nicht pendeln muss. Aber mir fehlen schon die Kollegen, ehrlich gesagt.",
+  "expect": []
+ },
+ {
+  "id": "de-interessieren",
+  "lang": "german",
+  "mode": "translate",
+  "level": 4,
+  "typed": true,
+  "english": "I'm interested in the job.",
+  "said": "Ich interessiere mich an der Stelle.",
+  "expect": [
+   "sich interessieren für + accusative: für die Stelle"
+  ]
+ },
+ {
+  "id": "de-konj2",
+  "lang": "german",
+  "mode": "produce",
+  "level": 5,
+  "typed": true,
+  "english": "What would you have done differently if you could study again?",
+  "target": "Was hättest du anders gemacht, wenn du noch einmal studieren könntest?",
+  "said": "Ich hätte ein anderes Fach gewählt, wenn ich gewusst habe, wie wenig mir Jura gefällt.",
+  "expect": [
+   "counterfactual condition needs Konjunktiv II past: wenn ich gewusst hätte"
+  ]
+ },
+ {
+  "id": "zh-multi",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "Where did you go last weekend?",
+  "target": "你上个周末去哪儿了？",
+  "said": "上个周末我和朋友去了北京。我们在那里住三天，看了很多地方。天气很冷，但是我们玩得很开心了。",
+  "expect": [
+   "completed duration needs 了 after the verb: 住了三天",
+   "no sentence-final 了 after a 得 complement: 玩得很开心"
+  ]
+ },
+ {
+  "id": "zh-clean-topic",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "Do you like cooking?",
+  "target": "你喜欢做饭吗？",
+  "said": "做饭啊，我还挺喜欢的，就是平时太忙了，没什么时间。周末的话会做几个菜。",
+  "expect": []
+ },
+ {
+  "id": "zh-potential",
+  "lang": "mandarin",
+  "mode": "translate",
+  "level": 4,
+  "typed": true,
+  "english": "I can't understand what he says.",
+  "said": "他说的话我不听懂。",
+  "expect": [
+   "inability to understand by listening is the potential complement: 听不懂"
+  ]
+ },
+ {
+  "id": "zh-ba-place",
+  "lang": "mandarin",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "I put the keys on the table.",
+  "said": "我放钥匙在桌子上。",
+  "expect": [
+   "placement with 在 needs 把 (or the object fronted): 我把钥匙放在桌子上"
+  ]
+ },
+ {
+  "id": "fr-multi",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "How was your week?",
+  "target": "Comment s'est passée ta semaine ?",
+  "said": "Ma semaine était assez chargée. Lundi j'ai dû finir un projet important, et mardi je suis resté au bureau jusqu'à neuf heures. Les réunions étaient longues et je ne les ai pas aimé. Heureusement, vendredi j'ai sorti avec des collègues.",
+  "expect": [
+   "past participle agrees with a preceding direct object: je ne les ai pas aimées",
+   "sortir (intransitive) takes être: je suis sorti"
+  ]
+ },
+ {
+  "id": "fr-clean-conditionnel",
+  "lang": "french",
+  "mode": "translate",
+  "level": 5,
+  "typed": true,
+  "english": "What would you have done in my place?",
+  "said": "Qu'est-ce que tu aurais fait à ma place ?",
+  "expect": []
+ },
+ {
+  "id": "fr-depuis",
+  "lang": "french",
+  "mode": "translate",
+  "level": 3,
+  "typed": true,
+  "english": "I have been living in Paris for three years.",
+  "said": "J'ai habité à Paris depuis trois ans.",
+  "expect": [
+   "ongoing situation with depuis takes the present: J'habite à Paris depuis trois ans"
+  ]
+ },
+ {
+  "id": "fr-clean-y",
+  "lang": "french",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "Do you often go to the cinema?",
+  "target": "Tu vas souvent au cinéma ?",
+  "said": "Pas trop, j'y vais peut-être une fois par mois. Avant j'y allais plus souvent, mais maintenant je préfère regarder des films chez moi.",
+  "expect": []
+ },
+ {
+  "id": "de-case-clear",
+  "lang": "german",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "What did you do last weekend?",
+  "target": "Was hast du letztes Wochenende gemacht?",
+  "said": "Am Samstag bin ich mit mein Bruder in die Berge gefahren. Wir sind den ganzen Tag gewandert und am Abend haben wir in einem kleinen Gasthaus gegessen.",
+  "expect": [
+   "mit takes the dative: mit meinem Bruder"
+  ],
+  "band": [
+   80,
+   93
+  ],
+  "notes": "One case slip, meaning fully clear, otherwise natural B2 speech: weakens, high score."
+ },
+ {
+  "id": "de-endings-clear",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "Describe your flat.",
+  "target": "Beschreib mal deine Wohnung.",
+  "said": "Ich wohne in einer kleine Wohnung mit einem großen Balkon. Das Wohnzimmer hat ein schöner Blick auf den Park, und die Küche ist neu.",
+  "expect": [
+   "dative feminine after in einer: in einer kleinen Wohnung",
+   "accusative masculine object of hat: einen schönen Blick"
+  ],
+  "band": [
+   72,
+   90
+  ],
+  "notes": "Two ending errors, nothing a listener would misunderstand: both weakens; not a failing score."
+ },
+ {
+  "id": "de-stilted",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "How do you get to work?",
+  "target": "Wie kommst du zur Arbeit?",
+  "said": "Ich benutze den Bus, um zu der Arbeit zu kommen. Die Benutzung dauert ungefähr zwanzig Minuten.",
+  "expect": [
+   "\"Die Benutzung dauert\" is not what a speaker says: die Fahrt dauert",
+   "\"Ich benutze den Bus, um zu der Arbeit zu kommen\" reads as translated: Ich fahre mit dem Bus zur Arbeit (zur, not zu der)"
+  ],
+  "band": [
+   55,
+   80
+  ],
+  "notes": "Grammatical but translated-sounding: naturalness findings should lead."
+ },
+ {
+  "id": "de-spelling-only",
+  "lang": "german",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "My brother lives in Munich and works at a bank.",
+  "said": "Mein bruder wohnt in Munchen und arbeitet bei einer bank.",
+  "expect": [
+   "spelling only: capitalise nouns (Bruder, Bank) and München with the umlaut; at most weakens"
+  ],
+  "band": [
+   85,
+   98
+  ],
+  "notes": "Only keyboard-type spelling; ideally one low-weight finding and a high score."
+ },
+ {
+  "id": "de-wordchoice-spelling",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What do you like to eat for breakfast?",
+  "target": "Was isst du gern zum Frühstück?",
+  "said": "Zum Frühstück esse ich meistens Brot mit Käse und trinke einen Kaffe. Am Wochenende mache ich manchmal Pfannkuchen, aber unter der Woche ist das mir zu schwer.",
+  "expect": [
+   "\"zu schwer\" reads as too heavy or too hard; for effort a speaker says zu aufwendig / zu viel Arbeit (and das ist mir, not ist das mir, is the usual order)",
+   "spelling: Kaffee"
+  ],
+  "band": [
+   70,
+   88
+  ],
+  "notes": "Start should be the word choice, never the spelling."
+ },
+ {
+  "id": "fr-agreement-silent",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What did you do last night?",
+  "target": "Qu'est-ce que tu as fait hier soir ?",
+  "said": "Hier soir, ma copine et moi sommes allé au cinéma. Le film était un peu long mais les acteurs étaient très bon.",
+  "expect": [
+   "silent participle agreement: sommes allés",
+   "silent plural agreement: très bons"
+  ],
+  "band": [
+   85,
+   97
+  ],
+  "notes": "Both errors inaudible: spelling-level, low rank, high score."
+ },
+ {
+  "id": "fr-excite",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": false,
+  "english": "What are you looking forward to this week?",
+  "target": "Qu'est-ce qui te fait plaisir cette semaine ?",
+  "said": "Ce week-end, je suis très excité parce que je vais voir des amis que je n'ai pas vus depuis longtemps.",
+  "expect": [
+   "\"je suis excité\" reads as agitated or aroused; a speaker says j'ai hâte / j'ai trop hâte de voir…"
+  ],
+  "band": [
+   60,
+   84
+  ],
+  "notes": "Grammar flawless (vus agrees); the anglicism is the start."
+ },
+ {
+  "id": "fr-homophones",
+  "lang": "french",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "My sister is at home and she is tired.",
+  "said": "Ma soeur et a la maison et elle est fatiguer.",
+  "expect": [
+   "et → est (is)",
+   "a → à",
+   "fatiguer → fatiguée"
+  ],
+  "band": [
+   78,
+   95
+  ],
+  "notes": "Every error sounds right aloud: spelling, weakens, low rank."
+ },
+ {
+  "id": "fr-gender-heard",
+  "lang": "french",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "Have you bought anything big recently?",
+  "target": "Tu as acheté quelque chose d'important récemment ?",
+  "said": "Oui, j'ai acheté un nouvelle voiture le mois dernier. Elle consomme beaucoup moins que l'ancien, donc je suis content.",
+  "expect": [
+   "audible gender: une nouvelle voiture",
+   "audible gender: l'ancienne"
+  ],
+  "band": [
+   75,
+   90
+  ],
+  "notes": "Audible but meaning clear: weakens, not breaks."
+ },
+ {
+  "id": "zh-ime-slips",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What do you often do at the weekend?",
+  "target": "你周末常常做什么？",
+  "said": "周末我常常在家休息，有时候跟朋友去公圆散步，或者在咖啡馆和茶。",
+  "expect": [
+   "公圆 → 公园 (same sound, wrong character)",
+   "和茶 → 喝茶 (keyboard slip, not a tone error)"
+  ],
+  "band": [
+   85,
+   97
+  ],
+  "notes": "Pinyin keyboard slips only: spelling as word-choice, never tone."
+ },
+ {
+  "id": "zh-stilted",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 4,
+  "typed": true,
+  "english": "What have you been busy with lately?",
+  "target": "你最近在忙什么？",
+  "said": "最近我非常忙碌于我的工作，因为我们公司有一个新的项目。我每天工作到很晚。",
+  "expect": [
+   "\"非常忙碌于我的工作\" is a translated, written-register structure; a speaker says 最近工作特别忙 / 最近在忙工作的事"
+  ],
+  "band": [
+   60,
+   82
+  ],
+  "notes": "Naturalness is the whole problem."
+ },
+ {
+  "id": "zh-measure-clear",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 2,
+  "typed": false,
+  "english": "Tell me about your family.",
+  "target": "说说你的家人吧。",
+  "said": "我家有三个人，我有一只哥哥，他在北京工作。",
+  "expect": [
+   "只 is for animals: 一个哥哥"
+  ],
+  "band": [
+   75,
+   90
+  ],
+  "notes": "Wrong classifier, meaning clear: weakens."
+ }
+]

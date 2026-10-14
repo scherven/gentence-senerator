@@ -36,6 +36,42 @@ struct VocabTests {
         #expect(VocabDrill.isDue(log.state(of: "k"), now: Self.now))
     }
 
+    /// Knew it, after a miss, is the newer word on it.
+    @Test func knownAfterAMissStaysAway() {
+        var log = QuizLog()
+        log.record(entry: "k", right: false, at: Self.now.addingTimeInterval(-86_400))
+        log.markKnown(entry: "k", at: Self.now)
+        #expect(!VocabDrill.isDue(log.state(of: "k"), now: Self.now.addingTimeInterval(86_400)))
+    }
+
+    /// A one-day word answered late in the evening is due the next morning.
+    @Test func intervalsAreWholeDays() {
+        let calendar = Calendar.current
+        let evening = calendar.date(bySettingHour: 21, minute: 0, second: 0, of: Self.now)!
+        let morning = calendar.date(byAdding: .hour, value: 11, to: evening)!
+        var log = QuizLog()
+        log.record(entry: "a", right: true, at: evening)
+        #expect(!VocabDrill.isDue(log.state(of: "a"), now: evening.addingTimeInterval(3600)))
+        #expect(VocabDrill.isDue(log.state(of: "a"), now: morning))
+    }
+
+    /// Nothing due or new: the fill is the oldest seen, never the known.
+    @Test func theFillLeavesKnownWordsAlone() {
+        let few = Array(Self.words.prefix(5))
+        var log = QuizLog()
+        let long = Self.now.addingTimeInterval(-90 * 86_400)
+        log.markKnown(entry: few[0].entry(.german), at: long)
+        for w in few.dropFirst() {
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
+        }
+        var rng = QuizTests.Seeded(state: 1)
+        let round = VocabDrill.round(words: few, language: .german, maxBand: 1,
+                                     state: { log.state(of: $0) }, now: Self.now, using: &rng)
+        #expect(round.items.count == 4)
+        #expect(!round.items.contains { $0.entry == few[0].entry(.german) })
+    }
+
     @Test func missedWordsComeFirstAndNewOnesStayInBand() {
         var log = QuizLog()
         let missed = Self.words[5].entry(.german)
@@ -54,20 +90,48 @@ struct VocabTests {
         var rng = QuizTests.Seeded(state: 5)
         let round = VocabDrill.round(words: Self.words, language: .german, maxBand: 3,
                                      state: { QuizLog().state(of: $0) }, now: Self.now, using: &rng)
-        for (i, item) in round.items.enumerated() where !item.id.hasSuffix("|art") {
+        for (i, item) in round.items.enumerated() {
             #expect(item.id.hasSuffix(i.isMultiple(of: 2) ? "|meaning" : "|word"))
         }
     }
 
-    @Test func itemsHaveOneRightAnswerAndNoDuplicateOptions() {
+    @Test func cardsCarryTheArticleOnTheBack() {
         var rng = QuizTests.Seeded(state: 3)
-        for w in Self.words.prefix(20) {
-            let item = VocabDrill.item(for: w, language: .german, among: Self.words, using: &rng)
-            let step = item.steps[0]
-            #expect(Set(step.options).count == step.options.count)
-            #expect(step.options.indices.contains(step.answer))
-            #expect(item.format.rules.options?.contains(step.options.count) ?? false)
+        let w = Self.word("Zeitung", en: "newspaper")
+        let toEnglish = VocabDrill.item(for: w, language: .german, toEnglish: true, using: &rng)
+        #expect(toEnglish.format == .card && toEnglish.prompt == "Zeitung")
+        #expect(toEnglish.accept == ["newspaper"] && toEnglish.gloss == "die Zeitung")
+        let toWord = VocabDrill.item(for: w, language: .german, toEnglish: false, using: &rng)
+        #expect(toWord.prompt == "newspaper" && toWord.accept == ["die Zeitung"])
+        #expect(toWord.problems.isEmpty && toEnglish.problems.isEmpty)
+    }
+
+    @Test func frenchElides() {
+        let usine = VocabWord(w: "usine", band: 1, pos: "noun", art: "la", py: nil, en: "factory", skip: nil)
+        #expect(usine.shown(.french) == "l'usine f.")
+        #expect(Self.word("table", art: "la").shown(.french) == "la table")
+    }
+
+    /// Endless words: what's due, then new words one in three.
+    @Test func endlessWordsMixNewAndOld() {
+        var log = QuizLog()
+        // Seen today, so a one-day word is not due yet.
+        for w in Self.words.prefix(12) {
+            log.record(entry: w.entry(.german), right: true, at: Self.now)
         }
+        log.record(entry: Self.words[0].entry(.german), right: false, at: Self.now)
+        var rng = QuizTests.Seeded(state: 9)
+        let items = VocabDrill.next(words: Self.words, language: .german, maxBand: 2,
+                                    state: { log.state(of: $0) }, asked: [], now: Self.now,
+                                    count: 9, startIndex: 0, using: &rng)
+        #expect(items.count == 9)
+        #expect(items[0].entry == Self.words[0].entry(.german))
+        let new = items.filter { log.state(of: $0.entry).recent.isEmpty }
+        #expect(new.count == 2)
+        let again = VocabDrill.next(words: Self.words, language: .german, maxBand: 2,
+                                    state: { log.state(of: $0) }, asked: Set(items.map(\.entry)),
+                                    now: Self.now, count: 9, startIndex: 9, using: &rng)
+        #expect(Set(again.map(\.entry)).isDisjoint(with: items.map(\.entry)))
     }
 
     @Test func pluralOnlyNounsAreNotAskedTheirArticle() {
@@ -101,7 +165,7 @@ struct VocabTests {
     /// The shipped lists decode and make full rounds at every band.
     @MainActor @Test func shippedListsMakeRounds() {
         let library = BookLibrary()
-        for (language, top) in [(Language.german, 4), (.french, 4), (.mandarin, 6)] {
+        for (language, top) in [(Language.german, 4), (.french, 4), (.mandarin, 6), (.spanish, 4), (.korean, 4)] {
             let words = library.words(for: language)
             #expect(words.count > 3000, "\(language)")
             for band in 1...top {
@@ -109,10 +173,140 @@ struct VocabTests {
                                              state: { QuizLog().state(of: $0) })
                 #expect(round.items.count == 20)
                 for item in round.items {
-                    #expect(Set(item.steps[0].options).count == item.steps[0].options.count, "\(item.id)")
-                    #expect(item.format.rules.options?.contains(item.steps[0].options.count) ?? false)
+                    #expect(item.problems.isEmpty, "\(item.id)")
+                    #expect(!(item.accept.first ?? "").isEmpty, "\(item.id)")
                 }
             }
         }
+    }
+
+    // MARK: All languages
+
+    static let three: [Language] = [.german, .french, .mandarin]
+
+    @Test func frontsTurnAndEnglishComesSecond() {
+        typealias F = ConceptDeck.Face
+        let ring = Self.three
+        #expect(ConceptDeck.faces(turn: 0, ring: ring) == [F.language(.german), .en, .language(.french), .language(.mandarin)])
+        #expect(ConceptDeck.faces(turn: 1, ring: ring) == [F.language(.french), .en, .language(.mandarin), .language(.german)])
+        #expect(ConceptDeck.faces(turn: 2, ring: ring) == [F.language(.mandarin), .en, .language(.german), .language(.french)])
+        #expect(ConceptDeck.faces(turn: 3, ring: ring) == [F.en, .language(.german), .language(.french), .language(.mandarin)])
+        #expect(ConceptDeck.faces(turn: 4, ring: ring) == ConceptDeck.faces(turn: 0, ring: ring))
+    }
+
+    /// The ring is the languages on, in a fixed order, whatever order they
+    /// were turned on in.
+    @Test func theRingFollowsTheLanguagesOn() {
+        #expect(ConceptDeck.ring([.korean, .german, .spanish]) == [.german, .spanish, .korean])
+        #expect(ConceptDeck.ring(Language.allCases) == [.german, .french, .spanish, .mandarin, .korean])
+    }
+
+    @Test func dueConceptsFirst() {
+        let rows = (0..<5).map {
+            Concept(en: "e\($0)", words: [.german: "d\($0)", .french: "f\($0)", .mandarin: "z\($0)"])
+        }
+        var log = QuizLog()
+        log.record(entry: ConceptDeck.entry(rows[3], .french), right: false, at: Self.now)
+        let next = ConceptDeck.next(concepts: rows, ring: Self.three, state: { log.state(of: $0) },
+                                    asked: [], now: Self.now, count: 3)
+        #expect(next.first == rows[3])
+        #expect(next.count == 3)
+    }
+
+    /// A row missing a language that is on is left out of the deck.
+    @Test func rowsMustCoverTheRing() {
+        let full = Concept(en: "dog", words: [.german: "Hund", .spanish: "perro"])
+        let part = Concept(en: "cat", words: [.german: "Katze"])
+        let next = ConceptDeck.next(concepts: [full, part], ring: [.german, .spanish],
+                                    state: { _ in EntryState(standing: .never, slipping: false, lastSeen: nil, recent: []) },
+                                    asked: [], now: Self.now, count: 5)
+        #expect(next == [full])
+    }
+
+    /// The shipped rows point at words that exist.
+    @MainActor @Test func shippedConceptsResolve() {
+        let library = BookLibrary()
+        let rows = library.concepts()
+        #expect(rows.count > 1000)
+        for row in rows.prefix(200) {
+            for (language, word) in row.words {
+                #expect(library.word(word, in: language) != nil, "\(row.en) \(language)")
+            }
+        }
+    }
+
+    // MARK: Rules and endless
+
+    /// Every rules item ships usable: none dropped on load.
+    @MainActor @Test func shippedRulesLoad() throws {
+        let library = BookLibrary()
+        for language in Language.allCases {
+            let rules = library.rules(for: language)
+            #expect(rules.count > 40, "\(language)")
+            let url = try #require(Bundle.main.url(forResource: "rules-\(language.rawValue)", withExtension: "json"))
+            let raw = try JSONDecoder().decode([QuizItem].self, from: Data(contentsOf: url))
+            #expect(raw.count == rules.count, "\(language)")
+        }
+    }
+
+    @Test func aMissComesBackLater() {
+        let items = (0..<6).map { QuizTests.pick("i\($0)", entry: "e\($0)") }
+        var round = QuizRound(plan: QuizPlan(id: "x", name: "X", mix: .init(words: true)), items: items)
+        round.answer(1, .init(steps: [false], given: ["a"]))
+        round.again(1, after: 3)
+        #expect(round.items.count == 7)
+        #expect(round.items[5].entry == "e1" && round.items[5].id != "i1")
+        #expect(round.answers[5] == nil)
+        round.append([QuizTests.pick("i9", entry: "e9")])
+        #expect(round.items.count == 8 && round.answers.count == 8)
+    }
+
+    // MARK: Top-ups
+
+    static func draft(_ prompt: String, entry: String = "c.a", format: String = "pick-one",
+                      options: [String] = ["auf", "an", "für"]) -> TopUp.Written.Draft {
+        TopUp.Written.Draft(entry: entry, format: format, prompt: prompt, gloss: "g", task: "", why: "w",
+                            steps: [.init(prompt: "", options: options, answer: 0)],
+                            tiles: [], decoys: [], accept: [])
+    }
+
+    /// Only new, well-formed items for this chapter's entries and formats.
+    @Test func topUpsKeepOnlyWhatIsNew() {
+        let chapter = Chapter(id: "c", name: "C", sub: "", layout: .list,
+                              entries: [Chapter.Entry(id: "c.a", head: "warten auf")], formats: [.pickOne])
+        let used = ["Wir warten seit zehn Minuten ＿ den Bus."]
+        let kept = TopUp.keep([
+            Self.draft("Wir warten seit zehn Minuten ＿ den Bus!"),           // the used one again
+            Self.draft("Sie wartet am Bahnhof ＿ ihre Schwester."),          // new
+            Self.draft("Sie wartet am Bahnhof ＿ ihre Schwester."),          // twice in one reply
+            Self.draft("Er denkt ＿ dich.", entry: "other.entry"),           // not this chapter
+            Self.draft("Er wartet ＿ dich.", format: "flip"),               // format not allowed
+            Self.draft("Er wartet ＿ dich.", options: ["auf", "auf", "an"]), // breaks the rules
+        ], chapter: chapter, used: used, idPrefix: "t")
+        #expect(kept.map(\.prompt) == ["Sie wartet am Bahnhof ＿ ihre Schwester."])
+        #expect(kept[0].steps[0].prompt == nil && kept[0].task == nil)
+    }
+
+    @Test func similarityReadsLikeAReader() {
+        #expect(TopUp.similarity("Ich warte auf den Bus.", "ich warte auf den Bus") == 1)
+        #expect(TopUp.similarity("Ich warte auf den Bus.", "Wir freuen uns auf das Wochenende.") < TopUp.sameAt)
+    }
+
+    /// Settings saved before languages could be turned off: the three
+    /// reviewed ones, plus whichever is in use.
+    @Test func oldSettingsOfferTheLanguageInUse() throws {
+        let old = try JSONDecoder().decode(Settings.self, from: Data(#"{"language":"korean"}"#.utf8))
+        #expect(old.languages == [.mandarin, .german, .french, .korean])
+        let none = try JSONDecoder().decode(Settings.self, from: Data("{}".utf8))
+        #expect(none.languages == [.mandarin, .german, .french])
+    }
+
+    @Test func oldSpendDaysStillDecode() throws {
+        let old = #"{"days":{"2026-10-01":{"input":1000000,"output":0,"cacheRead":0,"cacheWrite":0}}}"#
+        var spend = try JSONDecoder().decode(Spend.self, from: Data(old.utf8))
+        #expect(spend.days["2026-10-01"]?.dollars == 5)
+        spend.addSonnet(.init(inputTokens: 1_000_000, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0),
+                       on: Date(timeIntervalSince1970: 1_790_000_000))
+        #expect(spend.days.values.contains { abs($0.topUps - 2) < 0.0001 })
     }
 }

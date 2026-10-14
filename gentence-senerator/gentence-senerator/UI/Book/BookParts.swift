@@ -11,6 +11,8 @@ enum BookRoute: Hashable {
 extension EnvironmentValues {
     /// Starts a quiz over whatever is on screen. Set by the shell.
     @Entry var startQuiz: (QuizPlan) -> Void = { _ in }
+    /// Opens the ALL LANGUAGES deck. Set by the shell.
+    @Entry var startAllLanguages: () -> Void = {}
 }
 
 enum BookColour {
@@ -126,7 +128,7 @@ extension EntryState {
     var label: String {
         if slipping { return "SLIPPING" }
         switch standing {
-        case .never:   return "NEVER USED"
+        case .never:   return "NEVER"
         case .tried:   return "TRIED"
         case .holding: return "HOLDING"
         case .solid:   return "SOLID"
@@ -143,17 +145,5 @@ struct BookTag: View {
 
     var body: some View {
         Tag(text, .tinted(colour))
-    }
-}
-
-/// The swipe back survives a hidden navigation bar.
-extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        interactivePopGestureRecognizer?.delegate = self
-    }
-
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        viewControllers.count > 1
     }
 }

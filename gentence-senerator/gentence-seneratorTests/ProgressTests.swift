@@ -46,6 +46,19 @@ struct ProgressTests {
              seed: .init(subject: subject, context: "我已经吃", pointID: nil))
     }
 
+    /// Each retrieval on the day it falls due, as the schedule would hand it
+    /// out. Returns the last of those days.
+    @discardableResult
+    static func retrieveWhenDue(_ progress: inout Progress, _ subject: String,
+                                times: Int) -> Date {
+        var at = day
+        for _ in 0..<times {
+            at = progress.encounters.values.first { $0.subject == subject }?.dueAt ?? at
+            progress.retrieved(subject: subject, language: .mandarin, on: at)
+        }
+        return at
+    }
+
     // MARK: Retrieval
 
     @Test func retrievalHeldGoesUpTheLadder() {
@@ -121,6 +134,19 @@ struct ProgressTests {
         #expect(progress.encounters[Atom.identify(.gender, "le")]?.stage == 1)
     }
 
+    /// Translate and produce weave the same due subjects; both coming back
+    /// clean is still one day.
+    @Test func aSecondCleanRetrievalTheSameDayDoesNothing() {
+        var progress = Self.progress(Self.encounter(.particle, "已经", stage: 2))
+        progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
+        progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
+
+        let e = progress.encounters[Atom.identify(.particle, "已经")]
+        #expect(e?.stage == 3)
+        #expect(e?.cleanRuns == 1)
+        #expect(e?.dueAt == Self.days(7))
+    }
+
     // MARK: Sightings
 
     /// An encounter with no date is invisible to `due`, so a finding nobody
@@ -146,6 +172,43 @@ struct ProgressTests {
         #expect(e?.sightings == 2)
         #expect(e?.stage == 1)
         #expect(e?.dueAt == Self.days(1))
+    }
+
+    /// Retired, then made again in a sentence that never wove it: the miss
+    /// `missed` would have caught, had it been asked.
+    @Test func aRetiredEncounterComesBackOnASighting() {
+        var progress = Self.progress(Self.encounter(.particle, "已经", stage: 4))
+        let held = Self.retrieveWhenDue(&progress, "已经", times: 3)
+        progress.saw(Self.atom(.particle, "已经"), language: .mandarin, on: held)
+
+        let e = progress.encounters[Atom.identify(.particle, "已经")]
+        #expect(e?.standing == .active)
+        #expect(e?.cleanRuns == 0)
+        #expect(e?.dueAt == Self.days(35, after: held))
+    }
+
+    /// An unwoven repeat ends the run and brings the date in, never out.
+    @Test func aSightingEndsTheRunAndPullsTheDateIn() {
+        var progress = Self.progress(Self.encounter(.particle, "已经", stage: 2))
+        progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
+        progress.saw(Self.atom(.particle, "已经"), language: .mandarin, on: Self.day)
+
+        let e = progress.encounters[Atom.identify(.particle, "已经")]
+        #expect(e?.cleanRuns == 0)
+        #expect(e?.stage == 3)
+        #expect(e?.dueAt == Self.days(1))
+    }
+
+    /// `missed` already moved it; the sighting of the same turn only counts.
+    @Test func aWovenSightingLeavesTheMissAlone() {
+        var progress = Self.progress(Self.encounter(.particle, "已经", stage: 3))
+        progress.missed(subject: "已经", language: .mandarin, on: Self.day)
+        progress.saw(Self.atom(.particle, "已经"), language: .mandarin, on: Self.day,
+                     woven: true)
+
+        let e = progress.encounters[Atom.identify(.particle, "已经")]
+        #expect(e?.sightings == 1)
+        #expect(e?.dueAt == Self.days(7))
     }
 
     /// Opening a lesson is the stronger signal and stays that way.
@@ -232,15 +295,54 @@ struct ProgressTests {
         #expect(settings.levelChangedAt == nil)
     }
 
+    @Test func settingsMissingAKeyKeepTheRest() throws {
+        let stored = #"{"language":"german","level":4}"#
+        let settings = try JSONDecoder().decode(Settings.self, from: Data(stored.utf8))
+
+        #expect(settings.language == .german)
+        #expect(settings.level == 4)
+        #expect(settings.dailyGoal == Settings().dailyGoal)
+    }
+
+    /// One encounter of a kind that no longer exists costs that encounter.
+    @Test func anUnknownKindDropsOnlyItsEncounter() throws {
+        let stored = """
+        {"encounters":{
+          "particle/已经":{"atomID":"particle/已经","kind":"particle","subject":"已经",
+            "language":"mandarin","firstSeen":0,"lastSeen":0,"visits":0,
+            "knowledge":"gap","stage":1},
+          "gone/x":{"atomID":"gone/x","kind":"gone","subject":"x",
+            "language":"mandarin","firstSeen":0,"lastSeen":0,"visits":0,
+            "knowledge":"gap","stage":1}},
+         "structures":{},"xp":0,"streak":0}
+        """
+        let progress = try JSONDecoder().decode(Progress.self, from: Data(stored.utf8))
+
+        #expect(progress.encounters.keys.sorted() == ["particle/已经"])
+    }
+
+    @Test func aListDropsOnlyWhatFails() throws {
+        let stored = #"[1, "two", 3]"#
+        let lossy = try JSONDecoder().decode([Lossy<Int>].self, from: Data(stored.utf8))
+
+        #expect(lossy.compactMap(\.value) == [1, 3])
+    }
+
+    /// Keys are compared as strings, so they are Gregorian whatever the device
+    /// calendar says.
+    @Test func dayKeysAreGregorian() {
+        let key = Spend.key(Self.day)
+        #expect(key.hasPrefix("2026-"))
+        #expect(Spend.date(key) == Calendar.current.startOfDay(for: Self.day))
+    }
+
     // MARK: Retirement
 
     /// Otherwise nothing ever leaves: the top rung reschedules itself forever
     /// and the queue only grows.
     @Test func threeCleanRetrievalsAtTheTopRetireIt() {
         var progress = Self.progress(Self.encounter(.particle, "已经", stage: 4))
-        for _ in 0..<3 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 3)
 
         let e = progress.encounters[Atom.identify(.particle, "已经")]
         #expect(e?.standing == .held)
@@ -249,39 +351,31 @@ struct ProgressTests {
 
     @Test func twoCleanRetrievalsAreNotEnough() {
         var progress = Self.progress(Self.encounter(.particle, "已经", stage: 4))
-        for _ in 0..<2 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 2)
 
         let e = progress.encounters[Atom.identify(.particle, "已经")]
         #expect(e?.standing == .active)
-        #expect(e?.dueAt == Self.days(35))
+        #expect(e?.dueAt == Self.days(70))
     }
 
     /// Three clean runs part-way up the ladder are the ladder working, not a
     /// reason to stop asking.
     @Test func cleanRunsBelowTheTopRungDoNotRetire() {
         var progress = Self.progress(Self.encounter(.particle, "已经", stage: 0))
-        for _ in 0..<3 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 3)
 
         let e = progress.encounters[Atom.identify(.particle, "已经")]
         #expect(e?.stage == 3)
         #expect(e?.standing == .active)
-        #expect(e?.dueAt == Self.days(7))
+        #expect(e?.dueAt == Self.days(11))
     }
 
     /// Consecutive, not cumulative.
     @Test func aMissResetsTheCleanRun() {
         var progress = Self.progress(Self.encounter(.particle, "已经", stage: 4))
-        for _ in 0..<2 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
-        progress.missed(subject: "已经", language: .mandarin, on: Self.day)
-        for _ in 0..<2 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        let last = Self.retrieveWhenDue(&progress, "已经", times: 2)
+        progress.missed(subject: "已经", language: .mandarin, on: last)
+        Self.retrieveWhenDue(&progress, "已经", times: 2)
 
         let e = progress.encounters[Atom.identify(.particle, "已经")]
         #expect(e?.cleanRuns == 2)
@@ -295,9 +389,7 @@ struct ProgressTests {
             Self.encounter(.particle, "已经", stage: 4),
             Self.encounter(.tone, "shì", stage: 4)
         )
-        for _ in 0..<3 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 3)
         progress.leaveOut(Atom.identify(.tone, "shì"))
 
         #expect(progress.encounters[Atom.identify(.particle, "已经")]?.standing == .held)
@@ -308,9 +400,7 @@ struct ProgressTests {
     /// Retiring it was a conclusion, and this is the evidence against it.
     @Test func aRetiredEncounterComesBackOnAMiss() {
         var progress = Self.progress(Self.encounter(.particle, "已经", stage: 4))
-        for _ in 0..<3 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 3)
         progress.missed(subject: "已经", language: .mandarin, on: Self.day)
 
         let e = progress.encounters[Atom.identify(.particle, "已经")]
@@ -338,9 +428,7 @@ struct ProgressTests {
             Self.encounter(.tone, "shì", stage: 0),
             Self.encounter(.wordOrder, "把", stage: 0)
         )
-        for _ in 0..<3 {
-            progress.retrieved(subject: "已经", language: .mandarin, on: Self.day)
-        }
+        Self.retrieveWhenDue(&progress, "已经", times: 3)
         progress.retrieved(subject: "把", language: .mandarin, on: Self.day)
 
         let tally = progress.tally(language: .mandarin, on: Self.day)

@@ -28,13 +28,16 @@ CUR = os.path.join(APP, "Curriculum")
 KEYFILE = os.path.join(APP, "key.swift")
 M64 = (1 << 64) - 1
 
-LANG_NAME = {"mandarin": "Mandarin", "german": "German", "french": "French"}
+LANG_NAME = {"mandarin": "Mandarin", "german": "German", "french": "French",
+             "spanish": "Spanish", "korean": "Korean"}
 GEN_NOTES = {
     "mandarin": "Write the English prompt so a natural Mandarin rendering needs the\ntarget structure. No Chinese in the English prompt.",
     "german": "No German in the English prompt.",
     "french": "No French in the English prompt.",
+    "spanish": "No Spanish in the English prompt. Plural you is ustedes.",
+    "korean": "No Korean in the English prompt. When the speech level matters, say who\nis being spoken to; otherwise 해요체 is expected.",
 }
-LEVELS = {"french": 2, "german": 2, "mandarin": 3}
+LEVELS = {"french": 2, "german": 2, "mandarin": 3, "spanish": 2, "korean": 2}
 
 # --- port of DayPlan.swift: lifeDomains, seed, domain (seeded xorshift + FNV-1a) ---
 LIFE_DOMAINS = ["work", "family", "food and cooking", "money", "sleep", "travel",
@@ -76,6 +79,8 @@ def seed_word(have, new, turn):
 def level_label(lang, n):
     if lang == "mandarin":
         return f"HSK {min(max(n, 1), 9)}"
+    if lang == "korean":
+        return f"TOPIK {min(max(n, 1), 6)}"
     return ["A1", "A2", "B1", "B2", "C1", "C2"][min(max(n - 1, 0), 5)]
 
 def voice(lang):

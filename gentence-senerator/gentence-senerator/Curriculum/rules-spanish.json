@@ -1,0 +1,1408 @@
+[
+ {
+  "id": "rule.es.gender.libro",
+  "entry": "es.gender.libro",
+  "format": "flip",
+  "prompt": "＿ libro",
+  "why": "-o: masculine",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.mano",
+  "entry": "es.gender.mano",
+  "format": "flip",
+  "prompt": "＿ mano",
+  "why": "exception",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.casa",
+  "entry": "es.gender.casa",
+  "format": "flip",
+  "prompt": "＿ casa",
+  "why": "-a: feminine",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.dia",
+  "entry": "es.gender.dia",
+  "format": "flip",
+  "prompt": "＿ día",
+  "why": "exception",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.problema",
+  "entry": "es.gender.problema",
+  "format": "flip",
+  "prompt": "＿ problema",
+  "why": "Greek -ma",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.idioma",
+  "entry": "es.gender.idioma",
+  "format": "flip",
+  "prompt": "＿ idioma",
+  "why": "Greek -ma",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.clima",
+  "entry": "es.gender.clima",
+  "format": "flip",
+  "prompt": "＿ clima",
+  "why": "Greek -ma",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.cama",
+  "entry": "es.gender.cama",
+  "format": "flip",
+  "prompt": "＿ cama",
+  "why": "not Greek: regular -a",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.cancion",
+  "entry": "es.gender.cancion",
+  "format": "flip",
+  "prompt": "＿ canción",
+  "why": "always",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.ciudad",
+  "entry": "es.gender.ciudad",
+  "format": "flip",
+  "prompt": "＿ ciudad",
+  "why": "always",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.costumbre",
+  "entry": "es.gender.costumbre",
+  "format": "flip",
+  "prompt": "＿ costumbre",
+  "why": "always",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.viaje",
+  "entry": "es.gender.viaje",
+  "format": "flip",
+  "prompt": "＿ viaje",
+  "why": "always",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.color",
+  "entry": "es.gender.color",
+  "format": "flip",
+  "prompt": "＿ color",
+  "why": "mostly masculine",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.flor",
+  "entry": "es.gender.flor",
+  "format": "flip",
+  "prompt": "＿ flor",
+  "why": "exception",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.noche",
+  "entry": "es.gender.noche",
+  "format": "flip",
+  "prompt": "＿ noche",
+  "why": "no rule: learn it",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.gente",
+  "entry": "es.gender.gente",
+  "format": "flip",
+  "prompt": "＿ gente",
+  "why": "singular: la gente es",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.agua",
+  "entry": "es.gender.agua",
+  "format": "flip",
+  "prompt": "＿ agua",
+  "why": "feminine: el agua fría",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.gender.hambre",
+  "entry": "es.gender.hambre",
+  "format": "flip",
+  "prompt": "＿ hambre",
+  "why": "feminine: mucha hambre",
+  "steps": [
+   {
+    "options": [
+     "el",
+     "la"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.identity",
+  "entry": "es.ser-estar.identity",
+  "format": "flip",
+  "prompt": "identity, relation → ＿",
+  "why": "ser + who",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.job",
+  "entry": "es.ser-estar.job",
+  "format": "flip",
+  "prompt": "no article → ＿",
+  "why": "ser + job",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.owner",
+  "entry": "es.ser-estar.owner",
+  "format": "flip",
+  "prompt": "whose → ＿",
+  "why": "ser de + owner",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.origin",
+  "entry": "es.ser-estar.origin",
+  "format": "flip",
+  "prompt": "origin → ＿",
+  "why": "ser de + place",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.location",
+  "entry": "es.ser-estar.location",
+  "format": "flip",
+  "prompt": "where something is → ＿",
+  "why": "estar en + place",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.event",
+  "entry": "es.ser-estar.event",
+  "format": "flip",
+  "prompt": "where an event happens → ＿",
+  "why": "ser + event place",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.trait",
+  "entry": "es.ser-estar.trait",
+  "format": "flip",
+  "prompt": "what it's like → ＿",
+  "why": "ser + trait",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.state",
+  "entry": "es.ser-estar.state",
+  "format": "flip",
+  "prompt": "how it is right now → ＿",
+  "why": "estar + state",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.time",
+  "entry": "es.ser-estar.time",
+  "format": "flip",
+  "prompt": "clock, day, date → ＿",
+  "why": "ser + time, date",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.gerund",
+  "entry": "es.ser-estar.gerund",
+  "format": "flip",
+  "prompt": "in progress → ＿",
+  "why": "estar + -ndo",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.passive",
+  "entry": "es.ser-estar.passive",
+  "format": "flip",
+  "prompt": "passive action → ＿",
+  "why": "ser + participle",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.resultative",
+  "entry": "es.ser-estar.resultative",
+  "format": "flip",
+  "prompt": "result of an action → ＿",
+  "why": "estar + participle",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.listo-ser",
+  "entry": "es.ser-estar.listo-ser",
+  "format": "flip",
+  "prompt": "clever → ＿",
+  "why": "ser listo",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.listo-estar",
+  "entry": "es.ser-estar.listo-estar",
+  "format": "flip",
+  "prompt": "ready → ＿",
+  "why": "estar listo",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.aburrido-ser",
+  "entry": "es.ser-estar.aburrido-ser",
+  "format": "flip",
+  "prompt": "boring → ＿",
+  "why": "ser aburrido",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.aburrido-estar",
+  "entry": "es.ser-estar.aburrido-estar",
+  "format": "flip",
+  "prompt": "bored → ＿",
+  "why": "estar aburrido",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.rico-ser",
+  "entry": "es.ser-estar.rico-ser",
+  "format": "flip",
+  "prompt": "rich → ＿",
+  "why": "ser rico",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.ser-estar.rico-estar",
+  "entry": "es.ser-estar.rico-estar",
+  "format": "flip",
+  "prompt": "tasty → ＿",
+  "why": "estar rico",
+  "steps": [
+   {
+    "options": [
+     "SER",
+     "ESTAR"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.through",
+  "entry": "es.por-para.through",
+  "format": "flip",
+  "prompt": "through, around → ＿",
+  "why": "por + place",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.toward",
+  "entry": "es.por-para.toward",
+  "format": "flip",
+  "prompt": "heading to → ＿",
+  "why": "para + place",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.cause",
+  "entry": "es.por-para.cause",
+  "format": "flip",
+  "prompt": "because of → ＿",
+  "why": "por + cause",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.purpose",
+  "entry": "es.por-para.purpose",
+  "format": "flip",
+  "prompt": "in order to → ＿",
+  "why": "para + infinitive",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.sake",
+  "entry": "es.por-para.sake",
+  "format": "flip",
+  "prompt": "for your sake → ＿",
+  "why": "por + person",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.recipient",
+  "entry": "es.por-para.recipient",
+  "format": "flip",
+  "prompt": "recipient → ＿",
+  "why": "para + person",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.part-day",
+  "entry": "es.por-para.part-day",
+  "format": "flip",
+  "prompt": "during → ＿",
+  "why": "por + part of day",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.deadline",
+  "entry": "es.por-para.deadline",
+  "format": "flip",
+  "prompt": "by → ＿",
+  "why": "para + deadline",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.price",
+  "entry": "es.por-para.price",
+  "format": "flip",
+  "prompt": "in exchange → ＿",
+  "why": "por + price",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.means",
+  "entry": "es.por-para.means",
+  "format": "flip",
+  "prompt": "by, via → ＿",
+  "why": "por + means",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.opinion",
+  "entry": "es.por-para.opinion",
+  "format": "flip",
+  "prompt": "in my view → ＿",
+  "why": "para mí",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.considering",
+  "entry": "es.por-para.considering",
+  "format": "flip",
+  "prompt": "considering → ＿",
+  "why": "para + comparison",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.ir-por",
+  "entry": "es.por-para.ir-por",
+  "format": "flip",
+  "prompt": "go get → ＿",
+  "why": "ir por",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.estar-por",
+  "entry": "es.por-para.estar-por",
+  "format": "flip",
+  "prompt": "about to → ＿",
+  "why": "estar por + infinitive",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.agent",
+  "entry": "es.por-para.agent",
+  "format": "flip",
+  "prompt": "by (passive) → ＿",
+  "why": "por + agent",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.fixed-por",
+  "entry": "es.por-para.fixed-por",
+  "format": "flip",
+  "prompt": "fixed → ＿",
+  "why": "por fin · por eso · por cierto",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.por-para.fixed-para",
+  "entry": "es.por-para.fixed-para",
+  "format": "flip",
+  "prompt": "fixed → ＿",
+  "why": "para nada · para siempre",
+  "steps": [
+   {
+    "options": [
+     "POR",
+     "PARA"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.event",
+  "entry": "es.past.event",
+  "format": "flip",
+  "prompt": "what happened → ＿",
+  "why": "a finished event",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.habit",
+  "entry": "es.past.habit",
+  "format": "flip",
+  "prompt": "habit → ＿",
+  "why": "used to",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.scene",
+  "entry": "es.past.scene",
+  "format": "flip",
+  "prompt": "the scene → ＿",
+  "why": "background, weather, time",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.action",
+  "entry": "es.past.action",
+  "format": "flip",
+  "prompt": "what happened next → ＿",
+  "why": "action in the scene",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.ongoing",
+  "entry": "es.past.ongoing",
+  "format": "flip",
+  "prompt": "the interrupted → ＿",
+  "why": "ongoing when …",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.interrupt",
+  "entry": "es.past.interrupt",
+  "format": "flip",
+  "prompt": "the interrupter → ＿",
+  "why": "… the interruption",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.supe",
+  "entry": "es.past.supe",
+  "format": "flip",
+  "prompt": "supe → ＿",
+  "gloss": "found out",
+  "why": "supe",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.sabia",
+  "entry": "es.past.sabia",
+  "format": "flip",
+  "prompt": "sabía → ＿",
+  "gloss": "knew",
+  "why": "sabía",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.quiso",
+  "entry": "es.past.quiso",
+  "format": "flip",
+  "prompt": "no quiso → ＿",
+  "gloss": "refused",
+  "why": "no quiso",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.queria",
+  "entry": "es.past.queria",
+  "format": "flip",
+  "prompt": "quería → ＿",
+  "gloss": "wanted",
+  "why": "quería",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.pude",
+  "entry": "es.past.pude",
+  "format": "flip",
+  "prompt": "pude → ＿",
+  "gloss": "managed to",
+  "why": "pude",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.past.podia",
+  "entry": "es.past.podia",
+  "format": "flip",
+  "prompt": "podía → ＿",
+  "gloss": "was able to",
+  "why": "podía",
+  "steps": [
+   {
+    "options": [
+     "PRETÉRITO",
+     "IMPERFECTO"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.ir-a",
+  "entry": "es.verb-prep.ir-a",
+  "format": "pick-one",
+  "prompt": "ir ＿",
+  "gloss": "motion to",
+  "steps": [
+   {
+    "options": [
+     "por",
+     "de",
+     "con",
+     "a"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.llegar-a",
+  "entry": "es.verb-prep.llegar-a",
+  "format": "pick-one",
+  "prompt": "llegar ＿",
+  "gloss": "arrive at",
+  "steps": [
+   {
+    "options": [
+     "por",
+     "con",
+     "a",
+     "de"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.entrar-a",
+  "entry": "es.verb-prep.entrar-a",
+  "format": "pick-one",
+  "prompt": "entrar ＿",
+  "gloss": "Mexico: a, not en",
+  "steps": [
+   {
+    "options": [
+     "con",
+     "de",
+     "a",
+     "en"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.aprender-a",
+  "entry": "es.verb-prep.aprender-a",
+  "format": "pick-one",
+  "prompt": "aprender ＿",
+  "gloss": "learn to",
+  "steps": [
+   {
+    "options": [
+     "en",
+     "a",
+     "por",
+     "de"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.ayudar-a",
+  "entry": "es.verb-prep.ayudar-a",
+  "format": "pick-one",
+  "prompt": "ayudar ＿",
+  "gloss": "help to",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "con",
+     "en",
+     "a"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.estar-en",
+  "entry": "es.verb-prep.estar-en",
+  "format": "pick-one",
+  "prompt": "estar ＿",
+  "gloss": "location",
+  "steps": [
+   {
+    "options": [
+     "con",
+     "por",
+     "a",
+     "en"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.pensar-en",
+  "entry": "es.verb-prep.pensar-en",
+  "format": "pick-one",
+  "prompt": "pensar ＿",
+  "gloss": "think about",
+  "steps": [
+   {
+    "options": [
+     "por",
+     "a",
+     "en",
+     "de"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.confiar-en",
+  "entry": "es.verb-prep.confiar-en",
+  "format": "pick-one",
+  "prompt": "confiar ＿",
+  "gloss": "trust",
+  "steps": [
+   {
+    "options": [
+     "en",
+     "con",
+     "por",
+     "de"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.tardar-en",
+  "entry": "es.verb-prep.tardar-en",
+  "format": "pick-one",
+  "prompt": "tardar ＿",
+  "gloss": "take long to",
+  "steps": [
+   {
+    "options": [
+     "con",
+     "en",
+     "a",
+     "por"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.quedar-en",
+  "entry": "es.verb-prep.quedar-en",
+  "format": "pick-one",
+  "prompt": "quedar ＿",
+  "gloss": "agree to",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "por",
+     "a",
+     "en"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.sonar-con",
+  "entry": "es.verb-prep.sonar-con",
+  "format": "pick-one",
+  "prompt": "soñar ＿",
+  "gloss": "dream of",
+  "steps": [
+   {
+    "options": [
+     "a",
+     "con",
+     "de",
+     "en"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.casarse-con",
+  "entry": "es.verb-prep.casarse-con",
+  "format": "pick-one",
+  "prompt": "casarse ＿",
+  "gloss": "marry",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "con",
+     "en",
+     "por"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.contar-con",
+  "entry": "es.verb-prep.contar-con",
+  "format": "pick-one",
+  "prompt": "contar ＿",
+  "gloss": "count on",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "en",
+     "a",
+     "con"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.platicar-con",
+  "entry": "es.verb-prep.platicar-con",
+  "format": "pick-one",
+  "prompt": "platicar ＿",
+  "gloss": "chat with",
+  "steps": [
+   {
+    "options": [
+     "con",
+     "a",
+     "de",
+     "por"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.acordarse-de",
+  "entry": "es.verb-prep.acordarse-de",
+  "format": "pick-one",
+  "prompt": "acordarse ＿",
+  "gloss": "remember",
+  "steps": [
+   {
+    "options": [
+     "en",
+     "de",
+     "con",
+     "por"
+    ],
+    "answer": 1
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.olvidarse-de",
+  "entry": "es.verb-prep.olvidarse-de",
+  "format": "pick-one",
+  "prompt": "olvidarse ＿",
+  "gloss": "forget",
+  "steps": [
+   {
+    "options": [
+     "de",
+     "con",
+     "por",
+     "en"
+    ],
+    "answer": 0
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.tratar-de",
+  "entry": "es.verb-prep.tratar-de",
+  "format": "pick-one",
+  "prompt": "tratar ＿",
+  "gloss": "try to",
+  "steps": [
+   {
+    "options": [
+     "por",
+     "a",
+     "de",
+     "con"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.depender-de",
+  "entry": "es.verb-prep.depender-de",
+  "format": "pick-one",
+  "prompt": "depender ＿",
+  "gloss": "depend on",
+  "steps": [
+   {
+    "options": [
+     "con",
+     "a",
+     "de",
+     "en"
+    ],
+    "answer": 2
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.darse-cuenta-de",
+  "entry": "es.verb-prep.darse-cuenta-de",
+  "format": "pick-one",
+  "prompt": "darse cuenta ＿",
+  "gloss": "realize",
+  "steps": [
+   {
+    "options": [
+     "en",
+     "a",
+     "con",
+     "de"
+    ],
+    "answer": 3
+   }
+  ]
+ },
+ {
+  "id": "rule.es.verb-prep.preocuparse-por",
+  "entry": "es.verb-prep.preocuparse-por",
+  "format": "pick-one",
+  "prompt": "preocuparse ＿",
+  "gloss": "worry about",
+  "steps": [
+   {
+    "options": [
+     "por",
+     "con",
+     "de",
+     "a"
+    ],
+    "answer": 0
+   }
+  ]
+ }
+]

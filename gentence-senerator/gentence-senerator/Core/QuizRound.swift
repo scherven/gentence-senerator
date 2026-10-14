@@ -5,7 +5,8 @@ import Foundation
 struct QuizRound: Identifiable, Hashable {
     let id: UUID
     let plan: QuizPlan
-    let items: [QuizItem]
+    /// Grows as an endless round goes on.
+    private(set) var items: [QuizItem]
     /// Parallel to `items`; nil until answered.
     private(set) var answers: [Answer?]
     let started: Date
@@ -33,19 +34,29 @@ struct QuizRound: Identifiable, Hashable {
         if isComplete { ended = date }
     }
 
+    /// Endless: more items at the end.
+    mutating func append(_ more: [QuizItem]) {
+        items += more
+        answers += Array(repeating: nil, count: more.count)
+    }
+
+    /// Endless: a missed item again, a few items on. Its id gets a suffix,
+    /// so the two never share a view.
+    mutating func again(_ index: Int, after gap: Int) {
+        guard items.indices.contains(index) else { return }
+        var copy = items[index]
+        copy.id += "~\(items.count)"
+        let at = min(index + 1 + gap, items.count)
+        items.insert(copy, at: at)
+        answers.insert(nil, at: at)
+    }
+
     var answered: Int { answers.compactMap { $0 }.count }
     var right: Int { answers.compactMap { $0 }.filter(\.right).count }
     var isComplete: Bool { !items.isEmpty && answers.allSatisfy { $0 != nil } }
 
     /// Right answers in a row, counting back from the latest.
-    var streak: Int {
-        var n = 0
-        for a in answers.compactMap({ $0 }).reversed() {
-            guard a.right else { break }
-            n += 1
-        }
-        return n
-    }
+    var streak: Int { answers.compactMap { $0?.right }.trailingRun }
 
     func seconds(at now: Date = .now) -> Int {
         max(0, Int((ended ?? now).timeIntervalSince(started)))
@@ -112,6 +123,11 @@ extension QuizRound {
         }
     }
 
+    /// Card: the learner's own mark.
+    static func score(_ item: QuizItem, knew: Bool) -> Answer {
+        Answer(steps: [knew], given: [knew ? "✓" : "✗"])
+    }
+
     /// Transform: typed, compared to `accept` ignoring case, spacing and
     /// punctuation.
     static func score(_ item: QuizItem, typed: String) -> Answer {
@@ -124,7 +140,9 @@ extension QuizRound {
     /// space (none next to CJK), punctuation off. Apostrophes and hyphens stay:
     /// they are part of "j'en" and "donne-le-moi".
     static func normalise(_ s: String) -> String {
-        var t = s.lowercased().replacingOccurrences(of: "’", with: "'")
+        // NFKC folds full-width forms from a CJK keyboard (３点 → 3点).
+        var t = s.precomposedStringWithCompatibilityMapping.lowercased()
+        for quote in ["’", "‘", "ʼ", "`"] { t = t.replacingOccurrences(of: quote, with: "'") }
         t = String(String.UnicodeScalarView(t.unicodeScalars.map {
             $0 == "'" || $0 == "-" || !CharacterSet.punctuationCharacters.contains($0) ? $0 : " "
         }))
@@ -165,7 +183,7 @@ extension QuizRound {
     static func expected(_ item: QuizItem) -> [String] {
         switch item.format {
         case .build:     return [join(item.tiles)]
-        case .transform: return [item.accept.first ?? ""]
+        case .transform, .card: return [item.accept.first ?? ""]
         default:
             return item.steps.map { $0.options.indices.contains($0.answer) ? $0.options[$0.answer] : "" }
         }
@@ -381,12 +399,13 @@ extension QuizItem {
             out.append("sort steps must share buckets")
         }
         if r.tiles, tiles.count < 2 { out.append("build needs 2+ tiles") }
-        if r.accept, accept.isEmpty { out.append("transform needs accept") }
+        if r.accept, accept.isEmpty { out.append("\(format.rawValue) needs accept") }
         if format == .transform, (task ?? "").isEmpty { out.append("transform needs task") }
         if [.pickOne, .flip, .twoStep].contains(format), !(prompt ?? "").contains(QuizItem.gap) {
             out.append("\(format.rawValue) prompt needs a gap")
         }
         if format == .toneTap, (speak ?? "").isEmpty { out.append("tone-tap needs speak") }
+        if format == .card, (prompt ?? "").isEmpty { out.append("card needs a prompt") }
         return out
     }
 

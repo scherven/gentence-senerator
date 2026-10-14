@@ -1,0 +1,3207 @@
+{
+ "language": "spanish",
+ "chapters": [
+  {
+   "id": "es.ser-estar",
+   "name": "Ser or estar",
+   "sub": "es de Monterrey · está en casa · está cansado",
+   "layout": "split",
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.ser-estar.identity",
+     "head": "ser + who",
+     "reading": "es mi prima",
+     "gloss": "identity, relation",
+     "group": "who · what",
+     "tag": "SER",
+     "example": "Ella es mi prima Lupita.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.job",
+     "head": "ser + job",
+     "reading": "soy maestra",
+     "gloss": "no article",
+     "group": "who · what",
+     "tag": "SER",
+     "example": "Mi papá es ingeniero.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.owner",
+     "head": "ser de + owner",
+     "reading": "es de mi tío",
+     "gloss": "whose",
+     "group": "who · what",
+     "tag": "SER",
+     "example": "Ese carro es de mi tío.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.origin",
+     "head": "ser de + place",
+     "reading": "soy de Puebla",
+     "gloss": "origin",
+     "group": "where",
+     "tag": "SER",
+     "example": "Somos de Guadalajara.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.location",
+     "head": "estar en + place",
+     "reading": "está en la oficina",
+     "gloss": "where something is",
+     "group": "where",
+     "tag": "ESTAR",
+     "example": "El celular está en la mesa.",
+     "point": "estar-location",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.event",
+     "head": "ser + event place",
+     "reading": "la fiesta es en mi casa",
+     "gloss": "where an event happens",
+     "group": "where",
+     "tag": "SER",
+     "example": "¿Dónde es la junta?",
+     "point": "ser-event",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.trait",
+     "head": "ser + trait",
+     "reading": "es alto",
+     "gloss": "what it's like",
+     "group": "how",
+     "tag": "SER",
+     "example": "Mi hermano es muy alto.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.state",
+     "head": "estar + state",
+     "reading": "estoy cansado",
+     "gloss": "how it is right now",
+     "group": "how",
+     "tag": "ESTAR",
+     "example": "Hoy estoy muy cansada.",
+     "point": "estar-states",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.time",
+     "head": "ser + time, date",
+     "reading": "son las tres",
+     "gloss": "clock, day, date",
+     "group": "when",
+     "tag": "SER",
+     "example": "Hoy es lunes y son las ocho.",
+     "point": "ser-identity",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.gerund",
+     "head": "estar + -ndo",
+     "reading": "estoy comiendo",
+     "gloss": "in progress",
+     "group": "action",
+     "tag": "ESTAR",
+     "example": "Estamos comiendo, te marco al rato.",
+     "point": "estar-gerund",
+     "level": 1
+    },
+    {
+     "id": "es.ser-estar.passive",
+     "head": "ser + participle",
+     "reading": "fue construido",
+     "gloss": "passive action",
+     "group": "result",
+     "tag": "SER",
+     "example": "El puente fue construido en 1950.",
+     "point": "passive-ser",
+     "level": 4
+    },
+    {
+     "id": "es.ser-estar.resultative",
+     "head": "estar + participle",
+     "reading": "está cerrado",
+     "gloss": "result of an action",
+     "group": "result",
+     "tag": "ESTAR",
+     "example": "La tienda ya está cerrada.",
+     "point": "estar-resultative",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.listo-ser",
+     "head": "ser listo",
+     "reading": "es muy lista",
+     "gloss": "clever",
+     "group": "listo",
+     "tag": "SER",
+     "example": "Tu hija es muy lista.",
+     "point": "ser-estar-meaning",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.listo-estar",
+     "head": "estar listo",
+     "reading": "ya estoy listo",
+     "gloss": "ready",
+     "group": "listo",
+     "tag": "ESTAR",
+     "example": "¿Ya estás listo? Nos vamos.",
+     "point": "ser-estar-meaning",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.aburrido-ser",
+     "head": "ser aburrido",
+     "reading": "es aburrida",
+     "gloss": "boring",
+     "group": "aburrido",
+     "tag": "SER",
+     "example": "La película es aburrida.",
+     "point": "ser-estar-meaning",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.aburrido-estar",
+     "head": "estar aburrido",
+     "reading": "están aburridos",
+     "gloss": "bored",
+     "group": "aburrido",
+     "tag": "ESTAR",
+     "example": "Los niños están aburridos.",
+     "point": "ser-estar-meaning",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.rico-ser",
+     "head": "ser rico",
+     "reading": "es rica",
+     "gloss": "rich",
+     "group": "rico",
+     "tag": "SER",
+     "example": "Su familia es muy rica.",
+     "point": "ser-estar-meaning",
+     "level": 3
+    },
+    {
+     "id": "es.ser-estar.rico-estar",
+     "head": "estar rico",
+     "reading": "está rico",
+     "gloss": "tasty",
+     "group": "rico",
+     "tag": "ESTAR",
+     "example": "¡Este mole está riquísimo!",
+     "point": "ser-estar-meaning",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.gender",
+   "name": "Gender",
+   "sub": "el problema · la mano · la ciudad",
+   "layout": "cards",
+   "formats": [
+    "sort",
+    "flip",
+    "pick-one"
+   ],
+   "entries": [
+    {
+     "id": "es.gender.libro",
+     "head": "el libro",
+     "gloss": "-o: masculine",
+     "group": "-o",
+     "tag": "EL",
+     "example": "El libro está en la mesa.",
+     "point": "noun-gender",
+     "level": 1
+    },
+    {
+     "id": "es.gender.mano",
+     "head": "la mano",
+     "gloss": "exception",
+     "group": "-o",
+     "tag": "LA",
+     "example": "Dame la mano.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.casa",
+     "head": "la casa",
+     "gloss": "-a: feminine",
+     "group": "-a",
+     "tag": "LA",
+     "example": "La casa es grande.",
+     "point": "noun-gender",
+     "level": 1
+    },
+    {
+     "id": "es.gender.dia",
+     "head": "el día",
+     "gloss": "exception",
+     "group": "-a",
+     "tag": "EL",
+     "example": "Fue un día largo.",
+     "point": "gender-exceptions",
+     "level": 1
+    },
+    {
+     "id": "es.gender.problema",
+     "head": "el problema",
+     "gloss": "Greek -ma",
+     "group": "-ma",
+     "tag": "EL",
+     "example": "No hay problema.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.idioma",
+     "head": "el idioma",
+     "gloss": "Greek -ma",
+     "group": "-ma",
+     "tag": "EL",
+     "example": "El idioma más difícil es el chino.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.clima",
+     "head": "el clima",
+     "gloss": "Greek -ma",
+     "group": "-ma",
+     "tag": "EL",
+     "example": "El clima en Cuernavaca es perfecto.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.cama",
+     "head": "la cama",
+     "gloss": "not Greek: regular -a",
+     "group": "-ma",
+     "tag": "LA",
+     "example": "La cama está tendida.",
+     "point": "noun-gender",
+     "level": 2
+    },
+    {
+     "id": "es.gender.cancion",
+     "head": "la canción",
+     "gloss": "always",
+     "group": "-ción · -sión",
+     "tag": "LA",
+     "example": "Me encanta esa canción.",
+     "point": "noun-gender",
+     "level": 1
+    },
+    {
+     "id": "es.gender.ciudad",
+     "head": "la ciudad",
+     "gloss": "always",
+     "group": "-dad · -tad",
+     "tag": "LA",
+     "example": "La ciudad es enorme.",
+     "point": "noun-gender",
+     "level": 1
+    },
+    {
+     "id": "es.gender.costumbre",
+     "head": "la costumbre",
+     "gloss": "always",
+     "group": "-umbre",
+     "tag": "LA",
+     "example": "Es una costumbre muy mexicana.",
+     "point": "noun-gender",
+     "level": 3
+    },
+    {
+     "id": "es.gender.viaje",
+     "head": "el viaje",
+     "gloss": "always",
+     "group": "-aje",
+     "tag": "EL",
+     "example": "¿Qué tal el viaje?",
+     "point": "noun-gender",
+     "level": 2
+    },
+    {
+     "id": "es.gender.color",
+     "head": "el color",
+     "gloss": "mostly masculine",
+     "group": "-or",
+     "tag": "EL",
+     "example": "El color azul me queda bien.",
+     "point": "noun-gender",
+     "level": 2
+    },
+    {
+     "id": "es.gender.flor",
+     "head": "la flor",
+     "gloss": "exception",
+     "group": "-or",
+     "tag": "LA",
+     "example": "Le regalé una flor.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.noche",
+     "head": "la noche",
+     "gloss": "no rule: learn it",
+     "group": "-e",
+     "tag": "LA",
+     "example": "La noche está fresca.",
+     "point": "noun-gender",
+     "level": 1
+    },
+    {
+     "id": "es.gender.gente",
+     "head": "la gente",
+     "gloss": "singular: la gente es",
+     "group": "-e",
+     "tag": "LA",
+     "example": "La gente es muy amable aquí.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.agua",
+     "head": "el agua",
+     "gloss": "feminine: el agua fría",
+     "group": "stressed a-",
+     "tag": "EL",
+     "example": "El agua está fría.",
+     "point": "gender-exceptions",
+     "level": 2
+    },
+    {
+     "id": "es.gender.hambre",
+     "head": "el hambre",
+     "gloss": "feminine: mucha hambre",
+     "group": "stressed a-",
+     "tag": "EL",
+     "example": "Tengo mucha hambre.",
+     "point": "gender-exceptions",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.articles",
+   "name": "Articles & adjectives",
+   "sub": "una casa blanca · al centro · más alto que",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "two-step",
+    "build",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.articles.agree",
+     "head": "article + noun + adjective agree",
+     "reading": "las casas blancas",
+     "gloss": "gender and number",
+     "example": "Compré unas camisas rojas.",
+     "point": "article-adjective-agreement",
+     "level": 1
+    },
+    {
+     "id": "es.articles.agree-e",
+     "head": "-e and consonant adjectives",
+     "reading": "una ciudad grande",
+     "gloss": "one form for both genders",
+     "example": "Es una maestra muy inteligente.",
+     "point": "article-adjective-agreement",
+     "level": 1
+    },
+    {
+     "id": "es.articles.generic",
+     "head": "el + noun in general",
+     "reading": "me gusta el café",
+     "gloss": "things in general take the article",
+     "example": "Los perros necesitan ejercicio.",
+     "point": "definite-article-generic",
+     "level": 1
+    },
+    {
+     "id": "es.articles.days",
+     "head": "el lunes · los sábados",
+     "reading": "el lunes voy",
+     "gloss": "on Monday: no preposition",
+     "example": "Los sábados juego futbol.",
+     "point": "definite-article-generic",
+     "level": 1
+    },
+    {
+     "id": "es.articles.after",
+     "head": "adjective after the noun",
+     "reading": "un carro rojo",
+     "gloss": "most adjectives",
+     "example": "Vivo en una casa azul.",
+     "point": "adjective-position",
+     "level": 1
+    },
+    {
+     "id": "es.articles.before",
+     "head": "buen · mal · gran before",
+     "reading": "un buen amigo",
+     "gloss": "short forms",
+     "example": "Es un gran día.",
+     "point": "adjective-position",
+     "level": 2
+    },
+    {
+     "id": "es.articles.al",
+     "head": "a + el → al",
+     "reading": "voy al cine",
+     "gloss": "always contracts",
+     "example": "Vamos al súper.",
+     "point": "contractions-al-del",
+     "level": 1
+    },
+    {
+     "id": "es.articles.del",
+     "head": "de + el → del",
+     "reading": "el carro del vecino",
+     "gloss": "always contracts",
+     "example": "Es el celular del profe.",
+     "point": "contractions-al-del",
+     "level": 1
+    },
+    {
+     "id": "es.articles.poss",
+     "head": "mi · tu · su",
+     "reading": "mis papás",
+     "gloss": "before the noun, agree in number",
+     "example": "Mis hermanos viven en Tijuana.",
+     "point": "possessives",
+     "level": 1
+    },
+    {
+     "id": "es.articles.muy",
+     "head": "muy + adjective",
+     "reading": "muy caro",
+     "gloss": "very",
+     "example": "La renta está muy cara.",
+     "point": "muy-mucho",
+     "level": 1
+    },
+    {
+     "id": "es.articles.mucho",
+     "head": "mucho + noun",
+     "reading": "mucha gente",
+     "gloss": "a lot of · agrees",
+     "example": "Hay mucho tráfico hoy.",
+     "point": "muy-mucho",
+     "level": 1
+    },
+    {
+     "id": "es.articles.mas",
+     "head": "más … que",
+     "reading": "más alto que yo",
+     "gloss": "more than",
+     "example": "Monterrey es más grande que Saltillo.",
+     "point": "comparatives",
+     "level": 2
+    },
+    {
+     "id": "es.articles.tan",
+     "head": "tan … como",
+     "reading": "tan caro como",
+     "gloss": "as … as",
+     "example": "El jugo es tan caro como el refresco.",
+     "point": "comparatives",
+     "level": 2
+    },
+    {
+     "id": "es.articles.mejor",
+     "head": "mejor · peor · mayor · menor",
+     "reading": "es mejor que",
+     "gloss": "irregular",
+     "example": "Mi hermano mayor vive en Cancún.",
+     "point": "comparatives",
+     "level": 2
+    },
+    {
+     "id": "es.articles.ito",
+     "head": "-ito · -ita",
+     "reading": "un cafecito",
+     "gloss": "small, affectionate, softer",
+     "example": "¿Me esperas un ratito?",
+     "point": "diminutives",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.present",
+   "name": "Present tense",
+   "sub": "hablo · quiero · me levanto",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.present.ar",
+     "head": "-ar: -o, -as, -a, -amos, -an",
+     "reading": "hablo · hablan",
+     "gloss": "regular -ar",
+     "example": "Trabajo en el centro.",
+     "point": "verb-endings",
+     "level": 1
+    },
+    {
+     "id": "es.present.er",
+     "head": "-er: -o, -es, -e, -emos, -en",
+     "reading": "como · comen",
+     "gloss": "regular -er",
+     "example": "Comemos a las tres.",
+     "point": "verb-endings",
+     "level": 1
+    },
+    {
+     "id": "es.present.ir",
+     "head": "-ir: -o, -es, -e, -imos, -en",
+     "reading": "vivo · vivimos",
+     "gloss": "regular -ir",
+     "example": "Vivimos en un departamento.",
+     "point": "verb-endings",
+     "level": 1
+    },
+    {
+     "id": "es.present.go",
+     "head": "yo -go",
+     "reading": "tengo · hago · salgo · digo",
+     "gloss": "irregular yo",
+     "example": "Salgo del trabajo a las seis.",
+     "point": "verb-endings",
+     "level": 1
+    },
+    {
+     "id": "es.present.e-ie",
+     "head": "e → ie",
+     "reading": "quiero · pienso · empiezo",
+     "gloss": "not nosotros",
+     "example": "¿Quieres un jugo?",
+     "point": "stem-changing-verbs",
+     "level": 1
+    },
+    {
+     "id": "es.present.o-ue",
+     "head": "o → ue",
+     "reading": "puedo · duermo · vuelvo",
+     "gloss": "not nosotros",
+     "example": "Duermo muy poco.",
+     "point": "stem-changing-verbs",
+     "level": 1
+    },
+    {
+     "id": "es.present.e-i",
+     "head": "e → i",
+     "reading": "pido · sirvo · repito",
+     "gloss": "-ir verbs only",
+     "example": "Siempre pido tacos al pastor.",
+     "point": "stem-changing-verbs",
+     "level": 1
+    },
+    {
+     "id": "es.present.drop",
+     "head": "drop the pronoun",
+     "reading": "hablo español",
+     "gloss": "the ending says who",
+     "example": "Somos de Puebla.",
+     "point": "subject-pronoun-drop",
+     "level": 1
+    },
+    {
+     "id": "es.present.reflexive",
+     "head": "me · te · se · nos · se",
+     "reading": "me levanto",
+     "gloss": "daily routine",
+     "example": "Me levanto a las seis.",
+     "point": "reflexive-routine",
+     "level": 1
+    },
+    {
+     "id": "es.present.saber",
+     "head": "saber",
+     "reading": "sé nadar",
+     "gloss": "facts, how to",
+     "example": "No sé dónde está.",
+     "point": "saber-conocer",
+     "level": 2
+    },
+    {
+     "id": "es.present.conocer",
+     "head": "conocer",
+     "reading": "conozco Oaxaca",
+     "gloss": "people, places",
+     "example": "¿Conoces a mi novia?",
+     "point": "saber-conocer",
+     "level": 2
+    },
+    {
+     "id": "es.present.ir-go",
+     "head": "ir",
+     "reading": "ya voy",
+     "gloss": "toward there · 'coming!'",
+     "example": "¡Ya voy! Me estoy cambiando.",
+     "point": "ir-venir",
+     "level": 2
+    },
+    {
+     "id": "es.present.venir",
+     "head": "venir",
+     "reading": "ven acá",
+     "gloss": "toward the speaker",
+     "example": "Ven a mi casa el sábado.",
+     "point": "ir-venir",
+     "level": 2
+    },
+    {
+     "id": "es.present.llevar",
+     "head": "llevar · traer",
+     "reading": "llévalo · tráelo",
+     "gloss": "take there · bring here",
+     "example": "Lleva un suéter, allá hace frío.",
+     "point": "ir-venir",
+     "level": 2
+    }
+   ]
+  },
+  {
+   "id": "es.everyday",
+   "name": "Everyday frames",
+   "sub": "hay tráfico · tengo hambre · hace calor",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "flip",
+    "build",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.everyday.hay",
+     "head": "hay",
+     "reading": "hay un Oxxo",
+     "gloss": "there is, there are",
+     "example": "Hay mucho tráfico en Periférico.",
+     "point": "hay-existence",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.hay-estar",
+     "head": "hay un … · el … está",
+     "reading": "hay un banco · el banco está ahí",
+     "gloss": "new thing · known thing",
+     "example": "¿Hay una farmacia por aquí?",
+     "point": "hay-existence",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.hambre",
+     "head": "tener hambre, sed, sueño",
+     "reading": "tengo hambre",
+     "gloss": "English uses be",
+     "example": "¿Tienes hambre? Vamos por tacos.",
+     "point": "tener-expressions",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.anos",
+     "head": "tener … años",
+     "reading": "tengo 25 años",
+     "gloss": "age",
+     "example": "Mi abuela tiene noventa años.",
+     "point": "tener-expressions",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.tener-que",
+     "head": "tener que + infinitive",
+     "reading": "tengo que trabajar",
+     "gloss": "have to (me)",
+     "example": "Tengo que ir al banco.",
+     "point": "tener-que",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.hay-que",
+     "head": "hay que + infinitive",
+     "reading": "hay que pagar",
+     "gloss": "one has to (anyone)",
+     "example": "Hay que llegar temprano.",
+     "point": "hay-que",
+     "level": 2
+    },
+    {
+     "id": "es.everyday.hace",
+     "head": "hace calor, frío, sol",
+     "reading": "hace mucho calor",
+     "gloss": "weather with hacer",
+     "example": "En Mérida hace mucho calor.",
+     "point": "hace-weather",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.no",
+     "head": "no + verb",
+     "reading": "no lo sé",
+     "gloss": "before the verb and its pronouns",
+     "example": "No me gusta el café.",
+     "point": "negation-no",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.qu",
+     "head": "question word first",
+     "reading": "¿dónde vives?",
+     "gloss": "accent mark",
+     "example": "¿Cuándo llega tu vuelo?",
+     "point": "question-words",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.mande",
+     "head": "¿mande?",
+     "reading": "¿mande?",
+     "gloss": "what? (polite)",
+     "example": "¿Mande? No te escuché.",
+     "point": "politeness-formulas",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.me-da",
+     "head": "¿me da …?",
+     "reading": "¿me da un jugo?",
+     "gloss": "ordering",
+     "example": "¿Me da un agua natural, por favor?",
+     "point": "politeness-formulas",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.gustaria",
+     "head": "me gustaría + infinitive",
+     "reading": "me gustaría ir",
+     "gloss": "I'd like to",
+     "example": "Me gustaría conocer Chiapas.",
+     "point": "me-gustaria",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.ojala",
+     "head": "¡ojalá!",
+     "reading": "ojalá que sí",
+     "gloss": "I hope so",
+     "example": "¿Vienes mañana? — Ojalá que sí.",
+     "point": "ojala-formulaic",
+     "level": 1
+    },
+    {
+     "id": "es.everyday.vaya",
+     "head": "que te vaya bien",
+     "reading": "que te vaya bien",
+     "gloss": "have a good one",
+     "example": "Bueno, que te vaya bien.",
+     "point": "que-wishes-formulaic",
+     "level": 2
+    },
+    {
+     "id": "es.everyday.falta",
+     "head": "hacer falta",
+     "reading": "me hace falta dinero",
+     "gloss": "need, be missing",
+     "example": "Nos hace falta una silla.",
+     "point": "hacer-falta-valer-pena",
+     "level": 4
+    },
+    {
+     "id": "es.everyday.pena",
+     "head": "valer la pena",
+     "reading": "vale la pena",
+     "gloss": "be worth it",
+     "example": "Vale la pena ir a Bacalar.",
+     "point": "hacer-falta-valer-pena",
+     "level": 4
+    },
+    {
+     "id": "es.everyday.r-rr",
+     "head": "r · rr",
+     "reading": "pero · perro",
+     "gloss": "tap · trill",
+     "example": "El perro de Rosa corre rápido.",
+     "point": "trilled-rr",
+     "level": 1
+    }
+   ]
+  },
+  {
+   "id": "es.gustar",
+   "name": "Gustar & co.",
+   "sub": "me gusta · me gustan · me duele la cabeza",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "flip",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.gustar.gusta",
+     "head": "me gusta + singular",
+     "reading": "me gusta el café",
+     "gloss": "the thing is the subject",
+     "example": "Me gusta mucho la comida yucateca.",
+     "point": "gustar",
+     "level": 1
+    },
+    {
+     "id": "es.gustar.gustan",
+     "head": "me gustan + plural",
+     "reading": "me gustan los tacos",
+     "gloss": "plural thing, plural verb",
+     "example": "Me gustan los perros.",
+     "point": "gustar",
+     "level": 1
+    },
+    {
+     "id": "es.gustar.who",
+     "head": "me · te · le · nos · les",
+     "reading": "les gusta",
+     "gloss": "who likes it",
+     "example": "A mis papás les gusta viajar.",
+     "point": "gustar",
+     "level": 1
+    },
+    {
+     "id": "es.gustar.a-mi",
+     "head": "a mí me gusta",
+     "reading": "a mí no",
+     "gloss": "emphasis, contrast",
+     "example": "A mí no me gusta el picante.",
+     "point": "gustar",
+     "level": 1
+    },
+    {
+     "id": "es.gustar.tampoco",
+     "head": "a mí también · a mí tampoco",
+     "reading": "a mí tampoco",
+     "gloss": "agreeing",
+     "example": "—No me gusta el frío. —A mí tampoco.",
+     "point": "tambien-tampoco",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.doubling",
+     "head": "a + person + le",
+     "reading": "a Juan le gusta",
+     "gloss": "le stays with the name",
+     "example": "A mi mamá le encantan las flores.",
+     "point": "indirect-doubling",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.encantar",
+     "head": "encantar",
+     "reading": "me encanta",
+     "gloss": "love (things)",
+     "example": "Me encanta tu casa.",
+     "point": "gustar-type-verbs",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.doler",
+     "head": "doler",
+     "reading": "me duele la cabeza",
+     "gloss": "hurt",
+     "example": "Me duelen los pies.",
+     "point": "gustar-type-verbs",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.faltar",
+     "head": "faltar",
+     "reading": "me faltan diez pesos",
+     "gloss": "be short of",
+     "example": "Me faltan dos materias para terminar.",
+     "point": "gustar-type-verbs",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.caer",
+     "head": "caer bien · caer mal",
+     "reading": "me cae bien",
+     "gloss": "like a person",
+     "example": "Tu primo me cae muy bien.",
+     "point": "gustar-type-verbs",
+     "level": 2
+    },
+    {
+     "id": "es.gustar.quedar",
+     "head": "quedar",
+     "reading": "te queda bien",
+     "gloss": "fit, suit",
+     "example": "Esa camisa te queda chica.",
+     "point": "gustar-type-verbs",
+     "level": 3
+    },
+    {
+     "id": "es.gustar.antojar",
+     "head": "antojarse",
+     "reading": "se me antoja un elote",
+     "gloss": "crave",
+     "example": "Se me antojan unos tacos.",
+     "point": "gustar-type-verbs",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.pronouns",
+   "name": "Object pronouns",
+   "sub": "lo veo · le dije · se lo doy",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.pronouns.lo-la",
+     "head": "lo · la",
+     "reading": "lo veo",
+     "gloss": "it, him, her",
+     "example": "¿El celular? No lo encuentro.",
+     "point": "direct-object-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.lo-person",
+     "head": "lo for a man",
+     "reading": "lo conozco",
+     "gloss": "lo, never le",
+     "example": "A Carlos lo vi en el súper.",
+     "point": "direct-object-pronouns",
+     "level": 3
+    },
+    {
+     "id": "es.pronouns.le-les",
+     "head": "le · les",
+     "reading": "le hablé",
+     "gloss": "to him, her, them",
+     "example": "Les mando la dirección por WhatsApp.",
+     "point": "indirect-object-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.doubling",
+     "head": "le + a + person",
+     "reading": "le dije a Ana",
+     "gloss": "le stays with the name",
+     "example": "Le pedí ayuda a mi jefe.",
+     "point": "indirect-doubling",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.inf",
+     "head": "with an infinitive",
+     "reading": "voy a verlo · lo voy a ver",
+     "gloss": "either place",
+     "example": "Te voy a llamar en la noche.",
+     "point": "pronouns-with-infinitive",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.ger",
+     "head": "with a gerund",
+     "reading": "estoy buscándolo · lo estoy buscando",
+     "gloss": "either place",
+     "example": "Lo estoy buscando.",
+     "point": "pronouns-with-infinitive",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.se-lo",
+     "head": "le + lo → se lo",
+     "reading": "se lo di",
+     "gloss": "never le lo",
+     "example": "¿El libro? Se lo presté a Mario.",
+     "point": "se-lo",
+     "level": 3
+    },
+    {
+     "id": "es.pronouns.se-los",
+     "head": "se los for 'to you all'",
+     "reading": "ya se los dije",
+     "gloss": "Mexican plural on lo",
+     "example": "Ya se los dije, muchachos.",
+     "point": "se-lo",
+     "level": 4
+    },
+    {
+     "id": "es.pronouns.mi-ti",
+     "head": "mí · ti",
+     "reading": "para mí",
+     "gloss": "after a preposition",
+     "example": "Este regalo es para ti.",
+     "point": "prepositional-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.conmigo",
+     "head": "conmigo · contigo",
+     "reading": "ven conmigo",
+     "gloss": "with me, with you",
+     "example": "Quiero ir contigo.",
+     "point": "prepositional-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.a",
+     "head": "a + person",
+     "reading": "veo a Juan",
+     "gloss": "people and pets",
+     "example": "Visité a mis abuelos.",
+     "point": "personal-a",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.no-a",
+     "head": "no a for things",
+     "reading": "veo la tele",
+     "gloss": "also not after tener",
+     "example": "Tengo dos hermanos.",
+     "point": "personal-a",
+     "level": 2
+    },
+    {
+     "id": "es.pronouns.topic",
+     "head": "object first + pronoun",
+     "reading": "esa película ya la vi",
+     "gloss": "repeat it",
+     "example": "El pan lo compro yo.",
+     "point": "topic-doubling",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.you",
+   "name": "Talking to people",
+   "sub": "¿quieres? · ¿quiere? · ¡pásale!",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "flip",
+    "transform",
+    "build",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.you.tu",
+     "head": "tú",
+     "reading": "¿quieres?",
+     "gloss": "friends, family, kids",
+     "example": "¿Quieres ir al cine?",
+     "point": "tu-usted",
+     "level": 1
+    },
+    {
+     "id": "es.you.usted",
+     "head": "usted + él form",
+     "reading": "¿quiere?",
+     "gloss": "strangers, elders, service",
+     "example": "¿Tiene cambio, señor?",
+     "point": "tu-usted",
+     "level": 1
+    },
+    {
+     "id": "es.you.ustedes",
+     "head": "ustedes + ellos form",
+     "reading": "¿ustedes van?",
+     "gloss": "every plural you",
+     "example": "¿A qué hora llegan ustedes?",
+     "point": "ustedes-plural",
+     "level": 1
+    },
+    {
+     "id": "es.you.lo-usted",
+     "head": "lo · la = you (usted)",
+     "reading": "¿la ayudo?",
+     "gloss": "formal object",
+     "example": "Mucho gusto, señora, ¿la puedo ayudar?",
+     "point": "lo-la-usted",
+     "level": 4
+    },
+    {
+     "id": "es.you.le-usted",
+     "head": "le = to you (usted)",
+     "reading": "le traigo la carta",
+     "gloss": "formal indirect",
+     "example": "¿Le traigo algo de tomar?",
+     "point": "lo-la-usted",
+     "level": 4
+    },
+    {
+     "id": "es.you.imp-tu",
+     "head": "tú command",
+     "reading": "habla · come · escribe",
+     "gloss": "= él form",
+     "example": "Escribe tu nombre aquí.",
+     "point": "imperative",
+     "level": 1
+    },
+    {
+     "id": "es.you.imp-irr",
+     "head": "ven · ten · pon · sal · haz · di · ve",
+     "reading": "ven acá",
+     "gloss": "irregular tú",
+     "example": "Ven acá, rápido.",
+     "point": "imperative",
+     "level": 2
+    },
+    {
+     "id": "es.you.imp-usted",
+     "head": "usted command",
+     "reading": "pase · coma",
+     "gloss": "subjunctive form",
+     "example": "Pase, por favor.",
+     "point": "imperative",
+     "level": 1
+    },
+    {
+     "id": "es.you.neg-tu",
+     "head": "no + tú subjunctive",
+     "reading": "no hables",
+     "gloss": "negative tú",
+     "example": "No manejes tan rápido.",
+     "point": "imperative-negative",
+     "level": 2
+    },
+    {
+     "id": "es.you.attach",
+     "head": "pronouns after a yes",
+     "reading": "dímelo · siéntate",
+     "gloss": "attached, accent",
+     "example": "Pásame la sal.",
+     "point": "imperative-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.you.before",
+     "head": "pronouns before a no",
+     "reading": "no me digas",
+     "gloss": "separate",
+     "example": "No lo toques.",
+     "point": "imperative-pronouns",
+     "level": 2
+    },
+    {
+     "id": "es.you.le",
+     "head": "-le",
+     "reading": "ándale · órale · pásale",
+     "gloss": "urges, welcomes",
+     "example": "¡Pásale, está abierto!",
+     "point": "le-intensifier",
+     "level": 4
+    },
+    {
+     "id": "es.you.dizque",
+     "head": "dizque",
+     "reading": "dizque está enfermo",
+     "gloss": "supposedly, doubtful",
+     "example": "Dizque ya viene, pero no llega.",
+     "point": "dizque",
+     "level": 5
+    }
+   ]
+  },
+  {
+   "id": "es.past",
+   "name": "Preterite or imperfect",
+   "sub": "ayer comí · de niño comía · dormía cuando llamaste",
+   "layout": "split",
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "two-step",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.past.ar-p",
+     "head": "-ar",
+     "reading": "hablé · habló",
+     "gloss": "regular",
+     "group": "-ar",
+     "tag": "PRETÉRITO",
+     "example": "Ayer hablé con mi jefe.",
+     "point": "preterite",
+     "level": 2
+    },
+    {
+     "id": "es.past.ar-i",
+     "head": "-ar",
+     "reading": "hablaba",
+     "gloss": "-aba",
+     "group": "-ar",
+     "tag": "IMPERFECTO",
+     "example": "Hablaba con ella todos los días.",
+     "point": "imperfect-description",
+     "level": 2
+    },
+    {
+     "id": "es.past.er-p",
+     "head": "-er · -ir",
+     "reading": "comí · vivió",
+     "gloss": "regular",
+     "group": "-er · -ir",
+     "tag": "PRETÉRITO",
+     "example": "Comimos en el mercado.",
+     "point": "preterite",
+     "level": 2
+    },
+    {
+     "id": "es.past.er-i",
+     "head": "-er · -ir",
+     "reading": "comía · vivía",
+     "gloss": "-ía",
+     "group": "-er · -ir",
+     "tag": "IMPERFECTO",
+     "example": "Vivíamos en Coyoacán.",
+     "point": "imperfect-description",
+     "level": 2
+    },
+    {
+     "id": "es.past.ser-p",
+     "head": "ser · ir",
+     "reading": "fui · fue",
+     "gloss": "same form for both",
+     "group": "ser · ir",
+     "tag": "PRETÉRITO",
+     "example": "Fuimos a Acapulco en diciembre.",
+     "point": "preterite-irregular",
+     "level": 2
+    },
+    {
+     "id": "es.past.ser-i",
+     "head": "ser · ir",
+     "reading": "era · iba",
+     "gloss": "irregular, with veía",
+     "group": "ser · ir",
+     "tag": "IMPERFECTO",
+     "example": "De niño iba a la escuela a pie.",
+     "point": "imperfect-description",
+     "level": 2
+    },
+    {
+     "id": "es.past.u-stem",
+     "head": "u stem",
+     "reading": "tuve · estuve · pude · puse",
+     "gloss": "no accent",
+     "group": "stems",
+     "tag": "PRETÉRITO",
+     "example": "Tuve que trabajar el sábado.",
+     "point": "preterite-irregular",
+     "level": 2
+    },
+    {
+     "id": "es.past.event",
+     "head": "a finished event",
+     "reading": "llegó a las 8",
+     "gloss": "what happened",
+     "group": "event",
+     "tag": "PRETÉRITO",
+     "example": "Llegué a las ocho.",
+     "point": "preterite",
+     "level": 2
+    },
+    {
+     "id": "es.past.habit",
+     "head": "used to",
+     "reading": "de niño jugaba",
+     "gloss": "habit",
+     "group": "habit",
+     "tag": "IMPERFECTO",
+     "example": "Cada verano íbamos a Veracruz.",
+     "point": "imperfect-description",
+     "level": 2
+    },
+    {
+     "id": "es.past.scene",
+     "head": "background, weather, time",
+     "reading": "eran las diez",
+     "gloss": "the scene",
+     "group": "scene",
+     "tag": "IMPERFECTO",
+     "example": "Eran las diez y hacía frío.",
+     "point": "imperfect-description",
+     "level": 2
+    },
+    {
+     "id": "es.past.action",
+     "head": "action in the scene",
+     "reading": "entró un señor",
+     "gloss": "what happened next",
+     "group": "scene",
+     "tag": "PRETÉRITO",
+     "example": "De repente entró un señor con un perro.",
+     "point": "preterite-imperfect",
+     "level": 3
+    },
+    {
+     "id": "es.past.ongoing",
+     "head": "ongoing when …",
+     "reading": "dormía cuando",
+     "gloss": "the interrupted",
+     "group": "interrupted",
+     "tag": "IMPERFECTO",
+     "example": "Yo dormía cuando sonó el teléfono.",
+     "point": "preterite-imperfect",
+     "level": 3
+    },
+    {
+     "id": "es.past.interrupt",
+     "head": "… the interruption",
+     "reading": "cuando llegaste",
+     "gloss": "the interrupter",
+     "group": "interrupted",
+     "tag": "PRETÉRITO",
+     "example": "Me estaba bañando cuando llegaste.",
+     "point": "preterite-imperfect",
+     "level": 3
+    },
+    {
+     "id": "es.past.supe",
+     "head": "supe",
+     "reading": "supe la noticia",
+     "gloss": "found out",
+     "group": "saber",
+     "tag": "PRETÉRITO",
+     "example": "Supe la noticia ayer.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    },
+    {
+     "id": "es.past.sabia",
+     "head": "sabía",
+     "reading": "ya lo sabía",
+     "gloss": "knew",
+     "group": "saber",
+     "tag": "IMPERFECTO",
+     "example": "Ya lo sabía.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    },
+    {
+     "id": "es.past.quiso",
+     "head": "no quiso",
+     "reading": "no quiso venir",
+     "gloss": "refused",
+     "group": "querer",
+     "tag": "PRETÉRITO",
+     "example": "Le rogué, pero no quiso venir.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    },
+    {
+     "id": "es.past.queria",
+     "head": "quería",
+     "reading": "quería un café",
+     "gloss": "wanted",
+     "group": "querer",
+     "tag": "IMPERFECTO",
+     "example": "Quería ir, pero no tenía dinero.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    },
+    {
+     "id": "es.past.pude",
+     "head": "pude",
+     "reading": "por fin pude",
+     "gloss": "managed to",
+     "group": "poder",
+     "tag": "PRETÉRITO",
+     "example": "Por fin pude dormir.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    },
+    {
+     "id": "es.past.podia",
+     "head": "podía",
+     "reading": "podía correr",
+     "gloss": "was able to",
+     "group": "poder",
+     "tag": "IMPERFECTO",
+     "example": "De joven podía correr diez kilómetros.",
+     "point": "preterite-meaning-change",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.tenses",
+   "name": "Perfect, future, conditional",
+   "sub": "he ido · había salido · será · ¿podrías?",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.tenses.perfect",
+     "head": "he + participle",
+     "reading": "¿has probado el mole?",
+     "gloss": "ever, life experience",
+     "example": "¿Alguna vez has ido a Chiapas?",
+     "point": "present-perfect-experience",
+     "level": 2
+    },
+    {
+     "id": "es.tenses.ya-pret",
+     "head": "ya + preterite",
+     "reading": "¿ya comiste?",
+     "gloss": "Mexico: today, just now",
+     "example": "¿Ya terminaste la tarea?",
+     "point": "present-perfect-experience",
+     "level": 2
+    },
+    {
+     "id": "es.tenses.pluperfect",
+     "head": "había + participle",
+     "reading": "ya había salido",
+     "gloss": "before another past",
+     "example": "Cuando llegué, ya se había ido.",
+     "point": "pluperfect",
+     "level": 3
+    },
+    {
+     "id": "es.tenses.future",
+     "head": "infinitive + -é, -ás, -á, -emos, -án",
+     "reading": "hablaré",
+     "gloss": "will",
+     "example": "Mañana te llamaré.",
+     "point": "future-simple",
+     "level": 2
+    },
+    {
+     "id": "es.tenses.future-irr",
+     "head": "tendré · saldré · haré · diré · podré",
+     "reading": "te diré",
+     "gloss": "irregular stems",
+     "example": "Te diré la verdad.",
+     "point": "future-simple",
+     "level": 2
+    },
+    {
+     "id": "es.tenses.guess",
+     "head": "future = probably now",
+     "reading": "¿qué hora será?",
+     "gloss": "a guess",
+     "example": "Ya no contesta; estará manejando.",
+     "point": "future-conjecture",
+     "level": 3
+    },
+    {
+     "id": "es.tenses.guess-past",
+     "head": "conditional = probably then",
+     "reading": "serían las diez",
+     "gloss": "a guess about the past",
+     "example": "Cuando llegó serían las diez.",
+     "point": "future-conjecture",
+     "level": 4
+    },
+    {
+     "id": "es.tenses.fut-perf",
+     "head": "habré + participle",
+     "reading": "habré terminado",
+     "gloss": "will have done",
+     "example": "Para junio habré terminado la carrera.",
+     "point": "future-perfect",
+     "level": 4
+    },
+    {
+     "id": "es.tenses.conditional",
+     "head": "infinitive + -ía",
+     "reading": "podría · me gustaría",
+     "gloss": "would",
+     "example": "¿Podrías ayudarme con esto?",
+     "point": "conditional-politeness",
+     "level": 3
+    },
+    {
+     "id": "es.tenses.advice",
+     "head": "deberías",
+     "reading": "deberías ir al doctor",
+     "gloss": "advice",
+     "example": "Deberías descansar más.",
+     "point": "conditional-politeness",
+     "level": 3
+    },
+    {
+     "id": "es.tenses.journalistic",
+     "head": "conditional in the news",
+     "reading": "habría huido",
+     "gloss": "unconfirmed",
+     "example": "El alcalde habría recibido sobornos.",
+     "point": "conditional-journalistic",
+     "level": 5
+    },
+    {
+     "id": "es.tenses.ha-de",
+     "head": "ha de + infinitive",
+     "reading": "ha de estar cansado",
+     "gloss": "must be",
+     "example": "Ha de ser tu hermano, se parecen mucho.",
+     "point": "haber-de",
+     "level": 5
+    }
+   ]
+  },
+  {
+   "id": "es.aspect",
+   "name": "Verb + verb",
+   "sub": "voy a comer · acabo de llegar · llevo dos años",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "build",
+    "transform",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.aspect.ir-a",
+     "head": "ir a + infinitive",
+     "reading": "voy a comer",
+     "gloss": "going to",
+     "example": "Vamos a ver una película.",
+     "point": "ir-a-infinitive",
+     "level": 1
+    },
+    {
+     "id": "es.aspect.estar",
+     "head": "estar + -ndo",
+     "reading": "estoy comiendo",
+     "gloss": "right now",
+     "example": "Estoy manejando, te marco luego.",
+     "point": "estar-gerund",
+     "level": 1
+    },
+    {
+     "id": "es.aspect.acabar",
+     "head": "acabar de + infinitive",
+     "reading": "acabo de llegar",
+     "gloss": "have just",
+     "example": "Acabo de comer, gracias.",
+     "point": "acabar-de",
+     "level": 2
+    },
+    {
+     "id": "es.aspect.llevar",
+     "head": "llevar + time + -ndo",
+     "reading": "llevo dos años estudiando",
+     "gloss": "have been doing",
+     "example": "Llevo una hora esperándote.",
+     "point": "llevar-gerund",
+     "level": 3
+    },
+    {
+     "id": "es.aspect.hace-que",
+     "head": "hace + time + que",
+     "reading": "hace dos años que vivo aquí",
+     "gloss": "for, still true",
+     "example": "Hace mucho que no te veo.",
+     "point": "hace-duration",
+     "level": 2
+    },
+    {
+     "id": "es.aspect.ago",
+     "head": "hace + time",
+     "reading": "llegué hace una hora",
+     "gloss": "ago",
+     "example": "Hace tres años fui a Cuba.",
+     "point": "hace-duration",
+     "level": 2
+    },
+    {
+     "id": "es.aspect.ya",
+     "head": "ya · ya no",
+     "reading": "ya no vivo ahí",
+     "gloss": "already · no longer",
+     "example": "Ya no trabajo en esa empresa.",
+     "point": "ya-todavia",
+     "level": 2
+    },
+    {
+     "id": "es.aspect.todavia",
+     "head": "todavía · todavía no",
+     "reading": "todavía no termino",
+     "gloss": "still · not yet",
+     "example": "Todavía no llega el camión.",
+     "point": "ya-todavia",
+     "level": 2
+    },
+    {
+     "id": "es.aspect.seguir",
+     "head": "seguir + -ndo",
+     "reading": "sigue lloviendo",
+     "gloss": "keep on, still",
+     "example": "¿Sigues trabajando en el banco?",
+     "point": "aspect-periphrases",
+     "level": 3
+    },
+    {
+     "id": "es.aspect.dejar",
+     "head": "dejar de + infinitive",
+     "reading": "dejé de fumar",
+     "gloss": "stop",
+     "example": "Dejé de tomar refresco.",
+     "point": "aspect-periphrases",
+     "level": 3
+    },
+    {
+     "id": "es.aspect.acabar-por",
+     "head": "acabar por · terminar + -ndo",
+     "reading": "terminé pagando yo",
+     "gloss": "ended up",
+     "example": "Terminamos cenando en casa.",
+     "point": "acabar-por",
+     "level": 5
+    },
+    {
+     "id": "es.aspect.ponerse",
+     "head": "ponerse + adjective",
+     "reading": "se puso rojo",
+     "gloss": "sudden mood or look",
+     "example": "Se puso nervioso en la entrevista.",
+     "point": "ponerse-volverse",
+     "level": 4
+    },
+    {
+     "id": "es.aspect.volverse",
+     "head": "volverse + adjective",
+     "reading": "se volvió loco",
+     "gloss": "a change in who you are",
+     "example": "Se volvió muy serio.",
+     "point": "ponerse-volverse",
+     "level": 4
+    },
+    {
+     "id": "es.aspect.mandar",
+     "head": "mandar a + infinitive",
+     "reading": "mandé a arreglar el carro",
+     "gloss": "have it done",
+     "example": "Mandé a hacer un pastel.",
+     "point": "mandar-hacer",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.por-para",
+   "name": "Por or para",
+   "sub": "por la mañana · para ti · por eso",
+   "layout": "split",
+   "formats": [
+    "flip",
+    "sort",
+    "pick-one",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.por-para.through",
+     "head": "por + place",
+     "reading": "por el centro",
+     "gloss": "through, around",
+     "group": "place",
+     "tag": "POR",
+     "example": "Caminamos por el Zócalo.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.toward",
+     "head": "para + place",
+     "reading": "para Monterrey",
+     "gloss": "heading to",
+     "group": "place",
+     "tag": "PARA",
+     "example": "El camión sale para Monterrey.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.cause",
+     "head": "por + cause",
+     "reading": "por el tráfico",
+     "gloss": "because of",
+     "group": "why",
+     "tag": "POR",
+     "example": "Llegué tarde por el tráfico.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.purpose",
+     "head": "para + infinitive",
+     "reading": "para aprender",
+     "gloss": "in order to",
+     "group": "why",
+     "tag": "PARA",
+     "example": "Ahorro para comprar un carro.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.sake",
+     "head": "por + person",
+     "reading": "lo hice por ti",
+     "gloss": "for your sake",
+     "group": "person",
+     "tag": "POR",
+     "example": "Lo hice por mis hijos.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.recipient",
+     "head": "para + person",
+     "reading": "para ti",
+     "gloss": "recipient",
+     "group": "person",
+     "tag": "PARA",
+     "example": "Este regalo es para ti.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.part-day",
+     "head": "por + part of day",
+     "reading": "por la tarde",
+     "gloss": "during",
+     "group": "time",
+     "tag": "POR",
+     "example": "Trabajo por la mañana.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.deadline",
+     "head": "para + deadline",
+     "reading": "para el lunes",
+     "gloss": "by",
+     "group": "time",
+     "tag": "PARA",
+     "example": "La tarea es para el lunes.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.price",
+     "head": "por + price",
+     "reading": "por 200 pesos",
+     "gloss": "in exchange",
+     "group": "exchange",
+     "tag": "POR",
+     "example": "Lo compré por 200 pesos.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.means",
+     "head": "por + means",
+     "reading": "por teléfono",
+     "gloss": "by, via",
+     "group": "means",
+     "tag": "POR",
+     "example": "Te lo mando por correo.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.opinion",
+     "head": "para mí",
+     "reading": "para mí, es mejor",
+     "gloss": "in my view",
+     "group": "view",
+     "tag": "PARA",
+     "example": "Para mí, es el mejor taco de la ciudad.",
+     "point": "por-para",
+     "level": 2
+    },
+    {
+     "id": "es.por-para.considering",
+     "head": "para + comparison",
+     "reading": "para ser niño",
+     "gloss": "considering",
+     "group": "view",
+     "tag": "PARA",
+     "example": "Habla muy bien para tener cinco años.",
+     "point": "por-para-advanced",
+     "level": 3
+    },
+    {
+     "id": "es.por-para.ir-por",
+     "head": "ir por",
+     "reading": "voy por pan",
+     "gloss": "go get",
+     "group": "fetch",
+     "tag": "POR",
+     "example": "Voy por las tortillas, ahorita vengo.",
+     "point": "por-para-advanced",
+     "level": 3
+    },
+    {
+     "id": "es.por-para.estar-por",
+     "head": "estar por + infinitive",
+     "reading": "está por llover",
+     "gloss": "about to",
+     "group": "about to",
+     "tag": "POR",
+     "example": "Está por llover, métete.",
+     "point": "por-para-advanced",
+     "level": 3
+    },
+    {
+     "id": "es.por-para.agent",
+     "head": "por + agent",
+     "reading": "escrito por Rulfo",
+     "gloss": "by (passive)",
+     "group": "passive",
+     "tag": "POR",
+     "example": "Fue escrito por Juan Rulfo.",
+     "point": "por-para-advanced",
+     "level": 4
+    },
+    {
+     "id": "es.por-para.fixed-por",
+     "head": "por fin · por eso · por cierto",
+     "reading": "por fin llegaste",
+     "gloss": "fixed",
+     "group": "fixed",
+     "tag": "POR",
+     "example": "Por cierto, ¿ya pagaste la luz?",
+     "point": "por-para-advanced",
+     "level": 3
+    },
+    {
+     "id": "es.por-para.fixed-para",
+     "head": "para nada · para siempre",
+     "reading": "para nada",
+     "gloss": "fixed",
+     "group": "fixed",
+     "tag": "PARA",
+     "example": "¿Te molesta? — Para nada.",
+     "point": "por-para-advanced",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.verb-prep",
+   "name": "Verb + preposition",
+   "sub": "soñar con · pensar en · acabar de",
+   "layout": "pairs",
+   "formats": [
+    "pick-one",
+    "two-step",
+    "spot-it",
+    "build"
+   ],
+   "entries": [
+    {
+     "id": "es.verb-prep.ir-a",
+     "head": "ir a + place",
+     "reading": "voy a Mérida",
+     "gloss": "motion to",
+     "group": "a",
+     "tag": "A",
+     "example": "Voy a la playa el fin.",
+     "point": "a-en-place",
+     "level": 1
+    },
+    {
+     "id": "es.verb-prep.llegar-a",
+     "head": "llegar a",
+     "reading": "llegué a casa",
+     "gloss": "arrive at",
+     "group": "a",
+     "tag": "A",
+     "example": "¿A qué hora llegas a la oficina?",
+     "point": "a-en-place",
+     "level": 1
+    },
+    {
+     "id": "es.verb-prep.entrar-a",
+     "head": "entrar a",
+     "reading": "entré a la tienda",
+     "gloss": "Mexico: a, not en",
+     "group": "a",
+     "tag": "A",
+     "example": "Entramos al cine tarde.",
+     "point": "a-en-place",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.aprender-a",
+     "head": "aprender a",
+     "gloss": "learn to",
+     "group": "a",
+     "tag": "A",
+     "example": "Estoy aprendiendo a manejar.",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.ayudar-a",
+     "head": "ayudar a",
+     "gloss": "help to",
+     "group": "a",
+     "tag": "A",
+     "example": "¿Me ayudas a cargar esto?",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.estar-en",
+     "head": "estar en + place",
+     "reading": "estoy en casa",
+     "gloss": "location",
+     "group": "en",
+     "tag": "EN",
+     "example": "Estoy en el trabajo.",
+     "point": "a-en-place",
+     "level": 1
+    },
+    {
+     "id": "es.verb-prep.pensar-en",
+     "head": "pensar en",
+     "gloss": "think about",
+     "group": "en",
+     "tag": "EN",
+     "example": "Siempre pienso en ti.",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.confiar-en",
+     "head": "confiar en",
+     "gloss": "trust",
+     "group": "en",
+     "tag": "EN",
+     "example": "Confío en ti.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.tardar-en",
+     "head": "tardar en",
+     "gloss": "take long to",
+     "group": "en",
+     "tag": "EN",
+     "example": "Tardó dos horas en llegar.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.quedar-en",
+     "head": "quedar en",
+     "gloss": "agree to",
+     "group": "en",
+     "tag": "EN",
+     "example": "Quedamos en vernos a las siete.",
+     "point": "verb-prepositions",
+     "level": 4
+    },
+    {
+     "id": "es.verb-prep.sonar-con",
+     "head": "soñar con",
+     "gloss": "dream of",
+     "group": "con",
+     "tag": "CON",
+     "example": "Anoche soñé contigo.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.casarse-con",
+     "head": "casarse con",
+     "gloss": "marry",
+     "group": "con",
+     "tag": "CON",
+     "example": "Se casó con su novia de la prepa.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.contar-con",
+     "head": "contar con",
+     "gloss": "count on",
+     "group": "con",
+     "tag": "CON",
+     "example": "Cuenta conmigo.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.platicar-con",
+     "head": "platicar con",
+     "gloss": "chat with",
+     "group": "con",
+     "tag": "CON",
+     "example": "Ayer platiqué con tu mamá.",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.acordarse-de",
+     "head": "acordarse de",
+     "gloss": "remember",
+     "group": "de",
+     "tag": "DE",
+     "example": "¿Te acuerdas de mí?",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.olvidarse-de",
+     "head": "olvidarse de",
+     "gloss": "forget",
+     "group": "de",
+     "tag": "DE",
+     "example": "Me olvidé de su cumpleaños.",
+     "point": "verb-prepositions",
+     "level": 2
+    },
+    {
+     "id": "es.verb-prep.tratar-de",
+     "head": "tratar de",
+     "gloss": "try to",
+     "group": "de",
+     "tag": "DE",
+     "example": "Trata de llegar temprano.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.depender-de",
+     "head": "depender de",
+     "gloss": "depend on",
+     "group": "de",
+     "tag": "DE",
+     "example": "Depende del clima.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.darse-cuenta-de",
+     "head": "darse cuenta de",
+     "gloss": "realize",
+     "group": "de",
+     "tag": "DE",
+     "example": "No me di cuenta de la hora.",
+     "point": "verb-prepositions",
+     "level": 3
+    },
+    {
+     "id": "es.verb-prep.preocuparse-por",
+     "head": "preocuparse por",
+     "gloss": "worry about",
+     "group": "por",
+     "tag": "POR",
+     "example": "No te preocupes por eso.",
+     "point": "verb-prepositions",
+     "level": 3
+    }
+   ]
+  },
+  {
+   "id": "es.subjunctive",
+   "name": "Subjunctive triggers",
+   "sub": "quiero que vengas · me alegra que estés · no creo que sea",
+   "layout": "formulas",
+   "formats": [
+    "flip",
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.subjunctive.querer-que",
+     "head": "querer que …",
+     "reading": "quiero que vengas",
+     "gloss": "wanting someone else to",
+     "example": "Quiero que me acompañes.",
+     "point": "subjunctive-wishes",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.querer-inf",
+     "head": "querer + infinitive",
+     "reading": "quiero ir",
+     "gloss": "same subject",
+     "example": "Quiero ir contigo.",
+     "point": "subjunctive-wishes",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.ojala",
+     "head": "ojalá (que) …",
+     "reading": "ojalá que llueva",
+     "gloss": "hope",
+     "example": "Ojalá que no haya tráfico.",
+     "point": "ojala-subjunctive",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.ojala-ra",
+     "head": "ojalá + -ra",
+     "reading": "ojalá tuviera tiempo",
+     "gloss": "wish, unlikely",
+     "example": "Ojalá tuviera más tiempo.",
+     "point": "ojala-subjunctive",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.alegrar",
+     "head": "me alegra que …",
+     "reading": "me alegra que estés aquí",
+     "gloss": "feeling",
+     "example": "Me alegra que te guste.",
+     "point": "subjunctive-emotion",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.importante",
+     "head": "es importante que …",
+     "reading": "es importante que llegues",
+     "gloss": "judgement",
+     "example": "Es importante que llegues temprano.",
+     "point": "impersonal-subjunctive",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.puede-que",
+     "head": "puede que · es posible que …",
+     "reading": "puede que llueva",
+     "gloss": "maybe",
+     "example": "Puede que no venga.",
+     "point": "impersonal-subjunctive",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.creo",
+     "head": "creo que + indicative",
+     "reading": "creo que tiene razón",
+     "gloss": "belief",
+     "example": "Creo que ya llegó.",
+     "point": "creer-que-mood",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.no-creo",
+     "head": "no creo que …",
+     "reading": "no creo que venga",
+     "gloss": "doubt",
+     "example": "No creo que sea tan difícil.",
+     "point": "creer-que-mood",
+     "level": 3
+    },
+    {
+     "id": "es.subjunctive.busco",
+     "head": "busco un … que …",
+     "reading": "busco un depa que tenga terraza",
+     "gloss": "not known to exist",
+     "example": "Busco un departamento que tenga estacionamiento.",
+     "point": "subjunctive-relative-unknown",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.tal-vez",
+     "head": "tal vez …",
+     "reading": "tal vez venga",
+     "gloss": "maybe · either mood",
+     "example": "Tal vez vaya mañana.",
+     "point": "tal-vez-a-lo-mejor",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.a-lo-mejor",
+     "head": "a lo mejor + indicative",
+     "reading": "a lo mejor viene",
+     "gloss": "maybe · always indicative",
+     "example": "A lo mejor llueve en la tarde.",
+     "point": "tal-vez-a-lo-mejor",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.de-que",
+     "head": "estar seguro de que · tener ganas de que …",
+     "reading": "tengo ganas de que llegue",
+     "gloss": "noun, adjective + de que",
+     "example": "Tengo ganas de que llegue el viernes.",
+     "point": "de-que",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.hayas",
+     "head": "… que + haya + participle",
+     "reading": "espero que hayas descansado",
+     "gloss": "done, before now",
+     "example": "Me alegra que hayas venido.",
+     "point": "subjunctive-perfect",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.sequence",
+     "head": "quería que + -ra",
+     "reading": "quería que vinieras",
+     "gloss": "past trigger",
+     "example": "Mi mamá quería que estudiara medicina.",
+     "point": "subjunctive-sequence",
+     "level": 4
+    },
+    {
+     "id": "es.subjunctive.no-es-que",
+     "head": "no es que …, es que …",
+     "reading": "no es que no quiera",
+     "gloss": "denying a reason",
+     "example": "No es que no quiera, es que no puedo.",
+     "point": "no-es-que",
+     "level": 5
+    },
+    {
+     "id": "es.subjunctive.hecho",
+     "head": "el hecho de que …",
+     "reading": "el hecho de que sea caro",
+     "gloss": "the fact that",
+     "example": "El hecho de que no conteste me preocupa.",
+     "point": "el-hecho-de-que",
+     "level": 5
+    },
+    {
+     "id": "es.subjunctive.decir-ind",
+     "head": "decir que + indicative",
+     "reading": "me dijo que venía",
+     "gloss": "reporting",
+     "example": "Me dijo que venía en camino.",
+     "point": "sentir-decir-dual",
+     "level": 6
+    },
+    {
+     "id": "es.subjunctive.decir-subj",
+     "head": "decir que + subjunctive",
+     "reading": "me dijo que viniera",
+     "gloss": "telling to",
+     "example": "Dile que me espere.",
+     "point": "sentir-decir-dual",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "es.conjunctions",
+   "name": "Cuando, para que, aunque",
+   "sub": "cuando llegues · para que sepas · aunque llueva",
+   "layout": "formulas",
+   "formats": [
+    "flip",
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.conjunctions.cuando-subj",
+     "head": "cuando + subjunctive",
+     "reading": "cuando llegues",
+     "gloss": "future",
+     "example": "Cuando llegues, me mandas mensaje.",
+     "point": "subjunctive-cuando",
+     "level": 3
+    },
+    {
+     "id": "es.conjunctions.cuando-ind",
+     "head": "cuando + indicative",
+     "reading": "cuando era niño",
+     "gloss": "habit, past",
+     "example": "Cuando era niño, vivía en Toluca.",
+     "point": "subjunctive-cuando",
+     "level": 3
+    },
+    {
+     "id": "es.conjunctions.hasta-que",
+     "head": "hasta que …",
+     "reading": "hasta que vuelvas",
+     "gloss": "until",
+     "example": "Espérame aquí hasta que salga.",
+     "point": "subjunctive-conjunctions",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.para-que",
+     "head": "para que …",
+     "reading": "para que sepas",
+     "gloss": "so that, other subject",
+     "example": "Te lo digo para que lo sepas.",
+     "point": "para-que",
+     "level": 3
+    },
+    {
+     "id": "es.conjunctions.para-inf",
+     "head": "para + infinitive",
+     "reading": "para comprar",
+     "gloss": "same subject",
+     "example": "Trabajo para pagar la renta.",
+     "point": "para-que",
+     "level": 3
+    },
+    {
+     "id": "es.conjunctions.antes-de",
+     "head": "antes de + infinitive",
+     "reading": "antes de comer",
+     "gloss": "same subject",
+     "example": "Lávate las manos antes de comer.",
+     "point": "antes-despues-infinitive",
+     "level": 3
+    },
+    {
+     "id": "es.conjunctions.antes-que",
+     "head": "antes de que …",
+     "reading": "antes de que llueva",
+     "gloss": "other subject",
+     "example": "Vámonos antes de que llueva.",
+     "point": "subjunctive-conjunctions",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.sin-que",
+     "head": "sin que …",
+     "reading": "sin que nadie lo viera",
+     "gloss": "without",
+     "example": "Salió sin que nadie lo viera.",
+     "point": "subjunctive-conjunctions",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.al-inf",
+     "head": "al + infinitive",
+     "reading": "al llegar",
+     "gloss": "on, when",
+     "example": "Al llegar, me di cuenta del error.",
+     "point": "al-infinitive",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.aunque-ind",
+     "head": "aunque + indicative",
+     "reading": "aunque llueve",
+     "gloss": "although, a fact",
+     "example": "Aunque está lloviendo, vamos a salir.",
+     "point": "aunque-mood",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.aunque-subj",
+     "head": "aunque + subjunctive",
+     "reading": "aunque llueva",
+     "gloss": "even if",
+     "example": "Aunque llueva, vamos a salir.",
+     "point": "aunque-mood",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.siempre-que",
+     "head": "siempre y cuando …",
+     "reading": "siempre y cuando regreses",
+     "gloss": "as long as",
+     "example": "Puedes ir siempre y cuando regreses temprano.",
+     "point": "siempre-y-cuando",
+     "level": 4
+    },
+    {
+     "id": "es.conjunctions.por-mucho",
+     "head": "por mucho que · por más que …",
+     "reading": "por más que insistas",
+     "gloss": "however much",
+     "example": "Por más que insistas, no voy.",
+     "point": "por-mucho-que",
+     "level": 5
+    },
+    {
+     "id": "es.conjunctions.pase",
+     "head": "pase lo que pase",
+     "reading": "digan lo que digan",
+     "gloss": "whatever happens",
+     "example": "Pase lo que pase, te apoyo.",
+     "point": "reduplicative-subjunctive",
+     "level": 5
+    }
+   ]
+  },
+  {
+   "id": "es.si",
+   "name": "Si & como si",
+   "sub": "si llueve · si tuviera · como si nada",
+   "layout": "formulas",
+   "formats": [
+    "pick-one",
+    "build",
+    "two-step",
+    "transform",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.si.present",
+     "head": "si + present, …",
+     "reading": "si llueve, no voy",
+     "gloss": "real condition",
+     "example": "Si tienes tiempo, llámame.",
+     "point": "si-present",
+     "level": 2
+    },
+    {
+     "id": "es.si.hypo",
+     "head": "si + -ra, … -ría",
+     "reading": "si tuviera dinero, viajaría",
+     "gloss": "unreal now",
+     "example": "Si tuviera carro, te llevaría.",
+     "point": "si-hypothetical",
+     "level": 3
+    },
+    {
+     "id": "es.si.past",
+     "head": "si + hubiera + participle, … habría + participle",
+     "reading": "si hubiera sabido, habría venido",
+     "gloss": "unreal past",
+     "example": "Si me hubieras avisado, te habría esperado.",
+     "point": "si-pluperfect",
+     "level": 4
+    },
+    {
+     "id": "es.si.hubiera-hubiera",
+     "head": "si hubiera …, … hubiera …",
+     "reading": "si hubiera sabido, no hubiera venido",
+     "gloss": "Mexican speech",
+     "example": "Si hubiera salido antes, no hubiera llegado tarde.",
+     "point": "si-pluperfect",
+     "level": 4
+    },
+    {
+     "id": "es.si.mixed-1",
+     "head": "si + hubiera + participle, … -ría",
+     "reading": "si hubiera estudiado, ahora tendría",
+     "gloss": "past cause, present result",
+     "example": "Si hubiera estudiado, ahora tendría un mejor trabajo.",
+     "point": "mixed-conditional",
+     "level": 6
+    },
+    {
+     "id": "es.si.mixed-2",
+     "head": "si + -ra, … habría + participle",
+     "reading": "si fuera organizado, no habría perdido",
+     "gloss": "present cause, past result",
+     "example": "Si fuera más organizado, no habría perdido el vuelo.",
+     "point": "mixed-conditional",
+     "level": 6
+    },
+    {
+     "id": "es.si.como-si",
+     "head": "como si + -ra",
+     "reading": "como si fuera el jefe",
+     "gloss": "as if",
+     "example": "Habla como si fuera el jefe.",
+     "point": "como-si",
+     "level": 4
+    },
+    {
+     "id": "es.si.como-si-nada",
+     "head": "como si nada",
+     "reading": "como si nada",
+     "gloss": "as if nothing happened",
+     "example": "Llegó tarde como si nada.",
+     "point": "como-si",
+     "level": 4
+    },
+    {
+     "id": "es.si.en-caso",
+     "head": "en caso de que · por si …",
+     "reading": "por si llueve",
+     "gloss": "in case",
+     "example": "Lleva paraguas por si llueve.",
+     "point": "siempre-y-cuando",
+     "level": 4
+    },
+    {
+     "id": "es.si.de-inf",
+     "head": "de + infinitive, …",
+     "reading": "de haberlo sabido",
+     "gloss": "if",
+     "example": "De haberlo sabido, no habría venido.",
+     "point": "de-infinitive-condition",
+     "level": 5
+    },
+    {
+     "id": "es.si.ni-que",
+     "head": "ni que + -ra",
+     "reading": "¡ni que fuera tu mamá!",
+     "gloss": "as if! (rejecting)",
+     "example": "¡Ni que fuera tu sirvienta!",
+     "point": "ni-que",
+     "level": 6
+    }
+   ]
+  },
+  {
+   "id": "es.relatives",
+   "name": "Relatives & reported speech",
+   "sub": "el carro que compré · lo que quieras · dijo que vendría",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "build",
+    "two-step",
+    "spot-it",
+    "transform"
+   ],
+   "entries": [
+    {
+     "id": "es.relatives.que",
+     "head": "que",
+     "reading": "el carro que compré",
+     "gloss": "who, that, which",
+     "example": "La chava que trabaja aquí es de Tepic.",
+     "point": "relative-que-donde",
+     "level": 2
+    },
+    {
+     "id": "es.relatives.donde",
+     "head": "donde",
+     "reading": "el lugar donde vivo",
+     "gloss": "where",
+     "example": "Es el restaurante donde nos conocimos.",
+     "point": "relative-que-donde",
+     "level": 2
+    },
+    {
+     "id": "es.relatives.lo-que",
+     "head": "lo que",
+     "reading": "no entiendo lo que dices",
+     "gloss": "what, the thing that",
+     "example": "No entiendo lo que dices.",
+     "point": "relative-lo-que",
+     "level": 3
+    },
+    {
+     "id": "es.relatives.prep-que",
+     "head": "preposition + el que · la que",
+     "reading": "la casa en la que vivo",
+     "gloss": "after a preposition",
+     "example": "La empresa para la que trabajo es chica.",
+     "point": "relative-preposition",
+     "level": 4
+    },
+    {
+     "id": "es.relatives.lo-cual",
+     "head": "…, lo cual · …, lo que",
+     "reading": "lo cual es raro",
+     "gloss": "the whole clause",
+     "example": "No llamó, lo cual es raro.",
+     "point": "relative-lo-cual",
+     "level": 4
+    },
+    {
+     "id": "es.relatives.cuyo",
+     "head": "cuyo · cuya",
+     "reading": "la señora cuya hija",
+     "gloss": "whose · agrees with the owned",
+     "example": "Es la señora cuya hija estudia conmigo.",
+     "point": "cuyo",
+     "level": 5
+    },
+    {
+     "id": "es.relatives.quien",
+     "head": "quien + subjunctive",
+     "reading": "quien quiera venir",
+     "gloss": "whoever",
+     "example": "Quien termine primero, gana.",
+     "point": "quien-generic",
+     "level": 5
+    },
+    {
+     "id": "es.relatives.cleft-place",
+     "head": "fue ahí donde · fue entonces cuando",
+     "reading": "fue en Puebla donde",
+     "gloss": "singling out",
+     "example": "Fue en Puebla donde nos conocimos.",
+     "point": "cleft",
+     "level": 5
+    },
+    {
+     "id": "es.relatives.lo-dificil",
+     "head": "lo + adjective + que",
+     "reading": "no sabes lo difícil que es",
+     "gloss": "how …",
+     "example": "No sabes lo cansado que estoy.",
+     "point": "lo-adjective-que",
+     "level": 5
+    },
+    {
+     "id": "es.relatives.que-kept",
+     "head": "que can't drop",
+     "reading": "creo que viene",
+     "gloss": "never omitted",
+     "example": "Me dijo que estaba ocupada.",
+     "point": "que-obligatory",
+     "level": 3
+    },
+    {
+     "id": "es.relatives.si",
+     "head": "si = whether",
+     "reading": "no sé si viene",
+     "gloss": "yes-no question",
+     "example": "Pregúntale si quiere ir.",
+     "point": "indirect-questions",
+     "level": 3
+    },
+    {
+     "id": "es.relatives.qu",
+     "head": "qué · dónde · cuándo, accented",
+     "reading": "no sé dónde vive",
+     "gloss": "question word",
+     "example": "¿Sabes a qué hora abre?",
+     "point": "indirect-questions",
+     "level": 3
+    },
+    {
+     "id": "es.relatives.rep-impf",
+     "head": "dijo que + imperfect",
+     "reading": "dijo que estaba cansado",
+     "gloss": "present → imperfect",
+     "example": "Me dijo que tenía hambre.",
+     "point": "reported-speech-past",
+     "level": 4
+    },
+    {
+     "id": "es.relatives.rep-cond",
+     "head": "dijo que + conditional",
+     "reading": "dijo que vendría",
+     "gloss": "future → conditional",
+     "example": "Dijo que llegaría a las ocho.",
+     "point": "reported-speech-past",
+     "level": 4
+    },
+    {
+     "id": "es.relatives.rep-cmd",
+     "head": "dijo que + -ra",
+     "reading": "me dijo que esperara",
+     "gloss": "command → -ra",
+     "example": "Me dijo que la esperara afuera.",
+     "point": "reported-speech-past",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.se",
+   "name": "The many se",
+   "sub": "se vende · se me olvidó · se conocieron",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "transform",
+    "build",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.se.reflexive",
+     "head": "se = oneself",
+     "reading": "se baña",
+     "gloss": "reflexive",
+     "example": "Mi hijo se baña en la noche.",
+     "point": "reflexive-routine",
+     "level": 1
+    },
+    {
+     "id": "es.se.reciprocal",
+     "head": "se · nos = each other",
+     "reading": "se quieren",
+     "gloss": "each other",
+     "example": "Se conocieron en la universidad.",
+     "point": "reciprocal-se",
+     "level": 2
+    },
+    {
+     "id": "es.se.impersonal",
+     "head": "se + él form",
+     "reading": "aquí se vive bien",
+     "gloss": "people, one",
+     "example": "Aquí se come muy bien.",
+     "point": "impersonal-se",
+     "level": 3
+    },
+    {
+     "id": "es.se.they",
+     "head": "ellos form = someone",
+     "reading": "me robaron la cartera",
+     "gloss": "unnamed people",
+     "example": "Me robaron el celular en el metro.",
+     "point": "impersonal-se",
+     "level": 3
+    },
+    {
+     "id": "es.se.pasiva",
+     "head": "se + verb agreeing with the thing",
+     "reading": "se venden elotes",
+     "gloss": "plural thing, plural verb",
+     "example": "Se rentan departamentos.",
+     "point": "pasiva-refleja",
+     "level": 4
+    },
+    {
+     "id": "es.se.pasiva-a",
+     "head": "se + a + person",
+     "reading": "se contrató a dos ingenieros",
+     "gloss": "verb stays singular",
+     "example": "Se busca a los responsables.",
+     "point": "pasiva-refleja",
+     "level": 5
+    },
+    {
+     "id": "es.se.olvido",
+     "head": "se + me + verb",
+     "reading": "se me olvidó",
+     "gloss": "it happened to me",
+     "example": "Se me olvidaron las llaves.",
+     "point": "accidental-se",
+     "level": 3
+    },
+    {
+     "id": "es.se.cayeron",
+     "head": "se me cayeron",
+     "reading": "se me cayeron los lentes",
+     "gloss": "verb agrees with the thing",
+     "example": "Se me cayeron los lentes.",
+     "point": "accidental-se",
+     "level": 3
+    },
+    {
+     "id": "es.se.le-nos",
+     "head": "se le · se nos · se les",
+     "reading": "se nos acabó el gas",
+     "gloss": "whose bad luck",
+     "example": "Se le descompuso el carro.",
+     "point": "accidental-se",
+     "level": 3
+    },
+    {
+     "id": "es.se.ser-passive",
+     "head": "ser + participle + por",
+     "reading": "fue construido por",
+     "gloss": "formal passive",
+     "example": "El museo fue diseñado por un arquitecto japonés.",
+     "point": "passive-ser",
+     "level": 4
+    },
+    {
+     "id": "es.se.se-vs-ser",
+     "head": "se over ser",
+     "reading": "se construyó en 1910",
+     "gloss": "speech prefers se",
+     "example": "La catedral se terminó en 1813.",
+     "point": "passive-ser",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.connectors",
+   "name": "Connectors & negatives",
+   "sub": "pero · sino · ni … ni · sin embargo",
+   "layout": "cards",
+   "formats": [
+    "pick-one",
+    "flip",
+    "build",
+    "two-step",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.connectors.pero",
+     "head": "pero",
+     "reading": "es caro, pero bueno",
+     "gloss": "but",
+     "group": "but",
+     "example": "Es caro, pero vale la pena.",
+     "point": "pero-sino",
+     "level": 1
+    },
+    {
+     "id": "es.connectors.sino",
+     "head": "sino",
+     "reading": "no es azul, sino verde",
+     "gloss": "but rather, after no",
+     "group": "but",
+     "example": "No es mi hermano, sino mi primo.",
+     "point": "pero-sino",
+     "level": 3
+    },
+    {
+     "id": "es.connectors.no-solo",
+     "head": "no solo … sino también",
+     "reading": "no solo canta, sino también baila",
+     "gloss": "not only … but also",
+     "group": "but",
+     "example": "No solo es guapo, sino también inteligente.",
+     "point": "pero-sino",
+     "level": 3
+    },
+    {
+     "id": "es.connectors.porque",
+     "head": "porque",
+     "reading": "porque llovía",
+     "gloss": "because",
+     "group": "because",
+     "example": "No fui porque estaba cansado.",
+     "point": "connectors-cause",
+     "level": 1
+    },
+    {
+     "id": "es.connectors.como",
+     "head": "como …, …",
+     "reading": "como llovía, no fui",
+     "gloss": "since, first in the sentence",
+     "group": "because",
+     "example": "Como no llegabas, me fui.",
+     "point": "connectors-cause",
+     "level": 3
+    },
+    {
+     "id": "es.connectors.ya-que",
+     "head": "ya que · puesto que",
+     "reading": "ya que estás aquí",
+     "gloss": "since, given that",
+     "group": "because",
+     "example": "Ya que estás aquí, ayúdame.",
+     "point": "connectors-cause",
+     "level": 3
+    },
+    {
+     "id": "es.connectors.sin-embargo",
+     "head": "sin embargo",
+     "reading": "sin embargo, …",
+     "gloss": "however",
+     "group": "however",
+     "example": "Estudió mucho; sin embargo, reprobó.",
+     "point": "connectors-opposition",
+     "level": 4
+    },
+    {
+     "id": "es.connectors.en-cambio",
+     "head": "en cambio",
+     "reading": "yo, en cambio, …",
+     "gloss": "whereas",
+     "group": "however",
+     "example": "Él es tímido; su hermana, en cambio, habla con todos.",
+     "point": "connectors-opposition",
+     "level": 4
+    },
+    {
+     "id": "es.connectors.no-obstante",
+     "head": "no obstante",
+     "reading": "no obstante, …",
+     "gloss": "nevertheless (formal)",
+     "group": "formal",
+     "example": "Las ventas bajaron; no obstante, hubo ganancias.",
+     "point": "connectors-argument",
+     "level": 5
+    },
+    {
+     "id": "es.connectors.por-ende",
+     "head": "por lo tanto · por ende",
+     "reading": "por lo tanto, …",
+     "gloss": "therefore (formal)",
+     "group": "formal",
+     "example": "No hubo quórum; por lo tanto, se canceló la sesión.",
+     "point": "connectors-argument",
+     "level": 5
+    },
+    {
+     "id": "es.connectors.ni-ni",
+     "head": "ni … ni",
+     "reading": "ni fuma ni toma",
+     "gloss": "neither … nor",
+     "group": "and · nor",
+     "example": "No tengo ni tiempo ni dinero.",
+     "point": "ni-ni",
+     "level": 3
+    },
+    {
+     "id": "es.connectors.tambien",
+     "head": "también",
+     "reading": "yo también",
+     "gloss": "too, after a yes",
+     "group": "and · nor",
+     "example": "Yo también quiero ir.",
+     "point": "tambien-tampoco",
+     "level": 2
+    },
+    {
+     "id": "es.connectors.tampoco",
+     "head": "tampoco",
+     "reading": "yo tampoco",
+     "gloss": "either, after a no",
+     "group": "and · nor",
+     "example": "Yo tampoco sé.",
+     "point": "tambien-tampoco",
+     "level": 2
+    },
+    {
+     "id": "es.connectors.nada",
+     "head": "no … nada",
+     "reading": "no quiero nada",
+     "gloss": "nothing · double negative",
+     "group": "never · nothing",
+     "example": "No compré nada.",
+     "point": "negation-double",
+     "level": 2
+    },
+    {
+     "id": "es.connectors.nunca",
+     "head": "nunca · no … nunca",
+     "reading": "nunca como carne",
+     "gloss": "never, before or after",
+     "group": "never · nothing",
+     "example": "No voy nunca al cine.",
+     "point": "negation-double",
+     "level": 2
+    },
+    {
+     "id": "es.connectors.ningun",
+     "head": "ningún · ninguna",
+     "reading": "no hay ningún problema",
+     "gloss": "no, not any · singular",
+     "group": "some · none",
+     "example": "No tengo ninguna duda.",
+     "point": "alguno-ninguno",
+     "level": 2
+    },
+    {
+     "id": "es.connectors.entre-mas",
+     "head": "entre más …, más …",
+     "reading": "entre más practicas, mejor",
+     "gloss": "the more … the more",
+     "group": "the more",
+     "example": "Entre más practiques, mejor te va a salir.",
+     "point": "entre-mas",
+     "level": 4
+    }
+   ]
+  },
+  {
+   "id": "es.formal",
+   "name": "Formal & literary",
+   "sub": "llevar a cabo · habiendo dicho · no está nada mal",
+   "layout": "list",
+   "formats": [
+    "pick-one",
+    "transform",
+    "spot-it"
+   ],
+   "entries": [
+    {
+     "id": "es.formal.inf-subject",
+     "head": "infinitive as subject",
+     "reading": "fumar es malo",
+     "gloss": "-ing as a noun",
+     "example": "Hacer ejercicio es bueno para la salud.",
+     "point": "infinitive-as-noun",
+     "level": 3
+    },
+    {
+     "id": "es.formal.nominal",
+     "head": "verb → noun",
+     "reading": "aumentar → el aumento",
+     "gloss": "formal style",
+     "example": "El aumento de precios afectó a todos.",
+     "point": "nominalization",
+     "level": 5
+    },
+    {
+     "id": "es.formal.llevar-a-cabo",
+     "head": "llevar a cabo",
+     "reading": "se llevará a cabo",
+     "gloss": "carry out, hold",
+     "example": "La reunión se llevará a cabo el lunes.",
+     "point": "support-verbs",
+     "level": 5
+    },
+    {
+     "id": "es.formal.dar-a-conocer",
+     "head": "dar a conocer",
+     "reading": "dio a conocer",
+     "gloss": "announce",
+     "example": "La empresa dio a conocer sus resultados.",
+     "point": "support-verbs",
+     "level": 5
+    },
+    {
+     "id": "es.formal.habiendo",
+     "head": "habiendo + participle",
+     "reading": "habiendo terminado",
+     "gloss": "having done",
+     "example": "Habiendo terminado el trabajo, se fue a casa.",
+     "point": "compound-gerund",
+     "level": 5
+    },
+    {
+     "id": "es.formal.el-inf",
+     "head": "el + infinitive",
+     "reading": "el ir y venir",
+     "gloss": "the act of",
+     "example": "Me cansa el ir y venir de la gente.",
+     "point": "nominal-infinitive",
+     "level": 6
+    },
+    {
+     "id": "es.formal.fut-subj",
+     "head": "-re future subjunctive",
+     "reading": "lo que fuere",
+     "gloss": "laws, sayings",
+     "example": "A donde fueres, haz lo que vieres.",
+     "point": "future-subjunctive",
+     "level": 6
+    },
+    {
+     "id": "es.formal.se-subj",
+     "head": "-se imperfect subjunctive",
+     "reading": "si tuviese",
+     "gloss": "written = tuviera",
+     "example": "Si tuviese tiempo, lo haría.",
+     "point": "se-imperfect-subjunctive",
+     "level": 6
+    },
+    {
+     "id": "es.formal.ra-plup",
+     "head": "-ra = había + participle",
+     "reading": "el que fuera alcalde",
+     "gloss": "written: who had been",
+     "example": "Murió quien fuera alcalde de la ciudad.",
+     "point": "ra-pluperfect",
+     "level": 6
+    },
+    {
+     "id": "es.formal.fronting",
+     "head": "predicate first",
+     "reading": "grande fue su sorpresa",
+     "gloss": "emphasis",
+     "example": "Difícil es decirlo.",
+     "point": "fronting-inversion",
+     "level": 6
+    },
+    {
+     "id": "es.formal.litotes",
+     "head": "no + the opposite",
+     "reading": "no está nada mal",
+     "gloss": "understatement",
+     "example": "No es poca cosa.",
+     "point": "litotes",
+     "level": 6
+    },
+    {
+     "id": "es.formal.con-lo-que",
+     "head": "con lo que …",
+     "reading": "con lo que cuesta",
+     "gloss": "given how much",
+     "example": "¡Con lo que te costó, y ya lo rompiste!",
+     "point": "con-lo-que",
+     "level": 6
+    }
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "id": "es.drill.speed",
+   "name": "SPEED"
+  },
+  {
+   "id": "es.drill.ser-estar",
+   "name": "SER / ESTAR",
+   "chapters": [
+    "es.ser-estar"
+   ]
+  },
+  {
+   "id": "es.drill.por-para",
+   "name": "POR / PARA",
+   "chapters": [
+    "es.por-para"
+   ]
+  },
+  {
+   "id": "es.drill.el-la",
+   "name": "EL / LA",
+   "chapters": [
+    "es.gender"
+   ]
+  }
+ ]
+}

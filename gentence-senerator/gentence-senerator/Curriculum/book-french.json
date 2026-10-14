@@ -452,7 +452,7 @@
      "id": "fr.agreement.compound-pl",
      "head": "compound nouns",
      "reading": "des arcs-en-ciel · des grands-parents",
-     "gloss": "only nouns and adjectives take -s",
+     "gloss": "nouns and adjectives take -s · verbs, adverbs and a noun complement don't",
      "example": "des timbres-poste, mes beaux-frères",
      "point": "noms-composes-pluriel",
      "level": 6
@@ -461,7 +461,7 @@
      "id": "fr.agreement.demi",
      "head": "demi, ci-joint, vingt",
      "reading": "une demi-heure · deux heures et demie",
-     "gloss": "invariable before, agrees after",
+     "gloss": "invariable before the noun, agrees after · vingt, cent: -s only at the end",
      "example": "quatre-vingts euros, quatre-vingt-deux euros",
      "point": "accords-particuliers",
      "level": 6
@@ -567,7 +567,7 @@
      "gloss": "la liberté, la santé",
      "group": "la",
      "tag": "LA",
-     "example": "l'université",
+     "example": "la société",
      "point": "gender",
      "level": 1
     },
@@ -587,7 +587,7 @@
      "gloss": "la baguette, la fourchette",
      "group": "la",
      "tag": "LA",
-     "example": "l'assiette",
+     "example": "la serviette",
      "point": "gender",
      "level": 1
     },
@@ -597,7 +597,7 @@
      "gloss": "la différence, la chance",
      "group": "la",
      "tag": "LA",
-     "example": "l'enfance",
+     "example": "la confiance",
      "point": "gender",
      "level": 2
     },
@@ -683,7 +683,7 @@
      "gloss": "le bonheur, le moteur",
      "group": "le",
      "tag": "LE",
-     "example": "l'ordinateur",
+     "example": "le malheur",
      "point": "gender",
      "level": 3
     },
@@ -953,7 +953,7 @@
      "id": "fr.negation.compound",
      "head": "around avoir, être",
      "reading": "je n'ai pas vu",
-     "gloss": "personne goes after",
+     "gloss": "ne…pas wraps the auxiliary · personne goes after the participle",
      "example": "Je ne suis pas allé.",
      "point": "ne-pas",
      "level": 2
@@ -1662,7 +1662,7 @@
      "head": "mon, ton, son + vowel",
      "reading": "son amie · mon adresse",
      "gloss": "feminine noun, vowel first",
-     "example": "Elle a perdu son adresse.",
+     "example": "J'ai perdu son adresse.",
      "point": "possessive-adjectives",
      "level": 2
     },
@@ -1863,7 +1863,7 @@
      "gloss": "replaces de",
      "example": "L'outil dont j'ai besoin.",
      "point": "dont",
-     "level": 4
+     "level": 3
     },
     {
      "id": "fr.relatives.lequel",
@@ -1964,7 +1964,7 @@
     {
      "id": "fr.subjunctive.doubt",
      "head": "douter que, ne pas penser que",
-     "reading": "je doute qu'il puisse",
+     "reading": "je doute qu'il puisse venir",
      "gloss": "subjonctif",
      "example": "Je ne pense pas qu'il ait raison.",
      "point": "subjunctive-doubt",
@@ -2114,7 +2114,7 @@
     },
     {
      "id": "fr.liaison.preposition",
-     "head": "short word after",
+     "head": "after a short preposition",
      "reading": "chez‿eux",
      "gloss": "obligatoire",
      "example": "dans‿un, en‿avance",
@@ -2364,7 +2364,7 @@
      "head": "il n'y a pas de",
      "reading": "il n'y a pas de bus",
      "gloss": "there isn't, there aren't",
-     "example": "Il n'y a plus de pain.",
+     "example": "Il n'y a pas de métro ici.",
      "point": "il-y-a",
      "level": 1
     },
@@ -3594,7 +3594,7 @@
      "head": "ce qui …, ce dont …, c'est …",
      "reading": "ce dont il s'agit, c'est de la méthode",
      "gloss": "framing the point",
-     "example": "Ce qui compte, c'est le résultat.",
+     "example": "Ce dont j'ai besoin, c'est de temps.",
      "point": "mise-en-relief-soutenue",
      "level": 5
     },

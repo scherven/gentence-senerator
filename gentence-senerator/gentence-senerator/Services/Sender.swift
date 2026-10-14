@@ -25,8 +25,24 @@ final class Sender: NSObject, URLSessionDataDelegate, @unchecked Sendable {
         }
     }
 
-    /// Where a job ended up: the batch id, or why it did not get one.
-    var onResult: (@MainActor (UUID, Result<String, Error>) -> Void)?
+    /// What the worker made of an upload: the batch, and whether it is
+    /// watching it — only if the upload carried a push token.
+    struct Accepted: Hashable {
+        let batch: String
+        let watched: Bool
+
+        init?(_ data: Data) {
+            guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let batch = object["batch"] as? String else { return nil }
+            self.batch = batch
+            // A resend carries no flag; unwatched is the safe guess, since
+            // the app then asks the worker to watch.
+            watched = object["watched"] as? Bool ?? false
+        }
+    }
+
+    /// Where a job ended up: the batch, or why it did not get one.
+    var onResult: (@MainActor (UUID, Result<Accepted, Error>) -> Void)?
 
     private let lock = NSLock()
     private var received: [Int: Data] = [:]
@@ -68,23 +84,21 @@ final class Sender: NSObject, URLSessionDataDelegate, @unchecked Sendable {
     /// when the learner would rather press a button than wait. The job id
     /// makes it safe alongside the background copy: whichever arrives second
     /// is handed the batch the first one made.
-    func sendNow(job: UUID, body: Data, token: String?, label: String) async throws -> String {
+    func sendNow(job: UUID, body: Data, token: String?, label: String) async throws -> Accepted {
         let (data, response) = try await URLSession.shared.upload(
             for: Self.request(job: job, token: token, label: label), from: body)
-        guard (response as? HTTPURLResponse)?.statusCode == 200,
-              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let batch = object["batch"] as? String else {
+        guard (response as? HTTPURLResponse)?.statusCode == 200, let accepted = Accepted(data) else {
             throw Failure.rejected((response as? HTTPURLResponse)?.statusCode ?? 0,
                                    String(decoding: data, as: UTF8.self))
         }
-        return batch
+        return accepted
     }
 
     private static func request(job: UUID, token: String?, label: String) -> URLRequest {
-        var request = URLRequest(url: URL(string: Key.graderURL + "/submit")!)
+        var request = URLRequest(url: Worker.url("/submit"))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(Key.watchSecret, forHTTPHeaderField: "x-watch-secret")
+        Worker.authorize(&request)
         request.setValue(job.uuidString, forHTTPHeaderField: "x-job-id")
         request.setValue(label, forHTTPHeaderField: "x-label")
         if let token { request.setValue(token, forHTTPHeaderField: "x-token") }
@@ -116,13 +130,12 @@ final class Sender: NSObject, URLSessionDataDelegate, @unchecked Sendable {
         lock.unlock()
         guard let job = task.taskDescription.flatMap(UUID.init(uuidString:)) else { return }
 
-        let result: Result<String, Error>
+        let result: Result<Accepted, Error>
         if let error {
             result = .failure(error)
         } else if let http = task.response as? HTTPURLResponse, http.statusCode == 200,
-                  let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let batch = object["batch"] as? String {
-            result = .success(batch)
+                  let accepted = Accepted(data) {
+            result = .success(accepted)
         } else {
             let code = (task.response as? HTTPURLResponse)?.statusCode ?? 0
             result = .failure(Failure.rejected(code, String(decoding: data, as: UTF8.self)))
