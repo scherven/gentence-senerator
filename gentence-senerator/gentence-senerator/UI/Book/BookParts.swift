@@ -128,7 +128,7 @@ extension EntryState {
     var label: String {
         if slipping { return "SLIPPING" }
         switch standing {
-        case .never:   return "NEVER USED"
+        case .never:   return "NEVER"
         case .tried:   return "TRIED"
         case .holding: return "HOLDING"
         case .solid:   return "SOLID"

@@ -144,7 +144,7 @@ struct FormulasLayout: View {
         var parts = [rows.levels[entry.id], entry.gloss?.uppercased()].compactMap { $0 }
         if state.slipping { parts.append("MISSED") }
         else if state.right > 0 { parts.append("×\(state.right)") }
-        else if state.standing == .never { parts.append("NEVER USED") }
+        else if state.standing == .never { parts.append("NEVER") }
         return parts.joined(separator: " · ")
     }
 }

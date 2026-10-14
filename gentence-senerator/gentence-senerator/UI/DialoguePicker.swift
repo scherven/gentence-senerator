@@ -146,7 +146,7 @@ struct DialoguePicker: View {
             VStack(alignment: .leading, spacing: Theme.M.gapTight) {
                 Text(entry.passage.title).font(Theme.F.title)
                 Text(entry.passage.setup).font(Theme.F.body)
-                Text("#\(entry.passage.lesson) · " + meta(entry.passage, speakers: true))
+                Text(meta(entry.passage, speakers: true))
                     .font(Theme.F.meta).foregroundStyle(Theme.C.ink3)
 
                 if !entry.heard.isEmpty {

@@ -1040,14 +1040,13 @@ final class Store {
         var turn = turn
         phase = .assessing
         do {
-            let (review, written, usage) = try await tutor.review(turn: turn, level: settings.level)
+            let (review, usage) = try await tutor.review(turn: turn, level: settings.level)
             note(usage, model: Tutor.reviewModel(turn.mode))
             turn.review = review
             current = turn
             session?.turns.append(turn)
             record(for: turn, review: review)
             reached(review, in: turn)
-            shelve(written)
             hold()
             phase = .reviewing
         } catch {
@@ -1300,10 +1299,10 @@ final class Store {
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
             do {
-                let (review, lessons, usage) = try await tutor.review(
+                let (review, usage) = try await tutor.review(
                     turn: last, history: Array(turns.dropLast()), level: level)
                 note(usage, model: Tutor.reviewModel(last.mode))
-                land(review, lessons, on: last)
+                land(review, on: last)
             } catch {
                 if var now = jobs.first(where: { $0.id == job.id }) {
                     now.error = Plain.message(error, "regrade")
@@ -1316,13 +1315,12 @@ final class Store {
 
     /// One review into the archive, and everything it is evidence of into
     /// `Progress`.
-    private func land(_ review: Review, _ lessons: [Lesson], on turn: Turn) {
+    private func land(_ review: Review, on turn: Turn) {
         amend(turn.id) { $0.review = review }
         var graded = turn
         graded.review = review
         record(for: graded, review: review)
         reached(review, in: graded)
-        shelve(lessons)
         if scores.add(graded) { Vault.save(scores, Vault.scores) }
     }
 
@@ -1337,10 +1335,10 @@ final class Store {
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
             note(reply.usage, batched: batched, model: Tutor.reviewModel(last.mode))
-            guard let (review, lessons) = try? Tutor.read(reply, turn: last,
-                                                           history: Array(turns.dropLast()))
+            guard let review = try? Tutor.read(reply, turn: last,
+                                               history: Array(turns.dropLast()))
             else { continue }
-            land(review, lessons, on: last)
+            land(review, on: last)
         }
         // What the reviews put into `Progress` moves the record on screen.
         refreshPlan()
@@ -1906,13 +1904,12 @@ final class Store {
 
     // MARK: Drilling down
 
-    /// The one entry point. Every openable thing in the app ends up here, at
-    /// any depth, with a request built from the atom rather than the screen.
     /// The language of what is on screen. Usually the setting; while reading
     /// a graded session it is that session's, which can be another language
     /// entirely — its lessons, its schedule, its voice.
     private var language: Language { current?.language ?? settings.language }
 
+    /// A finding's lesson, from the Book. Opening counts as a visit.
     func open(_ atom: Atom) {
         let request = LessonRequest(
             seed: atom.seed, kind: atom.kind, language: language,
@@ -2728,9 +2725,6 @@ final class Store {
             chapter.entries.contains { $0.effectiveLevel(pointLevel: { points[$0] }) >= level }
         }
         var chapters = current + book.chapters.filter { c in !current.contains { $0.id == c.id } }
-        if hasWordDeck {
-            book.drills.append(VocabDrill.plan(settings.language))
-        }
         var noted: [String: Textbook.Entry] = [:]
         if let extra = Textbook.notedChapter(
             language: settings.language, sections: textbook(scope: .mine),
@@ -2906,22 +2900,6 @@ final class Store {
         return HistoryDay.build(archive: archive, quizzes: quizLog.plans,
                                 language: settings.language, today: Spend.key(.now)) {
             names[$0] ?? (VocabDrill.isVocab(QuizPlan(id: $0, name: "")) ? "Words" : "Quiz")
-        }
-    }
-
-    /// A recurring point's lesson. The latest finding it came from when one
-    /// is still archived, so the lesson keeps its sentence; else its subject.
-    func open(_ encounter: Progress.Encounter) {
-        let sessions = everySession
-        let atom = sessions.sorted { $0.startedAt > $1.startedAt }.lazy
-            .flatMap(\.turns)
-            .compactMap { $0.review?.atoms.first { $0.id == encounter.atomID } }
-            .first
-        if let atom {
-            open(atom)
-        } else {
-            open(seed: Atom.Seed(subject: encounter.subject, context: "", pointID: nil),
-                 kind: encounter.kind)
         }
     }
 

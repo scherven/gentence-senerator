@@ -102,7 +102,7 @@ struct KeyFace<Content: View>: View {
         let dx: CGFloat = variant == .primary ? d : 0
         let sunk = pressed && look.drop != nil || variant == .dim
         content
-            .strikethrough(variant == .wrong, color: Theme.C.bad)
+            .underline(variant == .wrong, color: Theme.C.bad)
             .foregroundStyle(look.ink)
             .frame(maxWidth: expand ? .infinity : nil, maxHeight: expand ? .infinity : nil)
             .background(look.face)

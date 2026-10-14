@@ -78,7 +78,7 @@ struct GradingTests {
     @Test func schemaPropertiesKeepTheirOrder() throws {
         let data = try Schemas.data(Schemas.review(for: .german))
         let text = String(decoding: data, as: UTF8.self)
-        let top = ["findings", "score", "readOfScore", "natural", "respeaks", "lessons", "used"]
+        let top = ["findings", "score", "readOfScore", "natural", "respeaks", "used"]
         let at = top.map { text.range(of: "\"\($0)\":{")!.lowerBound }
         #expect(at == at.sorted())
         let finding = ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject"]
@@ -94,7 +94,7 @@ struct GradingTests {
     @Test func aPlaceholderReviewIsAFailure() {
         let json = """
         {"respeaks":[{"incorrect":"","instruction":"x","accept":["x"],"correct":"x"}],
-         "findings":[],"natural":null,"readOfScore":"x","lessons":[],"used":[],"score":0}
+         "findings":[],"natural":null,"readOfScore":"x","used":[],"score":0}
         """
         let reply = Anthropic.Reply(
             text: json,
@@ -105,9 +105,10 @@ struct GradingTests {
         }
     }
 
-    /// A graded reply becomes a deep review, a lesson keyed where tapping the
-    /// finding will look for it, and only known point ids.
-    @Test func readsReviewAndLessons() throws {
+    /// A graded reply becomes a deep review with only known point ids. The
+    /// lessons in it are from a batch sent before reviews stopped asking for
+    /// them; they are ignored, not a failure.
+    @Test func readsReview() throws {
         let json = """
         {"score":72,"readOfScore":"Understood, one slip.",
          "findings":[
@@ -141,7 +142,7 @@ struct GradingTests {
             usage: .init(inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0),
             refusal: nil)
 
-        let (review, lessons) = try Tutor.read(reply, turn: last, history: [first])
+        let review = try Tutor.read(reply, turn: last, history: [first])
 
         #expect(review.isDeep)
         #expect(review.problems.count == 1)
@@ -149,15 +150,6 @@ struct GradingTests {
         #expect(review.problems[0].seed.context == "Ich gehe gern. weil ich bin müde")
         #expect(review.usedPoints.isEmpty)
         #expect(review.respeaks.count == 1)
-
-        // The out-of-range lesson is dropped; the real one is complete.
-        #expect(lessons.count == 1)
-        let lesson = lessons[0]
-        #expect(lesson.hasPractice)
-        #expect(lesson.patterns.count == 1)
-        let atom = review.problems[0]
-        let request = LessonRequest(seed: atom.seed, kind: atom.kind, language: .german)
-        #expect(lesson.id == request.cacheKey)
     }
 
     /// Archives from before either field existed still decode.

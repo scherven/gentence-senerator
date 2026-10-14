@@ -50,21 +50,8 @@ struct AllLanguagesScreen: View {
 
     private var runner: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Button { stop() } label: {
-                    Text("STOP").font(Theme.F.mono(12, bold: true))
-                        .frame(minWidth: 44, minHeight: 44, alignment: .leading)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(PressDim())
-                .accessibilityLabel("Stop")
-                Spacer()
-                Text("\(index)").font(Theme.F.mono(13))
-                Spacer()
-                // Balances STOP so the count sits centred.
-                Color.clear.frame(width: 44, height: 44)
-            }
-            .foregroundStyle(Theme.C.ink)
+            PageHeader(lead: .end("STOP"), title: "\(index)", onLead: stop) { EmptyView() }
+                .padding(.horizontal, -Theme.M.gap)
             card
             Spacer(minLength: 0)
             Text(editing != nil ? "RETURN TO KEEP · EMPTY PUTS IT BACK"

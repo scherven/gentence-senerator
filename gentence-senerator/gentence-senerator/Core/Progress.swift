@@ -154,6 +154,14 @@ struct Progress: Codable, Hashable {
         return e.dueLabel
     }
 
+    /// When a finding comes back, for its row: a due label, `held` once retired,
+    /// nil when dismissed or never seen.
+    func backLabel(_ atomID: String) -> String? {
+        guard let e = encounters[atomID] else { return nil }
+        if e.standing == .held { return "held" }
+        return e.dueAt == nil ? nil : e.dueLabel
+    }
+
     func due(on day: Date = .now, language: Language) -> [Encounter] {
         encounters.values
             .filter { $0.language == language && $0.dueAt.map { $0 <= day } == true }

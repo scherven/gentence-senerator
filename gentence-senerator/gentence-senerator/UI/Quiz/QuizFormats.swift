@@ -299,7 +299,7 @@ struct SortQuiz: View {
                                 Text(steps[i].prompt ?? "").font(Theme.F.targetSmall)
                                 Spacer()
                                 if !ok, let p = picks[ifAny: i] {
-                                    Text(buckets[p]).strikethrough().foregroundStyle(Theme.C.bad)
+                                    Text(buckets[p]).underline(color: Theme.C.bad).foregroundStyle(Theme.C.bad)
                                 }
                                 Text(buckets[steps[i].answer])
                                     .foregroundStyle(ok ? Theme.C.ink2 : Theme.C.good)
@@ -474,7 +474,7 @@ struct TransformQuiz: View {
                 .submitLabel(.done)
                 .onSubmit(check)
                 .disabled(c.done)
-                .strikethrough(c.revealed?.right == false, color: Theme.C.bad)
+                .underline(c.revealed?.right == false, color: Theme.C.bad)
                 .foregroundStyle(tint)
         }
     }

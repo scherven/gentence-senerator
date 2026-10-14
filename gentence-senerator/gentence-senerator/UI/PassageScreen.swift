@@ -145,7 +145,8 @@ struct PassageScreen: View {
 
     private func meta(_ passage: Passage) -> String {
         let seconds = passage.span.map { Int(($0.upperBound - $0.lowerBound).rounded()) } ?? 0
-        return "\(seconds)s · \(passage.lines.count) lines · "
+        return "\(seconds / 60):" + String(format: "%02d", seconds % 60)
+            + " · \(passage.lines.count) lines · "
             + passage.speakers.map(\.name).joined(separator: ", ")
     }
 
@@ -323,20 +324,16 @@ struct PassageScreen: View {
             LedgerSheet {
                 ForEach(review.atoms) { atom in
                     let colour = Theme.colour(for: atom.verdict)
-                    Button { store.open(atom) } label: {
-                        LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
-                                  ruled: atom.id != review.atoms.last?.id) {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(atom.stages.name).font(Theme.F.bodyTight)
-                                    .foregroundStyle(Theme.C.ink)
-                                Text(atom.stages.fix.isEmpty ? atom.stages.locate : atom.stages.fix)
-                                    .font(Theme.F.meta)
-                                    .foregroundStyle(Theme.C.ink3)
-                            }
+                    LedgerRow(account: atom.kind.label, colour: colour, edge: colour,
+                              ruled: atom.id != review.atoms.last?.id) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(atom.stages.name).font(Theme.F.bodyTight)
+                                .foregroundStyle(Theme.C.ink)
+                            Text(atom.stages.fix.isEmpty ? atom.stages.locate : atom.stages.fix)
+                                .font(Theme.F.meta)
+                                .foregroundStyle(Theme.C.ink3)
                         }
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(PressDim())
                 }
             }
         }

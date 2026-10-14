@@ -7,9 +7,10 @@ struct ReviewScreen: View {
     /// except a produce exchange graded whole before answers were graded alone.
     let exchange: [Turn]
     let knowledge: [String: Progress.Encounter.Knowledge]
-    let onOpenAtom: (Atom) -> Void
     let onOpenLink: (AtomLink) -> Void
     let onClassify: (Atom, Progress.Encounter.Knowledge) -> Void
+    /// When each finding comes back.
+    let back: (String) -> String?
     /// Nil when the dispute was sent, else the line to show.
     let onDispute: (Atom, String) async -> String?
     let disputed: Set<String>
@@ -177,9 +178,9 @@ struct ReviewScreen: View {
                                 open: binding(for: atom),
                                 knowledge: knowledge[atom.id] ?? .unclassified,
                                 onClassify: { onClassify(atom, $0) },
+                                back: back(atom.id),
                                 disputed: disputed.contains(atom.id),
-                                onDispute: { await onDispute(atom, $0) },
-                                onOpen: { onOpenAtom(atom) }
+                                onDispute: { await onDispute(atom, $0) }
                             )
                         }
                     }
@@ -190,9 +191,7 @@ struct ReviewScreen: View {
                     ModuleLabel(text: "Got right")
                     LedgerSheet {
                         ForEach(review.kept) { atom in
-                            KeptRow(atom: atom, last: atom.id == review.kept.last?.id) {
-                                onOpenAtom(atom)
-                            }
+                            KeptRow(atom: atom, last: atom.id == review.kept.last?.id)
                         }
                     }
                 }
@@ -200,7 +199,7 @@ struct ReviewScreen: View {
         }
     }
 
-    /// The weakest sounds, worst first, each openable. Names are absent outside
+    /// The weakest sounds, worst first. Names are absent outside
     /// English and Mandarin, so a unit falls back to the word it sat in.
     private func pronunciation(_ result: PronunciationResult) -> some View {
         let weak = result.units.filter { $0.score < 70 }.sorted { $0.score < $1.score }.prefix(4)
@@ -208,38 +207,17 @@ struct ReviewScreen: View {
             ModuleLabel(text: "Sounds", trailing: "\(result.overall)")
             LedgerSheet {
                 ForEach(Array(weak)) { unit in
-                    Button {
-                        onOpenAtom(Atom(
-                            id: "pronunciation/\(unit.name ?? unit.gloss ?? "\(unit.index)")",
-                            kind: .pronunciation, verdict: .weakens,
-                            stages: .init(
-                                locate: "Scored \(unit.score).",
-                                name: unit.name.map { "Sound \($0)." }
-                                    ?? "A sound in \(unit.gloss ?? "this word").",
-                                fix: unit.gloss ?? "",
-                                note: ""
-                            ),
-                            seed: .init(subject: unit.name ?? unit.gloss ?? "",
-                                        context: turn.attempt.confirmed, pointID: nil)
-                        ))
-                    } label: {
-                        LedgerRow(account: "\(unit.score)", colour: Theme.C.warn, edge: Theme.C.warn,
-                                  accountWidth: 48, ruled: unit.id != weak.last?.id) {
-                            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                                Text(unit.name ?? unit.gloss ?? "—")
-                                    .font(Theme.F.targetSmall)
-                                    .foregroundStyle(Theme.C.ink)
-                                Text(unit.name == nil ? "sound \(unit.index + 1)" : (unit.gloss ?? ""))
-                                    .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                            }
-                        } trailing: {
-                            Text("›").font(Theme.F.label).foregroundStyle(Theme.C.ink3)
-                                .padding(.top, 12).padding(.trailing, 10)
+                    LedgerRow(account: "\(unit.score)", colour: Theme.C.warn, edge: Theme.C.warn,
+                              accountWidth: 48, ruled: unit.id != weak.last?.id) {
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text(unit.name ?? unit.gloss ?? "—")
+                                .font(Theme.F.targetSmall)
+                                .foregroundStyle(Theme.C.ink)
+                            Text(unit.name == nil ? "sound \(unit.index + 1)" : (unit.gloss ?? ""))
+                                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
                         }
-                        .background(Theme.C.surface)
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(PressDim())
+                    .background(Theme.C.surface)
                 }
             }
         }
@@ -350,9 +328,9 @@ struct ReviewReader: View {
             turn: turn,
             exchange: store.exchange(endingAt: turn),
             knowledge: store.knowledge,
-            onOpenAtom: { store.open($0) },
             onOpenLink: { store.open($0, context: turn.attempt.confirmed) },
             onClassify: { store.classify($0, as: $1) },
+            back: { store.progress.backLabel($0) },
             onDispute: { await store.dispute($0, in: turn, note: $1) },
             disputed: store.disputed,
             onAsk: { question in

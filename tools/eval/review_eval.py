@@ -118,7 +118,9 @@ def spent_everywhere():
 # ---------- submit ----------
 
 def submit(args):
-    reqs = json.load(open(os.path.join(HERE, "requests.json")))
+    # --requests swaps in another prompt (an older one, say) dumped the same
+    # way; --tag keeps its arms apart from the default prompt's.
+    reqs = json.load(open(os.path.join(HERE, args.requests)))
     scen = {s["id"]: s for s in json.load(open(os.path.join(HERE, "scenarios.json")))}
     ids = args.scenarios or list(scen)
     arms = args.arms or list(ARMS)
@@ -132,29 +134,33 @@ def submit(args):
             seen.setdefault(cid.split("__")[0], []).append(r["cost"])
     projected = 0.0
     for arm in arms:
-        if arm in st["batches"]:
+        if arm + args.tag in st["batches"]:
             continue
         per = (sum(seen[arm]) / len(seen[arm])) if seen.get(arm) else guess[ARMS[arm][0]]
+        per *= args.reps
         projected += per * len(ids) + 0.03 * len(ids)
     already = spent_everywhere()
     print(f"spent so far ${already:.2f}; this submit projected ${projected:.2f}; cap ${args.cap:.2f}")
     if already + projected > args.cap:
         sys.exit("over the cap; submit fewer arms or scenarios")
     for arm in arms:
-        if arm in st["batches"]:
-            print(f"{arm}: already submitted"); continue
+        name = arm + args.tag
+        if name in st["batches"]:
+            print(f"{name}: already submitted"); continue
         model, effort = ARMS[arm]
         batch = []
         for sid in ids:
-            p = json.loads(json.dumps(reqs[sid]))
-            p["model"] = model
-            p["output_config"]["effort"] = effort
-            batch.append({"custom_id": f"{arm}__{sid}", "params": p})
+            for rep in range(args.reps):
+                p = json.loads(json.dumps(reqs[sid]))
+                p["model"] = model
+                p["output_config"]["effort"] = effort
+                suffix = f"_r{rep}" if args.reps > 1 else ""
+                batch.append({"custom_id": f"{name}__{sid}{suffix}", "params": p})
         b = http("POST", "/messages/batches", {"requests": batch})
-        st["batches"][arm] = {"id": b["id"], "kind": "review", "model": model}
+        st["batches"][name] = {"id": b["id"], "kind": "review", "model": model}
         st.setdefault("scenarios", ids)
         save_state(args.run, st)
-        print(f"{arm}: {b['id']} ({len(batch)} requests)")
+        print(f"{name}: {b['id']} ({len(batch)} requests)")
 
 
 # ---------- collect ----------
@@ -217,7 +223,30 @@ learner can self-repair, and must say only where.
 
 If you think the answer key itself is wrong, say so in key_concerns.
 `usefulness` is 1-10: how much this review would help this learner, given
-accuracy, clarity, and fit to their level."""
+accuracy, clarity, and fit to their level.
+
+The tutor is meant to grade like a conversation partner. In order of weight:
+understood (would a native listener get what was meant on first hearing; in
+translate, the meaning asked for), natural (are the words and phrasing what a
+speaker would reach for), form (grammar, case and endings included, weighed by
+how much a listener would notice). Form still matters and should be reported;
+it should not outrank a naturalness problem unless it obscures meaning. A typed
+error that would sound right said aloud (misspelling, missing accent, silent
+agreement, homophone or same-pinyin character) matters least of all.
+
+`own_score`: your score under these bands, without regard to anything the
+tutor did. 90-100 understood at once and sounds like a speaker, a slip or two
+in form at most; 80-89 understood at once, some phrasing or form marks a
+learner; 50-79 understood with some effort, or correct but phrased the way no
+speaker would; below 50 a listener misses or mistakes part of the meaning.
+Errors are not counted off one by one.
+`start_right`: whether the problem finding with weight "start" is the one that
+costs the learner most by that order (true when there are no problems).
+`overweighted`: problem findings whose verdict or rank overstates them by that
+order, e.g. "breaks" on a form error that leaves meaning clear, or spelling
+ranked above a phrasing problem.
+`missed_unnatural`: phrasing a native listener would notice as foreign that no
+finding raised. Not preferences: only what a native would actually notice."""
 
 JUDGE_SCHEMA = {
     "type": "object",
@@ -233,9 +262,16 @@ JUDGE_SCHEMA = {
         "locate_leaks": {"type": "integer"},
         "key_concerns": {"type": "string"},
         "usefulness": {"type": "integer"},
+        "own_score": {"type": "integer"},
+        "start_right": {"type": "boolean"},
+        "overweighted": {"type": "array", "items": {"type": "object", "properties": {
+            "finding": {"type": "integer"}, "why": {"type": "string"}},
+            "required": ["finding", "why"], "additionalProperties": False}},
+        "missed_unnatural": {"type": "array", "items": {"type": "string"}},
         "comment": {"type": "string"},
     },
-    "required": ["expected", "extras", "locate_leaks", "key_concerns", "usefulness", "comment"],
+    "required": ["expected", "extras", "locate_leaks", "key_concerns", "usefulness",
+                 "own_score", "start_right", "overweighted", "missed_unnatural", "comment"],
     "additionalProperties": False,
 }
 
@@ -249,7 +285,7 @@ def judge_facts(s, review):
             f"Spoken: {'no, typed' if s['typed'] else 'yes'}\n"
             f"Asked: {s.get('target') or ''} {s.get('english') or ''}\n"
             f"Learner said: {s['said']}\n\nExpected errors:\n{expected}\n\n"
-            f"Tutor score: {review.get('score')}\nTutor natural version: {review.get('natural')}\n"
+            f"Tutor natural version: {review.get('natural')}\n"
             f"Tutor findings:\n{json.dumps(finds, ensure_ascii=False, indent=1)}")
 
 
@@ -269,7 +305,7 @@ def submit_judge(run, st):
         batch.append({"custom_id": cid, "params": {
             "model": model, "max_tokens": 8000,
             "system": [{"type": "text", "text": JUDGE_SYSTEM, "cache_control": {"type": "ephemeral"}}],
-            "messages": [{"role": "user", "content": judge_facts(scen[cid.split("__")[1]], review)}],
+            "messages": [{"role": "user", "content": judge_facts(scen[cid.split("__")[1].split("_r")[0]], review)}],
             "output_config": {"effort": effort, "format": {"type": "json_schema", "schema": JUDGE_SCHEMA}},
         }})
     if not batch:
@@ -310,9 +346,12 @@ def report(args):
                 st[part][f"{arm}__{sid}__{run}"] = v
     scen = {s["id"]: s for s in json.load(open(os.path.join(HERE, "scenarios.json")))}
     rows = {}
+    scores = {}
     for cid, r in st["results"].items():
         arm, sid, _ = cid.split("__")
-        a = rows.setdefault(arm, {"n": 0, "cost": 0.0, "out": 0, "caught": 0, "expected": 0, "fixok": 0,
+        sid = sid.split("_r")[0]
+        a = rows.setdefault(arm, {"dscore": [], "inband": 0, "banded": 0, "start": 0, "starts": 0,
+                                  "over": 0, "missnat": 0, "n": 0, "cost": 0.0, "out": 0, "caught": 0, "expected": 0, "fixok": 0,
                                   "invented": 0, "pref": 0, "real": 0, "clean_ok": 0, "clean_n": 0,
                                   "leaks": 0, "useful": [], "fail": 0, "glitch": 0})
         a["n"] += 1
@@ -346,17 +385,38 @@ def report(args):
             a["clean_ok"] += 1 if inv == 0 and not any(x["class"] == "preference" for x in v["extras"]) else 0
         a["leaks"] += v["locate_leaks"]
         a["useful"].append(v["usefulness"])
+        if "own_score" in v:
+            sc = review.get("score", 0)
+            a["dscore"].append(sc - v["own_score"])
+            a["starts"] += 1; a["start"] += 1 if v["start_right"] else 0
+            a["over"] += len(v["overweighted"]); a["missnat"] += len(v["missed_unnatural"])
+        if s.get("band"):
+            a["banded"] += 1; a["inband"] += 1 if s["band"][0] <= review.get("score", 0) <= s["band"][1] else 0
+        scores.setdefault(sid, {}).setdefault(arm, []).append(review.get("score"))
     hdr = f"{'arm':16} {'caught':>8} {'fix ok':>7} {'clean ok':>9} {'invent':>7} {'pref':>5} {'leaks':>6} {'useful':>7} {'fail':>5} {'out tok':>8} {'$/review':>9}"
     print(hdr); print("-" * len(hdr))
-    for arm in [a for a in ARMS if a in rows]:
+    for arm in sorted(rows):
         a = rows[arm]
         u = sum(a["useful"]) / len(a["useful"]) if a["useful"] else 0
         print(f"{arm:16} {a['caught']:>3}/{a['expected']:<4} {a['fixok']:>7} {a['clean_ok']:>4}/{a['clean_n']:<4} "
               f"{a['invented']:>7} {a['pref']:>5} {a['leaks']:>6} {u:>7.1f} {a['fail']:>5} "
               f"{a['out'] // max(a['n'], 1):>8} {a['cost'] / max(a['n'], 1):>9.4f}")
+    hdr2 = f"{'arm':16} {'score-judge':>12} {'|diff|':>7} {'in band':>8} {'start ok':>9} {'overwt':>7} {'miss nat':>9}"
+    print("\n" + hdr2); print("-" * len(hdr2))
+    for arm in sorted(rows):
+        a = rows[arm]; d = a["dscore"]
+        if not d:
+            continue
+        print(f"{arm:16} {sum(d) / len(d):>+12.1f} {sum(map(abs, d)) / len(d):>7.1f} "
+              f"{a['inband']:>4}/{a['banded']:<3} {a['start']:>5}/{a['starts']:<3} {a['over']:>7} {a['missnat']:>9}")
     jc = sum(j.get("cost", 0) for j in st["judged"].values())
     print(f"\nthese runs spent ${st['spent']:.2f} (judge ${jc:.2f}); all runs ${spent_everywhere():.2f}")
     if args.detail:
+        arms = sorted(rows)
+        print("\nscores by scenario (band):\n" + f"{'':26}" + "".join(f"{x:>22}" for x in arms))
+        for sid in sorted(scores):
+            band = scen[sid].get("band")
+            print(f"{sid:20} {str(band or ''):>5}" + "".join(f"{str(scores[sid].get(x, '')):>22}" for x in arms))
         for cid in sorted(st["judged"]):
             j = st["judged"][cid]
             if j["type"] == "succeeded":
@@ -376,6 +436,8 @@ def main():
     s = sub.add_parser("submit"); s.add_argument("--run", required=True)
     s.add_argument("--arms", nargs="+", choices=list(ARMS)); s.add_argument("--scenarios", nargs="+")
     s.add_argument("--cap", type=float, default=10.0)
+    s.add_argument("--requests", default="requests.json"); s.add_argument("--tag", default="")
+    s.add_argument("--reps", type=int, default=1)
     w = sub.add_parser("wait"); w.add_argument("--run", required=True); w.add_argument("--every", type=int, default=60)
     r = sub.add_parser("report"); r.add_argument("--run", nargs="+", required=True); r.add_argument("--detail", action="store_true")
     args = ap.parse_args()

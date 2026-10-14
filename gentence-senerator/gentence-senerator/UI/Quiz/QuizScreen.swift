@@ -72,23 +72,10 @@ struct QuizScreen: View {
 
     private var runner: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Button { quit() } label: {
-                    Text(plan.endless ? "STOP" : "✕").font(Theme.F.mono(plan.endless ? 12 : 16, bold: plan.endless))
-                        .foregroundStyle(Theme.C.ink)
-                        .frame(minWidth: 44, minHeight: 44, alignment: .leading)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(PressDim())
-                .accessibilityLabel(plan.endless ? "Stop" : "Quit")
-                Spacer()
-                Text(counter).font(Theme.F.mono(13))
-                Spacer()
-                Text("×\(round.streak)").font(Theme.F.mono(13))
-                    .foregroundStyle(Theme.C.accent)
-                    .frame(width: 44, alignment: .trailing)
+            PageHeader(lead: .end(plan.endless ? "STOP" : "END"), title: counter, onLead: quit) {
+                Text("×\(round.streak)").foregroundStyle(Theme.C.accent)
             }
-            .foregroundStyle(Theme.C.ink)
+            .padding(.horizontal, -Theme.M.gap)
             ribbon
             timer
             QuizFormatView(context: QuizFormatContext(

@@ -110,6 +110,9 @@ enum LanguagePacks {
         it after the verb; that is word-order.
         会/能/可以 and 得/应该/必须 are mood, including when the wrong modal is
         just the wrong word for the meaning.
+        In translate and produce, a typed answer came through a pinyin keyboard.
+        A character with the same pinyin as the right one, whatever its tone,
+        is a slip of the keyboard: spelling, as word-choice, never tone.
         """,
         assessmentNotes: """
         The two jobs of 了 — completion after the verb, change of state at the
@@ -147,6 +150,12 @@ enum LanguagePacks {
         bracket, never word-order and never a separate "separable verb" finding
         — separability is a property of the verb, not a kind of mistake.
         Misplaced nicht is negation, never missing-piece.
+        Typed, a lower-case noun, ss for ß, and a missing umlaut are spelling —
+        the keyboard, usually — unless the plain vowel makes another word
+        (schon/schön, zahlen/zählen). ae, oe, ue for the umlaut are correct.
+        Spoken, weil or obwohl with main-clause order is common native speech:
+        verb-final, at most "weakens", ranked below anything else a listener
+        would notice.
         """,
         assessmentNotes: """
         Case has two separate failures. Choosing the wrong case is a fact about
@@ -178,6 +187,9 @@ enum LanguagePacks {
         orthography, and never at all when the attempt was spoken.
         Participle agreement after être is agreement, not auxiliary, even though
         the auxiliary is what triggers it.
+        agreement-written, a missing or wrong accent, and one homophone written
+        for another (a/à, et/est, ces/ses, -er for -é) are spelling: at most
+        "weakens", ranked below anything a listener would hear.
         A missing object pronoun is pronoun-placement, not missing-piece — for
         English speakers omission is the commonest pronoun error, not misorder.
         """,

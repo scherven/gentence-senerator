@@ -393,5 +393,227 @@
   "target": "Tu vas souvent au cinéma ?",
   "said": "Pas trop, j'y vais peut-être une fois par mois. Avant j'y allais plus souvent, mais maintenant je préfère regarder des films chez moi.",
   "expect": []
+ },
+ {
+  "id": "de-case-clear",
+  "lang": "german",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "What did you do last weekend?",
+  "target": "Was hast du letztes Wochenende gemacht?",
+  "said": "Am Samstag bin ich mit mein Bruder in die Berge gefahren. Wir sind den ganzen Tag gewandert und am Abend haben wir in einem kleinen Gasthaus gegessen.",
+  "expect": [
+   "mit takes the dative: mit meinem Bruder"
+  ],
+  "band": [
+   80,
+   93
+  ],
+  "notes": "One case slip, meaning fully clear, otherwise natural B2 speech: weakens, high score."
+ },
+ {
+  "id": "de-endings-clear",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "Describe your flat.",
+  "target": "Beschreib mal deine Wohnung.",
+  "said": "Ich wohne in einer kleine Wohnung mit einem großen Balkon. Das Wohnzimmer hat ein schöner Blick auf den Park, und die Küche ist neu.",
+  "expect": [
+   "dative feminine after in einer: in einer kleinen Wohnung",
+   "accusative masculine object of hat: einen schönen Blick"
+  ],
+  "band": [
+   72,
+   90
+  ],
+  "notes": "Two ending errors, nothing a listener would misunderstand: both weakens; not a failing score."
+ },
+ {
+  "id": "de-stilted",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "How do you get to work?",
+  "target": "Wie kommst du zur Arbeit?",
+  "said": "Ich benutze den Bus, um zu der Arbeit zu kommen. Die Benutzung dauert ungefähr zwanzig Minuten.",
+  "expect": [
+   "\"Die Benutzung dauert\" is not what a speaker says: die Fahrt dauert",
+   "\"Ich benutze den Bus, um zu der Arbeit zu kommen\" reads as translated: Ich fahre mit dem Bus zur Arbeit (zur, not zu der)"
+  ],
+  "band": [
+   55,
+   80
+  ],
+  "notes": "Grammatical but translated-sounding: naturalness findings should lead."
+ },
+ {
+  "id": "de-spelling-only",
+  "lang": "german",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "My brother lives in Munich and works at a bank.",
+  "said": "Mein bruder wohnt in Munchen und arbeitet bei einer bank.",
+  "expect": [
+   "spelling only: capitalise nouns (Bruder, Bank) and München with the umlaut; at most weakens"
+  ],
+  "band": [
+   85,
+   98
+  ],
+  "notes": "Only keyboard-type spelling; ideally one low-weight finding and a high score."
+ },
+ {
+  "id": "de-wordchoice-spelling",
+  "lang": "german",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What do you like to eat for breakfast?",
+  "target": "Was isst du gern zum Frühstück?",
+  "said": "Zum Frühstück esse ich meistens Brot mit Käse und trinke einen Kaffe. Am Wochenende mache ich manchmal Pfannkuchen, aber unter der Woche ist das mir zu schwer.",
+  "expect": [
+   "\"zu schwer\" reads as too heavy or too hard; for effort a speaker says zu aufwendig / zu viel Arbeit (and das ist mir, not ist das mir, is the usual order)",
+   "spelling: Kaffee"
+  ],
+  "band": [
+   70,
+   88
+  ],
+  "notes": "Start should be the word choice, never the spelling."
+ },
+ {
+  "id": "fr-agreement-silent",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What did you do last night?",
+  "target": "Qu'est-ce que tu as fait hier soir ?",
+  "said": "Hier soir, ma copine et moi sommes allé au cinéma. Le film était un peu long mais les acteurs étaient très bon.",
+  "expect": [
+   "silent participle agreement: sommes allés",
+   "silent plural agreement: très bons"
+  ],
+  "band": [
+   85,
+   97
+  ],
+  "notes": "Both errors inaudible: spelling-level, low rank, high score."
+ },
+ {
+  "id": "fr-excite",
+  "lang": "french",
+  "mode": "produce",
+  "level": 3,
+  "typed": false,
+  "english": "What are you looking forward to this week?",
+  "target": "Qu'est-ce qui te fait plaisir cette semaine ?",
+  "said": "Ce week-end, je suis très excité parce que je vais voir des amis que je n'ai pas vus depuis longtemps.",
+  "expect": [
+   "\"je suis excité\" reads as agitated or aroused; a speaker says j'ai hâte / j'ai trop hâte de voir…"
+  ],
+  "band": [
+   60,
+   84
+  ],
+  "notes": "Grammar flawless (vus agrees); the anglicism is the start."
+ },
+ {
+  "id": "fr-homophones",
+  "lang": "french",
+  "mode": "translate",
+  "level": 2,
+  "typed": true,
+  "english": "My sister is at home and she is tired.",
+  "said": "Ma soeur et a la maison et elle est fatiguer.",
+  "expect": [
+   "et → est (is)",
+   "a → à",
+   "fatiguer → fatiguée"
+  ],
+  "band": [
+   78,
+   95
+  ],
+  "notes": "Every error sounds right aloud: spelling, weakens, low rank."
+ },
+ {
+  "id": "fr-gender-heard",
+  "lang": "french",
+  "mode": "produce",
+  "level": 4,
+  "typed": false,
+  "english": "Have you bought anything big recently?",
+  "target": "Tu as acheté quelque chose d'important récemment ?",
+  "said": "Oui, j'ai acheté un nouvelle voiture le mois dernier. Elle consomme beaucoup moins que l'ancien, donc je suis content.",
+  "expect": [
+   "audible gender: une nouvelle voiture",
+   "audible gender: l'ancienne"
+  ],
+  "band": [
+   75,
+   90
+  ],
+  "notes": "Audible but meaning clear: weakens, not breaks."
+ },
+ {
+  "id": "zh-ime-slips",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 3,
+  "typed": true,
+  "english": "What do you often do at the weekend?",
+  "target": "你周末常常做什么？",
+  "said": "周末我常常在家休息，有时候跟朋友去公圆散步，或者在咖啡馆和茶。",
+  "expect": [
+   "公圆 → 公园 (same sound, wrong character)",
+   "和茶 → 喝茶 (keyboard slip, not a tone error)"
+  ],
+  "band": [
+   85,
+   97
+  ],
+  "notes": "Pinyin keyboard slips only: spelling as word-choice, never tone."
+ },
+ {
+  "id": "zh-stilted",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 4,
+  "typed": true,
+  "english": "What have you been busy with lately?",
+  "target": "你最近在忙什么？",
+  "said": "最近我非常忙碌于我的工作，因为我们公司有一个新的项目。我每天工作到很晚。",
+  "expect": [
+   "\"非常忙碌于我的工作\" is a translated, written-register structure; a speaker says 最近工作特别忙 / 最近在忙工作的事"
+  ],
+  "band": [
+   60,
+   82
+  ],
+  "notes": "Naturalness is the whole problem."
+ },
+ {
+  "id": "zh-measure-clear",
+  "lang": "mandarin",
+  "mode": "produce",
+  "level": 2,
+  "typed": false,
+  "english": "Tell me about your family.",
+  "target": "说说你的家人吧。",
+  "said": "我家有三个人，我有一只哥哥，他在北京工作。",
+  "expect": [
+   "只 is for animals: 一个哥哥"
+  ],
+  "band": [
+   75,
+   90
+  ],
+  "notes": "Wrong classifier, meaning clear: weakens."
  }
 ]

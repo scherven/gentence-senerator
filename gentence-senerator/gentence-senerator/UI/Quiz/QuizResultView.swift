@@ -155,7 +155,7 @@ struct QuizResultView: View {
         let expected = QuizRound.expected(item)
         func pair(_ given: String, _ right: String, _ ok: Bool) -> Text {
             ok ? Text(right).foregroundColor(Theme.C.ink)
-                : Text(given).strikethrough().foregroundColor(Theme.C.bad)
+                : Text(given).underline(color: Theme.C.bad).foregroundColor(Theme.C.bad)
                     + Text(" → ").foregroundColor(Theme.C.ink3)
                     + Text(right).bold().foregroundColor(Theme.C.good)
         }
@@ -188,7 +188,7 @@ struct QuizResultView: View {
                 + Text(" → ").foregroundColor(Theme.C.ink3)
                 + Text(expected.first ?? "").bold().foregroundColor(Theme.C.good)
         case .build, .transform:
-            return Text(a.given.first ?? "").strikethrough().foregroundColor(Theme.C.bad)
+            return Text(a.given.first ?? "").underline(color: Theme.C.bad).foregroundColor(Theme.C.bad)
                 + Text(" → ") + Text(expected.first ?? "").foregroundColor(Theme.C.good)
         }
     }
