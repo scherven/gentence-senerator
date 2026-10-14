@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// One entry: the head, where it stands, the saved rule, and the learner's own
-/// record with it.
+/// One entry. An entry that teaches a point is that point's page; a Noted
+/// entry with no point is the head, the finding and the sentence it came from.
 struct EntryScreen: View {
     @Bindable var store: Store
     let chapterID: String
@@ -14,7 +14,11 @@ struct EntryScreen: View {
         Group {
             if let chapter = index.chapter(chapterID),
                let entry = chapter.entries.first(where: { $0.id == entryID }) {
-                page(entry, chapter, index)
+                if index.noted[entry.id] == nil, let point = store.point(entry.point) {
+                    PointScreen(store: store, pointID: point.id, back: chapter.name, focus: entry.id)
+                } else {
+                    page(entry, chapter, index)
+                }
             } else {
                 Busy(text: "")
             }

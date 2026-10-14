@@ -17,6 +17,9 @@ struct ReviewScreen: View {
     let onAsk: (String) -> Void
     let answers: [AskItem]
     let isAsking: Bool
+    /// A point id's name, for the link under a finding.
+    var pointName: (String) -> String? = { _ in nil }
+    @Environment(\.openPoint) private var openPoint
 
     /// Findings the learner has opened. Per screen, not persisted: reopening a
     /// review is asking to read it again.
@@ -180,7 +183,10 @@ struct ReviewScreen: View {
                                 onClassify: { onClassify(atom, $0) },
                                 back: back(atom.id),
                                 disputed: disputed.contains(atom.id),
-                                onDispute: { await onDispute(atom, $0) }
+                                onDispute: { await onDispute(atom, $0) },
+                                point: atom.seed.pointID.flatMap { id in
+                                    pointName(id).map { (name: $0, open: { openPoint(id) }) }
+                                }
                             )
                         }
                     }
@@ -343,7 +349,8 @@ struct ReviewReader: View {
                 }
             },
             answers: store.asked[turn.id.uuidString] ?? [],
-            isAsking: store.asking.contains(turn.id.uuidString)
+            isAsking: store.asking.contains(turn.id.uuidString),
+            pointName: { store.point($0)?.name }
         )
         .id(turn.id)
     }

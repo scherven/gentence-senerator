@@ -53,7 +53,7 @@ struct DayPlan: Hashable {
     static let solidUses = 3
 
     struct Cell: Hashable, Identifiable {
-        /// The point id. Never rendered — it is here to key the view.
+        /// The point id. Never rendered — it keys the view and opens the point.
         let id: String
         let standing: Standing
         /// Today's stretch, marked rather than filled.

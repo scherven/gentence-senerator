@@ -51,6 +51,8 @@ struct StagedAtomRow: View {
     var disputed = false
     /// Nil when sent, else the line to show.
     var onDispute: ((String) async -> String?)? = nil
+    /// The grammar point the finding is on, and opening its page.
+    var point: (name: String, open: () -> Void)? = nil
 
     @State private var asking = false
     @State private var note = ""
@@ -134,6 +136,7 @@ struct StagedAtomRow: View {
 
             HStack(spacing: 0) { classify }
                 .padding(.top, 4)
+            if let point { TypedLink(point.name, action: point.open).padding(.top, 2) }
         }
         if onDispute != nil { wrong }
     }

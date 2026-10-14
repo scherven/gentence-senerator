@@ -4,6 +4,7 @@ import SwiftUI
 /// the learner has; the accent outline is today's stretch.
 struct PlanView: View {
     let plan: DayPlan
+    @Environment(\.openPoint) private var openPoint
 
     var body: some View {
         if !plan.bands.isEmpty { record }
@@ -17,7 +18,10 @@ struct PlanView: View {
                         ModuleLabel(text: band.name, trailing: "\(band.held)/\(band.cells.count)")
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 14), spacing: 3)],
                                   alignment: .leading, spacing: 3) {
-                            ForEach(band.cells) { CellView(cell: $0) }
+                            ForEach(band.cells) { cell in
+                                Button { openPoint(cell.id) } label: { CellView(cell: cell) }
+                                    .buttonStyle(PressDim())
+                            }
                         }
                     }
                 }

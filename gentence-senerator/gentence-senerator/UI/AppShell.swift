@@ -45,6 +45,7 @@ struct AppShell: View {
             store.pathBeforeTap = nil
         }
         .environment(\.startAllLanguages) { allLanguages = true }
+        .environment(\.openPoint, openPoint)
         .fullScreenCover(isPresented: $allLanguages) { AllLanguagesScreen(store: store) }
         .onChange(of: quiz?.id) { _, open in store.quizOpen = open != nil }
         .onChange(of: allLanguages) { _, open in store.quizOpen = open }
@@ -73,6 +74,8 @@ struct AppShell: View {
                             ChapterScreen(store: store, chapterID: id)
                         case .entry(let chapter, let entry):
                             EntryScreen(store: store, chapterID: chapter, entryID: entry)
+                        case .point(let id, let back):
+                            PointScreen(store: store, pointID: id, back: back)
                         case .lesson(let request):
                             LessonHost(store: store, request: request)
                         }
@@ -117,6 +120,19 @@ struct AppShell: View {
         store.path = []
         bookRoutes = [.chapter(chapter), .entry(chapter: chapter, entry: entry)]
         tab = .book
+    }
+
+    /// A point's page, on the Book tab, over whatever the Book had open.
+    /// From another tab, that tab's lessons are set aside.
+    private func openPoint(_ id: String) {
+        let back = tab == .book ? (bookRoutes.isEmpty ? "Book" : "Back") : tab.title.capitalized
+        if tab != .book {
+            paths[tab] = store.path
+            bookRoutes = []
+            tab = .book
+        }
+        store.path = []
+        bookRoutes.append(.point(id, back: back))
     }
 
     /// Book pages below, lessons above.

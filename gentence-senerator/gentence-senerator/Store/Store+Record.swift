@@ -122,8 +122,18 @@ extension Store {
         return "Quiz"
     }
 
-    /// The turn a feed line came from, if the archive still has it.
-    func turn(_ item: LearnerRecord.FeedItem) -> Turn? {
-        item.turnID.flatMap(archived)
+    /// Whether a feed line's review can still be opened.
+    func canOpen(_ item: LearnerRecord.FeedItem) -> Bool {
+        item.kind != .listen && item.turnID.flatMap(archived)?.review != nil
+    }
+
+    /// One answer's review, from the feed.
+    func open(_ item: LearnerRecord.FeedItem) {
+        guard canOpen(item), let id = item.turnID,
+              let session = everySession.first(where: { $0.turns.contains { $0.id == id } })
+        else { return }
+        read(GradingJob(id: UUID(), sessionID: session.id, language: session.language,
+                        mode: session.mode, createdAt: session.startedAt, level: session.level,
+                        exchanges: [.init(customID: "x0", turnIDs: [id])]))
     }
 }

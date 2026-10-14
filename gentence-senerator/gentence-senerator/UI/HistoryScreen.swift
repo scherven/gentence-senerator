@@ -4,6 +4,7 @@ import SwiftUI
 /// screen until the day is over.
 struct HistoryScreen: View {
     @Bindable var store: Store
+    @State private var showFeed = false
 
     var body: some View {
         let days = store.history
@@ -11,11 +12,19 @@ struct HistoryScreen: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.M.gap) {
-                    ActivityCalendar(store: store, targets: Set(days.map(\.day))) { day in
-                        withAnimation { proxy.scrollTo(day, anchor: .top) }
+                    HStack(spacing: 0) {
+                        TinyButton(title: "Days", selected: !showFeed) { showFeed = false }
+                        TinyButton(title: "Feed", selected: showFeed) { showFeed = true }
                     }
-                    if !weakest.isEmpty { recurring(weakest) }
-                    ForEach(days) { block($0) }
+                    if showFeed {
+                        FeedView(store: store)
+                    } else {
+                        ActivityCalendar(store: store, targets: Set(days.map(\.day))) { day in
+                            withAnimation { proxy.scrollTo(day, anchor: .top) }
+                        }
+                        if !weakest.isEmpty { recurring(weakest) }
+                        ForEach(days) { block($0) }
+                    }
                 }
                 .padding(.horizontal, Theme.M.gap)
                 .padding(.vertical, Theme.M.gap)

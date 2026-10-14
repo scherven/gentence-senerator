@@ -5,6 +5,7 @@ import SwiftUI
 enum BookRoute: Hashable {
     case chapter(String)
     case entry(chapter: String, entry: String)
+    case point(String, back: String)
     case lesson(LessonRequest)
 }
 
@@ -13,6 +14,8 @@ extension EnvironmentValues {
     @Entry var startQuiz: (QuizPlan) -> Void = { _ in }
     /// Opens the ALL LANGUAGES deck. Set by the shell.
     @Entry var startAllLanguages: () -> Void = {}
+    /// Opens a grammar point's page on the Book tab. Set by the shell.
+    @Entry var openPoint: (String) -> Void = { _ in }
 }
 
 enum BookColour {
