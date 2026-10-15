@@ -87,3 +87,4 @@ secrets/
 # Review eval: requests.json is regenerated from Swift; runs hold model output.
 !tools/eval/scenarios.json
 tools/eval/runs/
+stats.key
