@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsScreen: View {
     @Bindable var store: Store
     @Environment(\.dismiss) private var dismiss
+    @State private var packDays = 7
 
     var body: some View {
         ScrollView {
@@ -10,6 +11,7 @@ struct SettingsScreen: View {
                 language
                 level
                 session
+                offline
             }
             .padding(Theme.M.gap)
         }
@@ -111,6 +113,47 @@ struct SettingsScreen: View {
             }
         }
     }
+
+    /// Days written ahead for no signal; answers send themselves once it is back.
+    private var offline: some View {
+        let cost = store.packEstimate(days: packDays)
+        return VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Offline",
+                        trailing: store.packReady == 0 ? nil : "\(store.packReady) ready")
+            VStack(spacing: 0) {
+                row {
+                    SquareStepper(value: $packDays, in: 1...14) {
+                        Text(packDays == 1 ? "1 day" : "\(packDays) days").font(Theme.F.body)
+                    }
+                }
+                row {
+                    VStack(alignment: .leading, spacing: Theme.M.gapTight) {
+                        Text("\(Self.dollars(cost.now)) now · ~\(Self.dollars(cost.later)) grading later")
+                            .monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                        if let progress = store.packing {
+                            HStack {
+                                Ticker(text: "Writing \(progress.done + 1)/\(progress.of)")
+                                Spacer()
+                                TinyButton(title: "Stop") { store.stopPack() }
+                            }
+                        } else {
+                            TinyButton(title: "Download") { store.downloadPack(days: packDays) }
+                        }
+                        if let spent = store.packSpent {
+                            Text("Spent \(Self.dollars(spent))")
+                                .monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink3)
+                        }
+                        if let trouble = store.packTrouble {
+                            Text(trouble).font(Theme.F.note).foregroundStyle(Theme.C.bad)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+
+    private static func dollars(_ d: Double) -> String { String(format: "$%.2f", d) }
 
     private func row<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()

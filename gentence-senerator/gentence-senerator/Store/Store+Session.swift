@@ -32,6 +32,8 @@ extension Store {
             await running.value
         }
 
+        if mode != .listen { takePackDay() }
+
         // Pick up where it was left, rather than throwing the turns away.
         if resumable(mode) != nil,
            let held = holds[Store.holdKey(settings.language, mode)] {
@@ -83,6 +85,7 @@ extension Store {
     /// something to practise. Never over a held session: those are answers.
     func prepareDay() async {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        takePackDay()
         for mode in [Mode.translate, .produce] {
             let key = Store.holdKey(settings.language, mode)
             guard writing[key] == nil else { continue }
@@ -97,7 +100,7 @@ extension Store {
             if today(mode) == nil {
                 day = .now
                 (stretch, words) = (plan.stretch, plan.words)
-            } else if isDone(mode), feedbackIsIn(for: sessionID(for: mode)) {
+            } else if isDone(mode), feedbackIsIn(for: sessionID(for: mode)), packReady == 0 {
                 day = tomorrow
                 let draw = nextDraw(on: tomorrow)
                 stretch = draw.stretchID.flatMap { id in pack.points.first { $0.id == id } }
@@ -191,8 +194,9 @@ extension Store {
     /// the turn-by-turn generation made, so a turn index still gets the same
     /// seasoning it always did. `stretch` and `words` are the draw of the day
     /// the session belongs to, which is not always today.
-    private func writeSet(for session: Session, from index: Int,
-                          stretch: GrammarPoint?, words: WordSeeds) async throws -> [Turn.Prompt] {
+    func writeSet(for session: Session, from index: Int,
+                  stretch: GrammarPoint?, words: WordSeeds,
+                  avoiding also: [String] = []) async throws -> [Turn.Prompt] {
         guard session.goal > index else { return [] }
         let day = String(session.id.prefix(10))
         let slots = (index..<session.goal).map { turn in
@@ -206,15 +210,17 @@ extension Store {
             ? stretch : nil
         let avoid = Mode.allCases.compactMap { today($0) }
             .flatMap { ($0.planned ?? []) + $0.turns.map(\.prompt) }
-            .compactMap(\.english)
+            .compactMap(\.english) + also
         let (prompts, usage) = try await tutor.daySet(
             mode: session.mode, language: session.language,
             level: session.level ?? settings.level,
             slots: slots,
-            revisit: progress.seedsForGeneration(language: session.language),
+            revisit: progress.seedsForGeneration(language: session.language,
+                                                 on: max(Spend.date(day) ?? .now, .now)),
             stretch: reach, avoid: avoid
         )
-        note(usage)
+        costs.noteSet(note(usage))
+        Vault.save(costs, Vault.costs)
         return prompts
     }
 
@@ -222,10 +228,11 @@ extension Store {
     /// Absence is the signal — it produces no errors to schedule on. Produce
     /// only, but the plan names it before a mode has been picked, so the mode
     /// check sits at the use rather than here.
-    private func pickStretch() -> GrammarPoint? {
+    func pickStretch(excluding taken: Set<String> = []) -> GrammarPoint? {
         let use: GrammarPoint.Use = settings.prefersTyping ? .written : .spoken
         let candidates = pack.reachable(at: settings.level, use: use)
-        return weightedToTheTop(of: progress.neverReached(among: candidates))
+        let fresh = progress.neverReached(among: candidates).filter { !taken.contains($0.id) }
+        return weightedToTheTop(of: fresh)
     }
 
     /// The plan, rebuilt off today's draw. Everything random about a day

@@ -66,15 +66,33 @@ struct Spend: Codable, Hashable {
         days[key] = d
     }
 
-    /// Sonnet 5.5: $2/MTok in, $10/MTok out; cache reads a tenth of input,
-    /// writes a quarter more. Batched, half.
     mutating func addSonnet(_ usage: Anthropic.Usage, batched: Bool = false, on day: Date = .now) {
         let key = Spend.key(day)
         var d = days[key] ?? Day()
-        d.topUps += (Double(usage.inputTokens) * 2 + Double(usage.outputTokens) * 10
-                     + Double(usage.cacheReadTokens) * 0.2 + Double(usage.cacheWriteTokens) * 2.5)
-            / 1_000_000 / (batched ? 2 : 1)
+        d.topUps += Spend.sonnet(usage, batched: batched)
         days[key] = d
+    }
+
+    /// Sonnet 5.5: $2/MTok in, $10/MTok out; cache reads a tenth of input,
+    /// writes a quarter more. Batched, half.
+    static func sonnet(_ usage: Anthropic.Usage, batched: Bool) -> Double {
+        (Double(usage.inputTokens) * 2 + Double(usage.outputTokens) * 10
+         + Double(usage.cacheReadTokens) * 0.2 + Double(usage.cacheWriteTokens) * 2.5)
+            / 1_000_000 / (batched ? 2 : 1)
+    }
+
+    /// One call's dollars, priced the way `add` and `addSonnet` count it.
+    static func dollars(_ usage: Anthropic.Usage, batched: Bool, model: String?) -> Double {
+        if model == Anthropic.reviewModel { return sonnet(usage, batched: batched) }
+        var d = Day()
+        if batched {
+            (d.batchInput, d.batchOutput) = (usage.inputTokens, usage.outputTokens)
+            (d.batchCacheRead, d.batchCacheWrite) = (usage.cacheReadTokens, usage.cacheWriteTokens)
+        } else {
+            (d.input, d.output) = (usage.inputTokens, usage.outputTokens)
+            (d.cacheRead, d.cacheWrite) = (usage.cacheReadTokens, usage.cacheWriteTokens)
+        }
+        return d.dollars
     }
 
     func today(_ day: Date = .now) -> Day { days[Spend.key(day)] ?? Day() }

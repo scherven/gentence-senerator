@@ -213,7 +213,7 @@ extension Store {
             do {
                 let (review, usage) = try await tutor.review(
                     turn: last, history: Array(turns.dropLast()), level: level)
-                note(usage, model: Tutor.reviewModel(last.mode))
+                noteGraded(note(usage, model: Tutor.reviewModel(last.mode)), answers: turns.count)
                 land(review, on: last)
             } catch {
                 if var now = jobs.first(where: { $0.id == job.id }) {
@@ -247,7 +247,8 @@ extension Store {
             guard let result = byID[exchange.customID], let reply = result.reply else { continue }
             let turns = exchange.turnIDs.compactMap(archived)
             guard let last = turns.last, last.review == nil else { continue }
-            note(reply.usage, batched: batched, model: Tutor.reviewModel(last.mode))
+            noteGraded(note(reply.usage, batched: batched, model: Tutor.reviewModel(last.mode)),
+                       answers: turns.count)
             guard let review = try? Tutor.read(reply, turn: last,
                                                history: Array(turns.dropLast()))
             else { continue }

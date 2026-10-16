@@ -97,6 +97,16 @@ final class Store {
     /// `holds`, so switching away and back is not a new day either.
     var draws: [String: DayDraw] = [:]
 
+    /// Days written ahead for going without signal. See `PackDay`.
+    var packDays: [PackDay] = []
+    /// Set while a pack is being written: days done of days asked.
+    var packing: (done: Int, of: Int)?
+    var packTask: Task<Void, Never>?
+    var packTrouble: String?
+    /// The last download's actual cost.
+    var packSpent: Double?
+    var costs = CostLog()
+
     /// Sessions the learner stepped out of. Picking the same mode resumes it
     /// rather than starting over. One slot per language and mode: ending a
     /// produce session and then a translate session holds both.
@@ -231,6 +241,8 @@ final class Store {
         holds = Vault.loadMap(Unfinished.self, Vault.holds) ?? [:]
         passageState = Vault.loadMap(PassageState.self, Vault.passages) ?? [:]
         draws = Vault.loadMap(DayDraw.self, Vault.plan) ?? [:]
+        packDays = Vault.loadList(PackDay.self, Vault.pack) ?? []
+        costs = Vault.load(CostLog.self, Vault.costs) ?? CostLog()
         jobs = Vault.loadList(GradingJob.self, Vault.grading) ?? []
         landed = Vault.load([String: String].self, Vault.landed) ?? [:]
         if let stored = Vault.load(LearnerRecord.self, Vault.record) {
@@ -625,13 +637,16 @@ final class Store {
 
     // MARK: Bookkeeping
 
-    func note(_ usage: Anthropic.Usage, batched: Bool = false, model: String? = nil) {
+    /// The call's dollars, for callers that keep their own tally.
+    @discardableResult
+    func note(_ usage: Anthropic.Usage, batched: Bool = false, model: String? = nil) -> Double {
         if model == Anthropic.reviewModel {
             spend.addSonnet(usage, batched: batched)
         } else {
             spend.add(usage, batched: batched)
         }
         Vault.save(spend, Vault.spend)
+        return Spend.dollars(usage, batched: batched, model: model)
     }
 
     /// Lessons are kept across launches, since the batch wrote them once and
