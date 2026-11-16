@@ -218,6 +218,8 @@ final class Store {
     var pathBeforeTap: [LessonRequest]?
 
     var rerolling = false
+    /// Rerolls this launch, so each one lands on a corner the last did not.
+    var rerolls = 0
 
     init(tutor: Tutor, speech: SpeechIO? = nil,
          pronunciation: Pronunciation = Pronunciation()) {
@@ -270,7 +272,10 @@ final class Store {
             Task { @MainActor in
                 guard let self, now != self.online else { return }
                 self.online = now
-                if now { await self.pump() }
+                if now {
+                    await self.pump()
+                    self.keepPackStocked()
+                }
             }
         }
         network.start(queue: .global(qos: .utility))
@@ -346,7 +351,9 @@ final class Store {
         if mode == .listen, hasDialogues {
             return (today(.listen)?.completedCount ?? 0, listenGoal)
         }
-        guard let session = today(mode) else { return (0, settings.dailyGoal) }
+        guard let session = today(mode) else {
+            return (0, mode == .produce && sceneToday ? 1 : settings.dailyGoal)
+        }
         return (session.completedCount, session.goal)
     }
 
@@ -414,6 +421,8 @@ final class Store {
         settings.dailyGoal = n
         for mode in [Mode.translate, .produce] {
             let key = Store.holdKey(settings.language, mode)
+            // The scene is one, whatever the goal.
+            if mode == .produce, sceneToday { continue }
             if var live = session, live.id == sessionID(for: mode), !live.isComplete {
                 live.regoal(n)
                 session = live

@@ -12,6 +12,7 @@ struct SettingsScreen: View {
                 level
                 session
                 offline
+                advanced
             }
             .padding(Theme.M.gap)
         }
@@ -150,6 +151,32 @@ struct SettingsScreen: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+        }
+    }
+
+    /// Harder words without harder sentences: lifts the band the word decks
+    /// draw new words from, and leaves translate and produce at the level.
+    private var advanced: some View {
+        let boost = store.settings.wordLevelBoost
+        return VStack(alignment: .leading, spacing: 6) {
+            ModuleLabel(text: "Advanced")
+            VStack(spacing: 0) {
+                row {
+                    SquareToggle(isOn: Binding(get: { boost > 0 },
+                                               set: { store.settings.wordLevelBoost = $0 ? 1 : 0 })) {
+                        Text("Harder words than my level").font(Theme.F.body)
+                    }
+                }
+                if boost > 0 {
+                    row {
+                        SquareStepper(value: $store.settings.wordLevelBoost, in: 1...3) {
+                            Text(boost == 1 ? "1 level up" : "\(boost) levels up").font(Theme.F.body)
+                        }
+                    }
+                }
+            }
+            Text("Words and All languages only (All languages is uncapped while this is off). Translate and produce stay at your level.")
+                .font(Theme.F.note).foregroundStyle(Theme.C.ink3)
         }
     }
 

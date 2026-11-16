@@ -223,6 +223,19 @@ struct VocabTests {
         #expect(next == [full])
     }
 
+    /// The level cap keeps new rows out but lets a due one back in.
+    @Test func capHoldsBackNewRowsNotDueOnes() {
+        let rows = (0..<4).map {
+            Concept(en: "e\($0)", words: [.german: "d\($0)", .french: "f\($0)", .mandarin: "z\($0)"])
+        }
+        var log = QuizLog()
+        log.record(entry: ConceptDeck.entry(rows[3], .french), right: false, at: Self.now)
+        let next = ConceptDeck.next(concepts: rows, ring: Self.three, state: { log.state(of: $0) },
+                                    asked: [], now: Self.now, count: 4,
+                                    allows: { $0.en == "e0" })
+        #expect(next == [rows[3], rows[0]])
+    }
+
     /// The shipped rows point at words that exist.
     @MainActor @Test func shippedConceptsResolve() {
         let library = BookLibrary()

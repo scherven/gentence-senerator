@@ -136,14 +136,23 @@ struct DayPlan: Hashable {
 
 extension DayPlan {
 
-    /// Ordinary corners of a life to set a translate sentence in. Never shown
-    /// to the learner — they exist only to keep a day's sentences from all
-    /// landing in the same place, the job produce does from its own system
-    /// prompt. Deliberately broad and everyday; nothing here narrows to a topic.
+    /// Ordinary corners of a life to set a sentence in. Never shown to the
+    /// learner — they exist only to keep a day's sentences from all landing in
+    /// the same place. Broad and everyday; nothing here narrows to a topic.
+    /// Long because three languages a day draw from it: fourteen ran out by
+    /// the second.
     static let lifeDomains: [String] = [
-        "work", "family", "food and cooking", "money", "sleep", "travel",
-        "a daily habit", "the weekend", "health or the body", "studying",
-        "the neighbourhood or commute", "the home", "a friend", "childhood or the past"
+        "work", "a colleague or boss", "family", "a sibling or cousin", "a parent or grandparent",
+        "food and cooking", "eating out", "shopping", "money", "sleep", "travel",
+        "a trip that went wrong", "a daily habit", "the weekend", "health or the body",
+        "a doctor or pharmacy", "studying", "a skill they are learning",
+        "the neighbourhood", "the commute", "the home", "a flatmate or neighbour",
+        "a friend", "an old friend they lost touch with", "childhood", "school days",
+        "the weather or seasons", "a holiday or festival", "music", "a film or series",
+        "a book", "sport or exercise", "a phone or computer", "the news",
+        "an animal or pet", "clothes", "a city they know", "the countryside",
+        "a party or celebration", "a mistake they made", "a small annoyance",
+        "something they want to buy", "the future", "a decision coming up"
     ]
 
     /// The corner to set turn `turn` in. The order is fixed for a day and a
@@ -153,6 +162,40 @@ extension DayPlan {
     static func domain(day: String, language: Language, turn: Int) -> String {
         let order = shuffled(lifeDomains, seed: seedHash(day, language.rawValue))
         return order[((turn % order.count) + order.count) % order.count]
+    }
+
+    /// What a produce question asks the learner to do. A new topic in the same
+    /// shape — "what do you usually…?" ten times — still reads as one question.
+    /// Each also tends to call for its own grammar (past, conditional,
+    /// imperative, comparison) without being built around it.
+    static let produceKinds: [String] = [
+        "a specific past event — the last time something happened",
+        "a plan — something coming up",
+        "a hypothetical — what they would do if",
+        "a choice between two concrete things",
+        "an opinion they would argue for",
+        "advice for a friend in a fix",
+        "a complaint — something that annoys them",
+        "explaining something they know to someone who does not",
+        "a scene — they are in a situation; what do they say",
+        "describing a person, place or thing",
+        "then and now — how something has changed",
+        "talking someone into something"
+    ]
+
+    /// The kind for turn `turn`, shuffled apart from the domain order so a
+    /// corner and a kind do not pair up the same way every day.
+    static func kind(day: String, language: Language, turn: Int) -> String {
+        let order = shuffled(produceKinds, seed: seedHash(day, language.rawValue, "kind"))
+        return order[((turn % order.count) + order.count) % order.count]
+    }
+
+    /// Once a week per language, produce is one harder scene instead of the
+    /// day's questions. Languages land on different weekdays, so three in use
+    /// do not stack up on one day.
+    static func isSceneDay(_ date: Date, language: Language) -> Bool {
+        let index = Language.allCases.firstIndex(of: language) ?? 0
+        return Calendar.current.component(.weekday, from: date) == (index * 3) % 7 + 1
     }
 
     /// One seasoning word for turn `turn`, or none. At most one a turn, and

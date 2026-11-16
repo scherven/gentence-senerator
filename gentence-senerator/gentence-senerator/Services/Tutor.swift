@@ -307,8 +307,8 @@ actor Tutor {
     /// not fit, and never what the sentence is about: the weakest of the three
     /// and the one the model may ignore. `domain` is the corner of a life to
     /// set a translate sentence in, rotated so a day does not land in the same
-    /// place every turn; produce sets its own from the system prompt, so it
-    /// arrives nil.
+    /// place every turn. `kind` is what a produce question asks the learner to
+    /// do.
     func nextPrompt(mode: Mode,
                     language: Language,
                     level: Int,
@@ -316,6 +316,7 @@ actor Tutor {
                     stretch: GrammarPoint?,
                     seed: String? = nil,
                     domain: String? = nil,
+                    kind: String? = nil,
                     avoid: [String]) async throws -> (Generated, Anthropic.Usage) {
 
         let pack = LanguagePacks.pack(for: language)
@@ -367,6 +368,9 @@ actor Tutor {
             one sentence.
             """
         }
+        if let kind, mode == .produce {
+            facts += "\nKind of question: \(kind)."
+        }
         // Never a task, so never an instruction the sentence has to obey: a
         // prompt built around a word is a vocabulary card with extra steps. One
         // word, offered where it fits and dropped where it does not — the whole
@@ -390,9 +394,9 @@ actor Tutor {
         if !avoid.isEmpty {
             facts += """
 
-            Already asked today. Do not repeat one, and do not ask a different \
+            Already asked recently. Do not repeat one, and do not ask a different \
             question about the same setting either — go somewhere else in their \
-            life: \(avoid.suffix(20).joined(separator: " | "))
+            life: \(avoid.suffix(60).joined(separator: " | "))
             """
         }
 
@@ -419,9 +423,10 @@ actor Tutor {
         var items: [Item]
     }
 
-    /// One slot of a session: the corner of a life for translate, and at most
-    /// one word to season it with. Decided by the caller, like the stretch.
-    struct Slot { var domain: String?; var seed: String? }
+    /// One slot of a session: the corner of a life, what kind of question
+    /// (produce only), and at most one word to season it with. Decided by the
+    /// caller, like the stretch.
+    struct Slot { var domain: String?; var kind: String? = nil; var seed: String? }
 
     /// Everything a translate or produce session will ask, in one call. Written
     /// together so the model sees the whole spread and can keep it varied,
@@ -433,10 +438,11 @@ actor Tutor {
     /// a sentence that asked for it.
     func daySet(mode: Mode, language: Language, level: Int,
                 slots: [Slot], revisit: [String], stretch: GrammarPoint?,
+                scene: Bool = false,
                 avoid: [String]) async throws -> ([Turn.Prompt], Anthropic.Usage) {
         let pack = LanguagePacks.pack(for: language)
         var facts = """
-        Mode: \(mode.rawValue)
+        Mode: \(scene ? "scene" : mode.rawValue)
         Level: \(pack.level(level))
         Items: \(slots.count)
         """
@@ -466,18 +472,19 @@ actor Tutor {
         for (index, slot) in slots.enumerated() {
             var line = "\n\(index + 1)."
             if let domain = slot.domain { line += " Set it in: \(domain)." }
+            if let kind = slot.kind { line += " Kind: \(kind)." }
             if let seed = slot.seed {
                 line += " A word to work in only if it fits, never the point: \(seed)."
             }
-            if slot.domain == nil && slot.seed == nil { line += " —" }
+            if slot.domain == nil && slot.kind == nil && slot.seed == nil { line += " —" }
             facts += line
         }
         if !avoid.isEmpty {
             facts += """
 
 
-            Already asked today — do not repeat one, or ask about the same \
-            setting: \(avoid.suffix(20).joined(separator: " | "))
+            Already asked recently, in any language — do not repeat one, or \
+            ask about the same setting: \(avoid.suffix(60).joined(separator: " | "))
             """
         }
 
@@ -573,15 +580,16 @@ actor Tutor {
 
         produce — `target` is a question to answer in \(pack.language.name),
         written first and in \(pack.language.name); `english` is its meaning.
-        Exactly one question about the learner's own life: one sentence, one
-        question mark, under fifteen words. No preamble, no second question, no
+        Exactly one question for the learner to answer in their own words: one
+        sentence, one question mark, under twenty words. A scene may set itself
+        up in a short clause; otherwise no preamble, no second question, no
         "and why?". Answerable in two or three sentences.
-        Decide what is worth asking before you think about grammar at all. Pick
-        a corner of their life — work, family, food, money, sleep, travel, a
-        habit, someone they have not called — and ask what you would actually
-        ask a person about it. A structure you are pointed at is at most
-        something the answer may happen to need; it is never the reason for the
-        question, and a question that exists to host one is the wrong question.
+        Decide what is worth asking before you think about grammar at all. When
+        given a corner and a kind of question, ask that kind about that corner,
+        the way you would actually ask a person. A structure you are pointed at
+        is at most something the answer may happen to need; it is never the
+        reason for the question, and a question that exists to host one is the
+        wrong question.
         Land somewhere new each time: two questions about the same place, or
         the same afternoon, are one question asked twice however different the
         words.
@@ -607,15 +615,24 @@ actor Tutor {
 
         produce — `target` is a question to answer in \(pack.language.name),
         written first and in \(pack.language.name); `english` is its meaning;
-        `reference` is null. Each is exactly one question about the learner's
-        own life: one sentence, one question mark, under fifteen words. No
+        `reference` is null. Each is exactly one question for the learner to
+        answer in their own words: one sentence, one question mark, under twenty
+        words. A scene may set itself up in a short clause; otherwise no
         preamble, no second question, no "and why?". Answerable in two or three
-        sentences. The questions are asked in order as one conversation, so
-        they may follow on from each other, but each must stand alone.
-        Decide what is worth asking before you think about grammar at all. Ask
-        what you would actually ask a person. A structure you are pointed at is
-        at most something the answer may happen to need; it is never the reason
-        for the question.
+        sentences. Each must stand alone.
+        Each slot names a corner and a kind of question: ask that kind about
+        that corner, the way you would actually ask a person. Decide what is
+        worth asking before you think about grammar at all. A structure you are
+        pointed at is at most something the answer may happen to need; it is
+        never the reason for the question.
+
+        scene — produce, once a week, in place of the day's questions: one item,
+        harder. `target` sets up a situation in two or three short sentences,
+        in \(pack.language.name), and ends on one question: what do they say.
+        Someone specific is in front of them, and who it is settles how formal
+        to be. The learner wants something from that person, and something is
+        in the way. Answerable in four to six sentences. Pitch it at the top of
+        their level. `english` is its meaning; `reference` is null.
 
         Across the set, land somewhere different each time: two items about the
         same place, or the same afternoon, are one item asked twice however
@@ -709,6 +726,11 @@ actor Tutor {
         The same mistake in two answers is one finding and outranks two
         separate one-offs — say that it recurred. The score is for all of them.
 
+        In a produce scene — a situation set up, then "what do you say" — also
+        weigh whether the answer works there: the formality that person calls
+        for, and whether it would get the learner what they were after. A
+        correct answer in the wrong register is a "weakens".
+
         In listen the sentence is the speaker's and the learner is writing down
         what reached them, so nothing in it is a production error. Every finding
         says which of three things happened, because each takes a different
@@ -745,7 +767,10 @@ actor Tutor {
         grammar, case and endings included, weighed by how much a listener
         would notice it. Do not count errors off one by one: three wrong
         endings in a clear, natural sentence is a good score.
-        90–100: understood at once and sounds like a speaker; a slip or two in
+        100: no finding is "weakens" or "breaks". Nothing you would correct is
+        nothing to deduct for; another wording a speaker might also use is not
+        a reason to hold points back.
+        90–99: understood at once and sounds like a speaker; a slip or two in
         form at most.
         80–89: understood at once; some phrasing or form marks a learner.
         50–79: understood with some effort, or correct but phrased the way no

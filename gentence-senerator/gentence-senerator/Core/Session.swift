@@ -203,6 +203,8 @@ struct Session: Identifiable, Codable, Hashable {
     /// goal reopens it; only turns after these are graded again, as their own
     /// job, and they start a fresh exchange.
     var filed: Int? = nil
+    /// Produce only: the week's one scene, in place of the day's questions.
+    var scene: Bool? = nil
 
     /// Answered, and not yet filed for grading.
     var open: [Turn] { Array(turns.dropFirst(filed ?? 0)) }

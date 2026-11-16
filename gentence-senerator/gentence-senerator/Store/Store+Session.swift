@@ -54,10 +54,7 @@ extension Store {
         // single clips when the library has nothing at this level.
         if mode == .listen, startPassage() { return }
 
-        session = Session(
-            id: sessionID(for: mode), language: settings.language, mode: mode,
-            startedAt: .now, turns: [], goal: settings.dailyGoal, level: settings.level
-        )
+        session = freshSession(mode)
         stretch = nil
         await nextPrompt()
         if let session { stretch = stretch(of: session) }
@@ -80,11 +77,10 @@ extension Store {
     /// Run after the grading pump, so what yesterday's reviews put on the
     /// schedule is in `Progress` before today's sentences are written from it.
     ///
-    /// Once a mode is done for today and its feedback is in, tomorrow's set is
-    /// written too — so a first open on the train with no signal still has
-    /// something to practise. Never over a held session: those are answers.
+    /// Today comes from the offline queue when it has a day; then the queue is
+    /// kept one day ahead, so a first open with no signal still has a day.
+    /// Never over a held session: those are answers.
     func prepareDay() async {
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
         takePackDay()
         for mode in [Mode.translate, .produce] {
             let key = Store.holdKey(settings.language, mode)
@@ -93,25 +89,10 @@ extension Store {
                 if held.id == sessionID(for: mode) { await writeRest(of: held, key: key) }
                 continue
             }
+            guard today(mode) == nil else { continue }
 
-            let day: Date
-            let stretch: GrammarPoint?
-            let words: WordSeeds
-            if today(mode) == nil {
-                day = .now
-                (stretch, words) = (plan.stretch, plan.words)
-            } else if isDone(mode), feedbackIsIn(for: sessionID(for: mode)), packReady == 0 {
-                day = tomorrow
-                let draw = nextDraw(on: tomorrow)
-                stretch = draw.stretchID.flatMap { id in pack.points.first { $0.id == id } }
-                words = draw.words
-            } else {
-                continue
-            }
-
-            let draft = Session(id: sessionID(for: mode, on: day), language: settings.language,
-                                mode: mode, startedAt: day, turns: [], goal: settings.dailyGoal,
-                                level: settings.level)
+            let draft = freshSession(mode)
+            let (stretch, words) = (plan.stretch, plan.words)
             let task = Task { [weak self] in
                 guard let self else { return }
                 guard let prompts = try? await self.writeSet(for: draft, from: 0,
@@ -124,7 +105,7 @@ extension Store {
                 var planned = draft
                 planned.planned = prompts
                 // The goal may have moved while this was being written.
-                planned.goal = self.settings.dailyGoal
+                if planned.scene != true { planned.goal = self.settings.dailyGoal }
                 self.holds[key] = Unfinished(session: planned, turn: nil)
                 Vault.save(self.holds, Vault.holds)
             }
@@ -132,6 +113,7 @@ extension Store {
             await task.value
             writing[key] = nil
         }
+        keepPackStocked()
     }
 
     /// Today's held session asks more than its set holds — the goal was
@@ -162,33 +144,6 @@ extension Store {
         writing[key] = nil
     }
 
-    /// Every job for that session has come back. No job — nothing was
-    /// answered — counts as in.
-    private func feedbackIsIn(for sessionID: String) -> Bool {
-        jobs.filter { $0.sessionID == sessionID }.allSatisfy { $0.state == .done }
-    }
-
-    /// Tomorrow's draw, made now and kept in its own slot so today's plan is
-    /// not redrawn under it. `refreshPlan` promotes it when tomorrow comes.
-    private func nextDraw(on day: Date) -> DayDraw {
-        let language = settings.language
-        let level = settings.level
-        let slot = language.rawValue + "|next"
-        let drawn = DayDraw.forToday(draws[slot], day: Spend.key(day),
-                                     language: language, level: level) {
-            (requestedStretch(on: Spend.key(day)) { pickStretch()?.id },
-             WordSeeds.read(band: lexicon.band(upTo: level, language: language),
-                            above: lexicon.band(at: level + 1, language: language),
-                            progress: progress, language: language,
-                            missed: missedWords))
-        }
-        if drawn != draws[slot] {
-            draws[slot] = drawn
-            Vault.save(draws, Vault.plan)
-        }
-        return drawn
-    }
-
     /// Prompts for every turn from `index` to the end of the session. The
     /// per-turn choices — which corner of a life, which word — are the ones
     /// the turn-by-turn generation made, so a turn index still gets the same
@@ -199,16 +154,18 @@ extension Store {
                   avoiding also: [String] = []) async throws -> [Turn.Prompt] {
         guard session.goal > index else { return [] }
         let day = String(session.id.prefix(10))
+        let scene = session.scene == true
         let slots = (index..<session.goal).map { turn in
             Tutor.Slot(
-                domain: session.mode == .translate
-                    ? DayPlan.domain(day: day, language: session.language, turn: turn) : nil,
+                domain: DayPlan.domain(day: day, language: session.language, turn: turn),
+                kind: session.mode == .produce && !scene
+                    ? DayPlan.kind(day: day, language: session.language, turn: turn) : nil,
                 seed: DayPlan.seed(from: words, turn: turn)
             )
         }
         let reach = session.mode == .produce && index == 0 && settings.offerStretch
             ? stretch : nil
-        let avoid = Mode.allCases.compactMap { today($0) }
+        let avoid = recentlyAsked(session.mode) + Mode.allCases.compactMap { today($0) }
             .flatMap { ($0.planned ?? []) + $0.turns.map(\.prompt) }
             .compactMap(\.english) + also
         let (prompts, usage) = try await tutor.daySet(
@@ -217,11 +174,38 @@ extension Store {
             slots: slots,
             revisit: progress.seedsForGeneration(language: session.language,
                                                  on: max(Spend.date(day) ?? .now, .now)),
-            stretch: reach, avoid: avoid
+            stretch: reach, scene: scene, avoid: avoid
         )
         costs.noteSet(note(usage))
         Vault.save(costs, Vault.costs)
         return prompts
+    }
+
+    /// Today's session for `mode`, unstarted. Produce on the language's scene
+    /// day is the one scene.
+    func freshSession(_ mode: Mode) -> Session {
+        let scene = mode == .produce && sceneToday
+        var fresh = Session(id: sessionID(for: mode), language: settings.language, mode: mode,
+                            startedAt: .now, turns: [], goal: scene ? 1 : settings.dailyGoal,
+                            level: settings.level)
+        if scene { fresh.scene = true }
+        return fresh
+    }
+
+    var sceneToday: Bool { DayPlan.isSceneDay(.now, language: settings.language) }
+
+    /// Every `mode` question of the last week, every language, oldest first.
+    /// Compared by English meaning, so one asked in French counts in Mandarin.
+    func recentlyAsked(_ mode: Mode, days: Int = 7) -> [String] {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
+        let sessions = (past + holds.values.map(\.session))
+            .filter { $0.mode == mode && $0.startedAt >= cutoff }
+            .sorted { $0.startedAt < $1.startedAt }
+        var seen = Set<String>()
+        return sessions
+            .flatMap { $0.turns.map(\.prompt) + ($0.planned ?? []) }
+            .compactMap(\.english)
+            .filter { seen.insert($0).inserted }
     }
 
     /// A point at the learner's level that they have never once attempted.
@@ -345,13 +329,14 @@ extension Store {
         // One turn's worth of seasoning, rotated by how many prompts are already
         // out this session. The day fixes the pool; the turn picks from it, so a
         // sitting no longer forces the same two words into every sentence. The
-        // rotating domain gives translate a spread of its own — produce sets its
-        // own corner and takes none.
+        // rotating domain and kind keep the set from landing in one place.
         let turn = used.count
         let seed = DayPlan.seed(from: plan.words, turn: turn)
-        let domain = settings.mode == .translate
-            ? DayPlan.domain(day: Spend.key(.now), language: settings.language, turn: turn)
-            : nil
+        let day = Spend.key(.now)
+        let domain = settings.mode == .listen
+            ? nil : DayPlan.domain(day: day, language: settings.language, turn: turn)
+        let kind = settings.mode == .produce
+            ? DayPlan.kind(day: day, language: settings.language, turn: turn) : nil
         let (made, usage) = try await tutor.nextPrompt(
             mode: settings.mode,
             language: settings.language,
@@ -360,7 +345,8 @@ extension Store {
             stretch: offered,
             seed: seed,
             domain: domain,
-            avoid: used
+            kind: kind,
+            avoid: recentlyAsked(settings.mode) + used
         )
         note(usage)
 
@@ -635,18 +621,26 @@ extension Store {
     /// A different produce question in place of the one on screen, before any
     /// answer. Keeps the point it was asked to reach for, if it had one.
     func reroll() async {
-        guard var turn = current, turn.mode == .produce, draft.isEmpty, !rerolling else { return }
+        guard var turn = current, turn.mode == .produce, session?.scene != true,
+              draft.isEmpty, !rerolling else { return }
         rerolling = true
         defer { rerolling = false }
         let point = turn.prompt.pointID.flatMap { id in pack.points.first { $0.id == id } }
         let asked = (session?.planned ?? []) + (session?.turns.map(\.prompt) ?? []) + [turn.prompt]
-        let avoid = asked.compactMap { $0.english ?? $0.target }
+        let avoid = recentlyAsked(.produce) + asked.compactMap { $0.english ?? $0.target }
+        // Past the end of the day's slots, so the corner and kind are ones the
+        // set has not used.
+        let spare = (session?.goal ?? 0) + rerolls
+        rerolls += 1
+        let day = Spend.key(.now)
         do {
             let (made, usage) = try await tutor.nextPrompt(
                 mode: .produce, language: settings.language, level: settings.level,
                 revisit: turn.prompt.revisited, stretch: point,
                 seed: DayPlan.seed(from: plan.words, turn: session?.turns.count ?? 0),
-                domain: nil, avoid: avoid)
+                domain: DayPlan.domain(day: day, language: settings.language, turn: spare),
+                kind: DayPlan.kind(day: day, language: settings.language, turn: spare),
+                avoid: avoid)
             note(usage)
             turn.prompt.english = made.english
             turn.prompt.target = made.target

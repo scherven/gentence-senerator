@@ -22,6 +22,9 @@ struct Settings: Codable, Hashable {
     var turnsBeforeReview: Int = 3
     /// Offer a never-attempted structure at the start of a produce session.
     var offerStretch: Bool = true
+    /// Levels added to `level` for the word decks only (WORDS and ALL
+    /// LANGUAGES). Translate and produce stay at `level`. 0 is off.
+    var wordLevelBoost: Int = 0
 }
 
 /// Token spend, kept per day so a runaway session is visible.
@@ -133,6 +136,7 @@ extension Settings {
         turnsBeforeReview = try c.decodeIfPresent(Int.self, forKey: .turnsBeforeReview)
             ?? d.turnsBeforeReview
         offerStretch = try c.decodeIfPresent(Bool.self, forKey: .offerStretch) ?? d.offerStretch
+        wordLevelBoost = try c.decodeIfPresent(Int.self, forKey: .wordLevelBoost) ?? d.wordLevelBoost
     }
 }
 

@@ -412,7 +412,8 @@ struct ModeScreen: View {
                                 TinyButton(title: "Hear") { store.say(target) }
                             }
                         }
-                        if turn.mode == .produce, store.draft.isEmpty, store.phase == .ready {
+                        if turn.mode == .produce, store.session?.scene != true,
+                           store.draft.isEmpty, store.phase == .ready {
                             TinyButton(title: store.rerolling ? "Writing…" : "Another question") {
                                 Task { await store.reroll() }
                             }

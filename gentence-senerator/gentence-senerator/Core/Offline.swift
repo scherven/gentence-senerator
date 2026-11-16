@@ -7,10 +7,10 @@ struct PackDay: Codable, Hashable, Identifiable {
     let id: UUID
     let language: Language
     let level: Int
-    let stretchID: String?
+    var stretchID: String?
     let words: WordSeeds
     let translate: [Turn.Prompt]
-    let produce: [Turn.Prompt]
+    var produce: [Turn.Prompt]
     let writtenAt: Date
 
     func prompts(_ mode: Mode) -> [Turn.Prompt] {

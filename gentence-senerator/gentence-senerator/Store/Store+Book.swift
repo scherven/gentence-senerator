@@ -90,8 +90,12 @@ extension Store {
         return rulesItems.filter { ids.contains($0.entry) }.count
     }
 
-    /// Highest band new words come from. The lists stop at HSK 6 and B2.
-    private var wordBand: Int { min(settings.level, settings.language == .mandarin ? 6 : 4) }
+    /// Highest band new words come from: the level, plus the word-only boost
+    /// from Advanced. The lists stop at HSK 6 and B2.
+    func wordBand(_ language: Language) -> Int {
+        min(settings.level + settings.wordLevelBoost, language == .mandarin ? 6 : 4)
+    }
+
 
     func round(for plan: QuizPlan) -> QuizRound {
         if plan.endless {
@@ -101,7 +105,7 @@ extension Store {
         if VocabDrill.isVocab(plan) {
             let language = settings.language
             return VocabDrill.round(words: books.words(for: language), language: language,
-                                    maxBand: wordBand) {
+                                    maxBand: wordBand(language)) {
                 self.quizLog.state(of: $0)
             }
         }
@@ -150,7 +154,7 @@ extension Store {
             let language = settings.language
             var rng = SystemRandomNumberGenerator()
             words = VocabDrill.next(words: books.words(for: language), language: language,
-                                    maxBand: wordBand, state: { self.quizLog.state(of: $0) },
+                                    maxBand: wordBand(language), state: { self.quizLog.state(of: $0) },
                                     asked: Set(round.items.map(\.entry)), count: wordCount,
                                     startIndex: round.items.count, using: &rng)
         }
@@ -309,13 +313,23 @@ extension Store {
         return concept.with(language, edits[language.rawValue] ?? original ?? typed)
     }
 
+    /// Every word of the row at or under its language's band. Uncapped unless
+    /// the Advanced boost is on. A retyped word is off the lists, so it has
+    /// no band to exceed.
+    private func withinBand(_ concept: Concept) -> Bool {
+        guard settings.wordLevelBoost > 0 else { return true }
+        return conceptRing.allSatisfy { language in
+            (books.word(concept.word(language), in: language)?.band ?? 0) <= wordBand(language)
+        }
+    }
+
     var conceptsDue: Int {
         ConceptDeck.dueCount(concepts, ring: conceptRing) { self.quizLog.state(of: $0) }
     }
 
     func nextConcepts(asked: Set<String>, count: Int) -> [Concept] {
         ConceptDeck.next(concepts: concepts, ring: conceptRing, state: { self.quizLog.state(of: $0) },
-                         asked: asked, count: count)
+                         asked: asked, count: count, allows: withinBand)
     }
 
     func vocabWord(_ w: String, in language: Language) -> VocabWord? { books.word(w, in: language) }
@@ -494,6 +508,11 @@ extension Store {
     func requestTomorrow(point: String) {
         let language = settings.language
         guard pack.points.contains(where: { $0.id == point }) else { return }
+        if let target = pack.points.first(where: { $0.id == point }), retargetFrontDay(to: target) {
+            requests[language.rawValue] = nil
+            Vault.save(requests, Vault.requests)
+            return
+        }
         let request = StretchRequest(pointID: point, language: language, madeOn: Spend.key(.now))
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
         let slot = language.rawValue + "|next"
@@ -519,6 +538,7 @@ extension Store {
     func isRequested(point: String) -> Bool {
         let language = settings.language
         if requests[language.rawValue]?.pointID == point { return true }
+        if packDays.first(where: fitsNow)?.stretchID == point { return true }
         let tomorrow = Spend.key(Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now)
         guard let ahead = draws[language.rawValue + "|next"], ahead.day == tomorrow else { return false }
         return ahead.stretchID == point

@@ -92,9 +92,12 @@ enum ConceptDeck {
     }
 
     /// The next `count` rows: due, then ones with a word never seen (easiest
-    /// first, as the file is sorted), then the longest unseen.
+    /// first, as the file is sorted), then the longest unseen. `allows` caps
+    /// the last two by level; due rows come back whatever their band, as in
+    /// the single-language deck.
     static func next(concepts: [Concept], ring: [Language], state: @escaping (String) -> EntryState,
-                     asked: Set<String>, now: Date = .now, count: Int) -> [Concept] {
+                     asked: Set<String>, now: Date = .now, count: Int,
+                     allows: (Concept) -> Bool = { _ in true }) -> [Concept] {
         let open = concepts.filter { !asked.contains($0.id) && $0.covers(ring) }
         let states = { (c: Concept) in ring.map { state(entry(c, $0)) } }
         let missed = { (c: Concept) in states(c).contains { $0.recent.last == false } }
@@ -106,12 +109,13 @@ enum ConceptDeck {
             }
         if out.count < count {
             out += open.filter { c in
-                !isDue(c, ring: ring, state: state, now: now) && states(c).contains { $0.recent.isEmpty && !$0.known }
+                allows(c) && !isDue(c, ring: ring, state: state, now: now)
+                    && states(c).contains { $0.recent.isEmpty && !$0.known }
             }
         }
         if out.count < count {
             let have = Set(out.map(\.id))
-            out += open.filter { !have.contains($0.id) }.sorted { seen($0) < seen($1) }
+            out += open.filter { !have.contains($0.id) && allows($0) }.sorted { seen($0) < seen($1) }
         }
         return Array(out.prefix(count))
     }
