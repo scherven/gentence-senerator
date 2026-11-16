@@ -211,4 +211,23 @@ enum Schemas {
         "correct": ["type": "boolean"],
         "note": ["type": "string", "description": "One or two sentences."]
     ], required: ["correct", "note"])
+
+    // MARK: Talk
+
+    static let conversationScene: [String: Any] = object([
+        "place": ["type": "string", "description": "Where, in the target language, two or three words."],
+        "you": ["type": "string", "description": "English. Who the learner is and what has happened, one or two short sentences. No target-language words."],
+        "want": ["type": "string", "description": "English. What they are after, one short clause, no full stop."],
+        "them": ["type": "string", "description": "English. Who the other person is and what they would rather do, short."],
+        "role": ["type": "string", "description": "What the learner would call them, in the target language, one to three words."],
+        "formal": ["type": "boolean", "description": "Whether a speaker would be formal with them."],
+        "opening": ["type": "string", "description": "Their first line, in the target language, one sentence."]
+    ], required: ["place", "you", "want", "them", "role", "formal", "opening"])
+
+    static let partnerLine: [String: Any] = object([
+        "move": enumOf(["answer", "push back", "ask again", "close"],
+                       "ask again: you did not understand them. push back: you resist what they want. close: your line ends the conversation."),
+        "say": ["type": "string", "description": "Your line, in the target language only."],
+        "goal_met": ["type": "boolean", "description": "True once the learner has got what they wanted."]
+    ], required: ["move", "say", "goal_met"])
 }

@@ -75,6 +75,7 @@ struct FeedView: View {
         case .listen:    return "Listen"
         case .quiz:      return "Quiz"
         case .words:     return "Words"
+        case .talk:      return "Talk"
         }
     }
 

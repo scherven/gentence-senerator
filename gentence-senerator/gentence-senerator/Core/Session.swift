@@ -5,6 +5,9 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
     case translate
     case listen
     case produce
+    /// A typed conversation. Run outside the session machinery, filed as a
+    /// session when it ends; see `Conversation`.
+    case converse
 
     var id: String { rawValue }
 
@@ -17,6 +20,7 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
         case .translate: return "Translate"
         case .listen:    return "Listen"
         case .produce:   return "Produce"
+        case .converse:  return "Talk"
         }
     }
 
@@ -81,6 +85,9 @@ struct Turn: Identifiable, Codable, Hashable {
         /// Due subjects woven into this prompt. What the review is checked
         /// against to decide whether they were retrieved.
         var revisited: [String] = []
+        /// Talk: the scene and the lines before the one answered. Context
+        /// for the grader, not assessed.
+        var context: String? = nil
     }
 
     struct Attempt: Codable, Hashable {
@@ -108,6 +115,7 @@ extension Turn.Prompt {
         audioSource = try container.decodeIfPresent(AudioSource.self, forKey: .audioSource)
         pointID = try container.decodeIfPresent(String.self, forKey: .pointID)
         revisited = try container.decodeIfPresent([String].self, forKey: .revisited) ?? []
+        context = try container.decodeIfPresent(String.self, forKey: .context)
     }
 }
 

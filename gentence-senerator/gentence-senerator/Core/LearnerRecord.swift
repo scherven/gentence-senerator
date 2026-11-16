@@ -93,7 +93,7 @@ struct LearnerRecord: Codable, Hashable {
         var total = 0
 
         enum Kind: String, Codable, Hashable {
-            case translate, produce, listen, quiz, words
+            case translate, produce, listen, quiz, words, talk
         }
     }
 }
@@ -127,7 +127,8 @@ extension LearnerRecord {
             points[Self.key(turn.language, pointID)] = r
         }
         let kind: FeedItem.Kind = turn.mode == .translate ? .translate
-            : turn.mode == .produce ? .produce : .listen
+            : turn.mode == .produce ? .produce
+            : turn.mode == .converse ? .talk : .listen
         let first = problems.first { $0.weight == .start } ?? problems.first
         put(FeedItem(id: turn.id.uuidString, at: turn.createdAt, language: turn.language,
                      kind: kind, title: sentence,

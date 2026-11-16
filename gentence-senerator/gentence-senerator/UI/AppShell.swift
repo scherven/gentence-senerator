@@ -312,6 +312,7 @@ struct ModeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 ForEach(store.settings.language.modes) { modeKey($0) }
+                TalkKey(store: store)
                 WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
@@ -733,6 +734,31 @@ struct WrittenRows: View {
                 }
             }
         }
+    }
+}
+
+/// Talk: a new scene, or back into the one running. Not part of the day's
+/// count, so a finished day keeps it.
+struct TalkKey: View {
+    @Bindable var store: Store
+    @State private var open = false
+
+    var body: some View {
+        let held = store.conversation
+        Button { open = true } label: {
+            HStack(alignment: .center) {
+                Text(Mode.converse.name).font(Theme.F.cardTitle).lineLimit(1)
+                Spacer(minLength: 4)
+                if let held, !held.learnerLines.isEmpty {
+                    Text(held.ended ? held.scene.place : "\(held.scene.place) · \(held.learnerLines.count)/\(Conversation.cap)")
+                        .font(Theme.F.meta).opacity(0.75).lineLimit(1)
+                }
+            }
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(KeyStyle(.neutral))
+        .fullScreenCover(isPresented: $open) { TalkScreen(store: store) }
     }
 }
 

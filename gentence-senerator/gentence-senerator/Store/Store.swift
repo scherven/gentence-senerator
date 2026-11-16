@@ -221,6 +221,13 @@ final class Store {
     /// Rerolls this launch, so each one lands on a corner the last did not.
     var rerolls = 0
 
+    /// Talk, per language: the conversation in progress, kept after every line.
+    var conversations: [String: Conversation] =
+        Vault.load([String: Conversation].self, Vault.conversations) ?? [:]
+    /// Recent scenes, every language, for the next one to avoid.
+    var recentScenes: [String] = Vault.load([String].self, Vault.recentScenes) ?? []
+    var talk: TalkState = .idle
+
     init(tutor: Tutor, speech: SpeechIO? = nil,
          pronunciation: Pronunciation = Pronunciation()) {
         self.pronunciation = pronunciation

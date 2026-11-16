@@ -376,6 +376,8 @@ struct Slip<Content: View>: View {
         KeyFace(variant: .inverse, perforated: perforated) {
             VStack(alignment: .leading, spacing: Theme.M.gapTight) { content }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.M.pad)
+                .padding(.bottom, perforated ? 4 : 0)
         }
     }
 }

@@ -261,6 +261,18 @@ actor Tutor {
             return facts
         }
 
+        if turn.mode == .converse {
+            facts += """
+
+
+            \(turn.prompt.context ?? "")
+
+            They were answering: \(turn.prompt.target ?? "—")
+            The learner said: \(turn.attempt.confirmed)
+            """
+            return facts
+        }
+
         facts += """
 
         Asked (English): \(turn.prompt.english ?? "—")
@@ -512,6 +524,104 @@ actor Tutor {
         return (prompts, usage)
     }
 
+    // MARK: Talk
+    //
+    // Live, unlike grading: someone is waiting on every line. Sonnet, low
+    // effort, short. The grade comes later, in the batch.
+
+    struct PartnerLine: Codable {
+        var move: Conversation.Line.Move
+        var say: String
+        var goal_met: Bool
+    }
+
+    /// A scene to talk through. `avoid` is recent scenes, any language.
+    func scene(language: Language, level: Int, avoid: [String])
+    async throws -> (Conversation.Scene, Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: language)
+        var facts = "Level: \(pack.level(level))"
+        if !avoid.isEmpty {
+            facts += "\n\nHad recently, in any language. Somewhere else, about something else: "
+                + avoid.suffix(30).joined(separator: " | ")
+        }
+        return try await api.send(Conversation.Scene.self,
+                                  cachedSystem: Self.sceneSystem(pack),
+                                  user: facts,
+                                  schema: Schemas.conversationScene,
+                                  effort: .low, maxTokens: 4000,
+                                  model: Anthropic.reviewModel)
+    }
+
+    /// The partner's next line. `last` closes it whatever was said.
+    func partner(_ conversation: Conversation, last: Bool)
+    async throws -> (PartnerLine, Anthropic.Usage) {
+        let pack = LanguagePacks.pack(for: conversation.language)
+        var facts = """
+        Level: \(pack.level(conversation.level))
+        \(conversation.brief)
+
+        So far:
+        \(conversation.transcript())
+        """
+        if last { facts += "\n\nThis is your last line: close the conversation." }
+        let (line, usage) = try await api.send(PartnerLine.self,
+                                               cachedSystem: Self.partnerSystem(pack),
+                                               user: facts,
+                                               schema: Schemas.partnerLine,
+                                               effort: .low, maxTokens: 4000,
+                                               model: Anthropic.reviewModel)
+        guard !line.say.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw Anthropic.Failure.malformed("empty line")
+        }
+        return (line, usage)
+    }
+
+    private static func sceneSystem(_ pack: LanguagePack) -> String {
+        """
+        You set up a short conversation a learner of \(pack.language.name) will
+        have with one person, whom you will play. Something they would
+        actually need to do where \(pack.language.name) is spoken: a person in
+        front of them, something they want from that person, and one thing in
+        the way. Ordinary life, not a phrasebook: a landlord, a colleague, a
+        neighbour, a pharmacist, a friend's parent, a bank clerk. Pitch it at
+        the top of their level.
+
+        `you`, `want` and `them` are in English and give away no
+        \(pack.language.name) words: the learner reads them before speaking.
+        `role` and `opening` are in \(pack.language.name). The opening is what
+        that person would say first, at the learner's level.
+        """
+    }
+
+    private static func partnerSystem(_ pack: LanguagePack) -> String {
+        """
+        You play one person in a conversation with a learner of
+        \(pack.language.name). You are that person, not a tutor. Never correct,
+        explain, translate or praise their \(pack.language.name), and never
+        step out of the scene.
+
+        React as that person would. A line you would understand despite its
+        errors gets an answer to what they meant; you may say a phrase back
+        correctly in passing, as people do, never as a correction. A line you
+        would not understand gets the reply that person would give, and move
+        "ask again".
+
+        Put up the obstacle in the brief. Do not give way at the first ask:
+        resist once or twice, move "push back", and give way when they offer a
+        reason or an alternative that would work on a real person. Answer
+        questions they ask you. Keep their register: if they should be formal
+        and are not, react as that person would to it, mildly.
+
+        One to three short sentences, spoken, at the learner's level and no
+        harder. Only \(pack.language.name): no stage directions, no quotation
+        marks, no translation, no romanisation.
+
+        When they have got what they wanted, or have clearly given up, close
+        the conversation in one line, move "close". `goal_met` is whether they
+        got it.
+        """
+    }
+
     // MARK: Drills and questions
 
     struct DrillVerdict: Codable { var correct: Bool; var note: String }
@@ -730,6 +840,15 @@ actor Tutor {
         weigh whether the answer works there: the formality that person calls
         for, and whether it would get the learner what they were after. A
         correct answer in the wrong register is a "weakens".
+
+        In converse the learner is in a typed conversation with someone, set
+        up by the brief. Only the line they said is assessed; the brief and
+        the earlier lines are context, and errors in earlier lines are not
+        yours to report. Weigh whether the line works said to that person at
+        that point: whether it follows from what they just heard, the
+        register the brief calls for, and whether it moves them toward what
+        they want. A correct line in the wrong register, or one that ignores
+        what was just said, is a "weakens". Score it as produce.
 
         In listen the sentence is the speaker's and the learner is writing down
         what reached them, so nothing in it is a production error. Every finding
