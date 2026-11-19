@@ -11,6 +11,7 @@ struct Pronunciation {
     /// `reference` is what the learner should have said — the played sentence
     /// in listen mode, their own confirmed words otherwise.
     func assess(wav: URL, reference: String, locale: String) async throws -> PronunciationResult? {
+        if DryRun.on { return nil }
         let config: [String: Any] = [
             "ReferenceText": reference,
             "GradingSystem": "HundredMark",

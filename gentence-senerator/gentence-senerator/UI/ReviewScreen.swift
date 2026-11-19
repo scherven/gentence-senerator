@@ -24,22 +24,35 @@ struct ReviewScreen: View {
     /// Findings the learner has opened. Per screen, not persisted: reopening a
     /// review is asking to read it again.
     @State private var opened: Set<String> = []
+    @State private var showKept = false
+    @State private var showRespeak = false
 
     private var review: Review? { turn.review }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                asked
                 specimen
+
+                if let review {
+                    findings(review)
+                    native(review)
+                }
 
                 if let sounds = turn.attempt.pronunciation, !sounds.units.isEmpty {
                     pronunciation(sounds)
                 }
 
                 if let review {
-                    findings(review)
+                    kept(review)
                     if !review.respeaks.isEmpty {
-                        RespeakView(items: review.respeaks)
+                        if showRespeak {
+                            RespeakView(items: review.respeaks)
+                        } else {
+                            TinyButton(title: "Say it with a change") { showRespeak = true }
+                                .fixedSize()
+                        }
                     }
                 }
 
@@ -79,128 +92,152 @@ struct ReviewScreen: View {
         }
     }
 
+    /// What was asked, set back, with the score stamped beside it.
+    private var asked: some View {
+        HStack(alignment: .top, spacing: Theme.M.gapTight) {
+            VStack(alignment: .leading, spacing: 3) {
+                if turn.mode == .reply, let from = turn.prompt.context {
+                    Text(from.uppercased()).font(Theme.F.meta).tracking(Theme.M.caps)
+                        .foregroundStyle(Theme.C.ink2)
+                }
+                if exchange.count > 1 {
+                    EmptyView()
+                } else if turn.mode == .translate {
+                    Text(turn.prompt.english ?? "").font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
+                } else if turn.mode != .listen, let target = turn.prompt.target {
+                    Text(target).font(Theme.F.targetSmall(for: turn.language))
+                        .foregroundStyle(Theme.C.ink2)
+                    if let english = turn.prompt.english {
+                        Text(english).font(Theme.F.note).foregroundStyle(Theme.C.ink3)
+                    }
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if let review { Stamp(score: review.score) }
+        }
+    }
+
+    /// The fixed sentence, its changes marked against what was said.
+    private var fixLine: (text: String, marks: [SpanMark.Mark], tag: String)? {
+        if turn.mode == .listen, let played = turn.prompt.target {
+            let apart = Store.divergence(turn.attempt.confirmed, played, language: turn.language)
+            return (played, apart.ref.map { .init($0, colour: Theme.C.good) }, "Played")
+        }
+        guard let fixed = review?.fixed, !(review?.problems.isEmpty ?? true),
+              fixed != turn.attempt.confirmed else { return nil }
+        let apart = Store.divergence(turn.attempt.confirmed, fixed, language: turn.language)
+        return (fixed, apart.ref.map { .init($0, colour: Theme.C.good) }, "Fix")
+    }
+
     private var specimen: some View {
-        IndexCard(headRule: nil, pitch: nil) {
+        let font = Theme.F.target(size: 19, for: turn.language)
+        return LedgerSheet {
             if exchange.count > 1 {
-                // A finding can point at any answer here, so all of them are on
-                // screen and numbered to match.
+                // A legacy held exchange: a finding can point at any answer,
+                // so all of them are on screen and numbered to match.
                 ForEach(Array(exchange.enumerated()), id: \.element.id) { index, past in
-                    specimenRow("\(index + 1)", first: index == 0) {
+                    specimenRow("\(index + 1)", last: index == exchange.count - 1) {
                         Text(past.prompt.target ?? past.prompt.english ?? "")
                             .font(Theme.F.gloss)
                             .foregroundStyle(Theme.C.ink2)
-                        SpanMark(past.attempt.confirmed, marks: marks(for: index),
-                                 font: Theme.F.target(size: 19, for: past.language))
+                        SpanMark(past.attempt.confirmed, marks: marks(for: index), font: font)
                     }
                 }
             } else {
-                if let target = turn.prompt.target {
-                    specimenRow(turn.mode == .listen ? "Played" : "Asked", first: true) {
-                        Text(target).font(Theme.F.target(size: 19, for: turn.language))
-                        if let english = turn.prompt.english {
-                            Text(english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
-                        }
-                    }
-                } else if let english = turn.prompt.english {
-                    specimenRow("Asked", first: true) {
-                        Text(english).font(Theme.F.gloss).foregroundStyle(Theme.C.ink2)
+                specimenRow("You", last: fixLine == nil) {
+                    SpanMark(turn.attempt.confirmed, marks: marks(for: 0), font: font)
+                }
+                if let fix = fixLine {
+                    specimenRow(fix.tag, last: true) {
+                        SpanMark(fix.text, marks: fix.marks, font: font)
                     }
                 }
-                specimenRow("You said") {
-                    SpanMark(turn.attempt.confirmed, marks: marks(for: 0),
-                             font: Theme.F.target(size: 19, for: turn.language))
-                }
-                if let reference = turn.prompt.reference {
-                    specimenRow("Ref") {
-                        Text(reference).font(Theme.F.targetSmall(for: turn.language))
-                            .foregroundStyle(Theme.C.carbon)
-                    }
-                }
-            }
-            if let natural = review?.natural {
-                specimenRow("Natural") {
-                    Text(natural).font(Theme.F.targetSmall(for: turn.language))
-                        .foregroundStyle(Theme.C.carbon)
-                }
-            }
-            if let review, !review.readOfScore.isEmpty {
-                specimenRow("Score", last: true) {
-                    Text(review.readOfScore).font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-                }
-            }
-        }
-        .padding(.top, review == nil ? 0 : 10)
-        .overlay(alignment: .topTrailing) {
-            if let review {
-                Stamp(score: review.score).offset(x: 6, y: -4)
             }
         }
     }
 
-    /// Account | double red margin | entry. Rows abut, so the margin runs the
-    /// height of the card.
-    private func specimenRow<Content: View>(_ tag: String, first: Bool = false, last: Bool = false,
+    private func specimenRow<Content: View>(_ tag: String, last: Bool,
                                             @ViewBuilder content: () -> Content) -> some View {
-        HStack(alignment: .top, spacing: 0) {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(tag.uppercased())
                 .font(Theme.F.account)
                 .tracking(0.6)
                 .foregroundStyle(Theme.C.ink2)
-                .frame(width: 62 * Theme.F.growth(11, mono: true, upTo: Theme.F.accountCap),
+                .frame(width: 44 * Theme.F.growth(11, mono: true, upTo: Theme.F.accountCap),
                        alignment: .leading)
-                .padding(.top, 6)
-            HStack(spacing: 2.5) {
-                Rectangle().fill(Theme.C.margin).frame(width: 0.75)
-                Rectangle().fill(Theme.C.margin).frame(width: 0.75)
-            }
             VStack(alignment: .leading, spacing: 3) { content() }
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 10)
-                // Clear of the stamp.
-                .padding(.trailing, first && review != nil ? 64 * Theme.F.growth(26, mono: true) : 0)
-                .padding(.bottom, last ? 0 : 12)
         }
-        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .overlay(alignment: .bottom) {
+            if !last { Rectangle().fill(Theme.C.rule.opacity(0.45)).frame(height: Theme.M.hair) }
+        }
     }
 
-    /// Problems and praise are listed apart, so the count in the header names
-    /// what is under it. Both are shown; only problems stage their reveal.
+    /// One row per problem, in order of cost.
+    @ViewBuilder
     private func findings(_ review: Review) -> some View {
-        VStack(alignment: .leading, spacing: Theme.M.gap) {
-            if !review.problems.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "\(review.problems.count) to fix")
-                    LedgerSheet {
-                        ForEach(review.problems) { atom in
-                            StagedAtomRow(
-                                atom: atom,
-                                number: number(of: atom),
-                                span: located[atom.id]?.span,
-                                last: atom.id == review.problems.last?.id,
-                                open: binding(for: atom),
-                                knowledge: knowledge[atom.id] ?? .unclassified,
-                                onClassify: { onClassify(atom, $0) },
-                                back: back(atom.id),
-                                disputed: disputed.contains(atom.id),
-                                onDispute: { await onDispute(atom, $0) },
-                                point: atom.seed.pointID.flatMap { id in
-                                    pointName(id).map { (name: $0, open: { openPoint(id) }) }
-                                }
-                            )
+        if !review.problems.isEmpty {
+            LedgerSheet {
+                ForEach(review.problems) { atom in
+                    FindingRow(
+                        atom: atom,
+                        number: number(of: atom),
+                        span: located[atom.id]?.span,
+                        last: atom.id == review.problems.last?.id,
+                        open: binding(for: atom),
+                        knowledge: knowledge[atom.id] ?? .unclassified,
+                        onClassify: { onClassify(atom, $0) },
+                        back: back(atom.id),
+                        disputed: disputed.contains(atom.id),
+                        onDispute: { await onDispute(atom, $0) },
+                        point: atom.seed.pointID.flatMap { id in
+                            pointName(id).map { (name: $0, open: { openPoint(id) }) }
                         }
-                    }
+                    )
                 }
             }
-            if !review.kept.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    ModuleLabel(text: "Got right")
-                    LedgerSheet {
-                        ForEach(review.kept) { atom in
-                            KeptRow(atom: atom, last: atom.id == review.kept.last?.id)
-                        }
+        }
+    }
+
+    /// What a speaker would say, when it is not the fix. In translate with
+    /// no such line, the reference the learner saw.
+    @ViewBuilder
+    private func native(_ review: Review) -> some View {
+        let shown = [review.fixed, turn.attempt.confirmed].compactMap { $0 }
+        let line = review.natural ?? (turn.mode == .translate ? turn.prompt.reference : nil)
+        if turn.mode != .listen, let line, !shown.contains(line) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text("NATIVE").font(Theme.F.account).tracking(0.6).foregroundStyle(Theme.C.ink2)
+                Text(line).font(Theme.F.targetSmall(for: turn.language))
+                    .foregroundStyle(Theme.C.carbon)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 2)
+        }
+    }
+
+    /// What held, as a count until asked for.
+    @ViewBuilder
+    private func kept(_ review: Review) -> some View {
+        if !review.kept.isEmpty {
+            if showKept {
+                LedgerSheet {
+                    ForEach(review.kept) { atom in
+                        KeptRow(atom: atom, last: atom.id == review.kept.last?.id)
                     }
                 }
+            } else {
+                Button { showKept = true } label: {
+                    Text("+\(review.kept.count) right ›")
+                        .font(Theme.F.label).tracking(Theme.M.caps)
+                        .foregroundStyle(Theme.C.good)
+                        .frame(minHeight: 32)
+                }
+                .buttonStyle(PressDim())
             }
         }
     }
@@ -378,6 +415,12 @@ struct BatchSummary: View {
     private var scores: [Int] { turns.compactMap { $0.review?.score } }
     private var toFix: Int { turns.reduce(0) { $0 + ($1.review?.problems.count ?? 0) } }
 
+    /// The three problems most worth keeping: most often first, then the
+    /// costlier, then the one marked to start with.
+    private var takeAway: [(atom: Atom, count: Int)] {
+        Store.takeAway(turns.compactMap(\.review))
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
@@ -392,6 +435,34 @@ struct BatchSummary: View {
                     Spacer(minLength: 0)
                     if !scores.isEmpty {
                         Stamp(score: scores.reduce(0, +) / scores.count)
+                    }
+                }
+                if !takeAway.isEmpty {
+                    ModuleLabel(text: "Take away")
+                    LedgerSheet {
+                        ForEach(Array(takeAway.enumerated()), id: \.element.atom.id) { index, item in
+                            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                                NumberTag(number: index + 1, colour: Theme.colour(for: item.atom.verdict))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    FixLine(span: item.atom.stages.wrong.map {
+                                        Store.Span(range: 0..<0, wrong: $0, right: item.atom.stages.fix)
+                                    }, fix: item.atom.stages.fix)
+                                    Text(item.atom.stages.name).font(Theme.F.note)
+                                        .foregroundStyle(Theme.C.ink2)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                if item.count > 1 {
+                                    Text("×\(item.count)").font(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                                }
+                            }
+                            .padding(.horizontal, 12).padding(.vertical, 10)
+                            .overlay(alignment: .bottom) {
+                                if index < takeAway.count - 1 {
+                                    Rectangle().fill(Theme.C.rule.opacity(0.45)).frame(height: Theme.M.hair)
+                                }
+                            }
+                        }
                     }
                 }
                 ModuleLabel(text: "\(turns.count) sentence\(turns.count == 1 ? "" : "s")",

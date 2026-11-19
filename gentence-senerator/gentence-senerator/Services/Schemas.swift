@@ -156,17 +156,21 @@ enum Schemas {
                 "verdict": enumOf(["breaks", "weakens", "kept"],
                                   "breaks stops comprehension; weakens marks a learner; kept is right and worth knowing why."),
                 "weight": enumOf(["start", "also"], "Exactly one is start."),
-                "locate": ["type": "string",
-                           "description": "Where, without saying what. The learner should be able to try repairing it from this alone. Never name the fix here."],
-                "name": ["type": "string", "description": "What is wrong, still without the corrected text. For kept: what they did right."],
-                "fix": ["type": "string", "description": "The corrected text. For kept: the words that were right."],
+                "wrong": ["type": "string",
+                          "description": "The learner's words this is about, copied exactly from what they said, as few as show the problem. For kept: the words that were right. Empty only when something is missing and there is nothing to quote."],
+                "name": ["type": "string", "description": "Why, in six words or fewer. Read at a glance beside wrong → fix. For kept: what they did right."],
+                "fix": ["type": "string", "description": "What replaces `wrong`, and only that: not the whole sentence. For kept: the words that were right."],
                 "note": ["type": "string", "description": "One or two sentences on why."],
                 "subject": ["type": "string", "description": "What a lesson about this would be about."],
                 "point": ["type": ["string", "null"],
                           "description": "Id of the listed grammar point this finding is about, or null."]
-            ], required: ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject", "point"])),
+            ], required: ["kind", "verdict", "weight", "wrong", "name", "fix", "note", "subject", "point"])),
+            "fixed": ["type": ["string", "null"],
+                      "description": "The learner's own sentence with every breaks and weakens fix applied and nothing else changed. Null in listen, and when several numbered answers are assessed."],
+            "gloss": ["type": ["string", "null"],
+                      "description": "What `fixed` means, in plain English, one sentence. Null when `fixed` is."],
             "natural": ["type": ["string", "null"],
-                        "description": "What a speaker would actually say, if different from the minimal fix."],
+                        "description": "What a speaker would actually say, if different from `fixed`."],
             "respeaks": array(object([
                 "instruction": ["type": "string",
                                 "description": "Say the same sentence again with one thing changed — a different subject, tense, or added detail. Never a plain repeat."],
@@ -176,7 +180,7 @@ enum Schemas {
             ], required: ["instruction", "accept", "correct", "incorrect"])),
             "used": ["type": "array", "items": string,
                      "description": "Ids of the grammar points the learner's own sentences used, correctly or not. Only ids from the list given. Empty is a normal answer."]
-        ], required: ["findings", "score", "readOfScore", "natural", "respeaks", "used"])
+        ], required: ["findings", "score", "readOfScore", "fixed", "gloss", "natural", "respeaks", "used"])
     }
 
     // MARK: The day's prompts
@@ -186,14 +190,16 @@ enum Schemas {
     static let daySet: [String: Any] = object([
         "items": array(object([
             "english": ["type": "string",
-                        "description": "For translate, what the learner reads. For produce, the gloss of the question."],
+                        "description": "For translate, what the learner reads. Otherwise the gloss of `target`."],
             "target": ["type": ["string", "null"],
-                       "description": "Produce: the question, one sentence ending in a single question mark. Null for translate."],
+                       "description": "Produce: the question, one sentence ending in a single question mark. Reply: the message. Null for translate."],
             "reference": ["type": ["string", "null"],
-                          "description": "Translate: one natural rendering, shown after the learner answers. Null for produce."],
+                          "description": "Translate: one natural rendering, shown after the learner answers. Null otherwise."],
+            "from": ["type": ["string", "null"],
+                     "description": "Reply: who sent the message, in the target language. Null otherwise."],
             "revisited": ["type": "array", "items": string,
                           "description": "Which of the listed revisit subjects this sentence actually calls for, copied exactly."]
-        ], required: ["target", "english", "reference", "revisited"]))
+        ], required: ["target", "english", "reference", "from", "revisited"]))
     ], required: ["items"])
 
     // MARK: Prompt generation
@@ -211,4 +217,23 @@ enum Schemas {
         "correct": ["type": "boolean"],
         "note": ["type": "string", "description": "One or two sentences."]
     ], required: ["correct", "note"])
+
+    // MARK: Talk
+
+    static let conversationScene: [String: Any] = object([
+        "place": ["type": "string", "description": "Where, in the target language, two or three words."],
+        "you": ["type": "string", "description": "English. Who the learner is and what has happened, one or two short sentences. No target-language words."],
+        "want": ["type": "string", "description": "English. What they are after, one short clause, no full stop."],
+        "them": ["type": "string", "description": "English. Who the other person is and what they would rather do, short."],
+        "role": ["type": "string", "description": "What the learner would call them, in the target language, one to three words."],
+        "formal": ["type": "boolean", "description": "Whether a speaker would be formal with them."],
+        "opening": ["type": "string", "description": "Their first line, in the target language, one sentence."]
+    ], required: ["place", "you", "want", "them", "role", "formal", "opening"])
+
+    static let partnerLine: [String: Any] = object([
+        "move": enumOf(["answer", "push back", "ask again", "close"],
+                       "ask again: you did not understand them. push back: you resist what they want. close: your line ends the conversation."),
+        "say": ["type": "string", "description": "Your line, in the target language only."],
+        "goal_met": ["type": "boolean", "description": "True once the learner has got what they wanted."]
+    ], required: ["move", "say", "goal_met"])
 }

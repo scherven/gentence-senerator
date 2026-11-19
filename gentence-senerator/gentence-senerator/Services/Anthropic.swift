@@ -157,6 +157,7 @@ actor Anthropic {
 
         let body = params(cachedSystem: cachedSystem, user: user, schema: schema,
                           effort: effort, maxTokens: maxTokens, model: model)
+        if DryRun.on { return DryRun.reply(body: body) }
         let data = try await dataRetrying(for: try request("messages", body: body))
 
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {

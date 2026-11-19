@@ -210,6 +210,9 @@ struct ModeScreen: View {
 
     var body: some View {
         Group {
+            if store.redo != nil, store.phase != .idle {
+                RedoView(store: store)
+            } else {
             switch store.phase {
             case .idle:
                 if store.dayComplete { DayScreen(store: store) } else { start }
@@ -234,13 +237,14 @@ struct ModeScreen: View {
             case .failed(let why):
                 Trouble(message: why) { Task { await store.nextPrompt() } }
             }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Theme.C.ground)
         .toolbar(.hidden, for: .navigationBar)
         .pageHeader(PageHeader(lead: lead, title: title, centred: !isIdle, onLead: onLead) {
             isIdle ? AnyView(settingsLink) : AnyView(Text(progressLabel))
-        })
+        }, hidden: store.phase == .reviewing && store.redo == nil)
         .sheet(isPresented: $showingSettings) { SettingsScreen(store: store) }
         // A tapped push can start reading under an open sheet.
         .onChange(of: store.reading.isEmpty) { _, idle in
@@ -301,6 +305,7 @@ struct ModeScreen: View {
             let tally = store.tally(.listen)
             return "\(tally.done)/\(tally.goal)"
         }
+        if let redo = store.redo { return "Redo \(redo.index + 1)/\(redo.items.count)" }
         guard let session = store.session else { return "" }
         if store.phase == .complete { return "\(session.completedCount)/\(session.goal)" }
         return "\(Store.turnNumber(session: session, current: store.current))/\(session.goal)"
@@ -312,6 +317,7 @@ struct ModeScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
                 ForEach(store.settings.language.modes) { modeKey($0) }
+                TalkKey(store: store)
                 WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
@@ -402,6 +408,10 @@ struct ModeScreen: View {
                     if store.settings.mode == .translate {
                         Text(turn.prompt.english ?? "").font(Theme.F.target)
                     } else {
+                        if turn.mode == .reply, let from = turn.prompt.context {
+                            Text(from.uppercased()).font(Theme.F.meta).tracking(Theme.M.caps)
+                                .foregroundStyle(Theme.C.ink2)
+                        }
                         if let target = turn.prompt.target {
                             HStack(alignment: .firstTextBaseline, spacing: Theme.M.pad) {
                                 if store.settings.mode != .listen {
@@ -444,6 +454,10 @@ struct ModeScreen: View {
             let english = turn.mode == .translate || turn.prompt.target == nil
             if let text = english ? turn.prompt.english : turn.prompt.target {
                 Panel(fill: Theme.C.raised) {
+                    if turn.mode == .reply, let from = turn.prompt.context {
+                        Text(from.uppercased()).font(Theme.F.meta).tracking(Theme.M.caps)
+                            .foregroundStyle(Theme.C.ink3)
+                    }
                     Text(text)
                         .font(english ? Theme.F.body : Theme.F.targetSmall)
                         .foregroundStyle(Theme.C.ink2)
@@ -714,7 +728,7 @@ struct WrittenRows: View {
     var body: some View {
         LedgerSheet {
             ForEach(rows) { row in
-                LedgerRow(account: "\(row.mode == .produce ? "Prod" : "Trans") \(row.number)",
+                LedgerRow(account: "\(Store.short(row.mode)) \(row.number)",
                           accountWidth: 76, ruled: row.id != rows.last?.id) {
                     Text(row.turn.attempt.confirmed)
                         .font(Theme.F.target(size: 15, for: row.turn.language))
@@ -733,6 +747,57 @@ struct WrittenRows: View {
                 }
             }
         }
+    }
+}
+
+/// Produce, on a finished day: the long one is there when wanted, so the
+/// day being done does not take it away.
+struct ProduceKey: View {
+    @Bindable var store: Store
+
+    var body: some View {
+        let tally = store.tally(.produce)
+        let spent = store.isDone(.produce)
+        Button { Task { await store.begin(.produce) } } label: {
+            HStack(alignment: .center) {
+                Text(Mode.produce.name).font(Theme.F.cardTitle).lineLimit(1)
+                Spacer(minLength: 4)
+                if spent {
+                    Stamp("Sent", colour: Theme.C.good, size: 10)
+                } else {
+                    Text("\(tally.done)/\(tally.goal)").font(Theme.F.meta).opacity(0.75)
+                }
+            }
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(KeyStyle(spent ? .spent : .neutral))
+        .disabled(spent)
+    }
+}
+
+/// Talk: a new scene, or back into the one running. Not part of the day's
+/// count, so a finished day keeps it.
+struct TalkKey: View {
+    @Bindable var store: Store
+    @State private var open = false
+
+    var body: some View {
+        let held = store.conversation
+        Button { open = true } label: {
+            HStack(alignment: .center) {
+                Text(Mode.converse.name).font(Theme.F.cardTitle).lineLimit(1)
+                Spacer(minLength: 4)
+                if let held, !held.learnerLines.isEmpty {
+                    Text(held.ended ? held.scene.place : "\(held.scene.place) · \(held.learnerLines.count)/\(Conversation.cap)")
+                        .font(Theme.F.meta).opacity(0.75).lineLimit(1)
+                }
+            }
+            .padding(Theme.M.pad)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(KeyStyle(.neutral))
+        .fullScreenCover(isPresented: $open) { TalkScreen(store: store) }
     }
 }
 

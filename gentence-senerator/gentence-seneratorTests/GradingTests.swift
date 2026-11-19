@@ -78,10 +78,10 @@ struct GradingTests {
     @Test func schemaPropertiesKeepTheirOrder() throws {
         let data = try Schemas.data(Schemas.review(for: .german))
         let text = String(decoding: data, as: UTF8.self)
-        let top = ["findings", "score", "readOfScore", "natural", "respeaks", "used"]
+        let top = ["findings", "score", "readOfScore", "fixed", "gloss", "natural", "respeaks", "used"]
         let at = top.map { text.range(of: "\"\($0)\":{")!.lowerBound }
         #expect(at == at.sorted())
-        let finding = ["kind", "verdict", "weight", "locate", "name", "fix", "note", "subject"]
+        let finding = ["kind", "verdict", "weight", "wrong", "name", "fix", "note", "subject"]
         let inFinding = finding.map { text.range(of: "\"\($0)\":{")!.lowerBound }
         #expect(inFinding == inFinding.sorted())
         // Same bytes every time, and still the same JSON.

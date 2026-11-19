@@ -521,13 +521,15 @@ extension Store {
             draws[slot] = drawn
             Vault.save(draws, Vault.plan)
             requests[language.rawValue] = nil
-            // Its produce set was written for the old stretch. Unstarted, it
-            // is written again.
-            let key = Store.holdKey(language, .produce)
-            if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
-               held.session.id == sessionID(for: .produce, on: tomorrow) {
-                holds[key] = nil
-                Vault.save(holds, Vault.holds)
+            // Its produce and reply sets were written for the old stretch.
+            // Unstarted, they are written again.
+            for mode in [Mode.produce, .reply] {
+                let key = Store.holdKey(language, mode)
+                if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
+                   held.session.id == sessionID(for: mode, on: tomorrow) {
+                    holds[key] = nil
+                    Vault.save(holds, Vault.holds)
+                }
             }
         } else {
             requests[language.rawValue] = request

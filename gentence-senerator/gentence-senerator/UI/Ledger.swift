@@ -376,6 +376,8 @@ struct Slip<Content: View>: View {
         KeyFace(variant: .inverse, perforated: perforated) {
             VStack(alignment: .leading, spacing: Theme.M.gapTight) { content }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.M.pad)
+                .padding(.bottom, perforated ? 4 : 0)
         }
     }
 }
@@ -543,6 +545,12 @@ extension View {
                     meta: String? = nil, centred: Bool = true,
                     onLead: (() -> Void)? = nil) -> some View {
         pageHeader(PageHeader(lead: lead, title: title, meta: meta, centred: centred, onLead: onLead))
+    }
+
+    /// Off while a screen inside draws its own: two would stack.
+    @ViewBuilder
+    func pageHeader<T: View>(_ header: PageHeader<T>, hidden: Bool) -> some View {
+        if hidden { self } else { pageHeader(header) }
     }
 
     func pageHeader<T: View>(_ header: PageHeader<T>) -> some View {

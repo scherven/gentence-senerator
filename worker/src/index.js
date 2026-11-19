@@ -46,6 +46,12 @@ const DIRECT_AFTER_MS = 20 * 60 * 1000;
 // (24h) and will never end here either.
 const GIVE_UP_MS = 26 * 3600 * 1000;
 const INVITE = "invite:";
+// Reminders: `ping:<code>` holds a device's day plan, `pings` the codes that
+// have one, so the cron reads two keys instead of listing.
+const PING = "ping:";
+const PINGS = "pings";
+// A slot the cron reaches this late is skipped; the next one rolls it in.
+const PING_LATE_MS = 10 * 60 * 1000;
 // The models the app uses, each with its largest max_tokens: anything else
 // through the proxy is someone else's traffic. Sonnet reviews translate and
 // produce answers and writes quiz top-ups.
@@ -77,6 +83,34 @@ export default {
       try { given = await request.json(); } catch { return new Response("json", { status: 400 }); }
       if (!given || typeof given !== "object") return new Response("json", { status: 400 });
       await ledger(env, "/dispute", { ...given, code: who.code, name: who.name, at: new Date().toISOString() });
+      return Response.json({ ok: true });
+    }
+    // The day's reminders, replacing the last plan. Each `fire` starts its
+    // slot's Live Activity by push at `at`; the app does the notifications.
+    if (request.method === "POST" && url.pathname === "/pings") {
+      let given;
+      try { given = await request.json(); } catch { return new Response("json", { status: 400 }); }
+      const { token, sandbox, fires } = given || {};
+      if (!token || !Array.isArray(fires)) return new Response("token and fires", { status: 400 });
+      const prior = await env.STATE.get(PING + who.code, "json");
+      await env.STATE.put(PING + who.code, JSON.stringify({
+        token, sandbox: sandbox !== false, fires: fires.slice(0, 24),
+        activity: prior?.activity ?? null, sent: prior?.sent ?? 0,
+      }), { expirationTtl: 3 * 24 * 3600 });
+      const codes = (await env.STATE.get(PINGS, "json")) || [];
+      if (!codes.includes(who.code)) await env.STATE.put(PINGS, JSON.stringify([...codes, who.code]));
+      return Response.json({ ok: true });
+    }
+    // The running activity's own token, so the next slot can end it.
+    if (request.method === "POST" && url.pathname === "/pings/activity") {
+      let given;
+      try { given = await request.json(); } catch { return new Response("json", { status: 400 }); }
+      const prior = await env.STATE.get(PING + who.code, "json");
+      if (!prior || !given?.token) return Response.json({ ok: false });
+      if (prior.activity !== given.token) {
+        await env.STATE.put(PING + who.code, JSON.stringify({ ...prior, activity: given.token }),
+                            { expirationTtl: 3 * 24 * 3600 });
+      }
       return Response.json({ ok: true });
     }
     if (request.method === "POST" && url.pathname === "/azure/pronounce") {
@@ -186,7 +220,7 @@ export default {
   },
 
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(poll(env));
+    ctx.waitUntil(Promise.all([poll(env), ring(env)]));
   },
 };
 
@@ -260,6 +294,54 @@ async function azure(request, env, url) {
     status: r.status,
     headers: { "content-type": r.headers.get("content-type") || "application/json" },
   });
+}
+
+// Starts each device's due slot: ends the activity before it, then
+// push-to-starts the new one. A slot fires once (`sent`).
+async function ring(env) {
+  const codes = (await env.STATE.get(PINGS, "json")) || [];
+  const now = Date.now();
+  for (const code of codes) {
+    try {
+      const plan = await env.STATE.get(PING + code, "json");
+      if (!plan) continue;
+      const due = plan.fires
+        .filter((f) => f.at * 1000 <= now && f.at > plan.sent && now - f.at * 1000 < PING_LATE_MS)
+        .pop();
+      if (!due) continue;
+      // Marked first: a push that fails is not retried into a duplicate.
+      await env.STATE.put(PING + code, JSON.stringify({ ...plan, sent: due.at, activity: null }),
+                          { expirationTtl: 3 * 24 * 3600 });
+      const stamp = Math.floor(now / 1000);
+      if (plan.activity) {
+        await live(env, plan, plan.activity, {
+          timestamp: stamp, event: "end", "content-state": due.state, "dismissal-date": stamp,
+        });
+      }
+      await live(env, plan, plan.token, {
+        timestamp: stamp, event: "start",
+        "attributes-type": "PingAttributes", attributes: { day: "" },
+        "content-state": due.state, "stale-date": Math.floor(due.end),
+        // Required to start one. No sound: the app's own notification rings.
+        alert: due.alert, "input-push-token": 1,
+      });
+    } catch (e) { console.log(`ping ${code}: ${e?.stack || e}`); }
+  }
+}
+
+async function live(env, plan, token, aps) {
+  const host = plan.sandbox === false ? "api.push.apple.com" : "api.sandbox.push.apple.com";
+  const response = await fetch(`https://${host}/3/device/${token}`, {
+    method: "POST",
+    headers: {
+      authorization: `bearer ${await providerToken(env)}`,
+      "apns-topic": `${env.APNS_TOPIC}.push-type.liveactivity`,
+      "apns-push-type": "liveactivity",
+      "apns-priority": "10",
+    },
+    body: JSON.stringify({ aps }),
+  });
+  if (!response.ok) console.log(`live ${aps.event}: ${response.status} ${await response.text()}`);
 }
 
 async function poll(env) {

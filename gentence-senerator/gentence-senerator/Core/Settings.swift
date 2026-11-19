@@ -25,6 +25,10 @@ struct Settings: Codable, Hashable {
     /// Levels added to `level` for the word decks only (WORDS and ALL
     /// LANGUAGES). Translate and produce stay at `level`. 0 is off.
     var wordLevelBoost: Int = 0
+    /// Reminders through the day; see `Pings`.
+    var pingsOn: Bool = true
+    var wakeFrom: Int = 8
+    var wakeTo: Int = 23
 }
 
 /// Token spend, kept per day so a runaway session is visible.
@@ -137,6 +141,9 @@ extension Settings {
             ?? d.turnsBeforeReview
         offerStretch = try c.decodeIfPresent(Bool.self, forKey: .offerStretch) ?? d.offerStretch
         wordLevelBoost = try c.decodeIfPresent(Int.self, forKey: .wordLevelBoost) ?? d.wordLevelBoost
+        pingsOn = try c.decodeIfPresent(Bool.self, forKey: .pingsOn) ?? d.pingsOn
+        wakeFrom = try c.decodeIfPresent(Int.self, forKey: .wakeFrom) ?? d.wakeFrom
+        wakeTo = try c.decodeIfPresent(Int.self, forKey: .wakeTo) ?? d.wakeTo
     }
 }
 
@@ -251,6 +258,9 @@ enum Vault {
     static let activity = "activity.v1" // what was done each day, for History
     static let scores = "scores.v1" // every graded answer's score, for History averages
     static let disputed = "disputed.v1" // finding ids the learner reported as wrong
+    static let conversations = "talk.v1" // the conversation in progress, per language
+    static let recentScenes = "talk.scenes.v1" // recent scenes, every language
+    static let redo = "redo.v1" // what came of each redone sentence
 }
 
 /// One element of a stored collection, or nothing if it no longer decodes.

@@ -13,6 +13,7 @@ final class Push: NSObject, UIApplicationDelegate, UNUserNotificationCenterDeleg
         // Not over the invite screen: asked once the code is in.
         if Worker.invite != nil { Self.ask() }
         application.registerForRemoteNotifications()
+        Task { @MainActor in Pinger.shared.observe() }
         return true
     }
 
@@ -63,6 +64,10 @@ final class Push: NSObject, UIApplicationDelegate, UNUserNotificationCenterDeleg
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse) async {
         guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
+        if let ping = response.notification.request.content.userInfo["ping"] as? [String] {
+            await GentenceApp.store.openPing(ping)
+            return
+        }
         let tap = Store.Tap(response.notification.request.content.userInfo)
         await GentenceApp.store.open(tap)
     }

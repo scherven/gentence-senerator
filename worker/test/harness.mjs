@@ -351,6 +351,46 @@ test("7: direct grading charges the batch's code", async () => {
 });
 
 let failed = 0;
+test("pings: a due slot ends the last activity and starts its own, once", async () => {
+  const env = await makeEnv();
+  const now = Date.now() / 1000;
+  const fire = (at, title) => ({ at, end: at + 9000, alert: { title, body: "x" },
+    state: { title, end: at + 9000, ticks: [1, 2], lead: "zh" } });
+  const body = JSON.stringify({ token: "start", sandbox: true,
+    fires: [fire(now + 60, "zh translate"), fire(now + 9000, "fr translate")] });
+  assert.equal((await call(env, "/pings", { method: "POST", body })).status, 200);
+  assert.deepEqual(env.STATE.json("pings"), ["ABCD-EFGH"]);
+  await runPoll(env);
+  assert.equal(api.pushes.length, 0, "nothing due yet");
+  advance(90 * 1000);
+  await runPoll(env);
+  assert.equal(api.pushes.length, 1);
+  assert.equal(api.pushes[0].aps.event, "start");
+  assert.equal(api.pushes[0].aps["attributes-type"], "PingAttributes");
+  assert.equal(api.pushes[0].aps.alert.title, "zh translate");
+  await runPoll(env);
+  assert.equal(api.pushes.length, 1, "fires once");
+  await call(env, "/pings/activity", { method: "POST", body: JSON.stringify({ token: "act" }) });
+  // A replan keeps what was sent and the activity token.
+  assert.equal((await call(env, "/pings", { method: "POST", body })).status, 200);
+  assert.equal(env.STATE.json("ping:ABCD-EFGH").activity, "act");
+  advance(9000 * 1000);
+  await runPoll(env);
+  assert.deepEqual(api.pushes.slice(1).map((p) => p.aps.event), ["end", "start"]);
+  assert.equal(api.pushes[2].aps.alert.title, "fr translate");
+});
+
+test("pings: a slot reached more than ten minutes late is skipped", async () => {
+  const env = await makeEnv();
+  const at = Date.now() / 1000 + 60;
+  const body = JSON.stringify({ token: "start", fires: [{ at, end: at + 100, alert: { title: "t" },
+    state: { title: "t", end: at + 100, ticks: [], lead: "zh" } }] });
+  await call(env, "/pings", { method: "POST", body });
+  advance(20 * 60 * 1000);
+  await runPoll(env);
+  assert.equal(api.pushes.length, 0);
+});
+
 for (const [name, fn] of tests) {
   reset(); offset = 0;
   try { await fn(); console.log(`ok   ${name}`); }

@@ -12,6 +12,8 @@ struct DayScreen: View {
         let findings = store.todayFindings
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.M.gap) {
+                ProduceKey(store: store)
+                TalkKey(store: store)
                 WordsRow(store: store)
                 SpentToday(store: store)
                 WrittenToday(store: store)
