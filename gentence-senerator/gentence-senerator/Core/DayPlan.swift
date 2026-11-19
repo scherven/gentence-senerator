@@ -147,12 +147,11 @@ extension DayPlan {
         "a trip that went wrong", "a daily habit", "the weekend", "health or the body",
         "a doctor or pharmacy", "studying", "a skill they are learning",
         "the neighbourhood", "the commute", "the home", "a flatmate or neighbour",
-        "a friend", "an old friend they lost touch with", "childhood", "school days",
-        "the weather or seasons", "a holiday or festival", "music", "a film or series",
-        "a book", "sport or exercise", "a phone or computer", "the news",
+        "a friend", "the weather or seasons", "a holiday or festival", "music",
+        "a film or series", "a book", "sport or exercise", "a phone or computer",
         "an animal or pet", "clothes", "a city they know", "the countryside",
-        "a party or celebration", "a mistake they made", "a small annoyance",
-        "something they want to buy", "the future", "a decision coming up"
+        "a party or celebration", "a small annoyance", "something they want to buy",
+        "an appointment or errand", "a repair or something broken"
     ]
 
     /// The corner to set turn `turn` in. The order is fixed for a day and a
@@ -169,18 +168,16 @@ extension DayPlan {
     /// Each also tends to call for its own grammar (past, conditional,
     /// imperative, comparison) without being built around it.
     static let produceKinds: [String] = [
-        "a specific past event — the last time something happened",
-        "a plan — something coming up",
-        "a hypothetical — what they would do if",
+        "what happened — the last time they did something ordinary",
+        "a plan — something coming up this week or month",
+        "how to — how they do something they know",
+        "a description — a place, person or thing they know well",
+        "a recommendation — somewhere or something worth trying",
+        "a practical what-if — what they would do if a plan fell through",
         "a choice between two concrete things",
-        "an opinion they would argue for",
-        "advice for a friend in a fix",
-        "a complaint — something that annoys them",
-        "explaining something they know to someone who does not",
-        "a scene — they are in a situation; what do they say",
-        "describing a person, place or thing",
-        "then and now — how something has changed",
-        "talking someone into something"
+        "a small problem — something that went wrong and what they did",
+        "a routine — how a normal day or week goes",
+        "advice for a friend in a small, ordinary fix"
     ]
 
     /// The kind for turn `turn`, shuffled apart from the domain order so a

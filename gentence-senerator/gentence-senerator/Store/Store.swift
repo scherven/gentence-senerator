@@ -12,19 +12,20 @@ final class Store {
     var settings = Settings() {
         didSet {
             Vault.save(settings, Vault.settings)
+            Pinger.shared.replanSoon(self)
             if oldValue.prefersTyping != settings.prefersTyping
                 || oldValue.offerStretch != settings.offerStretch { rewriteUnstarted() }
         }
     }
     var progress = Progress()
     var spend = Spend()
-    var past: [Session] = []
+    var past: [Session] = [] { didSet { Pinger.shared.replanSoon(self) } }
     var bank: [BankEntry] = []
 
     // MARK: Current attempt
 
     var phase: Phase = .idle
-    var session: Session?
+    var session: Session? { didSet { if session?.isComplete != oldValue?.isComplete { Pinger.shared.replanSoon(self) } } }
     var current: Turn?
     /// The editable transcript, or what is being typed. Assessed only after the
     /// learner confirms it.
@@ -227,6 +228,9 @@ final class Store {
     /// Recent scenes, every language, for the next one to avoid.
     var recentScenes: [String] = Vault.load([String].self, Vault.recentScenes) ?? []
     var talk: TalkState = .idle
+    /// Redos on screen ahead of a translate session. Nil the rest of the time.
+    var redo: RedoRound?
+    var redoLog: RedoLog = Vault.load(RedoLog.self, Vault.redo) ?? RedoLog()
 
     init(tutor: Tutor, speech: SpeechIO? = nil,
          pronunciation: Pronunciation = Pronunciation()) {
@@ -314,6 +318,7 @@ final class Store {
     func retireStale() {
         if let live = session, live.mode != .listen,
            String(live.id.prefix(10)) < Spend.key(.now) {
+            redo = nil
             hold()
             session = nil
             current = nil
@@ -391,7 +396,7 @@ final class Store {
     func isDone(_ mode: Mode) -> Bool { today(mode)?.isComplete ?? false }
 
     /// Three of each and the day is over. The main screen becomes the summary.
-    var dayComplete: Bool { settings.language.modes.allSatisfy(isDone) }
+    var dayComplete: Bool { settings.language.dailyModes.allSatisfy(isDone) }
 
     /// The turns one review covers. One, except in produce graded before each
     /// answer was graded alone: there the review landed on the last answer of
@@ -426,7 +431,7 @@ final class Store {
     func setGoal(_ n: Int) {
         guard n != settings.dailyGoal else { return }
         settings.dailyGoal = n
-        for mode in [Mode.translate, .produce] {
+        for mode in Mode.written {
             let key = Store.holdKey(settings.language, mode)
             // The scene is one, whatever the goal.
             if mode == .produce, sceneToday { continue }
@@ -501,6 +506,7 @@ final class Store {
     /// back and picking the same mode carries on from here.
     func switchLanguage(_ language: Language) {
         guard language != settings.language else { return }
+        redo = nil
         hold()
         dropPending()
         settings.language = language
@@ -584,7 +590,7 @@ final class Store {
     /// has just changed. Unstarted only — anything begun holds answers.
     private func rewriteUnstarted() {
         var dropped = false
-        for mode in [Mode.translate, .produce] {
+        for mode in Mode.written {
             let key = Store.holdKey(settings.language, mode)
             if let held = holds[key], held.turn == nil, held.session.turns.isEmpty,
                held.session.id != session?.id {

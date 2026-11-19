@@ -1,6 +1,6 @@
 import Foundation
 
-/// One day's translate and produce sets, written ahead for a stretch without
+/// One day's translate and reply sets, written ahead for a stretch without
 /// signal. Days are a queue, not dates: the front one becomes today's set on
 /// the next day that has none, so a skipped day wastes nothing.
 struct PackDay: Codable, Hashable, Identifiable {
@@ -10,15 +10,22 @@ struct PackDay: Codable, Hashable, Identifiable {
     var stretchID: String?
     let words: WordSeeds
     let translate: [Turn.Prompt]
+    var reply: [Turn.Prompt] = []
+    /// Only on days queued before produce stopped being written ahead, or
+    /// retargeted to a requested point.
     var produce: [Turn.Prompt]
     let writtenAt: Date
 
     func prompts(_ mode: Mode) -> [Turn.Prompt] {
-        mode == .produce ? produce : translate
+        switch mode {
+        case .produce: return produce
+        case .reply:   return reply
+        default:       return translate
+        }
     }
 
     /// Every English line in it, for the next day's `avoid`.
-    var asked: [String] { (translate + produce).compactMap { $0.english } }
+    var asked: [String] { (translate + reply + produce).compactMap { $0.english } }
 }
 
 extension PackDay {
@@ -31,6 +38,7 @@ extension PackDay {
         stretchID = try c.decodeIfPresent(String.self, forKey: .stretchID)
         words = try c.decodeIfPresent(WordSeeds.self, forKey: .words) ?? WordSeeds()
         translate = try c.decodeIfPresent([Turn.Prompt].self, forKey: .translate) ?? []
+        reply = try c.decodeIfPresent([Turn.Prompt].self, forKey: .reply) ?? []
         produce = try c.decodeIfPresent([Turn.Prompt].self, forKey: .produce) ?? []
         writtenAt = try c.decodeIfPresent(Date.self, forKey: .writtenAt) ?? .distantPast
     }

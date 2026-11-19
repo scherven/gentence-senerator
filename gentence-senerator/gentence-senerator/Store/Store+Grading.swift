@@ -33,6 +33,11 @@ extension Store {
         for id in jobs.map(\.id) {
             guard var job = jobs.first(where: { $0.id == id }), job.state != .done else { continue }
             do {
+                if job.batchID == nil, DryRun.on {
+                    gradeDry(&job)
+                    put(job)
+                    continue
+                }
                 if job.batchID == nil {
                     if !job.uploading, mayUpload(job.id) { try submit(&job) }
                     put(job)
@@ -142,8 +147,32 @@ extension Store {
         return try Schemas.data(["requests": requests])
     }
 
+    /// A job graded on the device, in the simulator: what the batch would
+    /// have sent, answered by `DryRun`, read in as if it had come back.
+    private func gradeDry(_ job: inout GradingJob) {
+        guard let data = try? body(of: job),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let requests = object["requests"] as? [[String: Any]] else {
+            job.state = .done
+            return
+        }
+        let results = requests.compactMap { request -> Anthropic.BatchResult? in
+            guard let id = request["custom_id"] as? String,
+                  let params = request["params"] as? [String: Any] else { return nil }
+            return Anthropic.BatchResult(customID: id, reply: DryRun.reply(body: params), error: nil)
+        }
+        ingest(results, into: job, batched: true)
+        job.graded = results.count
+        job.failed = 0
+        job.state = .done
+        job.sentAt = job.sentAt ?? .now
+        job.returnedAt = job.returnedAt ?? .now
+        job.error = nil
+    }
+
     /// Sends a job from the app, now, beside whatever iOS is holding for it.
     func sendNow(_ job: GradingJob) async {
+        if DryRun.on { await pump(); return }
         guard job.batchID == nil, sendingNow.insert(job.id).inserted else { return }
         defer { sendingNow.remove(job.id) }
         do {
@@ -241,7 +270,7 @@ extension Store {
     /// Idempotent: an answer already reviewed is skipped, so a crash halfway
     /// through costs nothing on the next pass.
     /// `batched` false when the worker graded it with ordinary calls, at full price.
-    private func ingest(_ results: [Anthropic.BatchResult], into job: GradingJob, batched: Bool) {
+    func ingest(_ results: [Anthropic.BatchResult], into job: GradingJob, batched: Bool) {
         let byID = Dictionary(results.map { ($0.customID, $0) }, uniquingKeysWith: { a, _ in a })
         for exchange in job.exchanges {
             guard let result = byID[exchange.customID], let reply = result.reply else { continue }
@@ -295,11 +324,13 @@ extension Store {
     /// then the day — and, once today's feedback is in, tomorrow — is written.
     /// Polls while anything is out, so the graded count moves on screen.
     func wake() async {
+        if DryRun.on, ProcessInfo.processInfo.arguments.contains("-dryRunSeed") { seedDryRun() }
         backfillActivity()
         retireStale()
         await reconcileUploads()
         await pump()
         notificationsOn = await Push.allowed()
+        await Pinger.shared.replan(self)
         await prepareDay()
         polling?.cancel()
         polling = Task { [weak self] in
@@ -325,6 +356,7 @@ extension Store {
 
     /// The graded reviews of one job, one screen per exchange.
     func read(_ job: GradingJob) {
+        redo = nil
         let ids = job.exchanges.compactMap(\.turnIDs.last)
             .filter { archived($0)?.review != nil }
         guard let first = ids.first, let turn = archived(first) else { return }

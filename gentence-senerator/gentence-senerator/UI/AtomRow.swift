@@ -27,15 +27,9 @@ struct AtomRow: View {
     }
 }
 
-/// A finding revealed in two beats: where, then what it is and the fix.
-///
-/// Closed, the row says only where the trouble is, which is the learner's
-/// chance to repair it themselves. Opening it is them saying they want the
-/// answer, so the answer arrives — there is nothing left to confirm. After it
-/// they say whether they knew it, which decides whether this is scheduled.
-///
-/// Every stage arrives with the review; the staging is only in what is shown.
-struct StagedAtomRow: View {
+/// A finding, all of it at a glance: its number, `wrong → right`, and why in
+/// a few words. Tapped, the note and the decisions about it.
+struct FindingRow: View {
     let atom: Atom
     /// Shared with the underline in the sentence.
     var number: Int? = nil
@@ -59,50 +53,49 @@ struct StagedAtomRow: View {
     @State private var sending = false
     @State private var trouble: String?
 
-    /// Reviews from before grading moved to a batch can be missing everything
-    /// after `locate`; those stay on it.
-    private var headline: String {
-        open && atom.isDeep ? atom.stages.name : atom.stages.locate
-    }
-
     private var colour: Color { Theme.colour(for: atom.verdict) }
 
+    /// The words to put beside the arrow. Newer reviews quote them; older
+    /// ones have only the located span.
+    private var shown: Store.Span? {
+        guard let wrong = atom.stages.wrong, !wrong.isEmpty else { return span }
+        return Store.Span(range: span?.range ?? 0..<0, wrong: wrong,
+                          right: atom.stages.fix.isEmpty ? nil : atom.stages.fix)
+    }
+
+    /// Why, unless it is all there is to say and is already the headline.
+    private var why: String {
+        atom.stages.name.isEmpty ? atom.kind.label : atom.stages.name
+    }
+
     var body: some View {
-        LedgerRow(account: atom.verdict.rawValue, colour: colour, number: number,
-                  edge: colour, ruled: !last) {
-            VStack(alignment: .leading, spacing: 4) {
-                if atom.weight == .start && !open {
-                    Text("START HERE").monoCaps().foregroundStyle(Theme.C.ink2)
+        HStack(alignment: .top, spacing: 10) {
+            NumberTag(number: number ?? 0, colour: colour)
+                .opacity(number == nil ? 0 : 1)
+                .padding(.top, 3)
+            VStack(alignment: .leading, spacing: 3) {
+                if shown != nil || !atom.stages.fix.isEmpty {
+                    FixLine(span: shown, fix: atom.stages.fix)
                 }
-                HStack(alignment: .firstTextBaseline) {
-                    Text(atom.kind.label).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink3)
-                    Spacer(minLength: 8)
-                    if let back {
-                        Text(back).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink2)
-                            .accessibilityLabel("Back \(back)")
-                    }
-                }
-                Text(headline)
-                    .font(Theme.F.bodyTight)
-                    .foregroundStyle(Theme.C.ink)
+                Text(why)
+                    .font(Theme.F.note)
+                    .foregroundStyle(Theme.C.ink2)
                     .fixedSize(horizontal: false, vertical: true)
-                if open { opened }
+                if open { opened.padding(.top, 4) }
             }
-        } trailing: {
-            // Open, the entry takes the width.
-            if !open {
-                Text("FIX +")
-                    .font(Theme.F.label)
-                    .tracking(Theme.M.caps)
-                    .foregroundStyle(Theme.C.ink3)
-                    .fixedSize()
-                    .padding(.top, 12)
-                    .padding(.trailing, 10)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(open ? "–" : "›").font(Theme.F.label).foregroundStyle(Theme.C.ink3)
+                .padding(.top, 3)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .overlay(alignment: .leading) { Rectangle().fill(colour).frame(width: Theme.M.edge) }
+        .overlay(alignment: .bottom) {
+            if !last { Rectangle().fill(Theme.C.rule.opacity(0.45)).frame(height: Theme.M.hair) }
         }
         .background(Theme.C.surface)
         .contentShape(Rectangle())
-        .onTapGesture(perform: advance)
+        .onTapGesture { open.toggle() }
         .accessibilityAddTraits(.isButton)
         .alert("What's wrong?", isPresented: $asking) {
             TextField("Optional", text: $note)
@@ -123,36 +116,33 @@ struct StagedAtomRow: View {
 
     @ViewBuilder
     private var opened: some View {
-        if !atom.isDeep {
-            Text("No fix.")
-                .font(Theme.F.note).foregroundStyle(Theme.C.ink2)
-        } else {
-            FixLine(span: span, fix: atom.stages.fix).padding(.top, 4)
-
-            Text(atom.stages.note)
-                .font(Theme.F.note)
-                .foregroundStyle(Theme.C.ink2)
-                .fixedSize(horizontal: false, vertical: true)
-
-            HStack(spacing: 0) { classify }
-                .padding(.top, 4)
-            if let point { TypedLink(point.name, action: point.open).padding(.top, 2) }
-        }
-        if onDispute != nil { wrong }
-    }
-
-    /// Says the finding itself is wrong. Goes to the owner, changes nothing here.
-    @ViewBuilder
-    private var wrong: some View {
-        HStack(spacing: 8) {
-            TinyButton(title: disputed ? "Reported" : sending ? "Sending" : "That's wrong",
-                       selected: disputed) { if !disputed && !sending { note = ""; asking = true } }
-                .fixedSize()
+        VStack(alignment: .leading, spacing: 6) {
+            if !atom.stages.note.isEmpty {
+                Text(atom.stages.note)
+                    .font(Theme.F.bodyTight)
+                    .foregroundStyle(Theme.C.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: 6) {
+                classify
+                Spacer(minLength: 0)
+                if let back {
+                    Text("Back " + back).monoCaps(Theme.F.meta).foregroundStyle(Theme.C.ink2)
+                }
+            }
+            HStack(spacing: 8) {
+                if let point { TypedLink(point.name, action: point.open) }
+                Spacer(minLength: 0)
+                if onDispute != nil {
+                    TinyButton(title: disputed ? "Reported" : sending ? "Sending" : "That's wrong",
+                               selected: disputed) { if !disputed && !sending { note = ""; asking = true } }
+                        .fixedSize()
+                }
+            }
             if let trouble {
                 Text(trouble).font(Theme.F.meta).foregroundStyle(Theme.C.bad)
             }
         }
-        .padding(.top, 2)
     }
 
     @ViewBuilder
@@ -163,10 +153,6 @@ struct StagedAtomRow: View {
         TinyButton(title: "New to me",
                    selected: knowledge == .gap) { onClassify(.gap) }
             .fixedSize()
-    }
-
-    private func advance() {
-        if !open { open = true }
     }
 }
 

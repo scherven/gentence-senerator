@@ -547,6 +547,12 @@ extension View {
         pageHeader(PageHeader(lead: lead, title: title, meta: meta, centred: centred, onLead: onLead))
     }
 
+    /// Off while a screen inside draws its own: two would stack.
+    @ViewBuilder
+    func pageHeader<T: View>(_ header: PageHeader<T>, hidden: Bool) -> some View {
+        if hidden { self } else { pageHeader(header) }
+    }
+
     func pageHeader<T: View>(_ header: PageHeader<T>) -> some View {
         safeAreaInset(edge: .top, spacing: 0) {
             header

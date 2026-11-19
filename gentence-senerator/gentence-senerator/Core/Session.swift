@@ -5,6 +5,9 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
     case translate
     case listen
     case produce
+    /// A message from someone, answered in a line. Short, like translate; the
+    /// learner's own words, like produce.
+    case reply
     /// A typed conversation. Run outside the session machinery, filed as a
     /// session when it ends; see `Conversation`.
     case converse
@@ -20,12 +23,20 @@ enum Mode: String, Codable, Hashable, CaseIterable, Identifiable {
         case .translate: return "Translate"
         case .listen:    return "Listen"
         case .produce:   return "Produce"
+        case .reply:     return "Reply"
         case .converse:  return "Talk"
         }
     }
 
-    /// False for produce: turns run uninterrupted, review comes after.
-    var reviewsEachAttempt: Bool { self != .produce }
+    /// Owed every day. Produce and Talk are there when wanted.
+    var isDaily: Bool { self == .translate || self == .reply || self == .listen }
+
+    /// Written a session at a time by `Tutor.daySet`.
+    static let written: [Mode] = [.translate, .reply, .produce]
+
+    /// Written ahead, for today and the offline queue. Produce is written
+    /// when it is opened.
+    static let ahead: [Mode] = [.translate, .reply]
 }
 
 enum Phase: Hashable {
@@ -142,6 +153,11 @@ struct Review: Codable, Hashable {
 
     /// What a speaker would actually say. Second stage.
     var natural: String?
+    /// The learner's own sentence with only the problems fixed. Nil before
+    /// reviews carried it, in listen, and for a held exchange of several.
+    var fixed: String? = nil
+    /// What `fixed` means, in English: what a redo asks for.
+    var gloss: String? = nil
 
     /// Second stage. Empty until it arrives.
     var respeaks: [Respeak] = []
@@ -166,6 +182,8 @@ extension Review {
         readOfScore = try container.decode(String.self, forKey: .readOfScore)
         atoms = try container.decode([Atom].self, forKey: .atoms)
         natural = try container.decodeIfPresent(String.self, forKey: .natural)
+        fixed = try container.decodeIfPresent(String.self, forKey: .fixed)
+        gloss = try container.decodeIfPresent(String.self, forKey: .gloss)
         respeaks = try container.decodeIfPresent([Respeak].self, forKey: .respeaks) ?? []
         usedPoints = try container.decodeIfPresent([String].self, forKey: .usedPoints) ?? []
         isDeep = try container.decodeIfPresent(Bool.self, forKey: .isDeep) ?? false

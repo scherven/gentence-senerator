@@ -40,7 +40,7 @@ extension Store {
         var marks = activity.marks(on: day, settings.language)
         // Today's sessions may not be filed yet.
         if Calendar.current.isDateInToday(day) {
-            for mode in [Mode.translate, .produce] {
+            for mode in Mode.written {
                 if let s = today(mode), let m = ActivityLog.mark(for: s) { marks.insert(m) }
             }
         }

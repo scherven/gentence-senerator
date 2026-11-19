@@ -45,7 +45,7 @@ struct FeedView: View {
                     .foregroundStyle(Theme.C.ink)
                     .lineLimit(3)
                 if !item.detail.isEmpty {
-                    let fix = item.kind == .translate || item.kind == .produce
+                    let fix = item.kind == .translate || item.kind == .produce || item.kind == .reply
                     Text(fix ? "→ " + item.detail : item.detail)
                         .font(fix ? Theme.F.target(size: 15, for: item.language) : Theme.F.note)
                         .foregroundStyle(fix ? Theme.C.good : Theme.C.ink2)
@@ -76,6 +76,7 @@ struct FeedView: View {
         case .quiz:      return "Quiz"
         case .words:     return "Words"
         case .talk:      return "Talk"
+        case .reply:     return "Reply"
         }
     }
 

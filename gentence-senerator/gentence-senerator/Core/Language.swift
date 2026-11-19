@@ -61,13 +61,20 @@ enum Language: String, Codable, Hashable, CaseIterable, Identifiable {
         }
     }
 
-    /// Listen is ChinesePod dialogues; the others have none yet.
+    /// Listen is ChinesePod dialogues; the others have none yet. Produce is
+    /// the long one, there when wanted and never owed.
     var modes: [Mode] {
         switch self {
-        case .mandarin: return [.translate, .listen, .produce]
-        case .german, .french, .spanish, .korean: return [.translate, .produce]
+        case .mandarin: return [.translate, .reply, .listen, .produce]
+        case .german, .french, .spanish, .korean: return [.translate, .reply, .produce]
         }
     }
+
+    /// The day's modes: what has to be done for the day to be done.
+    var dailyModes: [Mode] { modes.filter(\.isDaily) }
+
+    /// Words split on spaces. Mandarin runs together and is compared by character.
+    var usesSpaces: Bool { self != .mandarin }
 
     var levelSystem: String {
         switch self {

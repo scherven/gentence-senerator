@@ -220,7 +220,7 @@ extension Store {
             "note": note.trimmingCharacters(in: .whitespacesAndNewlines)
         ]
         do {
-            try await Worker.dispute(body)
+            if !DryRun.on { try await Worker.dispute(body) }
             disputed.insert(atom.id)
             Vault.save(Array(disputed), Vault.disputed)
             return nil

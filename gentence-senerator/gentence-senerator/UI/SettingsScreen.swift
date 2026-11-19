@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsScreen: View {
+    @AppStorage(DryRun.realKey) private var realCalls = false
     @Bindable var store: Store
     @Environment(\.dismiss) private var dismiss
     @State private var packDays = 7
@@ -110,6 +111,30 @@ struct SettingsScreen: View {
             row {
                 SquareToggle(isOn: $store.settings.offerStretch) {
                     Text("Suggest structures I haven't used").font(Theme.F.body)
+                }
+            }
+            row {
+                SquareToggle(isOn: $store.settings.pingsOn) {
+                    Text("Reminders").font(Theme.F.body)
+                }
+            }
+            if store.settings.pingsOn {
+                row {
+                    SquareStepper(value: $store.settings.wakeFrom, in: 5...(store.settings.wakeTo - 4)) {
+                        Text("From \(store.settings.wakeFrom):00").font(Theme.F.body)
+                    }
+                }
+                row {
+                    SquareStepper(value: $store.settings.wakeTo, in: (store.settings.wakeFrom + 4)...24) {
+                        Text("Until \(store.settings.wakeTo):00").font(Theme.F.body)
+                    }
+                }
+            }
+            if DryRun.isSimulator {
+                row {
+                    SquareToggle(isOn: $realCalls) {
+                        Text("Simulator: real model calls (costs money)").font(Theme.F.body)
+                    }
                 }
             }
         }

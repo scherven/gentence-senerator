@@ -7,8 +7,11 @@ extension Store {
     /// Days queued for the language and level in use.
     var packReady: Int { packDays.filter(fitsNow).count }
 
+    /// A day queued before reply was written ahead has no reply set and
+    /// would leave Reply with nothing offline: it stays queued, unused, like
+    /// a day for another level.
     func fitsNow(_ day: PackDay) -> Bool {
-        day.language == settings.language && day.level == settings.level
+        day.language == settings.language && day.level == settings.level && !day.reply.isEmpty
     }
 
     func packEstimate(days: Int) -> (now: Double, later: Double) {
@@ -24,8 +27,7 @@ extension Store {
     /// quietly without signal; the next wake or reconnect tries again.
     func keepPackStocked() {
         guard packReady == 0, packTask == nil,
-              settings.language.modes.contains(.translate),
-              settings.language.modes.contains(.produce) else { return }
+              Mode.ahead.allSatisfy(settings.language.modes.contains) else { return }
         downloadPack(days: 1, quiet: true)
     }
 
@@ -76,7 +78,7 @@ extension Store {
                                    progress: progress, language: language, missed: missedWords)
         var avoid = queued.suffix(3).flatMap(\.asked)
         var sets: [Mode: [Turn.Prompt]] = [:]
-        for mode in [Mode.translate, .produce] {
+        for mode in Mode.ahead {
             let draft = Session(id: "\(Spend.key(day))|\(language.rawValue)|\(mode.rawValue)",
                                 language: language, mode: mode, startedAt: day, turns: [],
                                 goal: goal, level: level)
@@ -87,8 +89,8 @@ extension Store {
         }
         packDays.append(PackDay(id: UUID(), language: language, level: level,
                                 stretchID: stretch?.id, words: words,
-                                translate: sets[.translate] ?? [], produce: sets[.produce] ?? [],
-                                writtenAt: .now))
+                                translate: sets[.translate] ?? [], reply: sets[.reply] ?? [],
+                                produce: [], writtenAt: .now))
         Vault.save(packDays, Vault.pack)
     }
 
@@ -100,7 +102,7 @@ extension Store {
         let language = settings.language
         // Pack days are written without knowing the day they land on, so a
         // scene day takes translate from the pack and writes its scene live.
-        let modes: [Mode] = sceneToday ? [.translate] : [.translate, .produce]
+        let modes: [Mode] = Mode.ahead
         guard let at = packDays.firstIndex(where: fitsNow),
               modes.allSatisfy({ today($0) == nil
                   && holds[Store.holdKey(language, $0)] == nil
@@ -108,9 +110,12 @@ extension Store {
         else { return false }
 
         let day = packDays.remove(at: at)
-        // A day retargeted by a request may still be waiting on its produce
-        // set; `prepareDay` writes what is missing.
-        for mode in modes where !day.prompts(mode).isEmpty {
+        // Produce comes along when the day has a set for it (written for a
+        // requested point, or queued before it stopped being written ahead),
+        // except on a scene day, which writes its scene when opened.
+        let produce = !sceneToday && today(.produce) == nil
+            && holds[Store.holdKey(language, .produce)] == nil ? [Mode.produce] : []
+        for mode in modes + produce where !day.prompts(mode).isEmpty {
             var session = Session(id: sessionID(for: mode), language: language, mode: mode,
                                   startedAt: .now, turns: [], goal: settings.dailyGoal,
                                   level: day.level)
@@ -129,8 +134,10 @@ extension Store {
     }
 
     /// A point asked for while tomorrow is already queued: the front day takes
-    /// it as its stretch and its produce set is written again. Until that
-    /// lands the day has no produce set, and `prepareDay` writes one on the day.
+    /// it as its stretch and its reply set is written again around it. The
+    /// old reply set stays until the new one lands, so the day is never left
+    /// without one. Its produce set, if any, is dropped: produce is written
+    /// when it is opened, from the day's stretch.
     /// False when nothing is queued.
     func retargetFrontDay(to point: GrammarPoint) -> Bool {
         guard let at = packDays.firstIndex(where: fitsNow) else { return false }
@@ -141,15 +148,16 @@ extension Store {
         let day = packDays[at]
         Task { [weak self] in
             guard let self else { return }
-            let draft = Session(id: "\(Spend.key(.now))|\(day.language.rawValue)|produce",
-                                language: day.language, mode: .produce, startedAt: .now,
+            let draft = Session(id: "\(Spend.key(.now))|\(day.language.rawValue)|reply",
+                                language: day.language, mode: .reply, startedAt: .now,
                                 turns: [], goal: self.settings.dailyGoal, level: day.level)
             guard let written = try? await self.writeSet(for: draft, from: 0, stretch: point,
                                                          words: day.words, avoiding: day.asked),
+                  !written.isEmpty,
                   let now = self.packDays.firstIndex(where: { $0.id == id }),
                   self.packDays[now].stretchID == point.id
             else { return }
-            self.packDays[now].produce = written
+            self.packDays[now].reply = written
             Vault.save(self.packDays, Vault.pack)
         }
         return true

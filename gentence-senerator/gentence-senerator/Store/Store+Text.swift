@@ -20,6 +20,13 @@ extension Store {
         guard !chars.isEmpty else { return nil }
         let fix = atom.stages.fix.trimmingCharacters(in: .whitespacesAndNewlines)
         let problem = atom.verdict.isProblem && !fix.isEmpty
+        // Quoted by the review itself, on reviews that quote. The first
+        // occurrence: a quote is as short as shows the problem, so a repeat
+        // is rare.
+        if let wrong = atom.stages.wrong?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !wrong.isEmpty, let r = occurrences(of: wrong, in: chars).first {
+            return Span(range: r, wrong: String(chars[r]), right: problem ? fix : nil)
+        }
         // Where the fix says it is, from the fix alone.
         let fromFix: Span? = !problem ? nil : rewrite(said, to: fix) ?? window(for: fix, in: chars)
             .map { Span(range: $0, wrong: String(chars[$0]), right: fix) }

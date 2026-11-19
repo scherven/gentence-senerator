@@ -31,7 +31,8 @@ struct ActivityLog: Codable, Hashable {
         guard session.isComplete || (session.filed ?? 0) > 0 else { return nil }
         switch session.mode {
         case .translate: return .translate
-        case .produce:   return .produce
+        // Own words, short or long: one mark.
+        case .produce, .reply: return .produce
         default:         return nil
         }
     }

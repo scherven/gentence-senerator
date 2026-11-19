@@ -20,6 +20,7 @@ extension Store {
         guard settings.language.modes.contains(mode),
               !isDone(mode) || (mode == .listen && hasDialogues) else { return }
         settings.mode = mode
+        redo = nil
         knowledge = [:]
         path = []
         reading = []
@@ -39,6 +40,7 @@ extension Store {
            let held = holds[Store.holdKey(settings.language, mode)] {
             session = held.session
             current = held.turn
+            if mode == .translate { startRedo() }
             stretch = stretch(of: held.session)
             draft = ""
             if current == nil {
@@ -55,6 +57,7 @@ extension Store {
         if mode == .listen, startPassage() { return }
 
         session = freshSession(mode)
+        if mode == .translate { startRedo() }
         stretch = nil
         await nextPrompt()
         if let session { stretch = stretch(of: session) }
@@ -63,7 +66,7 @@ extension Store {
     /// The structure produce is reaching for this session, if any. Read off the
     /// written set, so it is the one the question was actually written for.
     func stretch(of session: Session) -> GrammarPoint? {
-        guard session.mode == .produce,
+        guard session.mode == .produce || session.mode == .reply,
               let id = session.planned?.first?.pointID else { return nil }
         return pack.points.first { $0.id == id }
     }
@@ -82,7 +85,7 @@ extension Store {
     /// Never over a held session: those are answers.
     func prepareDay() async {
         takePackDay()
-        for mode in [Mode.translate, .produce] {
+        for mode in Mode.ahead {
             let key = Store.holdKey(settings.language, mode)
             guard writing[key] == nil else { continue }
             if let held = holds[key]?.session {
@@ -163,8 +166,10 @@ extension Store {
                 seed: DayPlan.seed(from: words, turn: turn)
             )
         }
-        let reach = session.mode == .produce && index == 0 && settings.offerStretch
-            ? stretch : nil
+        // Item 1 of produce, or of reply now that produce is not owed: a
+        // requested point has to land somewhere every day.
+        let reach = (session.mode == .produce || session.mode == .reply) && index == 0
+            && settings.offerStretch ? stretch : nil
         let avoid = recentlyAsked(session.mode) + Mode.allCases.compactMap { today($0) }
             .flatMap { ($0.planned ?? []) + $0.turns.map(\.prompt) }
             .compactMap(\.english) + also
@@ -604,6 +609,7 @@ extension Store {
     /// so picking the same mode again carries on from here; a finished one was
     /// already archived by `advance`, and this just clears the screen.
     func endSession() {
+        redo = nil
         hold()
         dropPending()
         session = nil

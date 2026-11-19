@@ -5,15 +5,15 @@ extension Store {
     // MARK: Today
 
 
-    /// Today's order on the start screen: produce carries the day.
-    nonisolated static let todayOrder: [Mode] = [.produce, .translate, .listen]
+    /// Today's order on the start screen. Produce is there when wanted, not owed.
+    nonisolated static let todayOrder: [Mode] = [.translate, .reply, .listen]
 
     /// The first mode not yet done today.
     var nextMode: Mode? {
-        Store.todayOrder.first { settings.language.modes.contains($0) && !isDone($0) }
+        Store.todayOrder.first { settings.language.dailyModes.contains($0) && !isDone($0) }
     }
 
-    var modesDoneToday: Int { settings.language.modes.filter(isDone).count }
+    var modesDoneToday: Int { settings.language.dailyModes.filter(isDone).count }
 
     /// One answer the learner wrote today.
     struct Written: Identifiable, Hashable {
@@ -27,7 +27,44 @@ extension Store {
     /// The learner's own sentences today, oldest first. Listen is
     /// transcription, not writing.
     var writtenToday: [Written] {
-        Store.written([Mode.translate, .produce].compactMap { today($0) })
+        Store.written(Mode.written.compactMap { today($0) })
+    }
+
+    /// At most three problems from a batch of reviews: the same point counted
+    /// once with how often it came up, ranked by that, then breaks before
+    /// weakens, then the one each review marked to start with.
+    nonisolated static func takeAway(_ reviews: [Review], limit: Int = 3) -> [(atom: Atom, count: Int)] {
+        var order: [String] = []
+        var seen: [String: (atom: Atom, count: Int)] = [:]
+        for atom in reviews.flatMap(\.problems) {
+            if let hit = seen[atom.id] {
+                seen[atom.id] = (hit.atom, hit.count + 1)
+            } else {
+                seen[atom.id] = (atom, 1)
+                order.append(atom.id)
+            }
+        }
+        func rank(_ a: Atom) -> Int { (a.verdict == .breaks ? 2 : 0) + (a.weight == .start ? 1 : 0) }
+        return order.compactMap { seen[$0] }
+            .enumerated()
+            .sorted { l, r in
+                if l.element.count != r.element.count { return l.element.count > r.element.count }
+                if rank(l.element.atom) != rank(r.element.atom) { return rank(l.element.atom) > rank(r.element.atom) }
+                return l.offset < r.offset
+            }
+            .prefix(limit)
+            .map(\.element)
+    }
+
+    /// Four letters, for a ledger's account column.
+    nonisolated static func short(_ mode: Mode) -> String {
+        switch mode {
+        case .translate: return "Trans"
+        case .produce:   return "Prod"
+        case .reply:     return "Reply"
+        case .listen:    return "Lstn"
+        case .converse:  return "Talk"
+        }
     }
 
     nonisolated static func written(_ sessions: [Session]) -> [Written] {
